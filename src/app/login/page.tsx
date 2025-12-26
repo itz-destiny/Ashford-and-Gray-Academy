@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { EduEventLogo } from "@/components/eduevent-logo";
+import { Logo } from "@/components/logo";
 import Link from "next/link";
 
 export default function LoginPage() {
@@ -12,7 +12,7 @@ export default function LoginPage() {
         <CardHeader className="text-center">
           <div className="mx-auto mb-4">
             <Link href="/">
-              <EduEventLogo />
+              <Logo />
             </Link>
           </div>
           <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>

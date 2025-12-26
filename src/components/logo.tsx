@@ -9,9 +9,11 @@ type LogoProps = {
 export function Logo({ className, showText = true }: LogoProps) {
   return (
     <div className={cn('flex items-center gap-2', className)}>
-      <GraduationCap className="h-7 w-7 text-accent" />
+      <div className="bg-primary p-1.5 rounded-lg">
+        <GraduationCap className="h-5 w-5 text-primary-foreground" />
+      </div>
       {showText && (
-        <h1 className="text-xl font-bold font-headline text-sidebar-foreground">
+        <h1 className="text-xl font-bold text-foreground">
           Ashford & Gray
         </h1>
       )}

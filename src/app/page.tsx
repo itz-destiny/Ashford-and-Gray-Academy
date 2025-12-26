@@ -1,9 +1,10 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ArrowRight, BookOpen, Calendar, GraduationCap, Lock, Monitor, Star, Users, Mail, Youtube, Twitter, Instagram, MapPin } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { EduEventLogo } from "@/components/eduevent-logo";
+import { Logo } from "@/components/logo";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 
@@ -82,7 +83,7 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <header className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-        <EduEventLogo />
+        <Logo />
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
           <Link href="#" className="text-foreground/80 hover:text-foreground">Courses</Link>
           <Link href="#" className="text-foreground/80 hover:text-foreground">Events</Link>
@@ -270,7 +271,7 @@ export default function Home() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
             <div className="md:col-span-2">
-              <EduEventLogo />
+              <Logo />
               <p className="mt-4 text-muted-foreground">
                 Empowering the next generation of learners and leaders through integrated event management.
               </p>
@@ -305,7 +306,7 @@ export default function Home() {
             </div>
           </div>
           <div className="mt-12 pt-8 border-t flex justify-between items-center text-sm text-muted-foreground">
-            <p>&copy; {new Date().getFullYear()} EduEvent Systems Inc. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} Ashford & Gray Fusion Academy. All rights reserved.</p>
             <div className="flex gap-4">
                 <Link href="#" className="hover:text-primary">Privacy Policy</Link>
                 <Link href="#" className="hover:text-primary">Cookie Policy</Link>
@@ -316,5 +317,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
