@@ -19,6 +19,7 @@ import {
   BookOpen,
   Calendar,
   Home,
+  Info,
   MessageSquare,
   ScrollText,
   Settings,
@@ -49,6 +50,7 @@ export default function DashboardLayout({
     { href: "/schedule", icon: Calendar, label: "Schedule" },
     { href: "/resources", icon: ScrollText, label: "Resources" },
     { href: "/messages", icon: MessageSquare, label: "Messages" },
+    { href: "/about", icon: Info, label: "About" },
     { href: "/settings", icon: Settings, label: "Settings" },
   ];
 

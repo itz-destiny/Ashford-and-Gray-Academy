@@ -104,9 +104,9 @@ export default function Home() {
       >
         <Logo />
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-          <Link href="#" className="text-foreground/80 hover:text-foreground">Courses</Link>
-          <Link href="#" className="text-foreground/80 hover:text-foreground">Events</Link>
-          <Link href="#" className="text-foreground/80 hover:text-foreground">About</Link>
+          <Link href="/courses" className="text-foreground/80 hover:text-foreground">Courses</Link>
+          <Link href="/events" className="text-foreground/80 hover:text-foreground">Events</Link>
+          <Link href="/about" className="text-foreground/80 hover:text-foreground">About</Link>
         </nav>
         <div className="flex items-center gap-2">
           <Button variant="outline" asChild>
@@ -137,7 +137,7 @@ export default function Home() {
                 </Button>
               </div>
             </div>
-            <div className="animate-fade-in duration-500 [animation-delay:0.2s]">
+            <div className="motion-safe:animate-fade-in duration-500 [animation-delay:0.2s]">
               <Image
                 src="https://picsum.photos/seed/hero-team/600/450"
                 alt="A team of young professionals collaborating around a table."
@@ -155,7 +155,7 @@ export default function Home() {
             <h2 className="text-3xl font-bold font-headline">Choose Your Path</h2>
             <p className="mt-2 text-muted-foreground">Sign in to your dedicated dashboard to get started</p>
             <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-              <Card className="text-left motion-safe:animate-fade-in-up [animation-delay:0.1s]">
+              <Card className="text-left motion-safe:animate-fade-in-up" style={{animationDelay: '0.1s'}}>
                 <CardHeader>
                   <div className="w-12 h-12 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-4">
                     <GraduationCap className="w-6 h-6 text-primary" />
@@ -171,7 +171,7 @@ export default function Home() {
                   </Button>
                 </CardContent>
               </Card>
-              <Card className="text-left motion-safe:animate-fade-in-up [animation-delay:0.2s]">
+              <Card className="text-left motion-safe:animate-fade-in-up" style={{animationDelay: '0.2s'}}>
                 <CardHeader>
                   <div className="w-12 h-12 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-4">
                     <Monitor className="w-6 h-6 text-green-600" />
@@ -187,7 +187,7 @@ export default function Home() {
                   </Button>
                 </CardContent>
               </Card>
-              <Card className="text-left motion-safe:animate-fade-in-up [animation-delay:0.3s]">
+              <Card className="text-left motion-safe:animate-fade-in-up" style={{animationDelay: '0.3s'}}>
                 <CardHeader>
                   <div className="w-12 h-12 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mb-4">
                     <Users className="w-6 h-6 text-purple-600" />
@@ -224,6 +224,7 @@ export default function Home() {
                       width={600}
                       height={400}
                       className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
+                      data-ai-hint={item.imageHint}
                     />
                     <div className="absolute top-2 left-2 flex items-center gap-2">
                        <Badge variant="secondary" className="text-xs uppercase backdrop-blur-sm">{item.type}</Badge>
@@ -272,7 +273,7 @@ export default function Home() {
                   </div>
                   <p className="text-muted-foreground">"{t.quote}"</p>
                   <div className="mt-4 flex items-center gap-3">
-                    <Image src={t.avatarUrl} alt={t.name} width={40} height={40} className="rounded-full" />
+                    <Image src={t.avatarUrl} alt={t.name} width={40} height={40} className="rounded-full" data-ai-hint="person portrait" />
                     <div>
                       <p className="font-semibold">{t.name}</p>
                       <p className="text-sm text-muted-foreground">{t.title}</p>
@@ -303,7 +304,7 @@ export default function Home() {
             <div>
               <h3 className="font-semibold">Platform</h3>
               <ul className="mt-4 space-y-2">
-                <li><Link href="#" className="text-muted-foreground hover:text-primary">Browse Courses</Link></li>
+                <li><Link href="/courses" className="text-muted-foreground hover:text-primary">Browse Courses</Link></li>
                 <li><Link href="#" className="text-muted-foreground hover:text-primary">Upcoming Events</Link></li>
                 <li><Link href="#" className="text-muted-foreground hover:text-primary">For Instructors</Link></li>
                 <li><Link href="#" className="text-muted-foreground hover:text-primary">Pricing</Link></li>
@@ -339,5 +340,3 @@ export default function Home() {
     </div>
   );
 }
-
-    

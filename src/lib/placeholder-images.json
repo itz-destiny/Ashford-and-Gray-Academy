@@ -53,6 +53,36 @@
       "description": "Icon representing a presentation slide deck.",
       "imageUrl": "https://images.unsplash.com/photo-1642310290702-c232e4e8579a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwcmVzZW50YXRpb24lMjBpY29ufGVufDB8fHx8MTc2Njc1MzI1Mnww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "presentation icon"
+    },
+    {
+      "id": "about-hero",
+      "description": "A modern school building.",
+      "imageUrl": "https://images.unsplash.com/photo-1741638511444-4fff9a62053d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8bW9kZXJuJTIwc2Nob29sJTIwYnVpbGRpbmd8ZW58MHx8fHwxNzY2NzU0NTY4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "modern school building"
+    },
+    {
+      "id": "leader-1",
+      "description": "Portrait of a female principal.",
+      "imageUrl": "https://images.unsplash.com/photo-1642257834579-eee89ff3e9fd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxmZW1hbGUlMjBwcmluY2lwYWx8ZW58MHx8fHwxNzY2NzU0NTY4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "female principal"
+    },
+    {
+      "id": "leader-2",
+      "description": "Portrait of a male dean.",
+      "imageUrl": "https://images.unsplash.com/photo-1706381075788-74df037aea04?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxtYWxlJTIwZGVhbnxlbnwwfHx8fDE3NjY3NTQ1Njh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "male dean"
+    },
+    {
+      "id": "leader-3",
+      "description": "Portrait of a female director.",
+      "imageUrl": "https://images.unsplash.com/photo-1631387019069-2ff599943f9a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8ZmVtYWxlJTIwZGlyZWN0b3J8ZW58MHx8fHwxNzY2NzU0NTY4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "female director"
+    },
+    {
+      "id": "leader-4",
+      "description": "Portrait of a male teacher.",
+      "imageUrl": "https://images.unsplash.com/photo-1597570889212-97f48e632dad?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxtYWxlJTIwdGVhY2hlcnxlbnwwfHx8fDE3NjY3MzcyMjl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "male teacher"
     }
   ]
 }
