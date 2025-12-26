@@ -53,14 +53,19 @@ export default function DashboardLayout({
   ];
 
   const getPageTitle = () => {
+    // Exact match for dashboard pages
     const item = navItems.find(item => item.href === pathname);
-    if (pathname.startsWith('/courses/')) return 'Course Details';
-    return item ? item.label : "Dashboard";
+    if (item) return item.label;
+
+    // Handle nested course pages
+    if (pathname.startsWith('/courses/')) return 'Explore Our Courses';
+    
+    return "Dashboard";
   };
 
   return (
     <SidebarProvider>
-      <Sidebar side="left" collapsible="icon" className="border-r">
+      <Sidebar side="left" collapsible="icon" className="border-r bg-muted/20">
         <SidebarHeader>
           <Logo />
         </SidebarHeader>
@@ -70,7 +75,7 @@ export default function DashboardLayout({
               <SidebarMenuItem key={item.href}>
                 <Link href={item.href}>
                   <SidebarMenuButton
-                    isActive={pathname === item.href}
+                    isActive={pathname.startsWith(item.href) && (item.href !== '/dashboard' || pathname === '/dashboard')}
                     tooltip={item.label}
                   >
                     <item.icon />
@@ -105,7 +110,7 @@ export default function DashboardLayout({
             <UserNav />
           </div>
         </header>
-        <main className="flex-1 flex-col p-4 md:p-6 lg:p-8">
+        <main className="flex-1 flex-col bg-muted/30">
             {children}
         </main>
       </SidebarInset>

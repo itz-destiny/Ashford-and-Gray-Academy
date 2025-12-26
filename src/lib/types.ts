@@ -8,12 +8,22 @@ export type User = {
 export type Course = {
   id: string;
   title: string;
-  description: string;
-  instructor: string;
-  duration: string;
+  category: string;
+  instructor: {
+    name: string;
+    avatarUrl: string;
+    verified: boolean;
+  };
+  rating: number;
+  reviews: number;
+  duration: number; // in weeks
+  level: 'Beginner' | 'Intermediate' | 'Advanced' | 'All Levels';
+  price: number;
+  originalPrice?: number;
   imageUrl: string;
   imageHint: string;
-  progress: number;
+  description?: string; // Optional, as it's not on the main card
+  progress?: number; // Optional
 };
 
 export type Resource = {
