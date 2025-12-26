@@ -102,7 +102,7 @@ export default function Home() {
       <main>
         <section className="py-20 md:py-32">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center">
-            <div className="max-w-xl">
+            <div className="max-w-xl animate-fade-in-up">
               <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
                 Elevate Your Skills & Manage Events Seamlessly
               </h1>
@@ -118,7 +118,7 @@ export default function Home() {
                 </Button>
               </div>
             </div>
-            <div>
+            <div className="animate-fade-in duration-500">
               <Image
                 src="https://picsum.photos/seed/hero-team/600/450"
                 alt="A team of young professionals collaborating around a table."
@@ -132,7 +132,7 @@ export default function Home() {
         </section>
 
         <section className="py-24 bg-secondary">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fade-in-up">
             <h2 className="text-3xl font-bold">Choose Your Path</h2>
             <p className="mt-2 text-muted-foreground">Sign in to your dedicated dashboard to get started</p>
             <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -189,7 +189,7 @@ export default function Home() {
         </section>
 
         <section className="py-24">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 animate-fade-in-up">
             <div className="flex justify-between items-center mb-8">
               <h2 className="text-3xl font-bold">Trending Content</h2>
               <Button variant="link">View all <ArrowRight className="ml-2 h-4 w-4" /></Button>
@@ -242,7 +242,7 @@ export default function Home() {
         </section>
 
         <section className="py-24 bg-secondary">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fade-in-up">
             <h2 className="text-3xl font-bold">Trusted by 10,000+ Learners</h2>
             <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
               {testimonials.map(t => (
@@ -317,3 +317,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
