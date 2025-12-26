@@ -53,7 +53,7 @@ export default function CoursesPage() {
   ]
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 p-4 md:p-8">
       <header className="py-16 text-center bg-secondary rounded-lg">
         <div className="container">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight font-headline">Explore Our Courses</h1>
