@@ -4,7 +4,7 @@
 import { Button } from "@/components/ui/button";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { FaGoogle, FaFacebook } from "react-icons/fa";
+import { FaGoogle } from "react-icons/fa";
 
 type AuthFormProps = {
     title: string;
@@ -30,12 +30,9 @@ export function AuthForm({ title, description, children, footerText, footerLinkT
                         OR CONTINUE WITH
                     </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4">
                     <Button variant="outline">
                         <FaGoogle className="mr-2 h-4 w-4" /> Google
-                    </Button>
-                    <Button variant="outline">
-                        <FaFacebook className="mr-2 h-4 w-4" /> Facebook
                     </Button>
                 </div>
                  {footerText && footerLinkText && (

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowRight } from "lucide-react";
 import { AuthForm } from "./auth-form";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 type SignUpFormProps = {
   onSignUp?: () => void;
@@ -41,7 +42,20 @@ export function SignUpForm({ onSignUp }: SignUpFormProps) {
           <Label htmlFor="password-signup">Password</Label>
           <Input id="password-signup" type="password" required placeholder="Create a password" />
         </div>
-        <Button type="submit" className="w-full h-11">
+        <div className="space-y-3">
+          <Label>I am a...</Label>
+          <RadioGroup defaultValue="student" className="flex gap-4">
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="student" id="role-student" />
+              <Label htmlFor="role-student" className="font-normal">Student</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="instructor" id="role-instructor" />
+              <Label htmlFor="role-instructor" className="font-normal">Instructor/Organizer</Label>
+            </div>
+          </RadioGroup>
+        </div>
+        <Button type="submit" className="w-full h-11 !mt-6">
           Sign Up <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
       </form>
