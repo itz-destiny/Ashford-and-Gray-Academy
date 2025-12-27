@@ -7,11 +7,10 @@ import Link from "next/link";
 import { Logo } from "@/components/logo";
 import { LoginForm } from "./login-form";
 import { SignUpForm } from "./signup-form";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 
 export default function LoginPage() {
-  const [tab, setTab] = useState("login");
+  const [isLoginView, setIsLoginView] = useState(true);
 
   return (
     <div className="min-h-screen w-full grid grid-cols-1 md:grid-cols-2">
@@ -41,22 +40,13 @@ export default function LoginPage() {
       </div>
 
       <div className="flex items-center justify-center p-4 sm:p-8 bg-secondary">
-         <Tabs value={tab} onValueChange={setTab} className="w-full max-w-md">
-            <Card className="w-full">
-                 <div className="p-6">
-                    <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="login">Log In</TabsTrigger>
-                        <TabsTrigger value="signup">Sign Up</TabsTrigger>
-                    </TabsList>
-                 </div>
-                <TabsContent value="login">
-                    <LoginForm />
-                </TabsContent>
-                <TabsContent value="signup">
-                    <SignUpForm onSignUp={() => setTab("login")} />
-                </TabsContent>
-            </Card>
-        </Tabs>
+         <Card className="w-full max-w-md">
+            {isLoginView ? (
+                <LoginForm onSwitchToSignUp={() => setIsLoginView(false)} />
+            ) : (
+                <SignUpForm onSwitchToLogin={() => setIsLoginView(true)} />
+            )}
+        </Card>
       </div>
     </div>
   );

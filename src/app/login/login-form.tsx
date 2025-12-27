@@ -8,11 +8,18 @@ import { Label } from "@/components/ui/label";
 import { ArrowRight } from "lucide-react";
 import { AuthForm } from "./auth-form";
 
-export function LoginForm() {
+type LoginFormProps = {
+  onSwitchToSignUp?: () => void;
+};
+
+export function LoginForm({ onSwitchToSignUp }: LoginFormProps) {
   return (
     <AuthForm
       title="Welcome Back"
       description="Log in to manage your events and track your learning progress."
+      footerText="Don't have an account?"
+      footerLinkText="Sign Up"
+      onFooterLinkClick={onSwitchToSignUp}
     >
       <form className="space-y-4">
         <div className="space-y-2">

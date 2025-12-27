@@ -10,17 +10,17 @@ import { AuthForm } from "./auth-form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 type SignUpFormProps = {
-  onSignUp?: () => void;
+  onSwitchToLogin?: () => void;
 };
 
-export function SignUpForm({ onSignUp }: SignUpFormProps) {
+export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
   const [role, setRole] = useState("student");
 
   const handleSignUp = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle sign up logic here
-    if (onSignUp) {
-      onSignUp();
+    if (onSwitchToLogin) {
+      onSwitchToLogin();
     }
   };
 
@@ -30,7 +30,7 @@ export function SignUpForm({ onSignUp }: SignUpFormProps) {
       description="Join our community to start learning and managing events."
       footerText="Already have an account?"
       footerLinkText="Log In"
-      onFooterLinkClick={onSignUp}
+      onFooterLinkClick={onSwitchToLogin}
     >
       <form className="space-y-4" onSubmit={handleSignUp}>
         <div className="space-y-3">
