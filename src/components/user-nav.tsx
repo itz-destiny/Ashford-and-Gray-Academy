@@ -23,7 +23,7 @@ export function UserNav() {
   const router = useRouter();
 
   const getInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('');
+    return name ? name.split(' ').map(n => n[0]).join('') : '';
   }
 
   const handleSignOut = async () => {
@@ -33,9 +33,23 @@ export function UserNav() {
 
   if (!user) {
     return (
-      <Button asChild>
-        <Link href="/login">Log In</Link>
-      </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+            <Avatar className="h-9 w-9">
+              <AvatarFallback>U</AvatarFallback>
+            </Avatar>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56" align="end" forceMount>
+          <DropdownMenuItem asChild>
+            <Link href="/login">
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Log In</span>
+            </Link>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     )
   }
 
