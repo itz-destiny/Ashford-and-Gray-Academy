@@ -4,6 +4,8 @@
 import { Button } from "@/components/ui/button";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { signInWithGoogle } from "@/firebase/auth/auth";
+import { useRouter } from "next/navigation";
 import { FaGoogle } from "react-icons/fa";
 
 type AuthFormProps = {
@@ -16,6 +18,15 @@ type AuthFormProps = {
 };
 
 export function AuthForm({ title, description, children, footerText, footerLinkText, onFooterLinkClick }: AuthFormProps) {
+    const router = useRouter();
+
+    const handleGoogleSignIn = async () => {
+        const user = await signInWithGoogle();
+        if (user) {
+            router.push('/dashboard');
+        }
+    };
+
     return (
         <>
             <CardHeader className="text-left">
@@ -31,7 +42,7 @@ export function AuthForm({ title, description, children, footerText, footerLinkT
                     </div>
                 </div>
                 <div className="grid grid-cols-1 gap-4">
-                    <Button variant="outline">
+                    <Button variant="outline" onClick={handleGoogleSignIn}>
                         <FaGoogle className="mr-2 h-4 w-4" /> Google
                     </Button>
                 </div>

@@ -8,6 +8,9 @@ import { Label } from "@/components/ui/label";
 import { ArrowRight } from "lucide-react";
 import { AuthForm } from "./auth-form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { signUpWithEmail } from "@/firebase/auth/auth";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 type SignUpFormProps = {
   onSwitchToLogin?: () => void;
@@ -15,12 +18,50 @@ type SignUpFormProps = {
 
 export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
   const [role, setRole] = useState("student");
+  const router = useRouter();
+  const { toast } = useToast();
 
-  const handleSignUp = (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle sign up logic here
-    if (onSwitchToLogin) {
-      onSwitchToLogin();
+    const form = e.target as HTMLFormElement;
+    const name = (form.elements.namedItem("name") as HTMLInputElement).value;
+    const email = (form.elements.namedItem("email-signup") as HTMLInputElement).value;
+    const password = (form.elements.namedItem("password-signup") as HTMLInputElement).value;
+    
+    // Role-specific data
+    const studentData = {
+      dateOfBirth: (form.elements.namedItem("dob") as HTMLInputElement)?.value,
+      school: (form.elements.namedItem("school") as HTMLInputElement)?.value,
+    };
+    const instructorData = {
+      expertise: (form.elements.namedItem("expertise") as HTMLInputElement)?.value,
+      organization: (form.elements.namedItem("organization") as HTMLInputElement)?.value,
+    };
+
+    const userData = {
+      name,
+      email,
+      role,
+      ...(role === 'student' ? studentData : {}),
+      ...(role === 'instructor' ? instructorData : {}),
+    };
+    
+    const { error } = await signUpWithEmail(email, password, userData);
+
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Sign Up Failed",
+        description: error,
+      });
+    } else {
+      toast({
+        title: "Account Created!",
+        description: "Please log in with your new credentials.",
+      });
+      if (onSwitchToLogin) {
+        onSwitchToLogin();
+      }
     }
   };
 
@@ -57,12 +98,13 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
 
         <div className="space-y-2">
           <Label htmlFor="name">Full Name</Label>
-          <Input id="name" type="text" placeholder="John Doe" required />
+          <Input id="name" name="name" type="text" placeholder="John Doe" required />
         </div>
         <div className="space-y-2">
           <Label htmlFor="email-signup">Email address</Label>
           <Input
             id="email-signup"
+            name="email-signup"
             type="email"
             placeholder="name@company.com"
             required
@@ -72,6 +114,7 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
           <Label htmlFor="password-signup">Password</Label>
           <Input
             id="password-signup"
+            name="password-signup"
             type="password"
             required
             placeholder="Create a password"
@@ -82,12 +125,13 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
           <>
             <div className="space-y-2">
               <Label htmlFor="dob">Date of Birth</Label>
-              <Input id="dob" type="date" required />
+              <Input id="dob" name="dob" type="date" required />
             </div>
             <div className="space-y-2">
               <Label htmlFor="school">School or University</Label>
               <Input
                 id="school"
+                name="school"
                 type="text"
                 placeholder="e.g., Fusion University"
                 required
@@ -102,6 +146,7 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
               <Label htmlFor="expertise">Area of Expertise</Label>
               <Input
                 id="expertise"
+                name="expertise"
                 type="text"
                 placeholder="e.g., Data Science, Marketing"
                 required
@@ -111,6 +156,7 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
               <Label htmlFor="organization">Organization / Company</Label>
               <Input
                 id="organization"
+                name="organization"
                 type="text"
                 placeholder="e.g., Tech Corp"
               />
