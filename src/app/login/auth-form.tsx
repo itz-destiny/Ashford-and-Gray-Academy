@@ -4,7 +4,7 @@
 import { Button } from "@/components/ui/button";
 import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { signInWithGoogle } from "@/firebase/auth/auth";
+import { signInWithGoogle } from "@/firebase/auth";
 import { useRouter } from "next/navigation";
 import { FaGoogle } from "react-icons/fa";
 

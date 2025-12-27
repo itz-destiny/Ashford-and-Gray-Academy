@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { ArrowRight } from "lucide-react";
 import { AuthForm } from "./auth-form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { signUpWithEmail } from "@/firebase/auth/auth";
+import { signUpWithEmail } from "@/firebase/auth";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 

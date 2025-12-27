@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useUser } from "@/firebase"
-import { signOut } from "@/firebase/auth/auth"
+import { signOut } from "@/firebase/auth"
 import { CreditCard, LogOut, Settings, User as UserIcon } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"

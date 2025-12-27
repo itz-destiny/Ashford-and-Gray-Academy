@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { ArrowRight } from "lucide-react";
 import { AuthForm } from "./auth-form";
 import React from "react";
-import { signInWithEmail } from "@/firebase/auth/auth";
+import { signInWithEmail } from "@/firebase/auth";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 
