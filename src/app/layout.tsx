@@ -85,7 +85,7 @@ export default function RootLayout({
                       </li>
                       <li>
                         <Link
-                          href="#"
+                          href="/events"
                           className="text-muted-foreground hover:text-foreground"
                         >
                           Events

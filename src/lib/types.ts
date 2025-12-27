@@ -44,3 +44,15 @@ export type CalendarEvent = {
   startTime: string;
   endTime: string;
 };
+
+export type AppEvent = {
+  id: string;
+  title: string;
+  category: 'Conference' | 'Workshop' | 'Webinar' | 'Networking';
+  date: string;
+  location: string;
+  price?: number;
+  imageUrl: string;
+  imageHint: string;
+  organizer: string;
+};

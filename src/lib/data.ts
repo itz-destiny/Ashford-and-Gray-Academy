@@ -1,4 +1,4 @@
-import type { Course, User, Resource, CalendarEvent } from './types';
+import type { Course, User, Resource, CalendarEvent, AppEvent } from './types';
 
 export const mockUser: User = {
   name: 'Alex Johnson',
@@ -202,6 +202,53 @@ export const mockEvents: CalendarEvent[] = [
         endTime: '',
     },
 ];
+
+export const mockAppEvents: AppEvent[] = [
+  {
+    id: 'ae1',
+    title: 'Global AI Conference 2024',
+    category: 'Conference',
+    date: '2024-11-15',
+    location: 'Virtual',
+    price: 99,
+    imageUrl: 'https://picsum.photos/seed/event1/600/400',
+    imageHint: 'tech conference stage',
+    organizer: 'TechCon Inc.'
+  },
+  {
+    id: 'ae2',
+    title: 'Advanced React Patterns Workshop',
+    category: 'Workshop',
+    date: '2024-12-02',
+    location: 'New York, NY',
+    price: 249,
+    imageUrl: 'https://picsum.photos/seed/event2/600/400',
+    imageHint: 'people coding workshop',
+    organizer: 'DevHub'
+  },
+  {
+    id: 'ae3',
+    title: 'The Future of Remote Work',
+    category: 'Webinar',
+    date: '2024-11-20',
+    location: 'Online',
+    imageUrl: 'https://picsum.photos/seed/event3/600/400',
+    imageHint: 'person video call',
+    organizer: 'Future Workforce Co.'
+  },
+  {
+    id: 'ae4',
+    title: 'Startup Founders Networking Night',
+    category: 'Networking',
+    date: '2024-12-10',
+    location: 'San Francisco, CA',
+    price: 25,
+    imageUrl: 'https://picsum.photos/seed/event4/600/400',
+    imageHint: 'people networking event',
+    organizer: 'ConnectSphere'
+  },
+];
+
 
 export const mockLiveClassTranscript = `Instructor: Welcome everyone to our class on "The Art of Storytelling in Data Visualization". Today, we're going to explore how to turn dry data into compelling narratives. Let's start with a basic principle: every chart should tell a story. Can anyone give me an example?
 
