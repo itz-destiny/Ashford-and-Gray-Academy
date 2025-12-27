@@ -61,14 +61,12 @@ export default function DashboardLayout({
     // Exact match for dashboard pages
     const item = navItems.find(item => item.href === pathname);
     if (item) return item.label;
-
-    // Handle nested course pages
-    if (pathname.startsWith('/courses/')) return 'Explore Our Courses';
     
     return "Dashboard";
   };
 
   return (
+        <FirebaseClientProvider>
         <SidebarProvider>
           <div className="flex min-h-screen">
             <Sidebar side="left" collapsible="icon" className="border-r bg-muted/20 hidden md:flex">
@@ -155,5 +153,6 @@ export default function DashboardLayout({
             </div>
           </div>
         </SidebarProvider>
+        </FirebaseClientProvider>
   );
 }
