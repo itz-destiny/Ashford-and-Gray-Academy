@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, CheckCircle, Loader2 } from "lucide-react";
 import { AuthForm } from "./auth-form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { signUpWithEmail } from "@/firebase/auth";
@@ -18,17 +18,18 @@ type SignUpFormProps = {
 
 export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
   const [role, setRole] = useState("student");
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     const form = e.target as HTMLFormElement;
     const name = (form.elements.namedItem("name") as HTMLInputElement).value;
     const email = (form.elements.namedItem("email-signup") as HTMLInputElement).value;
     const password = (form.elements.namedItem("password-signup") as HTMLInputElement).value;
     
-    // Role-specific data
     const studentData = {
       dateOfBirth: (form.elements.namedItem("dob") as HTMLInputElement)?.value,
       school: (form.elements.namedItem("school") as HTMLInputElement)?.value,
@@ -48,6 +49,8 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
     
     const { error } = await signUpWithEmail(email, password, userData);
 
+    setIsLoading(false);
+
     if (error) {
       toast({
         variant: "destructive",
@@ -56,7 +59,12 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
       });
     } else {
       toast({
-        title: "Account Created!",
+        title: (
+          <div className="flex items-center">
+            <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
+            <span>Account Created!</span>
+          </div>
+        ),
         description: "Please log in with your new credentials.",
       });
       if (onSwitchToLogin) {
@@ -98,7 +106,7 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
 
         <div className="space-y-2">
           <Label htmlFor="name">Full Name</Label>
-          <Input id="name" name="name" type="text" placeholder="John Doe" required />
+          <Input id="name" name="name" type="text" placeholder="John Doe" required disabled={isLoading}/>
         </div>
         <div className="space-y-2">
           <Label htmlFor="email-signup">Email address</Label>
@@ -108,6 +116,7 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
             type="email"
             placeholder="name@company.com"
             required
+            disabled={isLoading}
           />
         </div>
         <div className="space-y-2">
@@ -118,6 +127,7 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
             type="password"
             required
             placeholder="Create a password"
+            disabled={isLoading}
           />
         </div>
 
@@ -125,7 +135,7 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
           <>
             <div className="space-y-2">
               <Label htmlFor="dob">Date of Birth</Label>
-              <Input id="dob" name="dob" type="date" required />
+              <Input id="dob" name="dob" type="date" required disabled={isLoading}/>
             </div>
             <div className="space-y-2">
               <Label htmlFor="school">School or University</Label>
@@ -135,6 +145,7 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
                 type="text"
                 placeholder="e.g., Fusion University"
                 required
+                disabled={isLoading}
               />
             </div>
           </>
@@ -150,6 +161,7 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
                 type="text"
                 placeholder="e.g., Data Science, Marketing"
                 required
+                disabled={isLoading}
               />
             </div>
             <div className="space-y-2">
@@ -159,13 +171,18 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
                 name="organization"
                 type="text"
                 placeholder="e.g., Tech Corp"
+                disabled={isLoading}
               />
             </div>
           </>
         )}
 
-        <Button type="submit" className="w-full h-11 !mt-6">
-          Sign Up <ArrowRight className="ml-2 h-4 w-4" />
+        <Button type="submit" className="w-full h-11 !mt-6" disabled={isLoading}>
+          {isLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <>Sign Up <ArrowRight className="ml-2 h-4 w-4" /></>
+          )}
         </Button>
       </form>
     </AuthForm>
