@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -95,174 +96,174 @@ export default function Home() {
   ]
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <main>
-        <section className="py-20 md:py-32">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center">
-            <div className="motion-safe:animate-fade-in-up">
-              <h1 className="text-4xl md:text-5xl font-bold tracking-tight font-headline">
-                Elevate Your Skills & Manage Events Seamlessly
-              </h1>
-              <p className="mt-6 text-lg text-foreground/80">
-                The all-in-one platform for learners, educators, and event organizers. Join thousands of users achieving their goals today.
-              </p>
-              <div className="mt-8 flex flex-wrap gap-4">
-                <Button size="lg" asChild>
-                  <Link href="/courses">Explore Courses</Link>
+    <>
+      <section className="py-20 md:py-32">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center">
+          <div className="motion-safe:animate-fade-in-up">
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight font-headline">
+              Elevate Your Skills & Manage Events Seamlessly
+            </h1>
+            <p className="mt-6 text-lg text-foreground/80">
+              The all-in-one platform for learners, educators, and event organizers. Join thousands of users achieving their goals today.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-4">
+              <Button size="lg" asChild>
+                <Link href="/courses">Explore Courses</Link>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
+                <Link href="/events">Host an Event</Link>
+              </Button>
+            </div>
+          </div>
+          <div className="motion-safe:animate-fade-in duration-500 [animation-delay:0.2s]">
+            <Image
+              src="https://picsum.photos/seed/hero-team/600/450"
+              alt="A team of young professionals collaborating around a table."
+              width={600}
+              height={450}
+              className="rounded-lg shadow-xl"
+              data-ai-hint="team collaboration"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section className="py-24 bg-secondary">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center motion-safe:animate-fade-in-up">
+          <h2 className="text-3xl font-bold font-headline">Choose Your Path</h2>
+          <p className="mt-2 text-muted-foreground">Sign in to your dedicated dashboard to get started</p>
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <Card className="text-left motion-safe:animate-fade-in-up" style={{animationDelay: '0.1s'}}>
+              <CardHeader>
+                <div className="w-12 h-12 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-4">
+                  <GraduationCap className="w-6 h-6 text-primary" />
+                </div>
+                <CardTitle>For Students</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Access over 500+ courses and track your learning progress with ease. Earn certificates and build your portfolio.
+                </p>
+                <Button variant="link" className="px-0 mt-4" asChild>
+                  <Link href="/login">Sign Up as Student <ArrowRight className="ml-2 h-4 w-4" /></Link>
                 </Button>
-                <Button size="lg" variant="outline" asChild>
-                  <Link href="#">Host an Event</Link>
+              </CardContent>
+            </Card>
+            <Card className="text-left motion-safe:animate-fade-in-up" style={{animationDelay: '0.2s'}}>
+              <CardHeader>
+                <div className="w-12 h-12 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-4">
+                  <Monitor className="w-6 h-6 text-green-600" />
+                </div>
+                <CardTitle>For Instructors</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Create courses, manage students, and share your expertise with the world. Monetize your skills.
+                </p>
+                <Button variant="link" className="px-0 mt-4" asChild>
+                   <Link href="/login">Become an Instructor <ArrowRight className="ml-2 h-4 w-4" /></Link>
                 </Button>
-              </div>
-            </div>
-            <div className="motion-safe:animate-fade-in duration-500 [animation-delay:0.2s]">
-              <Image
-                src="https://picsum.photos/seed/hero-team/600/450"
-                alt="A team of young professionals collaborating around a table."
-                width={600}
-                height={450}
-                className="rounded-lg shadow-xl"
-                data-ai-hint="team collaboration"
-              />
-            </div>
+              </CardContent>
+            </Card>
+            <Card className="text-left motion-safe:animate-fade-in-up" style={{animationDelay: '0.3s'}}>
+              <CardHeader>
+                <div className="w-12 h-12 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mb-4">
+                  <Users className="w-6 h-6 text-purple-600" />
+                </div>
+                <CardTitle>For Administrators</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  Manage events, approve courses, and oversee platform analytics. Control your institution's settings.
+                </p>
+                 <Button variant="link" className="px-0 mt-4" asChild>
+                  <Link href="/login">Admin Login <Lock className="ml-2 h-4 w-4" /></Link>
+                </Button>
+              </CardContent>
+            </Card>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section className="py-24 bg-secondary">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center motion-safe:animate-fade-in-up">
-            <h2 className="text-3xl font-bold font-headline">Choose Your Path</h2>
-            <p className="mt-2 text-muted-foreground">Sign in to your dedicated dashboard to get started</p>
-            <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-              <Card className="text-left motion-safe:animate-fade-in-up" style={{animationDelay: '0.1s'}}>
-                <CardHeader>
-                  <div className="w-12 h-12 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-4">
-                    <GraduationCap className="w-6 h-6 text-primary" />
+      <section className="py-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 motion-safe:animate-fade-in-up">
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl font-bold font-headline">Trending Content</h2>
+            <Button variant="link" asChild>
+                <Link href="/courses">View all <ArrowRight className="ml-2 h-4 w-4" /></Link>
+            </Button>
+          </div>
+          <p className="text-muted-foreground mb-12">Explore popular courses and upcoming events</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {trendingContent.map((item, index) => (
+              <Card key={item.id} className="overflow-hidden group motion-safe:animate-fade-in-up" style={{animationDelay: `${index * 0.1 + 0.1}s`}}>
+                <div className="relative">
+                  <Image
+                    src={item.imageUrl}
+                    alt={item.title}
+                    width={600}
+                    height={400}
+                    className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
+                    data-ai-hint={item.imageHint}
+                  />
+                  <div className="absolute top-2 left-2 flex items-center gap-2">
+                     <Badge variant="secondary" className="text-xs uppercase backdrop-blur-sm">{item.type}</Badge>
+                     {item.rating && (
+                        <Badge variant="secondary" className="flex items-center gap-1 backdrop-blur-sm">
+                          <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+                          {item.rating}
+                        </Badge>
+                     )}
+                     {item.date && item.type !== 'COURSE' && <Badge variant="secondary" className="backdrop-blur-sm">{item.date}</Badge>}
                   </div>
-                  <CardTitle>For Students</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Access over 500+ courses and track your learning progress with ease. Earn certificates and build your portfolio.
-                  </p>
-                  <Button variant="link" className="px-0 mt-4">
-                    Sign Up as Student <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
+                </div>
+                <CardContent className="p-4">
+                  <h3 className="font-semibold truncate group-hover:text-primary">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground mt-1 h-10">{item.author || item.description}</p>
+                  <div className="flex justify-between items-center mt-4">
+                    {item.price ? (
+                      <p className="font-bold text-primary">{item.price}</p>
+                    ) : (
+                      <p className="text-sm text-muted-foreground flex items-center gap-2">
+                        <MapPin className="w-4 h-4"/>
+                        {item.location}
+                      </p>
+                    )}
+                    <Button variant={item.action === 'Register' ? 'default' : 'outline'} size="sm">
+                      {item.action || 'View'}
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
-              <Card className="text-left motion-safe:animate-fade-in-up" style={{animationDelay: '0.2s'}}>
-                <CardHeader>
-                  <div className="w-12 h-12 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-4">
-                    <Monitor className="w-6 h-6 text-green-600" />
-                  </div>
-                  <CardTitle>For Instructors</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Create courses, manage students, and share your expertise with the world. Monetize your skills.
-                  </p>
-                  <Button variant="link" className="px-0 mt-4">
-                    Become an Instructor <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </CardContent>
-              </Card>
-              <Card className="text-left motion-safe:animate-fade-in-up" style={{animationDelay: '0.3s'}}>
-                <CardHeader>
-                  <div className="w-12 h-12 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mb-4">
-                    <Users className="w-6 h-6 text-purple-600" />
-                  </div>
-                  <CardTitle>For Administrators</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Manage events, approve courses, and oversee platform analytics. Control your institution's settings.
-                  </p>
-                  <Button variant="link" className="px-0 mt-4">
-                    Admin Login <Lock className="ml-2 h-4 w-4" />
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
+            ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section className="py-24">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 motion-safe:animate-fade-in-up">
-            <div className="flex justify-between items-center mb-8">
-              <h2 className="text-3xl font-bold font-headline">Trending Content</h2>
-              <Button variant="link">View all <ArrowRight className="ml-2 h-4 w-4" /></Button>
-            </div>
-            <p className="text-muted-foreground mb-12">Explore popular courses and upcoming events</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {trendingContent.map((item, index) => (
-                <Card key={item.id} className="overflow-hidden group motion-safe:animate-fade-in-up" style={{animationDelay: `${index * 0.1 + 0.1}s`}}>
-                  <div className="relative">
-                    <Image
-                      src={item.imageUrl}
-                      alt={item.title}
-                      width={600}
-                      height={400}
-                      className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
-                      data-ai-hint={item.imageHint}
-                    />
-                    <div className="absolute top-2 left-2 flex items-center gap-2">
-                       <Badge variant="secondary" className="text-xs uppercase backdrop-blur-sm">{item.type}</Badge>
-                       {item.rating && (
-                          <Badge variant="secondary" className="flex items-center gap-1 backdrop-blur-sm">
-                            <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
-                            {item.rating}
-                          </Badge>
-                       )}
-                       {item.date && item.type !== 'COURSE' && <Badge variant="secondary" className="backdrop-blur-sm">{item.date}</Badge>}
-                    </div>
+      <section className="py-24 bg-secondary">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center motion-safe:animate-fade-in-up">
+          <h2 className="text-3xl font-bold font-headline">Trusted by 10,000+ Learners</h2>
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+            {testimonials.map((t, index) => (
+              <Card key={t.id} className="p-6 text-left bg-background motion-safe:animate-fade-in-up" style={{animationDelay: `${index * 0.1 + 0.1}s`}}>
+                <div className="flex items-center mb-2">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+                  ))}
+                </div>
+                <p className="text-muted-foreground">"{t.quote}"</p>
+                <div className="mt-4 flex items-center gap-3">
+                  <Image src={t.avatarUrl} alt={t.name} width={40} height={40} className="rounded-full" data-ai-hint="person portrait" />
+                  <div>
+                    <p className="font-semibold">{t.name}</p>
+                    <p className="text-sm text-muted-foreground">{t.title}</p>
                   </div>
-                  <CardContent className="p-4">
-                    <h3 className="font-semibold truncate group-hover:text-primary">{item.title}</h3>
-                    <p className="text-sm text-muted-foreground mt-1 h-10">{item.author || item.description}</p>
-                    <div className="flex justify-between items-center mt-4">
-                      {item.price ? (
-                        <p className="font-bold text-primary">{item.price}</p>
-                      ) : (
-                        <p className="text-sm text-muted-foreground flex items-center gap-2">
-                          <MapPin className="w-4 h-4"/>
-                          {item.location}
-                        </p>
-                      )}
-                      <Button variant={item.action === 'Register' ? 'default' : 'outline'} size="sm">
-                        {item.action || 'View'}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                </div>
+              </Card>
+            ))}
           </div>
-        </section>
-
-        <section className="py-24 bg-secondary">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center motion-safe:animate-fade-in-up">
-            <h2 className="text-3xl font-bold font-headline">Trusted by 10,000+ Learners</h2>
-            <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-              {testimonials.map((t, index) => (
-                <Card key={t.id} className="p-6 text-left bg-background motion-safe:animate-fade-in-up" style={{animationDelay: `${index * 0.1 + 0.1}s`}}>
-                  <div className="flex items-center mb-2">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-5 h-5 text-yellow-500 fill-yellow-500" />
-                    ))}
-                  </div>
-                  <p className="text-muted-foreground">"{t.quote}"</p>
-                  <div className="mt-4 flex items-center gap-3">
-                    <Image src={t.avatarUrl} alt={t.name} width={40} height={40} className="rounded-full" data-ai-hint="person portrait" />
-                    <div>
-                      <p className="font-semibold">{t.name}</p>
-                      <p className="text-sm text-muted-foreground">{t.title}</p>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-      </main>
-    </div>
+        </div>
+      </section>
+    </>
   );
 }

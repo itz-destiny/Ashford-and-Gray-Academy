@@ -1,10 +1,10 @@
 import { MainNav } from "@/components/main-nav";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Logo } from "@/components/logo";
-import { Instagram, Mail, Twitter, Youtube } from "lucide-react";
+import { Instagram, Twitter, Youtube } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export default function PublicLayout({
   children,

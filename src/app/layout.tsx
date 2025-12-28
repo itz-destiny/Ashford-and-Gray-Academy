@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { FirebaseClientProvider } from "@/firebase/client-provider";
+import React from "react";
 
 export const metadata: Metadata = {
   title: "Ashford and Gray Fusion Academy",
@@ -34,7 +35,7 @@ export default function RootLayout({
       </head>
       <body className="font-body">
         <FirebaseClientProvider>
-            {children}
+          {children}
         </FirebaseClientProvider>
         <Toaster />
       </body>

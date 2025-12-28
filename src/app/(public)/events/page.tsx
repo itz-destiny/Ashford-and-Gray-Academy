@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { Badge } from "@/components/ui/badge";
@@ -33,8 +34,8 @@ export default function EventsPage() {
   ]
 
   return (
-    <div className="space-y-8 p-4 md:p-8">
-      <header className="py-16 text-center bg-secondary rounded-lg">
+    <div className="space-y-8">
+      <header className="py-16 text-center bg-secondary">
         <div className="container">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight font-headline">Discover Upcoming Events</h1>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -185,4 +186,3 @@ export default function EventsPage() {
     </div>
   );
 }
-
