@@ -3,10 +3,10 @@
 // in the browser and are necessary for the Firebase SDKs to work.
 
 export const firebaseConfig = {
-  apiKey: "REPLACE_WITH_YOUR_API_KEY",
-  authDomain: "REPLACE_WITH_YOUR_AUTH_DOMAIN",
-  projectId: "REPLACE_WITH_YOUR_PROJECT_ID",
-  storageBucket: "REPLACE_WITH_YOUR_STORAGE_BUCKET",
-  messagingSenderId: "REPLACE_WITH_YOUR_MESSAGING_SENDER_ID",
-  appId: "REPLACE_WITH_YOUR_APP_ID",
+  apiKey: "AIzaSyCQfPxc9CTdPeiV8MA7ZB3na3RvSpu2w9o",
+  authDomain: "studio-6301887284-1e730.firebaseapp.com",
+  projectId: "studio-6301887284-1e730",
+  storageBucket: "studio-6301887284-1e730.firebasestorage.app",
+  messagingSenderId: "442078159048",
+  appId: "1:442078159048:web:675216b748ac20d0c305fd"
 };

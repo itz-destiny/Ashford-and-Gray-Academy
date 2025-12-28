@@ -39,7 +39,7 @@ export default function PublicLayout({
               <h3 className="font-semibold text-foreground">Explore</h3>
               <ul className="mt-4 space-y-2 text-sm">
                 <li><Link href="/courses" className="text-muted-foreground hover:text-foreground">Courses</Link></li>
-                <li><Link href="#" className="text-muted-foreground hover:text-foreground">Events</Link></li>
+                <li><Link href="/events" className="text-muted-foreground hover:text-foreground">Events</Link></li>
                 <li><Link href="/about" className="text-muted-foreground hover:text-foreground">About Us</Link></li>
                 <li><Link href="#" className="text-muted-foreground hover:text-foreground">Blog</Link></li>
               </ul>

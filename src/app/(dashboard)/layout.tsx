@@ -19,7 +19,6 @@ import {
   BookOpen,
   Calendar,
   Home,
-  Info,
   MessageSquare,
   ScrollText,
   Settings,
@@ -27,11 +26,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { mockUser } from "@/lib/data";
-import { Separator } from "@/components/ui/separator";
-import { FirebaseClientProvider } from "@/firebase/client-provider";
-import { Toaster } from "@/components/ui/toaster";
 import "../globals.css";
 
 
@@ -42,10 +36,6 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
   const isMobile = useIsMobile();
-  
-  const getInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('');
-  }
 
   const navItems = [
     { href: "/dashboard", icon: Home, label: "Dashboard" },
@@ -58,15 +48,17 @@ export default function DashboardLayout({
   ];
 
   const getPageTitle = () => {
-    // Exact match for dashboard pages
     const item = navItems.find(item => item.href === pathname);
     if (item) return item.label;
     
+    // Handle nested routes like /courses/[id]
+    if (pathname.startsWith('/courses/')) return 'Courses';
+    if (pathname.startsWith('/live-classes')) return 'Live Classes';
+
     return "Dashboard";
   };
 
   return (
-        <FirebaseClientProvider>
         <SidebarProvider>
           <div className="flex min-h-screen">
             <Sidebar side="left" collapsible="icon" className="border-r bg-muted/20 hidden md:flex">
@@ -75,7 +67,7 @@ export default function DashboardLayout({
               </SidebarHeader>
               <SidebarContent>
                 <SidebarMenu>
-                  {navItems.slice(0, 6).map((item) => (
+                  {navItems.filter(item => item.href !== '/settings').map((item) => (
                     <SidebarMenuItem key={item.href}>
                       <Link href={item.href}>
                         <SidebarMenuButton
@@ -90,7 +82,7 @@ export default function DashboardLayout({
                   ))}
                 </SidebarMenu>
                  <SidebarMenu className="mt-auto">
-                   {navItems.slice(6).map((item) => (
+                   {navItems.filter(item => item.href === '/settings').map((item) => (
                     <SidebarMenuItem key={item.href}>
                       <Link href={item.href}>
                         <SidebarMenuButton
@@ -143,7 +135,7 @@ export default function DashboardLayout({
                 <div className="flex-1">
                   <h1 className="text-lg font-semibold font-headline">{getPageTitle()}</h1>
                 </div>
-                <div className="ml-auto">
+                <div className="ml-auto flex items-center gap-4">
                   <UserNav />
                 </div>
               </header>
@@ -153,6 +145,5 @@ export default function DashboardLayout({
             </div>
           </div>
         </SidebarProvider>
-        </FirebaseClientProvider>
   );
 }
