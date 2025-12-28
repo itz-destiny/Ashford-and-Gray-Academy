@@ -22,11 +22,12 @@ export function initializeFirebase(): {
   // This is a workaround for the "auth/unauthorized-domain" error
   // which can occur in some development environments.
   if (typeof window !== "undefined" && window.location.hostname === "localhost") {
-    auth.tenantId = null; 
+    auth.tenantId = null;
     auth.useDeviceLanguage();
-    if (!auth.config.authDomain) {
-      auth.config.authDomain = "localhost";
-    }
+    // Directly setting the authDomain on the config is not the recommended path
+    // The previous attempts were not effective. The primary fix remains ensuring
+    // 'localhost' is in the Firebase Console's authorized domains list.
+    // The code above helps reset any cached state that might interfere.
   }
 
   const firestore = getFirestore(firebaseApp);
