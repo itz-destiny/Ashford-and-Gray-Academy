@@ -1,16 +1,23 @@
 
 "use client";
 
-import { useState }from "react";
+import { useState, useEffect }from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Logo } from "@/components/logo";
 import { LoginForm } from "./login-form";
 import { SignUpForm } from "./signup-form";
 import { Card } from "@/components/ui/card";
 
-export default function LoginPage() {
-  const [isLoginView, setIsLoginView] = useState(true);
+function LoginPageContent() {
+  const searchParams = useSearchParams();
+  const initialView = searchParams.get('view') === 'signup' ? false : true;
+  const [isLoginView, setIsLoginView] = useState(initialView);
+
+  useEffect(() => {
+    setIsLoginView(searchParams.get('view') !== 'signup');
+  }, [searchParams]);
 
   return (
     <div className="min-h-screen w-full grid grid-cols-1 md:grid-cols-2">
@@ -50,4 +57,13 @@ export default function LoginPage() {
       </div>
     </div>
   );
+}
+
+
+export default function LoginPage() {
+  return (
+    <React.Suspense fallback={<div>Loading...</div>}>
+      <LoginPageContent />
+    </React.Suspense>
+  )
 }

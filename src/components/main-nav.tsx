@@ -36,7 +36,7 @@ export function MainNav() {
           <Link href="/login">Log In</Link>
         </Button>
         <Button asChild>
-          <Link href="/login">Sign Up</Link>
+          <Link href="/login?view=signup">Sign Up</Link>
         </Button>
       </div>
     </header>
