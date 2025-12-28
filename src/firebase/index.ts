@@ -10,10 +10,25 @@ export function initializeFirebase(): {
   auth: Auth;
   firestore: Firestore;
 } {
-  const firebaseApp = !getApps().length
-    ? initializeApp(firebaseConfig)
-    : getApp();
+  const appName = "default";
+  let firebaseApp;
+  if (!getApps().some(app => app.name === appName)) {
+    firebaseApp = initializeApp(firebaseConfig, appName);
+  } else {
+    firebaseApp = getApp(appName);
+  }
+  
   const auth = getAuth(firebaseApp);
+  // This is a workaround for the "auth/unauthorized-domain" error
+  // which can occur in some development environments.
+  if (typeof window !== "undefined" && window.location.hostname === "localhost") {
+    auth.tenantId = null; 
+    auth.useDeviceLanguage();
+    if (!auth.config.authDomain) {
+      auth.config.authDomain = "localhost";
+    }
+  }
+
   const firestore = getFirestore(firebaseApp);
   return { firebaseApp, auth, firestore };
 }
