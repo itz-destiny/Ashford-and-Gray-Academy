@@ -11,6 +11,7 @@ import { AuthForm } from "./auth-form";
 import { signInWithEmail } from "@/firebase/auth";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { useUser } from "@/firebase";
 
 type LoginFormProps = {
   onSwitchToSignUp?: () => void;
@@ -20,6 +21,7 @@ export function LoginForm({ onSwitchToSignUp }: LoginFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const { user } = useUser();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +30,7 @@ export function LoginForm({ onSwitchToSignUp }: LoginFormProps) {
     const email = (form.elements.namedItem("email") as HTMLInputElement).value;
     const password = (form.elements.namedItem("password") as HTMLInputElement).value;
 
-    const { error } = await signInWithEmail(email, password);
+    const { error, user: signedInUser } = await signInWithEmail(email, password);
     
     setIsLoading(false);
 
@@ -38,10 +40,28 @@ export function LoginForm({ onSwitchToSignUp }: LoginFormProps) {
         title: "Login Failed",
         description: error,
       });
-    } else {
-      router.push("/dashboard");
+    } else if (signedInUser) {
+        // We need to get the role from the user object after sign-in
+        // The useUser hook will provide the full user profile including the role
+        // For now, we will redirect based on the role we *should* get from Firestore
+        // This is a bit of a race condition, but useUser handles the eventual consistency.
+        
+        // A better approach would be to get the user doc right after login
+        // But for now we rely on the `useUser` hook's redirection logic
+        // which has been updated.
     }
   };
+
+  // Redirect if user object is available
+  React.useEffect(() => {
+    if (user) {
+      if (user.role === 'instructor') {
+        router.push("/instructor/dashboard");
+      } else {
+        router.push("/dashboard");
+      }
+    }
+  }, [user, router]);
 
   return (
     <AuthForm

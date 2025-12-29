@@ -1,4 +1,5 @@
-import type { Course, User, Resource, CalendarEvent, AppEvent, Assignment } from './types';
+
+import type { Course, User, Resource, CalendarEvent, AppEvent, Assignment, Enrollment, InstructorMessage } from './types';
 
 export const mockUser: User = {
   name: 'Alex Johnson',
@@ -10,9 +11,9 @@ export const mockUser: User = {
 export const mockCourses: Course[] = [
   {
     id: 'c1',
-    title: 'Introduction to UX Design',
+    title: 'Intro to Biology',
     description: 'Master the basics of user experience research and prototyping.',
-    category: 'Design',
+    category: 'BIO-101',
     instructor: { name: 'Sarah Johnson', avatarUrl: 'https://picsum.photos/seed/ins1/100/100', verified: true },
     rating: 4.8,
     reviews: 1234,
@@ -20,14 +21,14 @@ export const mockCourses: Course[] = [
     level: 'Intermediate',
     price: 299,
     originalPrice: 399,
-    imageUrl: 'https://picsum.photos/seed/course1/600/400',
-    imageHint: 'web development code',
+    imageUrl: 'https://picsum.photos/seed/biology/600/400',
+    imageHint: 'microscope plant',
   },
   {
     id: 'c2',
-    title: 'Data Science Basics',
+    title: 'Organic Chemistry',
     description: 'Learn Python, Pandas, and data visualization techniques.',
-    category: 'Computer Science',
+    category: 'CHM-202',
     instructor: { name: 'Emily Davis', avatarUrl: 'https://picsum.photos/seed/ins2/100/100', verified: true },
     rating: 4.9,
     reviews: 2852,
@@ -35,8 +36,8 @@ export const mockCourses: Course[] = [
     level: 'Advanced',
     price: 349,
     originalPrice: 449,
-    imageUrl: 'https://picsum.photos/seed/course2/600/400',
-    imageHint: 'data analytics chart',
+    imageUrl: 'https://picsum.photos/seed/chemistry/600/400',
+    imageHint: 'chemistry beakers',
   },
   {
     id: 'c3',
@@ -290,4 +291,41 @@ export const mockAssignments: Assignment[] = [
     }
 ];
 
-    
+export const mockRecentEnrollments: Enrollment[] = [
+    {
+        id: 'en1',
+        student: { name: 'Liam Johnson', avatarUrl: 'https://picsum.photos/seed/liam/100/100' },
+        course: 'Intro to Biology',
+        date: 'Oct 24, 2023',
+        status: 'Pending'
+    },
+    {
+        id: 'en2',
+        student: { name: 'Emma Wilson', avatarUrl: 'https://picsum.photos/seed/emma/100/100' },
+        course: 'Organic Chemistry',
+        date: 'Oct 23, 2023',
+        status: 'Approved'
+    },
+    {
+        id: 'en3',
+        student: { name: 'Noah Brown', avatarUrl: 'https://picsum.photos/seed/noah/100/100' },
+        course: 'Intro to Biology',
+        date: 'Oct 22, 2023',
+        status: 'Approved'
+    }
+];
+
+export const mockInstructorMessages: InstructorMessage[] = [
+    {
+        id: 'im1',
+        student: { name: 'Sarah Jenkins', avatarUrl: 'https://picsum.photos/seed/sarah/100/100' },
+        message: 'Question about the assignment...',
+        time: '2m ago'
+    },
+    {
+        id: 'im2',
+        student: { name: 'Mike Ross', avatarUrl: 'https://picsum.photos/seed/mike/100/100' },
+        message: 'Can I get an extension on...',
+        time: '1h ago'
+    }
+];

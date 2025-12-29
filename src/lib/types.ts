@@ -1,3 +1,4 @@
+
 export type User = {
   name: string;
   email: string;
@@ -64,4 +65,23 @@ export type Assignment = {
     dueDate: string;
 };
 
-    
+export type Enrollment = {
+    id: string;
+    student: {
+        name: string;
+        avatarUrl: string;
+    };
+    course: string;
+    date: string;
+    status: 'Pending' | 'Approved';
+};
+
+export type InstructorMessage = {
+    id: string;
+    student: {
+        name: string;
+        avatarUrl: string;
+    };
+    message: string;
+    time: string;
+};
