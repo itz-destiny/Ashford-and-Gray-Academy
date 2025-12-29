@@ -22,8 +22,8 @@ export type Course = {
   originalPrice?: number;
   imageUrl: string;
   imageHint: string;
-  description?: string; // Optional, as it's not on the main card
-  progress?: number; // Optional
+  description?: string;
+  progress?: number; 
 };
 
 export type Resource = {
@@ -56,3 +56,12 @@ export type AppEvent = {
   imageHint: string;
   organizer: string;
 };
+
+export type Assignment = {
+    id: string;
+    course: string;
+    title: string;
+    dueDate: string;
+};
+
+    

@@ -2,30 +2,22 @@
 "use client";
 
 import { Logo } from "@/components/logo";
-import {
-  Sidebar,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarContent,
-  SidebarFooter,
-  SidebarTrigger,
-  SidebarProvider,
-} from "@/components/ui/sidebar";
 import { UserNav } from "@/components/user-nav";
-import { useIsMobile } from "@/hooks/use-mobile";
 import {
   BookOpen,
   Calendar,
-  Home,
-  MessageSquare,
-  ScrollText,
+  GraduationCap,
+  Bell,
   Settings,
-  Video,
+  Search,
+  Menu,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { cn } from "@/lib/utils";
 import "../globals.css";
 
 
@@ -35,115 +27,91 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const isMobile = useIsMobile();
 
   const navItems = [
-    { href: "/dashboard", icon: Home, label: "Dashboard" },
-    { href: "/courses", icon: BookOpen, label: "Courses" },
-    { href: "/live-classes", icon: Video, label: "Live Classes" },
-    { href: "/schedule", icon: Calendar, label: "Schedule" },
-    { href: "/resources", icon: ScrollText, label: "Resources" },
-    { href: "/messages", icon: MessageSquare, label: "Messages" },
-    { href: "/settings", icon: Settings, label: "Settings" },
+    { href: "/dashboard", label: "Home" },
+    { href: "/courses", label: "My Courses" },
+    { href: "/events", label: "Events" },
+    { href: "/grades", label: "Grades" },
   ];
 
-  const getPageTitle = () => {
-    const item = navItems.find(item => item.href === pathname);
-    if (item) return item.label;
-    
-    // Handle nested routes like /courses/[id]
-    if (pathname.startsWith('/courses/')) return 'Courses';
-    if (pathname.startsWith('/live-classes')) return 'Live Classes';
-
-    return "Dashboard";
-  };
-
   return (
-        <SidebarProvider>
-          <div className="flex min-h-screen">
-            <Sidebar side="left" collapsible="icon" className="border-r bg-muted/20 hidden md:flex">
-              <SidebarHeader>
+    <div className="flex min-h-screen w-full flex-col bg-muted/40">
+       <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 sm:px-6">
+        <Link href="/dashboard">
+          <Logo />
+        </Link>
+        <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6 ml-10">
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                "transition-colors hover:text-foreground",
+                pathname === item.href ? "text-foreground font-semibold" : "text-muted-foreground"
+              )}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              className="shrink-0 md:hidden"
+            >
+              <Menu className="h-5 w-5" />
+              <span className="sr-only">Toggle navigation menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left">
+            <nav className="grid gap-6 text-lg font-medium">
+              <Link href="/dashboard" className="flex items-center gap-2 text-lg font-semibold">
                 <Logo />
-              </SidebarHeader>
-              <SidebarContent>
-                <SidebarMenu>
-                  {navItems.filter(item => item.href !== '/settings').map((item) => (
-                    <SidebarMenuItem key={item.href}>
-                      <Link href={item.href}>
-                        <SidebarMenuButton
-                          isActive={pathname.startsWith(item.href) && (item.href !== '/dashboard' || pathname === '/dashboard')}
-                          tooltip={item.label}
-                        >
-                          <item.icon />
-                          <span>{item.label}</span>
-                        </SidebarMenuButton>
-                      </Link>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarMenu>
-                 <SidebarMenu className="mt-auto">
-                   {navItems.filter(item => item.href === '/settings').map((item) => (
-                    <SidebarMenuItem key={item.href}>
-                      <Link href={item.href}>
-                        <SidebarMenuButton
-                          isActive={pathname.startsWith(item.href)}
-                          tooltip={item.label}
-                        >
-                          <item.icon />
-                          <span>{item.label}</span>
-                        </SidebarMenuButton>
-                      </Link>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarMenu>
-              </SidebarContent>
-              <SidebarFooter>
-                <UserNav />
-              </SidebarFooter>
-            </Sidebar>
-            <div className="flex-1 flex flex-col">
-              <header className="flex h-14 items-center gap-4 border-b bg-background/95 backdrop-blur-sm px-4 lg:px-6 sticky top-0 z-30">
-                {isMobile && (
-                  <SidebarTrigger>
-                    <Sidebar side="left" collapsible="offcanvas" className="border-r bg-muted/20">
-                        <SidebarHeader>
-                          <Logo />
-                        </SidebarHeader>
-                        <SidebarContent>
-                          <SidebarMenu>
-                            {navItems.map((item) => (
-                              <SidebarMenuItem key={item.href}>
-                                <Link href={item.href}>
-                                  <SidebarMenuButton
-                                    isActive={pathname.startsWith(item.href) && (item.href !== '/dashboard' || pathname === '/dashboard')}
-                                    tooltip={item.label}
-                                  >
-                                    <item.icon />
-                                    <span>{item.label}</span>
-                                  </SidebarMenuButton>
-                                </Link>
-                              </SidebarMenuItem>
-                            ))}
-                          </SidebarMenu>
-                        </SidebarContent>
-                        <SidebarFooter>
-                          <UserNav />
-                        </SidebarFooter>
-                      </Sidebar>
-                  </SidebarTrigger>
-                )}
-                <div className="flex-1">
-                  <h1 className="text-lg font-semibold font-headline">{getPageTitle()}</h1>
-                </div>
-                <div className="ml-auto flex items-center gap-4">
-                  <UserNav />
-                </div>
-              </header>
-              <main className="flex-1 p-4 md:p-6 bg-muted/30">
-                  {children}
-              </main>
+              </Link>
+               {navItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "transition-colors hover:text-foreground",
+                    pathname === item.href ? "text-foreground" : "text-muted-foreground"
+                  )}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+          </SheetContent>
+        </Sheet>
+        <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
+          <form className="ml-auto flex-1 sm:flex-initial">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Search courses, events, or resources..."
+                className="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px]"
+              />
             </div>
-          </div>
-        </SidebarProvider>
+          </form>
+           <Button variant="ghost" size="icon" className="rounded-full">
+            <Bell className="h-5 w-5" />
+            <span className="sr-only">Toggle notifications</span>
+          </Button>
+          <Button variant="ghost" size="icon" className="rounded-full">
+            <Settings className="h-5 w-5" />
+            <span className="sr-only">Settings</span>
+          </Button>
+          <UserNav />
+        </div>
+      </header>
+      <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
+        {children}
+      </main>
+    </div>
   );
 }
+    

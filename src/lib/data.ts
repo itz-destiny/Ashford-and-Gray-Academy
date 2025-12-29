@@ -1,4 +1,4 @@
-import type { Course, User, Resource, CalendarEvent, AppEvent } from './types';
+import type { Course, User, Resource, CalendarEvent, AppEvent, Assignment } from './types';
 
 export const mockUser: User = {
   name: 'Alex Johnson',
@@ -10,8 +10,9 @@ export const mockUser: User = {
 export const mockCourses: Course[] = [
   {
     id: 'c1',
-    title: 'Full Stack Web Development Bootcamp',
-    category: 'Web Development',
+    title: 'Introduction to UX Design',
+    description: 'Master the basics of user experience research and prototyping.',
+    category: 'Design',
     instructor: { name: 'Sarah Johnson', avatarUrl: 'https://picsum.photos/seed/ins1/100/100', verified: true },
     rating: 4.8,
     reviews: 1234,
@@ -24,8 +25,9 @@ export const mockCourses: Course[] = [
   },
   {
     id: 'c2',
-    title: 'Data Analytics & Visualization Masterclass',
-    category: 'Data Science',
+    title: 'Data Science Basics',
+    description: 'Learn Python, Pandas, and data visualization techniques.',
+    category: 'Computer Science',
     instructor: { name: 'Emily Davis', avatarUrl: 'https://picsum.photos/seed/ins2/100/100', verified: true },
     rating: 4.9,
     reviews: 2852,
@@ -40,6 +42,7 @@ export const mockCourses: Course[] = [
     id: 'c3',
     title: 'Digital Marketing Strategy & ROI',
     category: 'Marketing',
+    description: 'A deep dive into marketing strategies.',
     instructor: { name: 'Michael Chen', avatarUrl: 'https://picsum.photos/seed/ins3/100/100', verified: true },
     rating: 4.7,
     reviews: 2154,
@@ -54,6 +57,7 @@ export const mockCourses: Course[] = [
     id: 'c4',
     title: 'UI/UX Design: From Concept to Prototype',
     category: 'Design',
+    description: 'Everything about UI/UX design.',
     instructor: { name: 'Jessica Martinez', avatarUrl: 'https://picsum.photos/seed/ins4/100/100', verified: false },
     rating: 4.8,
     reviews: 1587,
@@ -68,6 +72,7 @@ export const mockCourses: Course[] = [
     id: 'c5',
     title: 'Project Management Professional (PMP)',
     category: 'Business',
+    description: 'Become a certified project manager.',
     instructor: { name: 'David Wilson', avatarUrl: 'https://picsum.photos/seed/ins5/100/100', verified: true },
     rating: 4.9,
     reviews: 3012,
@@ -82,6 +87,7 @@ export const mockCourses: Course[] = [
     id: 'c6',
     title: 'Machine Learning & AI Fundamentals',
     category: 'Data Science',
+    description: 'The basics of machine learning.',
     instructor: { name: 'Dr. Anna Lee', avatarUrl: 'https://picsum.photos/seed/ins6/100/100', verified: true },
     rating: 4.9,
     reviews: 4201,
@@ -96,6 +102,7 @@ export const mockCourses: Course[] = [
     id: 'c7',
     title: 'Cloud Computing with AWS & Azure',
     category: 'Technology',
+    description: 'Learn cloud computing from scratch.',
     instructor: { name: 'Robert Taylor', avatarUrl: 'https://picsum.photos/seed/ins7/100/100', verified: true },
     rating: 4.7,
     reviews: 986,
@@ -110,6 +117,7 @@ export const mockCourses: Course[] = [
     id: 'c8',
     title: 'Social Media Marketing Excellence',
     category: 'Marketing',
+    description: 'Become a social media expert.',
     instructor: { name: 'Lisa Anderson', avatarUrl: 'https://picsum.photos/seed/ins8/100/100', verified: false },
     rating: 4.8,
     reviews: 1998,
@@ -124,6 +132,7 @@ export const mockCourses: Course[] = [
     id: 'c9',
     title: 'Graphic Design & Brand Identity',
     category: 'Design',
+    description: 'Build a strong brand identity.',
     instructor: { name: 'Chris Roberts', avatarUrl: 'https://picsum.photos/seed/ins9/100/100', verified: true },
     rating: 4.8,
     reviews: 1342,
@@ -265,3 +274,20 @@ Instructor: To wrap up, I want you to remember three things. First, start with a
 Student A: No, that was very clear. Thanks!
 
 Instructor: Wonderful. Your assignment is to take a dataset of your choice and create a one-page visual story. See you all next week.`;
+
+export const mockAssignments: Assignment[] = [
+    {
+        id: 'a1',
+        course: 'Design History',
+        title: 'Essay: Evolution of Bauhaus',
+        dueDate: 'Due Tomorrow'
+    },
+    {
+        id: 'a2',
+        course: 'Data Science',
+        title: 'Python Quiz 2',
+        dueDate: 'In 3 days'
+    }
+];
+
+    
