@@ -3,8 +3,8 @@
 
 import { useEffect, useState } from "react";
 import { onAuthStateChanged, type User } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
-import { useRouter } from 'next/navigation';
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import { useRouter, usePathname } from 'next/navigation';
 
 import { useAuth, useFirestore } from "@/firebase/provider";
 
@@ -17,49 +17,56 @@ export const useUser = () => {
   const auth = useAuth();
   const firestore = useFirestore();
   const router = useRouter();
+  const pathname = usePathname();
   const [user, setUser] = useState<AppUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
         const userDocRef = doc(firestore, `users/${firebaseUser.uid}`);
-        const userDoc = await getDoc(userDocRef);
+        
+        const unsubscribeSnapshot = onSnapshot(userDocRef, (doc) => {
+          if (doc.exists()) {
+            const userData = doc.data();
+            const appUser: AppUser = {
+              ...firebaseUser,
+              role: userData.role,
+              ...userData,
+            };
+            setUser(appUser);
 
-        let appUser: AppUser;
+            const isAuthPage = pathname.startsWith('/login');
+            if (isAuthPage) {
+               if (userData.role === 'instructor') {
+                router.push('/instructor');
+              } else {
+                router.push('/dashboard');
+              }
+            }
 
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          appUser = {
-            ...firebaseUser,
-            role: userData.role,
-            ...userData,
-          };
-          setUser(appUser);
-          
-          // Redirect based on role
-          if (userData.role === 'instructor') {
-            router.push('/instructor');
           } else {
-            router.push('/dashboard');
+            // Document doesn't exist yet, might be in the process of being created
+            // We set the basic user and wait for the document to be created.
+            setUser(firebaseUser as AppUser);
           }
+          setLoading(false);
+        }, (error) => {
+          console.error("Error fetching user document:", error);
+          // Set basic user info even if Firestore doc fails
+          setUser(firebaseUser as AppUser);
+          setLoading(false);
+        });
 
-        } else {
-          // This case might happen if the user document wasn't created properly
-          // or for users who authenticated before the profile creation logic was in place.
-          appUser = firebaseUser as AppUser;
-          setUser(appUser);
-          // Default redirect for users without a specific role doc
-          router.push('/dashboard');
-        }
+        return () => unsubscribeSnapshot();
       } else {
         setUser(null);
+        setLoading(false);
       }
-      setLoading(false);
     });
 
-    return () => unsubscribe();
-  }, [auth, firestore, router]);
+    return () => unsubscribeAuth();
+  }, [auth, firestore, router, pathname]);
 
   return { user, loading };
 };
