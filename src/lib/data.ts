@@ -327,5 +327,11 @@ export const mockInstructorMessages: InstructorMessage[] = [
         student: { name: 'Mike Ross', avatarUrl: 'https://picsum.photos/seed/mike/100/100' },
         message: 'Can I get an extension on...',
         time: '1h ago'
+    },
+    {
+        id: 'im3',
+        student: { name: 'Jessica Day', avatarUrl: 'https://picsum.photos/seed/jessica/100/100' },
+        message: 'Thank you for the feedback!',
+        time: '3h ago'
     }
 ];

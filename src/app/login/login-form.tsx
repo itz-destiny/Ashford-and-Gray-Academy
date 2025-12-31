@@ -56,7 +56,7 @@ export function LoginForm({ onSwitchToSignUp }: LoginFormProps) {
   React.useEffect(() => {
     if (user) {
       if (user.role === 'instructor') {
-        router.push("/instructor/dashboard");
+        router.push("/instructor");
       } else {
         router.push("/dashboard");
       }

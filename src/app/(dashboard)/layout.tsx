@@ -11,6 +11,10 @@ import {
   Settings,
   Search,
   Menu,
+  MessageSquare,
+  FileText,
+  Clock,
+  Sparkles,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -33,6 +37,10 @@ export default function DashboardLayout({
     { href: "/courses", label: "My Courses" },
     { href: "/events", label: "Events" },
     { href: "/grades", label: "Grades" },
+    { href: "/messages", label: "Messages", icon: MessageSquare },
+    { href: "/resources", label: "Resources", icon: FileText },
+    { href: "/schedule", label: "Schedule", icon: Clock },
+    { href: "/live-classes", label: "AI Review", icon: Sparkles },
   ];
 
   return (
@@ -101,9 +109,11 @@ export default function DashboardLayout({
             <Bell className="h-5 w-5" />
             <span className="sr-only">Toggle notifications</span>
           </Button>
-          <Button variant="ghost" size="icon" className="rounded-full">
-            <Settings className="h-5 w-5" />
-            <span className="sr-only">Settings</span>
+          <Button variant="ghost" size="icon" className="rounded-full" asChild>
+            <Link href="/settings">
+              <Settings className="h-5 w-5" />
+              <span className="sr-only">Settings</span>
+            </Link>
           </Button>
           <UserNav />
         </div>

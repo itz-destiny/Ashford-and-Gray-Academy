@@ -22,6 +22,9 @@ export const useUser = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!auth || !firestore) {
+      return;
+    }
     const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
         const userDocRef = doc(firestore, `users/${firebaseUser.uid}`);

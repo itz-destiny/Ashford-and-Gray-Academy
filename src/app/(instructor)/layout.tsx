@@ -19,7 +19,7 @@ import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function InstructorLayout({
   children,
@@ -67,6 +67,9 @@ export default function InstructorLayout({
             <Card>
               <CardHeader className="p-2 pt-0 md:p-4">
                 <CardTitle className="text-base">Get Help</CardTitle>
+                <CardHeader>
+                    <CardTitle>Get Help</CardTitle>
+                </CardHeader>
               </CardHeader>
               <CardContent className="p-2 pt-0 md:p-4 md:pt-0">
                 <Button size="sm" className="w-full">
