@@ -119,7 +119,7 @@ export default function Home() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative bg-accent text-white py-20 md:py-32 overflow-hidden">
+      <section className="relative bg-primary text-white py-20 md:py-32 overflow-hidden">
          <div 
           className="absolute inset-0 bg-no-repeat bg-cover" 
           style={{ backgroundImage: "url('/wavy-background.svg')", opacity: 0.1, backgroundSize: '150%'}}
@@ -134,7 +134,7 @@ export default function Home() {
                 Join thousands of learners and experts on a journey of growth, knowledge, and excellence.
               </p>
               <div className="mt-8 flex flex-wrap gap-4">
-                <Button size="lg" asChild>
+                <Button size="lg" variant="secondary" asChild>
                   <Link href="/courses">Start Learning Now</Link>
                 </Button>
                 <Button size="lg" variant="outline" className="bg-transparent text-white border-white hover:bg-white hover:text-primary">
