@@ -220,9 +220,9 @@ export default function Home() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold font-headline">Explore Our Categories</h2>
           <p className="mt-2 text-muted-foreground max-w-2xl mx-auto">We offer a wide range of courses in various fields. Choose the one that best fits your career goals.</p>
-          <div className="mt-12 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 justify-center">
+          <div className="mt-12 flex flex-wrap gap-4 justify-center">
             {categories.map((cat) => (
-              <div key={cat.name} className="flex flex-col items-center gap-3 p-4 rounded-lg hover:bg-white hover:shadow-lg transition-all cursor-pointer">
+              <div key={cat.name} className="flex flex-col items-center gap-3 p-4 rounded-lg hover:bg-white hover:shadow-lg transition-all cursor-pointer w-32">
                 <div className="bg-primary/10 text-primary p-4 rounded-lg">
                   <cat.icon className="w-8 h-8" />
                 </div>
