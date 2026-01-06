@@ -20,9 +20,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog"
 import { Slider } from "@/components/ui/slider";
 import { mockCourses } from "@/lib/data";
-import { BookOpen, Briefcase, CheckCircle, Handshake, Search, Star, Video, Wrench } from "lucide-react";
+import { BookOpen, Briefcase, CheckCircle, Handshake, Search, Star, Video, Wrench, Building, Lightbulb, Users, BarChart, FileText } from "lucide-react";
 import Image from "next/image";
 import React, { useState, useMemo } from "react";
 import type { Course } from "@/lib/types";
@@ -55,15 +64,21 @@ export default function CoursesPage() {
   };
   
   const filterCategories = [
-    { id: 'Hospitality', label: 'Hospitality', icon: Handshake },
-    { id: 'Facilities Management', label: 'Facilities Management', icon: Wrench },
     { id: 'Business', label: 'Business', icon: Briefcase },
+    { id: 'Technology', label: 'Technology', icon: FileText },
+    { id: 'Design', label: 'Design', icon: Lightbulb },
+    { id: 'Marketing', label: 'Marketing', icon: BarChart },
+    { id: 'Data Science', label: 'Data Science', icon: Users },
+    { id: 'Personal Development', label: 'Personal Development', icon: Building },
   ];
 
   const quickSearchCategories = [
-      'Hospitality',
-      'Facilities Management',
-      'Business',
+    'Business',
+    'Technology',
+    'Design',
+    'Marketing',
+    'Data Science',
+    'Personal Development',
   ];
 
   const handleCategoryChange = (categoryId: string) => {
@@ -330,55 +345,112 @@ export default function CoursesPage() {
 
           <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
             {filteredAndSortedCourses.map((course) => (
-              <Card key={course.id} className="flex flex-col overflow-hidden group">
-                <div className="relative">
-                  <Image
-                    src={course.imageUrl}
-                    alt={course.title}
-                    width={600}
-                    height={400}
-                    className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
-                    data-ai-hint={course.imageHint}
-                  />
-                  <Badge className="absolute top-3 left-3 bg-primary/80 backdrop-blur-sm">{course.category}</Badge>
-                </div>
-                <CardContent className="flex-grow pt-4 flex flex-col">
-                  <h3 className="font-bold text-lg leading-tight group-hover:text-primary transition-colors">{course.title}</h3>
-                  <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
-                     <Avatar className="h-6 w-6">
-                        <AvatarImage src={course.instructor.avatarUrl} />
-                        <AvatarFallback>{getInitials(course.instructor.name)}</AvatarFallback>
-                    </Avatar>
-                    <span>{course.instructor.name}</span>
-                    {course.instructor.verified && <CheckCircle className="w-4 h-4 text-blue-500" />}
-                  </div>
-
-                  <div className="flex items-center gap-1 mt-2">
-                    <span className="font-bold text-yellow-600">{course.rating.toFixed(1)}</span>
-                    <div className="flex">{renderStars(course.rating)}</div>
-                    <span className="text-sm text-muted-foreground">({course.reviews})</span>
-                  </div>
-                  
-                  <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1.5">
-                      <BookOpen className="w-4 h-4" />
-                      <span>{course.duration} weeks</span>
+               <Dialog key={course.id}>
+                <DialogTrigger asChild>
+                  <Card className="flex flex-col overflow-hidden group cursor-pointer">
+                    <div className="relative">
+                      <Image
+                        src={course.imageUrl}
+                        alt={course.title}
+                        width={600}
+                        height={400}
+                        className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
+                        data-ai-hint={course.imageHint}
+                      />
+                      <Badge className="absolute top-3 left-3 bg-primary/80 backdrop-blur-sm">{course.category}</Badge>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <Video className="w-4 h-4" />
-                      <span>{course.level}</span>
+                    <CardContent className="flex-grow pt-4 flex flex-col">
+                      <h3 className="font-bold text-lg leading-tight group-hover:text-primary transition-colors">{course.title}</h3>
+                      <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
+                        <Avatar className="h-6 w-6">
+                            <AvatarImage src={course.instructor.avatarUrl} />
+                            <AvatarFallback>{getInitials(course.instructor.name)}</AvatarFallback>
+                        </Avatar>
+                        <span>{course.instructor.name}</span>
+                        {course.instructor.verified && <CheckCircle className="w-4 h-4 text-blue-500" />}
+                      </div>
+
+                      <div className="flex items-center gap-1 mt-2">
+                        <span className="font-bold text-yellow-600">{course.rating.toFixed(1)}</span>
+                        <div className="flex">{renderStars(course.rating)}</div>
+                        <span className="text-sm text-muted-foreground">({course.reviews})</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-1.5">
+                          <BookOpen className="w-4 h-4" />
+                          <span>{course.duration} weeks</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <Video className="w-4 h-4" />
+                          <span>{course.level}</span>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 pt-4 border-t flex items-end justify-between flex-grow">
+                        <div>
+                            <p className="text-2xl font-bold">${course.price}</p>
+                            {course.originalPrice && <p className="text-sm text-muted-foreground line-through">${course.originalPrice}</p>}
+                        </div>
+                        <Button variant="outline" className="pointer-events-none">Details</Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-3xl">
+                  <div className="grid md:grid-cols-2 gap-8">
+                    <div>
+                      <Image
+                        src={course.imageUrl}
+                        alt={course.title}
+                        width={600}
+                        height={400}
+                        className="w-full h-auto object-cover rounded-lg"
+                        data-ai-hint={course.imageHint}
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <DialogHeader>
+                        <Badge className="w-fit">{course.category}</Badge>
+                        <DialogTitle className="text-3xl font-headline mt-2">{course.title}</DialogTitle>
+                        <DialogDescription className="text-base">{course.description}</DialogDescription>
+                      </DialogHeader>
+                      
+                      <div className="flex items-center gap-2 mt-4 text-sm text-muted-foreground">
+                        <Avatar className="h-8 w-8">
+                            <AvatarImage src={course.instructor.avatarUrl} />
+                            <AvatarFallback>{getInitials(course.instructor.name)}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p>Taught by <span className="font-semibold text-foreground">{course.instructor.name}</span></p>
+                          {course.instructor.verified && <div className="flex items-center gap-1 text-xs text-blue-500"><CheckCircle className="w-3 h-3"/> Verified Instructor</div>}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-4 mt-4 text-sm">
+                        <div className="flex items-center gap-1">
+                          <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                          <span className="font-bold">{course.rating.toFixed(1)}</span>
+                          <span className="text-muted-foreground">({course.reviews} reviews)</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <BookOpen className="w-4 h-4 text-muted-foreground" />
+                          <span>{course.duration} weeks</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <Users className="w-4 h-4 text-muted-foreground" />
+                          <span>{course.level}</span>
+                        </div>
+                      </div>
+
+                      <div className="mt-auto pt-6 flex flex-col gap-2">
+                        <p className="text-4xl font-bold">${course.price} {course.originalPrice && <span className="text-xl text-muted-foreground line-through ml-2">${course.originalPrice}</span>}</p>
+                        <Button size="lg" className="w-full">Enroll Now</Button>
+                      </div>
                     </div>
                   </div>
-
-                  <div className="mt-4 pt-4 border-t flex items-end justify-between flex-grow">
-                     <div>
-                        <p className="text-2xl font-bold">${course.price}</p>
-                        {course.originalPrice && <p className="text-sm text-muted-foreground line-through">${course.originalPrice}</p>}
-                     </div>
-                     <Button variant="outline">Enroll Now</Button>
-                  </div>
-                </CardContent>
-              </Card>
+                </DialogContent>
+              </Dialog>
             ))}
              {filteredAndSortedCourses.length === 0 && (
               <div className="sm:col-span-2 xl:col-span-3 text-center py-16">

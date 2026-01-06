@@ -18,6 +18,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { mockAppEvents } from "@/lib/data";
 import { format } from 'date-fns';
 import { Calendar, DollarSign, MapPin, Search, Tag, Users } from "lucide-react";
@@ -86,8 +94,8 @@ export default function EventsPage() {
 
       // Location filter
       const matchesLocation = selectedLocations.length === 0 || 
-        (selectedLocations.includes('online') && event.location.toLowerCase().includes('virtual', 'online')) ||
-        (selectedLocations.includes('in-person') && !event.location.toLowerCase().includes('virtual', 'online'));
+        (selectedLocations.includes('online') && (event.location.toLowerCase().includes('virtual') || event.location.toLowerCase().includes('online'))) ||
+        (selectedLocations.includes('in-person') && !(event.location.toLowerCase().includes('virtual') || event.location.toLowerCase().includes('online')));
 
       // Price filter
       const matchesPrice = selectedPrices.length === 0 ||
@@ -252,41 +260,88 @@ export default function EventsPage() {
 
           <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2">
             {filteredAndSortedEvents.map((event) => (
-              <Card key={event.id} className="flex flex-col overflow-hidden group">
-                <div className="relative">
-                  <Image
-                    src={event.imageUrl}
-                    alt={event.title}
-                    width={600}
-                    height={300}
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                    data-ai-hint={event.imageHint}
-                  />
-                  <Badge className="absolute top-3 left-3 bg-primary/80 backdrop-blur-sm">{event.category}</Badge>
-                </div>
-                <CardContent className="flex-grow pt-4 flex flex-col">
-                  <h3 className="font-bold text-xl leading-tight group-hover:text-primary transition-colors">{event.title}</h3>
-                  <p className="text-sm text-muted-foreground mt-1">by {event.organizer}</p>
-                  
-                  <div className="flex items-center gap-4 mt-4 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1.5">
-                      <Calendar className="w-4 h-4" />
-                      <span>{format(new Date(event.date), 'MMMM d, yyyy')}</span>
+              <Dialog key={event.id}>
+                <DialogTrigger asChild>
+                  <Card className="flex flex-col overflow-hidden group cursor-pointer">
+                    <div className="relative">
+                      <Image
+                        src={event.imageUrl}
+                        alt={event.title}
+                        width={600}
+                        height={300}
+                        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                        data-ai-hint={event.imageHint}
+                      />
+                      <Badge className="absolute top-3 left-3 bg-primary/80 backdrop-blur-sm">{event.category}</Badge>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <MapPin className="w-4 h-4" />
-                      <span>{event.location}</span>
-                    </div>
-                  </div>
+                    <CardContent className="flex-grow pt-4 flex flex-col">
+                      <h3 className="font-bold text-xl leading-tight group-hover:text-primary transition-colors">{event.title}</h3>
+                      <p className="text-sm text-muted-foreground mt-1">by {event.organizer}</p>
+                      
+                      <div className="flex items-center gap-4 mt-4 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-1.5">
+                          <Calendar className="w-4 h-4" />
+                          <span>{format(new Date(event.date), 'MMMM d, yyyy')}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <MapPin className="w-4 h-4" />
+                          <span>{event.location}</span>
+                        </div>
+                      </div>
 
-                  <div className="mt-4 pt-4 border-t flex items-end justify-between flex-grow">
-                     <div>
-                        <p className="text-2xl font-bold">{event.price ? `$${event.price}` : 'Free'}</p>
-                     </div>
-                     <Button variant="outline">Register Now</Button>
+                      <div className="mt-4 pt-4 border-t flex items-end justify-between flex-grow">
+                        <div>
+                            <p className="text-2xl font-bold">{event.price ? `$${event.price}` : 'Free'}</p>
+                        </div>
+                        <Button variant="outline" className="pointer-events-none">Details</Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-3xl">
+                   <div className="grid md:grid-cols-2 gap-8">
+                    <div>
+                      <Image
+                        src={event.imageUrl}
+                        alt={event.title}
+                        width={600}
+                        height={400}
+                        className="w-full h-auto object-cover rounded-lg"
+                        data-ai-hint={event.imageHint}
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <DialogHeader>
+                        <Badge className="w-fit">{event.category}</Badge>
+                        <DialogTitle className="text-3xl font-headline mt-2">{event.title}</DialogTitle>
+                        <DialogDescription className="text-base">
+                          A detailed description of the event will go here, outlining the agenda, speakers, and what attendees can expect to learn.
+                        </DialogDescription>
+                      </DialogHeader>
+
+                      <div className="mt-4 space-y-3 text-sm">
+                        <div className="flex items-center gap-2">
+                           <Calendar className="w-4 h-4 text-muted-foreground"/> 
+                           <span className="font-semibold">{format(new Date(event.date), 'EEEE, MMMM d, yyyy')}</span>
+                        </div>
+                         <div className="flex items-center gap-2">
+                           <MapPin className="w-4 h-4 text-muted-foreground"/> 
+                           <span className="font-semibold">{event.location}</span>
+                        </div>
+                         <div className="flex items-center gap-2">
+                           <Users className="w-4 h-4 text-muted-foreground"/> 
+                           <span>Organized by <span className="font-semibold">{event.organizer}</span></span>
+                        </div>
+                      </div>
+
+                      <div className="mt-auto pt-6 flex flex-col gap-2">
+                        <p className="text-4xl font-bold">{event.price ? `$${event.price}` : 'Free'}</p>
+                        <Button size="lg" className="w-full">Register Now</Button>
+                      </div>
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
+                </DialogContent>
+              </Dialog>
             ))}
             {filteredAndSortedEvents.length === 0 && (
               <div className="md:col-span-2 text-center py-16">
