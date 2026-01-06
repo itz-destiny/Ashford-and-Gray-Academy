@@ -12,12 +12,25 @@ import { Card } from "@/components/ui/card";
 
 function LoginPageContent() {
   const searchParams = useSearchParams();
-  const initialView = searchParams.get('view') === 'signup' ? false : true;
-  const [isLoginView, setIsLoginView] = useState(initialView);
+  const [isLoginView, setIsLoginView] = useState(true);
 
   useEffect(() => {
     setIsLoginView(searchParams.get('view') !== 'signup');
   }, [searchParams]);
+
+  const toggleView = (view: 'login' | 'signup') => {
+    const url = new URL(window.location.href);
+    if (view === 'signup') {
+        url.searchParams.set('view', 'signup');
+    } else {
+        url.searchParams.delete('view');
+    }
+    // We use replaceState to avoid adding to the history stack,
+    // so the back button works as expected.
+    window.history.replaceState({ ...window.history.state, as: url.toString(), url: url.toString() }, '', url.toString());
+    setIsLoginView(view === 'login');
+  }
+
 
   return (
     <div className="min-h-screen w-full grid grid-cols-1 md:grid-cols-2">
@@ -49,9 +62,9 @@ function LoginPageContent() {
       <div className="flex items-center justify-center p-4 sm:p-8 bg-secondary">
          <Card className="w-full max-w-md">
             {isLoginView ? (
-                <LoginForm onSwitchToSignUp={() => setIsLoginView(false)} />
+                <LoginForm onSwitchToSignUp={() => toggleView('signup')} />
             ) : (
-                <SignUpForm onSwitchToLogin={() => setIsLoginView(true)} />
+                <SignUpForm onSwitchToLogin={() => toggleView('login')} />
             )}
         </Card>
       </div>
@@ -67,3 +80,5 @@ export default function LoginPage() {
     </React.Suspense>
   )
 }
+
+    

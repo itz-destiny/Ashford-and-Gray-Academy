@@ -9,7 +9,7 @@ import { ArrowRight, CheckCircle, Loader2 } from "lucide-react";
 import { AuthForm } from "./auth-form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { signUpWithEmail } from "@/firebase/auth";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 
 type SignUpFormProps = {
@@ -20,6 +20,8 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
   const [role, setRole] = useState("student");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirectUrl');
   const { toast } = useToast();
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -47,7 +49,7 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
       ...(role === 'instructor' ? instructorData : {}),
     };
     
-    const { error } = await signUpWithEmail(email, password, userData);
+    const { error, user } = await signUpWithEmail(email, password, userData);
 
     setIsLoading(false);
 
@@ -68,6 +70,17 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
         description: "Please log in with your new credentials.",
       });
       if (onSwitchToLogin) {
+        // Pass the redirectUrl to the login view
+        const url = new URL(window.location.href);
+        if (redirectUrl) {
+          url.searchParams.set('redirectUrl', redirectUrl);
+        } else {
+          url.searchParams.delete('redirectUrl');
+        }
+        url.searchParams.delete('view'); // switch to login view
+        // We don't use router.push here because onSwitchToLogin updates the state
+        // of the parent component, which re-renders the login form.
+        window.history.replaceState({}, '', url.toString());
         onSwitchToLogin();
       }
     }
@@ -188,3 +201,5 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
     </AuthForm>
   );
 }
+
+    

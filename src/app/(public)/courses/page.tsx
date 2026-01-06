@@ -35,8 +35,14 @@ import { BookOpen, Briefcase, CheckCircle, Handshake, Search, Star, Video, Wrenc
 import Image from "next/image";
 import React, { useState, useMemo } from "react";
 import type { Course } from "@/lib/types";
+import { useRouter, usePathname } from "next/navigation";
+import { useUser } from "@/firebase";
 
 export default function CoursesPage() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const { user } = useUser();
+
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState("popular");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -64,21 +70,15 @@ export default function CoursesPage() {
   };
   
   const filterCategories = [
+    { id: 'Hospitality', label: 'Hospitality', icon: Handshake },
+    { id: 'Facilities Management', label: 'Facilities Management', icon: Wrench },
     { id: 'Business', label: 'Business', icon: Briefcase },
-    { id: 'Technology', label: 'Technology', icon: FileText },
-    { id: 'Design', label: 'Design', icon: Lightbulb },
-    { id: 'Marketing', label: 'Marketing', icon: BarChart },
-    { id: 'Data Science', label: 'Data Science', icon: Users },
-    { id: 'Personal Development', label: 'Personal Development', icon: Building },
   ];
 
   const quickSearchCategories = [
+    'Hospitality',
+    'Facilities Management',
     'Business',
-    'Technology',
-    'Design',
-    'Marketing',
-    'Data Science',
-    'Personal Development',
   ];
 
   const handleCategoryChange = (categoryId: string) => {
@@ -103,6 +103,16 @@ export default function CoursesPage() {
         ? prev.filter(r => r !== rating) 
         : [...prev, rating]
     );
+  };
+
+  const handleEnrollClick = () => {
+    if (!user) {
+      router.push(`/login?redirectUrl=${pathname}`);
+    } else {
+      // In a real app, you would handle the enrollment logic here.
+      // For now, we can just show an alert or a toast.
+      alert('Enrollment logic would be handled here!');
+    }
   };
 
   const clearAllFilters = () => {
@@ -445,7 +455,7 @@ export default function CoursesPage() {
 
                       <div className="mt-auto pt-6 flex flex-col gap-2">
                         <p className="text-4xl font-bold">${course.price} {course.originalPrice && <span className="text-xl text-muted-foreground line-through ml-2">${course.originalPrice}</span>}</p>
-                        <Button size="lg" className="w-full">Enroll Now</Button>
+                        <Button size="lg" className="w-full" onClick={handleEnrollClick}>Enroll Now</Button>
                       </div>
                     </div>
                   </div>
@@ -475,3 +485,5 @@ export default function CoursesPage() {
     </div>
   );
 }
+
+    

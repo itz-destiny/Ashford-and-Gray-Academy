@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { AuthForm } from "./auth-form";
 import { signInWithEmail } from "@/firebase/auth";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useUser } from "@/firebase";
 
@@ -20,6 +20,8 @@ type LoginFormProps = {
 export function LoginForm({ onSwitchToSignUp }: LoginFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirectUrl');
   const { toast } = useToast();
   const { user } = useUser();
 
@@ -41,27 +43,22 @@ export function LoginForm({ onSwitchToSignUp }: LoginFormProps) {
         description: error,
       });
     } else if (signedInUser) {
-        // We need to get the role from the user object after sign-in
-        // The useUser hook will provide the full user profile including the role
-        // For now, we will redirect based on the role we *should* get from Firestore
-        // This is a bit of a race condition, but useUser handles the eventual consistency.
-        
-        // A better approach would be to get the user doc right after login
-        // But for now we rely on the `useUser` hook's redirection logic
-        // which has been updated.
+        // Redirection is now handled by the useEffect below
     }
   };
 
   // Redirect if user object is available
   React.useEffect(() => {
     if (user) {
-      if (user.role === 'instructor') {
+      if (redirectUrl) {
+        router.push(redirectUrl);
+      } else if (user.role === 'instructor') {
         router.push("/instructor");
       } else {
         router.push("/dashboard");
       }
     }
-  }, [user, router]);
+  }, [user, router, redirectUrl]);
 
   return (
     <AuthForm
@@ -96,3 +93,5 @@ export function LoginForm({ onSwitchToSignUp }: LoginFormProps) {
     </AuthForm>
   );
 }
+
+    

@@ -32,8 +32,13 @@ import { Calendar, DollarSign, MapPin, Search, Tag, Users } from "lucide-react";
 import Image from "next/image";
 import React, { useState, useMemo } from "react";
 import type { AppEvent } from "@/lib/types";
+import { useRouter, usePathname } from "next/navigation";
+import { useUser } from "@/firebase";
 
 export default function EventsPage() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const { user } = useUser();
     
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState("date");
@@ -73,6 +78,15 @@ export default function EventsPage() {
         ? prev.filter(p => p !== price)
         : [...prev, price]
     );
+  };
+
+  const handleRegisterClick = () => {
+    if (!user) {
+      router.push(`/login?redirectUrl=${pathname}`);
+    } else {
+      // In a real app, you would handle the registration logic here.
+      alert('Registration logic would be handled here!');
+    }
   };
 
   const clearAllFilters = () => {
@@ -336,7 +350,7 @@ export default function EventsPage() {
 
                       <div className="mt-auto pt-6 flex flex-col gap-2">
                         <p className="text-4xl font-bold">{event.price ? `$${event.price}` : 'Free'}</p>
-                        <Button size="lg" className="w-full">Register Now</Button>
+                        <Button size="lg" className="w-full" onClick={handleRegisterClick}>Register Now</Button>
                       </div>
                     </div>
                   </div>
@@ -366,3 +380,5 @@ export default function EventsPage() {
     </div>
   );
 }
+
+    
