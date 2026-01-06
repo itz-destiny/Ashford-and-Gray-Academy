@@ -37,11 +37,13 @@ import React, { useState, useMemo } from "react";
 import type { Course } from "@/lib/types";
 import { useRouter, usePathname } from "next/navigation";
 import { useUser } from "@/firebase";
+import { useToast } from "@/hooks/use-toast";
 
 export default function CoursesPage() {
   const router = useRouter();
   const pathname = usePathname();
   const { user } = useUser();
+  const { toast } = useToast();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState("popular");
@@ -105,13 +107,14 @@ export default function CoursesPage() {
     );
   };
 
-  const handleEnrollClick = () => {
+  const handleEnrollClick = (courseTitle: string) => {
     if (!user) {
       router.push(`/login?redirectUrl=${pathname}`);
     } else {
-      // In a real app, you would handle the enrollment logic here.
-      // For now, we can just show an alert or a toast.
-      alert('Enrollment logic would be handled here!');
+      toast({
+        title: "Successfully Enrolled!",
+        description: `You have been enrolled in "${courseTitle}".`,
+      });
     }
   };
 
@@ -455,7 +458,7 @@ export default function CoursesPage() {
 
                       <div className="mt-auto pt-6 flex flex-col gap-2">
                         <p className="text-4xl font-bold">${course.price} {course.originalPrice && <span className="text-xl text-muted-foreground line-through ml-2">${course.originalPrice}</span>}</p>
-                        <Button size="lg" className="w-full" onClick={handleEnrollClick}>Enroll Now</Button>
+                        <Button size="lg" className="w-full" onClick={() => handleEnrollClick(course.title)}>Enroll Now</Button>
                       </div>
                     </div>
                   </div>

@@ -34,11 +34,13 @@ import React, { useState, useMemo } from "react";
 import type { AppEvent } from "@/lib/types";
 import { useRouter, usePathname } from "next/navigation";
 import { useUser } from "@/firebase";
+import { useToast } from "@/hooks/use-toast";
 
 export default function EventsPage() {
   const router = useRouter();
   const pathname = usePathname();
   const { user } = useUser();
+  const { toast } = useToast();
     
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState("date");
@@ -80,12 +82,14 @@ export default function EventsPage() {
     );
   };
 
-  const handleRegisterClick = () => {
+  const handleRegisterClick = (eventTitle: string) => {
     if (!user) {
       router.push(`/login?redirectUrl=${pathname}`);
     } else {
-      // In a real app, you would handle the registration logic here.
-      alert('Registration logic would be handled here!');
+      toast({
+        title: "Successfully Registered!",
+        description: `You have registered for "${eventTitle}".`,
+      });
     }
   };
 
@@ -350,7 +354,7 @@ export default function EventsPage() {
 
                       <div className="mt-auto pt-6 flex flex-col gap-2">
                         <p className="text-4xl font-bold">{event.price ? `$${event.price}` : 'Free'}</p>
-                        <Button size="lg" className="w-full" onClick={handleRegisterClick}>Register Now</Button>
+                        <Button size="lg" className="w-full" onClick={() => handleRegisterClick(event.title)}>Register Now</Button>
                       </div>
                     </div>
                   </div>
