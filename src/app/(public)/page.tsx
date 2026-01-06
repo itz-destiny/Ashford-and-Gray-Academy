@@ -21,7 +21,7 @@ import {
   GraduationCap,
   Handshake,
   Wrench,
-  Video
+  Radio
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -137,7 +137,7 @@ export default function Home() {
                 <Button size="lg" asChild>
                   <Link href="/courses">Start Learning Now</Link>
                 </Button>
-                <Button size="lg" variant="outline" className="bg-transparent text-white border-white hover:bg-white hover:text-accent">
+                <Button size="lg" variant="outline" className="bg-transparent text-white border-white hover:bg-white hover:text-primary">
                   <PlayCircle className="mr-2" />
                   Watch Video
                 </Button>
@@ -235,6 +235,60 @@ export default function Home() {
           </Button>
         </div>
       </section>
+
+      {/* Live Class Section */}
+      <section className="py-24 bg-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+           <div className="text-center mb-12">
+            <div className="flex items-center justify-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-green-500"></span>
+              <p className="text-green-600 font-semibold text-sm">Live Class</p>
+            </div>
+            <h2 className="text-3xl font-bold font-headline mt-2">Join Now Our Live Class</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {coursesLoading ? (
+              Array.from({ length: 4 }).map((_, index) => (
+                <Card key={index} className="bg-background overflow-hidden group">
+                  <Skeleton className="w-full h-40" />
+                  <CardContent className="p-4 space-y-2">
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-4 w-1/2" />
+                    <div className="flex items-center mt-4">
+                      <Skeleton className="h-6 w-1/4" />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              trendingCourses?.map((item, index) => (
+                <Card key={item.id} className="bg-white overflow-hidden group border rounded-lg shadow-sm">
+                  <div className="relative">
+                    <Image
+                      src={item.imageUrl}
+                      alt={item.title}
+                      width={600}
+                      height={400}
+                      className="w-full h-40 object-cover"
+                      data-ai-hint={item.imageHint}
+                    />
+                    <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                       <Button variant="secondary">Join Class</Button>
+                    </div>
+                  </div>
+                  <CardContent className="p-4">
+                    <h3 className="font-semibold truncate group-hover:text-primary mt-2 h-12">{item.title}</h3>
+                    <div className="flex items-center gap-2 mt-4 text-sm text-muted-foreground">
+                        <Radio className="w-4 h-4 text-red-500 animate-pulse" />
+                        <span>Live - 01:34:47</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+        </div>
+      </section>
       
       {/* Trending Courses Section */}
       <section className="py-24 bg-primary/5">
@@ -246,7 +300,7 @@ export default function Home() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {coursesLoading ? (
               Array.from({ length: 4 }).map((_, index) => (
-                <Card key={index} className="bg-background overflow-hidden group motion-safe:animate-fade-in-up" style={{ animationDelay: `${'index * 0.1 + 0.1'}s` }}>
+                <Card key={index} className="bg-background overflow-hidden group motion-safe:animate-fade-in-up" style={{ animationDelay: `${index * 0.1 + 0.1}s` }}>
                   <Skeleton className="w-full h-40" />
                   <CardContent className="p-4 space-y-2">
                     <Skeleton className="h-5 w-3/4" />
@@ -260,7 +314,7 @@ export default function Home() {
               ))
             ) : (
               trendingCourses?.map((item, index) => (
-                <Card key={item.id} className="bg-background overflow-hidden group motion-safe:animate-fade-in-up" style={{ animationDelay: `${'index * 0.1 + 0.1'}s` }}>
+                <Card key={item.id} className="bg-background overflow-hidden group motion-safe:animate-fade-in-up" style={{ animationDelay: `${index * 0.1 + 0.1}s` }}>
                   <div className="relative">
                     <Image
                       src={item.imageUrl}
@@ -283,7 +337,7 @@ export default function Home() {
                     <div className="flex justify-between items-center mt-4">
                       <p className="font-bold text-lg text-primary">${item.price}</p>
                       <Button variant="ghost" size="sm" asChild>
-                        <Link href={`/courses?dialog=${'item.id'}`}>View Details <ArrowRight className="ml-2 h-4 w-4"/></Link>
+                        <Link href={`/courses?dialog=${item.id}`}>View Details <ArrowRight className="ml-2 h-4 w-4"/></Link>
                       </Button>
                     </div>
                   </CardContent>
@@ -291,32 +345,6 @@ export default function Home() {
               ))
             )}
           </div>
-        </div>
-      </section>
-
-      {/* Live Class Section */}
-      <section className="py-24 bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center">
-            <div>
-                <p className="text-primary font-semibold text-sm">LIVE SESSIONS</p>
-                <h2 className="text-3xl font-bold font-headline mt-2">Join Our Live Classes</h2>
-                <p className="mt-4 text-muted-foreground">Engage with instructors in real-time, ask questions, and collaborate with peers. Our interactive live classes provide an immersive learning experience that helps you master new skills faster.</p>
-                 <Button className="mt-8" asChild><Link href="/events">Browse Live Classes</Link></Button>
-            </div>
-             <div className="relative flex justify-center items-center">
-                <Image
-                    src="https://picsum.photos/seed/liveclass/600/400"
-                    alt="A teacher interacting with students in a live online class"
-                    width={600}
-                    height={400}
-                    className="rounded-lg shadow-xl"
-                    data-ai-hint="live online class"
-                />
-                 <div className="absolute -bottom-6 -left-6 bg-white p-3 rounded-lg shadow-lg text-sm flex items-center gap-2">
-                    <Video className="text-red-500 w-5 h-5"/>
-                    <span className="font-bold">Live Now: Quantum Physics</span>
-                 </div>
-            </div>
         </div>
       </section>
 
@@ -357,7 +385,7 @@ export default function Home() {
                         <button
                             key={i}
                             onClick={() => carouselApi?.scrollTo(i)}
-                            className={`h-2 w-2 rounded-full ${'i === current - 1' ? 'bg-primary' : 'bg-gray-300'}`}
+                            className={`h-2 w-2 rounded-full ${i === current - 1 ? 'bg-primary' : 'bg-gray-300'}`}
                         />
                     ))}
                 </div>
@@ -376,7 +404,7 @@ export default function Home() {
                     <p className="mt-2 text-white/80 max-w-xl mx-auto">Join our subscribers list to get the latest news, updates, and special offers delivered directly in your inbox.</p>
                     <div className="mt-6 flex max-w-md mx-auto">
                         <input type="email" placeholder="Your email address" className="w-full rounded-l-md px-4 text-gray-800 focus:outline-none focus:ring-2 focus:ring-secondary" />
-                        <Button variant="secondary" className="rounded-l-none text-black">Subscribe</Button>
+                        <Button variant="secondary" className="rounded-l-none">Subscribe</Button>
                     </div>
                 </div>
             </div>
@@ -385,5 +413,3 @@ export default function Home() {
     </>
   );
 }
-
-    
