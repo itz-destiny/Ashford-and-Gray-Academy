@@ -14,12 +14,10 @@ export function Logo({ className, showText = true }: LogoProps) {
         <GraduationCap className="h-5 w-5 text-primary-foreground" />
       </div>
       {showText && (
-        <h1 className={cn("text-xl font-bold text-foreground", className)}>
+        <h1 className={cn("text-xl font-bold", className)}>
           Ashford & Gray
         </h1>
       )}
     </div>
   );
 }
-
-    
