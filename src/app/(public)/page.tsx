@@ -86,21 +86,21 @@ export default function Home() {
       quote: "The course structure and mentor support at Ashford & Gray are second to none. I was able to transition into a new career with confidence and a strong portfolio. Highly recommended for anyone serious about skilling up.",
       name: 'Devon Lane',
       title: 'UI/UX Designer at Google',
-      avatarUrl: "https://picsum.photos/seed/testimonial-person/100"
+      avatarUrl: "/imagefx-3.png"
     },
     {
       id: 2,
       quote: "An incredible learning experience. The instructors are top-notch, and the curriculum is perfectly aligned with industry demands. I landed a promotion just months after completing my course.",
       name: 'Sarah Jenkins',
       title: 'Senior Developer at Microsoft',
-      avatarUrl: "https://picsum.photos/seed/testimonial-person-2/100"
+      avatarUrl: "/imagefx-4.png"
     },
     {
       id: 3,
       quote: "This platform transformed my understanding of digital marketing. The practical, hands-on projects were invaluable. The community is vibrant and supportive, which made a huge difference.",
       name: 'Michael Chen',
       title: 'Marketing Lead at Amazon',
-      avatarUrl: "https://picsum.photos/seed/testimonial-person-3/100"
+      avatarUrl: "/imagefx-5.png"
     },
   ]
 
@@ -145,7 +145,7 @@ export default function Home() {
             </div>
             <div className="relative motion-safe:animate-fade-in duration-500 [animation-delay:0.2s] hidden md:block">
               <Image
-                src="https://picsum.photos/seed/hero-person/500"
+                src="/imagefx-1.png"
                 alt="A confident professional woman with a laptop"
                 width={500}
                 height={500}
@@ -158,7 +158,7 @@ export default function Home() {
                <div className="absolute bottom-1/4 -right-10 bg-white/10 backdrop-blur-md p-4 rounded-lg shadow-lg text-sm">
                 <div className="flex items-center gap-2">
                    <Avatar>
-                      <AvatarImage src="https://picsum.photos/seed/mentor1/100" />
+                      <AvatarImage src="/imagefx-2.png" />
                       <AvatarFallback>DL</AvatarFallback>
                     </Avatar>
                     <div>
@@ -179,7 +179,7 @@ export default function Home() {
             <div className="relative flex justify-center items-center">
                 <div className="bg-primary/10 rounded-full p-4">
                   <Image
-                      src="https://picsum.photos/seed/strategy-person/400"
+                      src="/imagefx-6.png"
                       alt="A smiling student holding books"
                       width={400}
                       height={400}
@@ -413,3 +413,5 @@ export default function Home() {
     </>
   );
 }
+
+    

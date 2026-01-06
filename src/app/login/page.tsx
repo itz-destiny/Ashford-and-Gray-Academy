@@ -36,7 +36,7 @@ function LoginPageContent() {
     <div className="min-h-screen w-full grid grid-cols-1 md:grid-cols-2">
       <div className="relative flex-col items-center justify-center hidden bg-background md:flex">
         <Image
-          src="https://picsum.photos/seed/classroom/1200/1800"
+          src="/imagefx-7.png"
           alt="A modern, bright classroom with students learning"
           fill
           className="object-cover brightness-50"
