@@ -54,6 +54,14 @@ export default function CoursesPage() {
     { id: 'personal-dev', label: 'Personal Development', icon: User },
   ]
 
+  const quickSearchCategories = [
+      'Business',
+      'Technology',
+      'Design',
+      'Marketing',
+      'Data Science',
+  ]
+
   return (
     <div className="space-y-8">
       <header className="py-16 text-center bg-secondary">
@@ -71,11 +79,9 @@ export default function CoursesPage() {
               <Button size="lg" className="h-14 rounded-l-none">Search</Button>
             </div>
             <div className="mt-4 flex flex-wrap justify-center gap-2">
-              <Button variant="outline" className="rounded-full">Web Development</Button>
-              <Button variant="outline" className="rounded-full">Data Science</Button>
-              <Button variant="outline" className="rounded-full">UI/UX Design</Button>
-              <Button variant="outline" className="rounded-full">Marketing</Button>
-              <Button variant="outline" className="rounded-full">Business</Button>
+                {quickSearchCategories.map(cat => (
+                    <Button key={cat} variant="outline" className="rounded-full">{cat}</Button>
+                ))}
             </div>
           </div>
         </div>
