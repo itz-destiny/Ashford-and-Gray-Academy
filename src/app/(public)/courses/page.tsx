@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { mockCourses } from "@/lib/data";
-import { BookOpen, Building, CheckCircle, Code, DollarSign, PenTool, Search, Star, TrendingUp, User, Video } from "lucide-react";
+import { BookOpen, Briefcase, CheckCircle, Handshake, Search, Star, Video, Wrench } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 
@@ -46,20 +46,15 @@ export default function CoursesPage() {
   };
   
   const filterCategories = [
-    { id: 'business', label: 'Business', icon: Building },
-    { id: 'technology', label: 'Technology', icon: Code },
-    { id: 'design', label: 'Design', icon: PenTool },
-    { id: 'marketing', label: 'Marketing', icon: TrendingUp },
-    { id: 'data-science', label: 'Data Science', icon: Code },
-    { id: 'personal-dev', label: 'Personal Development', icon: User },
+    { id: 'hospitality', label: 'Hospitality', icon: Handshake },
+    { id: 'facilities', label: 'Facilities Management', icon: Wrench },
+    { id: 'business', label: 'Business', icon: Briefcase },
   ]
 
   const quickSearchCategories = [
+      'Hospitality',
+      'Facilities Management',
       'Business',
-      'Technology',
-      'Design',
-      'Marketing',
-      'Data Science',
   ]
 
   return (
