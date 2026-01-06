@@ -29,6 +29,7 @@ export default function SeedPage() {
     setCompleted(false);
 
     try {
+      let seededSomething = false;
       const coursesCollection = collection(firestore, 'courses');
       const coursesSnapshot = await getDocs(coursesCollection);
       if (coursesSnapshot.empty) {
@@ -39,6 +40,7 @@ export default function SeedPage() {
         });
         await batch.commit();
         toast({ title: 'Success', description: `${coursesToSeed.length} courses have been added.` });
+        seededSomething = true;
       } else {
         toast({ title: 'Skipped', description: 'Courses collection is not empty.' });
       }
@@ -53,6 +55,7 @@ export default function SeedPage() {
          });
          await batch.commit();
         toast({ title: 'Success', description: `${eventsToSeed.length} events have been added.` });
+        seededSomething = true;
       } else {
          toast({ title: 'Skipped', description: 'Events collection is not empty.' });
       }
@@ -81,12 +84,12 @@ export default function SeedPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center space-y-4">
-          <Button onClick={handleSeed} disabled={loading || completed} className="w-full">
+          <Button onClick={handleSeed} disabled={loading} className="w-full">
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {completed && <CheckCircle className="mr-2 h-4 w-4" />}
-            {completed ? 'Seeding Complete' : (loading ? 'Seeding...' : 'Start Seeding')}
+            {completed && !loading && <CheckCircle className="mr-2 h-4 w-4" />}
+            {completed && !loading ? 'Seeding Complete' : (loading ? 'Seeding...' : 'Start Seeding')}
           </Button>
-           {completed && <p className="text-sm text-green-600">Your database has been populated. You can now visit the courses and events pages.</p>}
+           {completed && !loading && <p className="text-sm text-green-600 text-center">Your database has been checked. Populated if it was empty. You can now visit the courses and events pages.</p>}
         </CardContent>
       </Card>
     </div>
