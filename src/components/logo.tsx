@@ -21,3 +21,5 @@ export function Logo({ className, showText = true }: LogoProps) {
     </div>
   );
 }
+
+    

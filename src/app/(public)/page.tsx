@@ -20,7 +20,8 @@ import {
   Quote,
   GraduationCap,
   Handshake,
-  Wrench
+  Wrench,
+  Video
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -219,7 +220,7 @@ export default function Home() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold font-headline">Explore Our Categories</h2>
           <p className="mt-2 text-muted-foreground max-w-2xl mx-auto">We offer a wide range of courses in various fields. Choose the one that best fits your career goals.</p>
-          <div className="mt-12 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+          <div className="mt-12 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 justify-center">
             {categories.map((cat) => (
               <div key={cat.name} className="flex flex-col items-center gap-3 p-4 rounded-lg hover:bg-white hover:shadow-lg transition-all cursor-pointer">
                 <div className="bg-primary/10 text-primary p-4 rounded-lg">
@@ -245,7 +246,7 @@ export default function Home() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {coursesLoading ? (
               Array.from({ length: 4 }).map((_, index) => (
-                <Card key={index} className="bg-background overflow-hidden group motion-safe:animate-fade-in-up" style={{ animationDelay: `${index * 0.1 + 0.1}s` }}>
+                <Card key={index} className="bg-background overflow-hidden group motion-safe:animate-fade-in-up" style={{ animationDelay: `${'index * 0.1 + 0.1'}s` }}>
                   <Skeleton className="w-full h-40" />
                   <CardContent className="p-4 space-y-2">
                     <Skeleton className="h-5 w-3/4" />
@@ -259,7 +260,7 @@ export default function Home() {
               ))
             ) : (
               trendingCourses?.map((item, index) => (
-                <Card key={item.id} className="bg-background overflow-hidden group motion-safe:animate-fade-in-up" style={{ animationDelay: `${index * 0.1 + 0.1}s` }}>
+                <Card key={item.id} className="bg-background overflow-hidden group motion-safe:animate-fade-in-up" style={{ animationDelay: `${'index * 0.1 + 0.1'}s` }}>
                   <div className="relative">
                     <Image
                       src={item.imageUrl}
@@ -282,7 +283,7 @@ export default function Home() {
                     <div className="flex justify-between items-center mt-4">
                       <p className="font-bold text-lg text-primary">${item.price}</p>
                       <Button variant="ghost" size="sm" asChild>
-                        <Link href={`/courses?dialog=${item.id}`}>View Details <ArrowRight className="ml-2 h-4 w-4"/></Link>
+                        <Link href={`/courses?dialog=${'item.id'}`}>View Details <ArrowRight className="ml-2 h-4 w-4"/></Link>
                       </Button>
                     </div>
                   </CardContent>
@@ -290,6 +291,32 @@ export default function Home() {
               ))
             )}
           </div>
+        </div>
+      </section>
+
+      {/* Live Class Section */}
+      <section className="py-24 bg-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center">
+            <div>
+                <p className="text-primary font-semibold text-sm">LIVE SESSIONS</p>
+                <h2 className="text-3xl font-bold font-headline mt-2">Join Our Live Classes</h2>
+                <p className="mt-4 text-muted-foreground">Engage with instructors in real-time, ask questions, and collaborate with peers. Our interactive live classes provide an immersive learning experience that helps you master new skills faster.</p>
+                 <Button className="mt-8" asChild><Link href="/events">Browse Live Classes</Link></Button>
+            </div>
+             <div className="relative flex justify-center items-center">
+                <Image
+                    src="https://picsum.photos/seed/liveclass/600/400"
+                    alt="A teacher interacting with students in a live online class"
+                    width={600}
+                    height={400}
+                    className="rounded-lg shadow-xl"
+                    data-ai-hint="live online class"
+                />
+                 <div className="absolute -bottom-6 -left-6 bg-white p-3 rounded-lg shadow-lg text-sm flex items-center gap-2">
+                    <Video className="text-red-500 w-5 h-5"/>
+                    <span className="font-bold">Live Now: Quantum Physics</span>
+                 </div>
+            </div>
         </div>
       </section>
 
@@ -330,7 +357,7 @@ export default function Home() {
                         <button
                             key={i}
                             onClick={() => carouselApi?.scrollTo(i)}
-                            className={`h-2 w-2 rounded-full ${i === current - 1 ? 'bg-primary' : 'bg-gray-300'}`}
+                            className={`h-2 w-2 rounded-full ${'i === current - 1' ? 'bg-primary' : 'bg-gray-300'}`}
                         />
                     ))}
                 </div>
@@ -358,3 +385,5 @@ export default function Home() {
     </>
   );
 }
+
+    
