@@ -24,9 +24,18 @@ import { Slider } from "@/components/ui/slider";
 import { mockCourses } from "@/lib/data";
 import { BookOpen, Briefcase, CheckCircle, Handshake, Search, Star, Video, Wrench } from "lucide-react";
 import Image from "next/image";
-import React from "react";
+import React, { useState, useMemo } from "react";
+import type { Course } from "@/lib/types";
 
 export default function CoursesPage() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortOrder, setSortOrder] = useState("popular");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedDifficulty, setSelectedDifficulty] = useState("all");
+  const [selectedDurations, setSelectedDurations] = useState<string[]>([]);
+  const [priceRange, setPriceRange] = useState([500]);
+  const [selectedRatings, setSelectedRatings] = useState<number[]>([]);
+
 
   const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('');
 
@@ -46,16 +55,110 @@ export default function CoursesPage() {
   };
   
   const filterCategories = [
-    { id: 'hospitality', label: 'Hospitality', icon: Handshake },
-    { id: 'facilities', label: 'Facilities Management', icon: Wrench },
-    { id: 'business', label: 'Business', icon: Briefcase },
-  ]
+    { id: 'Hospitality', label: 'Hospitality', icon: Handshake },
+    { id: 'Facilities Management', label: 'Facilities Management', icon: Wrench },
+    { id: 'Business', label: 'Business', icon: Briefcase },
+  ];
 
   const quickSearchCategories = [
       'Hospitality',
       'Facilities Management',
       'Business',
-  ]
+  ];
+
+  const handleCategoryChange = (categoryId: string) => {
+    setSelectedCategories(prev => 
+      prev.includes(categoryId) 
+        ? prev.filter(c => c !== categoryId) 
+        : [...prev, categoryId]
+    );
+  };
+  
+  const handleDurationChange = (duration: string) => {
+    setSelectedDurations(prev => 
+      prev.includes(duration) 
+        ? prev.filter(d => d !== duration) 
+        : [...prev, duration]
+    );
+  };
+
+  const handleRatingChange = (rating: number) => {
+    setSelectedRatings(prev => 
+      prev.includes(rating) 
+        ? prev.filter(r => r !== rating) 
+        : [...prev, rating]
+    );
+  };
+
+  const clearAllFilters = () => {
+    setSearchQuery("");
+    setSortOrder("popular");
+    setSelectedCategories([]);
+    setSelectedDifficulty("all");
+    setSelectedDurations([]);
+    setPriceRange([500]);
+    setSelectedRatings([]);
+  };
+  
+  const filteredAndSortedCourses = useMemo(() => {
+    let filtered = mockCourses.filter(course => {
+      // Search query filter
+      const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                            course.instructor.name.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      // Category filter
+      const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(course.category);
+
+      // Difficulty filter
+      const matchesDifficulty = selectedDifficulty === 'all' || course.level === selectedDifficulty;
+
+      // Duration filter
+      const matchesDuration = selectedDurations.length === 0 || selectedDurations.some(d => {
+        if (d === 'under-4') return course.duration < 4;
+        if (d === '4-8-weeks') return course.duration >= 4 && course.duration <= 8;
+        if (d === '8-12-weeks') return course.duration > 8 && course.duration <= 12;
+        if (d === '12-plus-weeks') return course.duration > 12;
+        return false;
+      });
+
+      // Price filter
+      const matchesPrice = course.price <= priceRange[0];
+
+      // Rating filter
+      const matchesRating = selectedRatings.length === 0 || selectedRatings.some(r => course.rating >= r);
+
+      return matchesSearch && matchesCategory && matchesDifficulty && matchesDuration && matchesPrice && matchesRating;
+    });
+
+    // Sorting logic
+    switch (sortOrder) {
+      case 'popular':
+        filtered.sort((a, b) => b.reviews - a.reviews);
+        break;
+      case 'newest':
+        // Assuming no date field, we'll just reverse for variety
+        filtered.reverse();
+        break;
+      case 'price-asc':
+        filtered.sort((a, b) => a.price - b.price);
+        break;
+      case 'price-desc':
+        filtered.sort((a, b) => b.price - a.price);
+        break;
+    }
+
+    return filtered;
+
+  }, [searchQuery, sortOrder, selectedCategories, selectedDifficulty, selectedDurations, priceRange, selectedRatings]);
+
+
+  const durationFilters = [
+    { id: 'under-4', label: 'Under 4 weeks' },
+    { id: '4-8-weeks', label: '4-8 weeks' },
+    { id: '8-12-weeks', label: '8-12 weeks' },
+    { id: '12-plus-weeks', label: '12+ weeks' }
+  ];
+
 
   return (
     <div className="space-y-8">
@@ -69,13 +172,25 @@ export default function CoursesPage() {
             <div className="flex">
               <div className="relative flex-grow">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input placeholder="Search courses, topics, or instructors..." className="h-14 pl-12 text-base" />
+                <Input 
+                  placeholder="Search courses, topics, or instructors..." 
+                  className="h-14 pl-12 text-base" 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
               </div>
               <Button size="lg" className="h-14 rounded-l-none">Search</Button>
             </div>
             <div className="mt-4 flex flex-wrap justify-center gap-2">
                 {quickSearchCategories.map(cat => (
-                    <Button key={cat} variant="outline" className="rounded-full">{cat}</Button>
+                    <Button 
+                      key={cat} 
+                      variant={selectedCategories.includes(cat) ? "default" : "outline"} 
+                      className="rounded-full"
+                      onClick={() => handleCategoryChange(cat)}
+                    >
+                      {cat}
+                    </Button>
                 ))}
             </div>
           </div>
@@ -91,7 +206,11 @@ export default function CoursesPage() {
               <div className="space-y-3">
                 {filterCategories.map(cat => (
                   <div key={cat.id} className="flex items-center space-x-2">
-                    <Checkbox id={cat.id} />
+                    <Checkbox 
+                      id={cat.id} 
+                      checked={selectedCategories.includes(cat.id)}
+                      onCheckedChange={() => handleCategoryChange(cat.id)}
+                    />
                     <Label htmlFor={cat.id} className="flex items-center gap-2 font-normal cursor-pointer">
                       <cat.icon className="w-4 h-4 text-muted-foreground" />
                       {cat.label}
@@ -106,22 +225,22 @@ export default function CoursesPage() {
           <Card>
             <CardContent className="pt-6">
               <h3 className="text-lg font-semibold mb-4">Difficulty Level</h3>
-              <RadioGroup defaultValue="all">
+              <RadioGroup value={selectedDifficulty} onValueChange={setSelectedDifficulty}>
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="all" id="all-levels" />
                     <Label htmlFor="all-levels" className="font-normal">All Levels</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="beginner" id="beginner" />
+                    <RadioGroupItem value="Beginner" id="beginner" />
                     <Label htmlFor="beginner" className="font-normal">Beginner</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="intermediate" id="intermediate" />
+                    <RadioGroupItem value="Intermediate" id="intermediate" />
                     <Label htmlFor="intermediate" className="font-normal">Intermediate</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="advanced" id="advanced" />
+                    <RadioGroupItem value="Advanced" id="advanced" />
                     <Label htmlFor="advanced" className="font-normal">Advanced</Label>
                   </div>
                 </div>
@@ -134,22 +253,16 @@ export default function CoursesPage() {
             <CardContent className="pt-6">
               <h3 className="text-lg font-semibold mb-4">Duration</h3>
               <div className="space-y-3">
-                 <div className="flex items-center space-x-2">
-                    <Checkbox id="under-4" />
-                    <Label htmlFor="under-4" className="font-normal">Under 4 weeks</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="4-8-weeks" />
-                    <Label htmlFor="4-8-weeks" className="font-normal">4-8 weeks</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="8-12-weeks" />
-                    <Label htmlFor="8-12-weeks" className="font-normal">8-12 weeks</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="12-plus-weeks" />
-                    <Label htmlFor="12-plus-weeks" className="font-normal">12+ weeks</Label>
-                  </div>
+                 {durationFilters.map(d => (
+                    <div key={d.id} className="flex items-center space-x-2">
+                      <Checkbox 
+                        id={d.id} 
+                        checked={selectedDurations.includes(d.id)}
+                        onCheckedChange={() => handleDurationChange(d.id)}
+                      />
+                      <Label htmlFor={d.id} className="font-normal">{d.label}</Label>
+                    </div>
+                  ))}
               </div>
             </CardContent>
           </Card>
@@ -158,10 +271,15 @@ export default function CoursesPage() {
           <Card>
             <CardContent className="pt-6">
               <h3 className="text-lg font-semibold mb-4">Price Range</h3>
-              <Slider defaultValue={[50]} max={500} step={10} />
+              <Slider 
+                value={priceRange} 
+                onValueChange={setPriceRange} 
+                max={500} 
+                step={10} 
+              />
               <div className="flex justify-between text-sm text-muted-foreground mt-2">
                 <span>$0</span>
-                <span>$500</span>
+                <span>${priceRange[0]}</span>
               </div>
             </CardContent>
           </Card>
@@ -173,7 +291,11 @@ export default function CoursesPage() {
               <div className="space-y-3">
                 {[4, 3, 2].map(rating => (
                   <div key={rating} className="flex items-center space-x-2">
-                    <Checkbox id={`rating-${rating}`} />
+                    <Checkbox 
+                      id={`rating-${rating}`} 
+                      checked={selectedRatings.includes(rating)}
+                      onCheckedChange={() => handleRatingChange(rating)}
+                    />
                     <Label htmlFor={`rating-${rating}`} className="flex items-center gap-1 font-normal cursor-pointer">
                       {renderStars(rating)}
                       <span className="text-muted-foreground">& up</span>
@@ -184,15 +306,15 @@ export default function CoursesPage() {
             </CardContent>
           </Card>
           
-          <Button variant="outline" className="w-full">Clear All Filters</Button>
+          <Button variant="outline" className="w-full" onClick={clearAllFilters}>Clear All Filters</Button>
         </aside>
 
         <main className="lg:col-span-3">
           <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-            <p className="text-muted-foreground">Showing {mockCourses.length} courses</p>
+            <p className="text-muted-foreground">Showing {filteredAndSortedCourses.length} of {mockCourses.length} courses</p>
             <div className="flex items-center gap-2">
               <Label htmlFor="sort">Sort by:</Label>
-              <Select defaultValue="popular">
+              <Select value={sortOrder} onValueChange={setSortOrder}>
                 <SelectTrigger id="sort" className="w-[180px]">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
@@ -207,7 +329,7 @@ export default function CoursesPage() {
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-            {mockCourses.map((course) => (
+            {filteredAndSortedCourses.map((course) => (
               <Card key={course.id} className="flex flex-col overflow-hidden group">
                 <div className="relative">
                   <Image
@@ -258,6 +380,15 @@ export default function CoursesPage() {
                 </CardContent>
               </Card>
             ))}
+             {filteredAndSortedCourses.length === 0 && (
+              <div className="sm:col-span-2 xl:col-span-3 text-center py-16">
+                <h3 className="text-xl font-semibold">No Courses Found</h3>
+                <p className="text-muted-foreground mt-2">Try adjusting your filters to find what you're looking for.</p>
+                <Button variant="link" onClick={clearAllFilters} className="mt-4">
+                  Clear All Filters
+                </Button>
+              </div>
+            )}
           </div>
         </main>
       </div>
