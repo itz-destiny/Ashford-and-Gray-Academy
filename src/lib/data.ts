@@ -21,7 +21,7 @@ export const mockCourses: Course[] = [
     level: 'Intermediate',
     price: 299,
     originalPrice: 399,
-    imageUrl: 'https://picsum.photos/seed/biology/600/400',
+    imageUrl: '/biology.jpeg',
     imageHint: 'microscope plant',
   },
   {
@@ -36,7 +36,7 @@ export const mockCourses: Course[] = [
     level: 'Advanced',
     price: 349,
     originalPrice: 449,
-    imageUrl: 'https://picsum.photos/seed/chemistry/600/400',
+    imageUrl: '/chemistry.jpeg',
     imageHint: 'chemistry beakers',
   },
   {
@@ -335,3 +335,5 @@ export const mockInstructorMessages: InstructorMessage[] = [
         time: '3h ago'
     }
 ];
+
+    
