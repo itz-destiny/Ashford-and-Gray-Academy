@@ -15,6 +15,7 @@ import {
   FileText,
   Clock,
   Sparkles,
+  Home,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -33,10 +34,10 @@ export default function DashboardLayout({
   const pathname = usePathname();
 
   const navItems = [
-    { href: "/dashboard", label: "Home" },
-    { href: "/courses", label: "My Courses" },
-    { href: "/events", label: "Events" },
-    { href: "/grades", label: "Grades" },
+    { href: "/dashboard", label: "Home", icon: Home },
+    { href: "/my-courses", label: "My Courses", icon: BookOpen },
+    { href: "/events", label: "Events", icon: Calendar },
+    { href: "/grades", label: "Grades", icon: GraduationCap },
     { href: "/messages", label: "Messages", icon: MessageSquare },
     { href: "/resources", label: "Resources", icon: FileText },
     { href: "/schedule", label: "Schedule", icon: Clock },

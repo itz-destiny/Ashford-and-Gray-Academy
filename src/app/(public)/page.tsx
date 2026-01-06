@@ -10,12 +10,24 @@ import Link from "next/link";
 import { Logo } from "@/components/logo";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { cn } from "@/lib/utils";
-import { mockCourses } from "@/lib/data";
+import { useCollection, useFirestore } from "@/firebase";
+import { collection, query, limit } from "firebase/firestore";
+import type { Course } from "@/lib/types";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Home() {
   const [scrolled, setScrolled] = useState(false);
+  const firestore = useFirestore();
+
+  const trendingCoursesQuery = useMemo(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'courses'), limit(4));
+  }, [firestore]);
+
+  const { data: trendingCourses, loading: coursesLoading } = useCollection<Course>(trendingCoursesQuery);
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,8 +36,6 @@ export default function Home() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const trendingCourses = mockCourses.slice(0, 4);
 
   const testimonials = [
     {
@@ -151,37 +161,53 @@ export default function Home() {
           </div>
           <p className="text-muted-foreground mb-12">Explore popular courses and upcoming events</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {trendingCourses.map((item, index) => (
-              <Card key={item.id} className="overflow-hidden group motion-safe:animate-fade-in-up" style={{animationDelay: `${index * 0.1 + 0.1}s`}}>
-                <div className="relative">
-                  <Image
-                    src={item.imageUrl}
-                    alt={item.title}
-                    width={600}
-                    height={400}
-                    className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
-                    data-ai-hint={item.imageHint}
-                  />
-                  <div className="absolute top-2 left-2 flex items-center gap-2">
-                     <Badge variant="secondary" className="text-xs uppercase backdrop-blur-sm">COURSE</Badge>
-                      <Badge variant="secondary" className="flex items-center gap-1 backdrop-blur-sm">
-                        <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
-                        {item.rating}
-                      </Badge>
-                  </div>
-                </div>
-                <CardContent className="p-4">
-                  <h3 className="font-semibold truncate group-hover:text-primary">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground mt-1 h-10">By {item.instructor.name}</p>
-                  <div className="flex justify-between items-center mt-4">
-                    <p className="font-bold text-primary">${item.price}</p>
-                    <Button variant="outline" size="sm">
-                      View
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+             {coursesLoading ? (
+               Array.from({ length: 4 }).map((_, index) => (
+                <Card key={index} className="overflow-hidden group motion-safe:animate-fade-in-up" style={{animationDelay: `${index * 0.1 + 0.1}s`}}>
+                    <Skeleton className="w-full h-40" />
+                    <CardContent className="p-4 space-y-2">
+                        <Skeleton className="h-5 w-3/4" />
+                        <Skeleton className="h-4 w-1/2" />
+                        <div className="flex justify-between items-center mt-4">
+                            <Skeleton className="h-6 w-1/4" />
+                            <Skeleton className="h-9 w-1/3" />
+                        </div>
+                    </CardContent>
+                </Card>
+               ))
+             ) : (
+                trendingCourses?.map((item, index) => (
+                <Card key={item.id} className="overflow-hidden group motion-safe:animate-fade-in-up" style={{animationDelay: `${index * 0.1 + 0.1}s`}}>
+                    <div className="relative">
+                    <Image
+                        src={item.imageUrl}
+                        alt={item.title}
+                        width={600}
+                        height={400}
+                        className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
+                        data-ai-hint={item.imageHint}
+                    />
+                    <div className="absolute top-2 left-2 flex items-center gap-2">
+                        <Badge variant="secondary" className="text-xs uppercase backdrop-blur-sm">COURSE</Badge>
+                        <Badge variant="secondary" className="flex items-center gap-1 backdrop-blur-sm">
+                            <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+                            {item.rating}
+                        </Badge>
+                    </div>
+                    </div>
+                    <CardContent className="p-4">
+                    <h3 className="font-semibold truncate group-hover:text-primary">{item.title}</h3>
+                    <p className="text-sm text-muted-foreground mt-1 h-10">By {item.instructor.name}</p>
+                    <div className="flex justify-between items-center mt-4">
+                        <p className="font-bold text-primary">${item.price}</p>
+                        <Button variant="outline" size="sm" asChild>
+                            <Link href={`/courses?dialog=${item.id}`}>View</Link>
+                        </Button>
+                    </div>
+                    </CardContent>
+                </Card>
+                ))
+             )}
           </div>
         </div>
       </section>
@@ -213,3 +239,4 @@ export default function Home() {
     </>
   );
 }
+

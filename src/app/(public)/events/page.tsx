@@ -26,21 +26,31 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { mockAppEvents } from "@/lib/data";
 import { format } from 'date-fns';
 import { Calendar, DollarSign, MapPin, Search, Tag, Users } from "lucide-react";
 import Image from "next/image";
 import React, { useState, useMemo } from "react";
 import type { AppEvent } from "@/lib/types";
 import { useRouter, usePathname } from "next/navigation";
-import { useUser } from "@/firebase";
+import { useUser, useFirestore, useCollection } from "@/firebase";
 import { useToast } from "@/hooks/use-toast";
+import { collection, query } from "firebase/firestore";
+import { registerForEvent } from "@/firebase/firestore/registrations";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function EventsPage() {
   const router = useRouter();
   const pathname = usePathname();
   const { user } = useUser();
   const { toast } = useToast();
+  const firestore = useFirestore();
+
+  const eventsQuery = useMemo(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, "events"));
+  }, [firestore]);
+
+  const { data: appEvents, loading: eventsLoading } = useCollection<AppEvent>(eventsQuery);
     
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState("date");
@@ -82,13 +92,14 @@ export default function EventsPage() {
     );
   };
 
-  const handleRegisterClick = (eventTitle: string) => {
+  const handleRegisterClick = async (event: AppEvent) => {
     if (!user) {
-      router.push(`/login?redirectUrl=${pathname}`);
+      router.push(`/login?redirectUrl=${pathname}?dialog=${event.id}`);
     } else {
+      await registerForEvent(firestore, user.uid, event.id);
       toast({
         title: "Successfully Registered!",
-        description: `You have registered for "${eventTitle}".`,
+        description: `You have registered for "${event.title}".`,
       });
     }
   };
@@ -102,7 +113,8 @@ export default function EventsPage() {
   };
 
   const filteredAndSortedEvents = useMemo(() => {
-    let filtered = mockAppEvents.filter(event => {
+    if (!appEvents) return [];
+    let filtered = appEvents.filter(event => {
       // Search query filter
       const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                             event.organizer.toLowerCase().includes(searchQuery.toLowerCase());
@@ -141,7 +153,7 @@ export default function EventsPage() {
     }
 
     return filtered;
-  }, [searchQuery, sortOrder, selectedCategories, selectedLocations, selectedPrices]);
+  }, [appEvents, searchQuery, sortOrder, selectedCategories, selectedLocations, selectedPrices]);
 
 
   return (
@@ -259,7 +271,9 @@ export default function EventsPage() {
 
         <main className="lg:col-span-3">
           <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-            <p className="text-muted-foreground">Showing {filteredAndSortedEvents.length} of {mockAppEvents.length} events</p>
+            <p className="text-muted-foreground">
+              {eventsLoading ? 'Loading events...' : `Showing ${filteredAndSortedEvents.length} of ${appEvents?.length || 0} events`}
+            </p>
             <div className="flex items-center gap-2">
               <Label htmlFor="sort">Sort by:</Label>
               <Select value={sortOrder} onValueChange={setSortOrder}>
@@ -277,7 +291,18 @@ export default function EventsPage() {
           </div>
 
           <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2">
-            {filteredAndSortedEvents.map((event) => (
+             {eventsLoading ? (
+                Array.from({ length: 4 }).map((_, index) => (
+                    <Card key={index}>
+                    <Skeleton className="h-48 w-full" />
+                    <CardContent className="pt-4 space-y-2">
+                        <Skeleton className="h-5 w-3/4" />
+                        <Skeleton className="h-4 w-1/2" />
+                        <Skeleton className="h-4 w-1/3" />
+                    </CardContent>
+                    </Card>
+                ))
+            ) : filteredAndSortedEvents.map((event) => (
               <Dialog key={event.id}>
                 <DialogTrigger asChild>
                   <Card className="flex flex-col overflow-hidden group cursor-pointer">
@@ -354,14 +379,14 @@ export default function EventsPage() {
 
                       <div className="mt-auto pt-6 flex flex-col gap-2">
                         <p className="text-4xl font-bold">{event.price ? `$${event.price}` : 'Free'}</p>
-                        <Button size="lg" className="w-full" onClick={() => handleRegisterClick(event.title)}>Register Now</Button>
+                        <Button size="lg" className="w-full" onClick={() => handleRegisterClick(event)}>Register Now</Button>
                       </div>
                     </div>
                   </div>
                 </DialogContent>
               </Dialog>
             ))}
-            {filteredAndSortedEvents.length === 0 && (
+            {(filteredAndSortedEvents.length === 0 && !eventsLoading) && (
               <div className="md:col-span-2 text-center py-16">
                 <h3 className="text-xl font-semibold">No Events Found</h3>
                 <p className="text-muted-foreground mt-2">Try adjusting your filters to find what you're looking for.</p>
@@ -385,4 +410,3 @@ export default function EventsPage() {
   );
 }
 
-    

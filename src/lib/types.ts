@@ -3,7 +3,7 @@ export type User = {
   name: string;
   email: string;
   avatarUrl: string;
-  role: 'Student' | 'Admin' | 'Instructor';
+  role: 'student' | 'admin' | 'instructor';
 };
 
 export type Course = {
@@ -27,25 +27,6 @@ export type Course = {
   progress?: number; 
 };
 
-export type Resource = {
-  id: string;
-  title: string;
-  type: 'PDF' | 'Video' | 'Slides';
-  course: string;
-  dateAdded: string;
-  imageUrl: string;
-  imageHint: string;
-};
-
-export type CalendarEvent = {
-  id: string;
-  title: string;
-  course: string;
-  type: 'Live Class' | 'Quiz Due' | 'Assignment';
-  startTime: string;
-  endTime: string;
-};
-
 export type AppEvent = {
   id: string;
   title: string;
@@ -66,14 +47,19 @@ export type Assignment = {
 };
 
 export type Enrollment = {
-    id: string;
-    student: {
-        name: string;
-        avatarUrl: string;
-    };
-    course: string;
-    date: string;
-    status: 'Pending' | 'Approved';
+    id?: string;
+    userId: string;
+    courseId: string;
+    enrolledAt: any;
+    course?: Course;
+};
+
+export type Registration = {
+  id?: string;
+  userId: string;
+  eventId: string;
+  registeredAt: any;
+  event?: AppEvent;
 };
 
 export type InstructorMessage = {

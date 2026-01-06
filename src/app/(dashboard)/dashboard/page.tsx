@@ -13,19 +13,36 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, BarChart, BookOpen, Calendar, CheckCircle2, Download, HelpCircle, Library, Plus } from "lucide-react";
-import { mockCourses, mockUser, mockAssignments } from "@/lib/data";
 import Link from "next/link";
 import Image from "next/image";
+import { useUser, useFirestore, useCollection } from "@/firebase";
+import { useMemo } from "react";
+import { collection, query, where, limit } from "firebase/firestore";
+import type { Course, Enrollment } from "@/lib/types";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function DashboardPage() {
-  const enrolledCourses = mockCourses.slice(0, 2).map((c, i) => ({...c, progress: i === 0 ? 45 : 10 }));
-  const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('');
+  const { user } = useUser();
+  const firestore = useFirestore();
+
+  const enrolledCoursesQuery = useMemo(() => {
+    if (!firestore || !user) return null;
+    return query(
+      collection(firestore, 'enrollments'),
+      where('userId', '==', user.uid),
+      limit(2)
+    );
+  }, [firestore, user]);
+
+  const { data: enrollments, loading: enrollmentsLoading } = useCollection<Enrollment>(enrolledCoursesQuery);
+  
+  const getInitials = (name: string) => name ? name.split(' ').map(n => n[0]).join('') : '';
 
   return (
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-              <h1 className="text-3xl font-bold tracking-tight font-headline">Welcome back, {mockUser.name.split(' ')[0]}</h1>
+              <h1 className="text-3xl font-bold tracking-tight font-headline">Welcome back, {user?.displayName?.split(' ')[0]}</h1>
               <p className="text-muted-foreground">You have 2 upcoming deadlines and 1 live session today.</p>
           </div>
           <Button>
@@ -100,39 +117,63 @@ export default function DashboardPage() {
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">Enrolled Courses</h2>
               <Button variant="link" asChild>
-                <Link href="/courses">View All</Link>
+                <Link href="/my-courses">View All</Link>
               </Button>
             </div>
             <div className="grid gap-6 sm:grid-cols-2">
-              {enrolledCourses.map((course, index) => (
-                <Card key={course.id}>
-                  <CardHeader>
-                    <Image 
-                      src={course.imageUrl}
-                      alt={course.title}
-                      width={600}
-                      height={400}
-                      className="w-full h-40 object-cover rounded-t-lg mb-4"
-                      data-ai-hint={course.imageHint}
-                    />
-                    <CardDescription className="uppercase font-semibold tracking-wider text-primary">{course.category}</CardDescription>
-                    <CardTitle>{course.title}</CardTitle>
-                     <p className="text-sm text-muted-foreground pt-2">{course.description}</p>
-                  </CardHeader>
-                  <CardContent>
-                    <div>
-                      <div className="flex justify-between items-center mb-1 text-sm">
-                        <span className="font-medium text-muted-foreground">Progress</span>
-                        <span>{course.progress}%</span>
-                      </div>
-                      <Progress value={course.progress} aria-label={`${course.title} progress`} />
-                    </div>
-                  </CardContent>
-                   <CardFooter>
-                    <Button variant="outline" className="w-full">Resume Course</Button>
-                  </CardFooter>
-                </Card>
-              ))}
+              {enrollmentsLoading ? (
+                 Array.from({ length: 2 }).map((_, index) => (
+                    <Card key={index}>
+                      <Skeleton className="h-40 w-full rounded-t-lg" />
+                      <CardHeader>
+                          <Skeleton className="h-4 w-1/4" />
+                          <Skeleton className="h-6 w-3/4" />
+                          <Skeleton className="h-4 w-full mt-2" />
+                      </CardHeader>
+                      <CardContent>
+                          <Skeleton className="h-6 w-1/2" />
+                      </CardContent>
+                      <CardFooter>
+                          <Skeleton className="h-10 w-full" />
+                      </CardFooter>
+                    </Card>
+                 ))
+              ) : (
+                enrollments?.map((enrollment) => (
+                    enrollment.course && (
+                    <Card key={enrollment.id}>
+                        <CardHeader>
+                        <Image 
+                            src={enrollment.course.imageUrl}
+                            alt={enrollment.course.title}
+                            width={600}
+                            height={400}
+                            className="w-full h-40 object-cover rounded-t-lg mb-4"
+                            data-ai-hint={enrollment.course.imageHint}
+                        />
+                        <CardDescription className="uppercase font-semibold tracking-wider text-primary">{enrollment.course.category}</CardDescription>
+                        <CardTitle>{enrollment.course.title}</CardTitle>
+                        <p className="text-sm text-muted-foreground pt-2">{enrollment.course.description}</p>
+                        </CardHeader>
+                        <CardContent>
+                        <div>
+                            <div className="flex justify-between items-center mb-1 text-sm">
+                            <span className="font-medium text-muted-foreground">Progress</span>
+                            <span>{enrollment.course.progress || 0}%</span>
+                            </div>
+                            <Progress value={enrollment.course.progress || 0} aria-label={`${enrollment.course.title} progress`} />
+                        </div>
+                        </CardContent>
+                        <CardFooter>
+                        <Button variant="outline" className="w-full">Resume Course</Button>
+                        </CardFooter>
+                    </Card>
+                    )
+                ))
+              )}
+               {!enrollmentsLoading && enrollments?.length === 0 && (
+                <p className="text-muted-foreground sm:col-span-2">You are not enrolled in any courses yet.</p>
+              )}
             </div>
           </div>
         </main>
@@ -186,15 +227,20 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                     <ul className="space-y-4">
-                        {mockAssignments.map(assignment => (
-                            <li key={assignment.id} className="p-3 bg-muted/50 rounded-md">
-                                <p className="text-sm text-muted-foreground">{assignment.course}</p>
-                                <div className="flex justify-between items-center">
-                                    <p className="font-semibold">{assignment.title}</p>
-                                    <p className={`text-sm font-medium ${assignment.dueDate === 'Due Tomorrow' ? 'text-red-500' : 'text-muted-foreground'}`}>{assignment.dueDate}</p>
-                                </div>
-                            </li>
-                        ))}
+                        <li className="p-3 bg-muted/50 rounded-md">
+                            <p className="text-sm text-muted-foreground">Design History</p>
+                            <div className="flex justify-between items-center">
+                                <p className="font-semibold">Essay: Evolution of Bauhaus</p>
+                                <p className="text-sm font-medium text-red-500">Due Tomorrow</p>
+                            </div>
+                        </li>
+                         <li className="p-3 bg-muted/50 rounded-md">
+                            <p className="text-sm text-muted-foreground">Data Science</p>
+                            <div className="flex justify-between items-center">
+                                <p className="font-semibold">Python Quiz 2</p>
+                                <p className="text-sm font-medium text-muted-foreground">In 3 days</p>
+                            </div>
+                        </li>
                     </ul>
                 </CardContent>
             </Card>
@@ -226,4 +272,3 @@ export default function DashboardPage() {
   );
 }
 
-    

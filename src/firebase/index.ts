@@ -4,6 +4,9 @@ import { getAuth, type Auth } from "firebase/auth";
 import { getFirestore, type Firestore, enableIndexedDbPersistence } from "firebase/firestore";
 
 import { firebaseConfig } from "./config";
+import { useCollection } from "./firestore/use-collection";
+import { useDoc } from "./firestore/use-doc";
+
 
 let firestoreInstance: Firestore | null = null;
 
@@ -61,3 +64,5 @@ export {
 export { FirebaseClientProvider } from "./client-provider";
 
 export { useUser } from "./auth/use-user";
+
+export { useCollection, useDoc };

@@ -27,23 +27,32 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter,
 } from "@/components/ui/dialog"
 import { Slider } from "@/components/ui/slider";
-import { mockCourses } from "@/lib/data";
 import { BookOpen, Briefcase, CheckCircle, Handshake, Search, Star, Video, Wrench, Building, Lightbulb, Users, BarChart, FileText } from "lucide-react";
 import Image from "next/image";
 import React, { useState, useMemo } from "react";
 import type { Course } from "@/lib/types";
 import { useRouter, usePathname } from "next/navigation";
-import { useUser } from "@/firebase";
+import { useUser, useFirestore, useCollection } from "@/firebase";
 import { useToast } from "@/hooks/use-toast";
+import { enrollInCourse } from "@/firebase/firestore/enrollments";
+import { collection, query, where } from "firebase/firestore";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function CoursesPage() {
   const router = useRouter();
   const pathname = usePathname();
   const { user } = useUser();
   const { toast } = useToast();
+  const firestore = useFirestore();
+
+  const coursesQuery = useMemo(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, "courses"));
+  }, [firestore]);
+
+  const { data: courses, loading: coursesLoading } = useCollection<Course>(coursesQuery);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState("popular");
@@ -54,7 +63,7 @@ export default function CoursesPage() {
   const [selectedRatings, setSelectedRatings] = useState<number[]>([]);
 
 
-  const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('');
+  const getInitials = (name: string) => name ? name.split(' ').map(n => n[0]).join('') : '';
 
   const renderStars = (rating: number) => {
     const stars = [];
@@ -107,13 +116,14 @@ export default function CoursesPage() {
     );
   };
 
-  const handleEnrollClick = (courseTitle: string) => {
+  const handleEnrollClick = async (course: Course) => {
     if (!user) {
-      router.push(`/login?redirectUrl=${pathname}`);
+      router.push(`/login?redirectUrl=${pathname}?dialog=${course.id}`);
     } else {
+      await enrollInCourse(firestore, user.uid, course.id);
       toast({
         title: "Successfully Enrolled!",
-        description: `You have been enrolled in "${courseTitle}".`,
+        description: `You have been enrolled in "${course.title}".`,
       });
     }
   };
@@ -129,10 +139,12 @@ export default function CoursesPage() {
   };
   
   const filteredAndSortedCourses = useMemo(() => {
-    let filtered = mockCourses.filter(course => {
+    if (!courses) return [];
+
+    let filtered = courses.filter(course => {
       // Search query filter
       const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                            course.instructor.name.toLowerCase().includes(searchQuery.toLowerCase());
+                            (course.instructor && course.instructor.name.toLowerCase().includes(searchQuery.toLowerCase()));
       
       // Category filter
       const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(course.category);
@@ -177,7 +189,7 @@ export default function CoursesPage() {
 
     return filtered;
 
-  }, [searchQuery, sortOrder, selectedCategories, selectedDifficulty, selectedDurations, priceRange, selectedRatings]);
+  }, [courses, searchQuery, sortOrder, selectedCategories, selectedDifficulty, selectedDurations, priceRange, selectedRatings]);
 
 
   const durationFilters = [
@@ -339,7 +351,9 @@ export default function CoursesPage() {
 
         <main className="lg:col-span-3">
           <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-            <p className="text-muted-foreground">Showing {filteredAndSortedCourses.length} of {mockCourses.length} courses</p>
+            <p className="text-muted-foreground">
+              {coursesLoading ? 'Loading courses...' : `Showing ${filteredAndSortedCourses.length} of ${courses?.length || 0} courses`}
+            </p>
             <div className="flex items-center gap-2">
               <Label htmlFor="sort">Sort by:</Label>
               <Select value={sortOrder} onValueChange={setSortOrder}>
@@ -357,7 +371,18 @@ export default function CoursesPage() {
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-            {filteredAndSortedCourses.map((course) => (
+            {coursesLoading ? (
+              Array.from({ length: 6 }).map((_, index) => (
+                <Card key={index}>
+                  <Skeleton className="h-40 w-full" />
+                  <CardContent className="pt-4 space-y-2">
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-4 w-1/2" />
+                    <Skeleton className="h-4 w-1/3" />
+                  </CardContent>
+                </Card>
+              ))
+            ) : filteredAndSortedCourses.map((course) => (
                <Dialog key={course.id}>
                 <DialogTrigger asChild>
                   <Card className="flex flex-col overflow-hidden group cursor-pointer">
@@ -458,14 +483,14 @@ export default function CoursesPage() {
 
                       <div className="mt-auto pt-6 flex flex-col gap-2">
                         <p className="text-4xl font-bold">${course.price} {course.originalPrice && <span className="text-xl text-muted-foreground line-through ml-2">${course.originalPrice}</span>}</p>
-                        <Button size="lg" className="w-full" onClick={() => handleEnrollClick(course.title)}>Enroll Now</Button>
+                        <Button size="lg" className="w-full" onClick={() => handleEnrollClick(course)}>Enroll Now</Button>
                       </div>
                     </div>
                   </div>
                 </DialogContent>
               </Dialog>
             ))}
-             {filteredAndSortedCourses.length === 0 && (
+             {(filteredAndSortedCourses.length === 0 && !coursesLoading) && (
               <div className="sm:col-span-2 xl:col-span-3 text-center py-16">
                 <h3 className="text-xl font-semibold">No Courses Found</h3>
                 <p className="text-muted-foreground mt-2">Try adjusting your filters to find what you're looking for.</p>
@@ -489,4 +514,3 @@ export default function CoursesPage() {
   );
 }
 
-    
