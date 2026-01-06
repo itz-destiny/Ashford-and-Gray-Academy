@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { useFirestore } from '@/firebase';
-import { collection, addDoc, getDocs } from 'firebase/firestore';
+import { collection, addDoc, getDocs, writeBatch } from 'firebase/firestore';
 import { coursesToSeed, eventsToSeed } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -29,25 +29,29 @@ export default function SeedPage() {
     setCompleted(false);
 
     try {
-      // Check if courses exist
       const coursesCollection = collection(firestore, 'courses');
       const coursesSnapshot = await getDocs(coursesCollection);
       if (coursesSnapshot.empty) {
-        for (const course of coursesToSeed) {
-          await addDoc(coursesCollection, course);
-        }
+        const batch = writeBatch(firestore);
+        coursesToSeed.forEach(course => {
+          const docRef = doc(coursesCollection);
+          batch.set(docRef, course);
+        });
+        await batch.commit();
         toast({ title: 'Success', description: `${coursesToSeed.length} courses have been added.` });
       } else {
         toast({ title: 'Skipped', description: 'Courses collection is not empty.' });
       }
 
-      // Check if events exist
       const eventsCollection = collection(firestore, 'events');
       const eventsSnapshot = await getDocs(eventsCollection);
       if (eventsSnapshot.empty) {
-        for (const event of eventsToSeed) {
-          await addDoc(eventsCollection, event);
-        }
+         const batch = writeBatch(firestore);
+         eventsToSeed.forEach(event => {
+            const docRef = doc(eventsCollection);
+            batch.set(docRef, event);
+         });
+         await batch.commit();
         toast({ title: 'Success', description: `${eventsToSeed.length} events have been added.` });
       } else {
          toast({ title: 'Skipped', description: 'Events collection is not empty.' });
