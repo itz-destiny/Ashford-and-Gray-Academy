@@ -26,7 +26,7 @@ export function MainNav() {
                 <Button variant="ghost" className="text-white hover:bg-white/10 hover:text-white" asChild>
                 <Link href="/login">Log In</Link>
                 </Button>
-                <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                <Button asChild>
                 <Link href="/login?view=signup">Sign Up</Link>
                 </Button>
             </div>

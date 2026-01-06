@@ -1,3 +1,4 @@
+
 import { GraduationCap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -13,7 +14,7 @@ export function Logo({ className, showText = true }: LogoProps) {
         <GraduationCap className="h-5 w-5 text-primary-foreground" />
       </div>
       {showText && (
-        <h1 className="text-xl font-bold text-foreground">
+        <h1 className={cn("text-xl font-bold text-foreground", className)}>
           Ashford & Gray
         </h1>
       )}
