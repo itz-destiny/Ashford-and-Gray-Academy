@@ -1,3 +1,4 @@
+
 import type { Course, AppEvent } from './types';
 
 // This data is now used for seeding the database, not for direct display.
@@ -13,7 +14,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     level: 'All Levels',
     price: 150,
     originalPrice: 200,
-    imageUrl: '/course1.jpeg',
+    imageUrl: 'https://picsum.photos/seed/course1/600/400',
     imageHint: 'formal dining setup',
   },
   {
@@ -27,7 +28,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     level: 'Beginner',
     price: 99,
     originalPrice: 149,
-    imageUrl: '/course2.jpeg',
+    imageUrl: 'https://picsum.photos/seed/course2/600/400',
     imageHint: 'cleaning supplies',
   },
   {
@@ -41,7 +42,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     level: 'Intermediate',
     price: 220,
     originalPrice: 280,
-    imageUrl: '/course3.jpeg',
+    imageUrl: 'https://picsum.photos/seed/course3/600/400',
     imageHint: 'ledger and calculator',
   },
   {
@@ -55,7 +56,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     level: 'Advanced',
     price: 350,
     originalPrice: 420,
-    imageUrl: '/course4.jpeg',
+    imageUrl: 'https://picsum.photos/seed/course4/600/400',
     imageHint: 'fine dining restaurant',
   },
   {
@@ -68,7 +69,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     duration: 10,
     level: 'Intermediate',
     price: 180,
-    imageUrl: '/course5.jpeg',
+    imageUrl: 'https://picsum.photos/seed/course5/600/400',
     imageHint: 'hotel room cleaning',
   },
   {
@@ -82,7 +83,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     level: 'Advanced',
     price: 250,
     originalPrice: 300,
-    imageUrl: '/course6.jpeg',
+    imageUrl: 'https://picsum.photos/seed/course6/600/400',
     imageHint: 'industrial cleaning machine',
   },
    {
@@ -95,7 +96,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     duration: 4,
     level: 'Beginner',
     price: 120,
-    imageUrl: '/course7.jpeg',
+    imageUrl: 'https://picsum.photos/seed/course7/600/400',
     imageHint: 'customer service representative',
   },
 ];
@@ -108,7 +109,7 @@ export const eventsToSeed: Omit<AppEvent, 'id'>[] = [
     date: '2024-11-15',
     location: 'Virtual',
     price: 150,
-    imageUrl: '/course1.jpeg',
+    imageUrl: 'https://picsum.photos/seed/course1/600/300',
     imageHint: 'formal dining setup',
     organizer: 'Etiquette Experts'
   },
@@ -118,7 +119,7 @@ export const eventsToSeed: Omit<AppEvent, 'id'>[] = [
     date: '2024-12-02',
     location: 'New York, NY',
     price: 99,
-    imageUrl: '/course2.jpeg',
+    imageUrl: 'https://picsum.photos/seed/course2/600/300',
     imageHint: 'cleaning supplies',
     organizer: 'CleanCo'
   },
@@ -128,7 +129,7 @@ export const eventsToSeed: Omit<AppEvent, 'id'>[] = [
     date: '2024-11-20',
     location: 'Online',
     price: 220,
-    imageUrl: '/course3.jpeg',
+    imageUrl: 'https://picsum.photos/seed/course3/600/300',
     imageHint: 'ledger and calculator',
     organizer: 'Biz Solutions'
   },
@@ -138,7 +139,7 @@ export const eventsToSeed: Omit<AppEvent, 'id'>[] = [
     date: '2024-12-10',
     location: 'San Francisco, CA',
     price: 350,
-    imageUrl: '/course4.jpeg',
+    imageUrl: 'https://picsum.photos/seed/course4/600/300',
     imageHint: 'fine dining restaurant',
     organizer: 'Hospitality Masters'
   },
@@ -209,3 +210,5 @@ export const mockInstructorMessages: any[] = [
     { id: '2', student: { name: 'David Lee', avatarUrl: 'https://picsum.photos/seed/s5/100' }, message: 'Could you clarify the lecture notes from yesterday?', time: '5h ago' },
     { id: '3', student: { name: 'Sophia Chen', avatarUrl: 'https://picsum.photos/seed/s6/100' }, message: 'Thank you for the extension!', time: '1d ago' },
 ];
+
+    
