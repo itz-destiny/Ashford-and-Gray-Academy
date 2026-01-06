@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { mockCourses } from "@/lib/data";
 
 export default function Home() {
   const [scrolled, setScrolled] = useState(false);
@@ -24,52 +25,7 @@ export default function Home() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const trendingContent = [
-    {
-      id: "1",
-      type: "COURSE",
-      rating: 4.8,
-      title: "Advanced UI/UX Principles",
-      description: "Master the art of user interface design with practical projects.",
-      author: "By Sarah Jenkins",
-      price: "$49.99",
-      imageUrl: "https://picsum.photos/seed/course1/600/400",
-      imageHint: "abstract gradient"
-    },
-    {
-      id: "2",
-      type: "EVENT",
-      date: "Nov 24",
-      title: "Global Tech Summit 2024",
-      description: "Join industry leaders for a 3-day virtual conference on AI.",
-      location: "Online",
-      action: "Register",
-      imageUrl: "https://picsum.photos/seed/event1/600/400",
-      imageHint: "tech conference"
-    },
-    {
-      id: "3",
-      type: "COURSE",
-      rating: 4.9,
-      title: "Python for Data Science",
-      description: "From zero to hero in Python with real-world data analysis.",
-      author: "By Michael Chen",
-      price: "$89.99",
-      imageUrl: "https://picsum.photos/seed/course2/600/400",
-      imageHint: "python code"
-    },
-    {
-      id: "4",
-      type: "WORKSHOP",
-      date: "Dec 02",
-      title: "Leadership in Crisis",
-      description: "Interactive workshop on managing teams during...",
-      location: "New York",
-      action: "Details",
-      imageUrl: "https://picsum.photos/seed/workshop1/600/400",
-      imageHint: "team meeting"
-    },
-  ];
+  const trendingCourses = mockCourses.slice(0, 4);
 
   const testimonials = [
     {
@@ -195,7 +151,7 @@ export default function Home() {
           </div>
           <p className="text-muted-foreground mb-12">Explore popular courses and upcoming events</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {trendingContent.map((item, index) => (
+            {trendingCourses.map((item, index) => (
               <Card key={item.id} className="overflow-hidden group motion-safe:animate-fade-in-up" style={{animationDelay: `${index * 0.1 + 0.1}s`}}>
                 <div className="relative">
                   <Image
@@ -207,30 +163,20 @@ export default function Home() {
                     data-ai-hint={item.imageHint}
                   />
                   <div className="absolute top-2 left-2 flex items-center gap-2">
-                     <Badge variant="secondary" className="text-xs uppercase backdrop-blur-sm">{item.type}</Badge>
-                     {item.rating && (
-                        <Badge variant="secondary" className="flex items-center gap-1 backdrop-blur-sm">
-                          <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
-                          {item.rating}
-                        </Badge>
-                     )}
-                     {item.date && item.type !== 'COURSE' && <Badge variant="secondary" className="backdrop-blur-sm">{item.date}</Badge>}
+                     <Badge variant="secondary" className="text-xs uppercase backdrop-blur-sm">COURSE</Badge>
+                      <Badge variant="secondary" className="flex items-center gap-1 backdrop-blur-sm">
+                        <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+                        {item.rating}
+                      </Badge>
                   </div>
                 </div>
                 <CardContent className="p-4">
                   <h3 className="font-semibold truncate group-hover:text-primary">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground mt-1 h-10">{item.author || item.description}</p>
+                  <p className="text-sm text-muted-foreground mt-1 h-10">By {item.instructor.name}</p>
                   <div className="flex justify-between items-center mt-4">
-                    {item.price ? (
-                      <p className="font-bold text-primary">{item.price}</p>
-                    ) : (
-                      <p className="text-sm text-muted-foreground flex items-center gap-2">
-                        <MapPin className="w-4 h-4"/>
-                        {item.location}
-                      </p>
-                    )}
-                    <Button variant={item.action === 'Register' ? 'default' : 'outline'} size="sm">
-                      {item.action || 'View'}
+                    <p className="font-bold text-primary">${item.price}</p>
+                    <Button variant="outline" size="sm">
+                      View
                     </Button>
                   </div>
                 </CardContent>

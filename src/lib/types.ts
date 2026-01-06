@@ -23,7 +23,7 @@ export type Course = {
   originalPrice?: number;
   imageUrl: string;
   imageHint: string;
-  description?: string;
+  description: string;
   progress?: number; 
 };
 
