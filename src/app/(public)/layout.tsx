@@ -1,6 +1,7 @@
+
 import { MainNav } from "@/components/main-nav";
 import { Logo } from "@/components/logo";
-import { Instagram, Twitter, Youtube } from "lucide-react";
+import { Instagram, Twitter, Youtube, Database } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { Button } from "@/components/ui/button";
@@ -42,6 +43,7 @@ export default function PublicLayout({
                 <li><Link href="/events" className="text-muted-foreground hover:text-foreground">Events</Link></li>
                 <li><Link href="/about" className="text-muted-foreground hover:text-foreground">About Us</Link></li>
                 <li><Link href="#" className="text-muted-foreground hover:text-foreground">Blog</Link></li>
+                 <li><Link href="/seed" className="flex items-center text-muted-foreground hover:text-foreground"><Database className="mr-2 h-4 w-4" />Seed Data</Link></li>
               </ul>
             </div>
             <div>
