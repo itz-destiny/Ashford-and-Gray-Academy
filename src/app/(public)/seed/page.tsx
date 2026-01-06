@@ -29,35 +29,29 @@ export default function SeedPage() {
     setCompleted(false);
 
     try {
-      let seededSomething = false;
+      // Forcibly seed courses
       const coursesCollection = collection(firestore, 'courses');
-      const coursesSnapshot = await getDocs(coursesCollection);
-      if (coursesSnapshot.empty) {
-        const batch = writeBatch(firestore);
-        coursesToSeed.forEach(course => {
-          const docRef = doc(coursesCollection);
-          batch.set(docRef, course);
-        });
-        await batch.commit();
-        toast({ title: 'Success', description: `${coursesToSeed.length} courses have been added.` });
-        seededSomething = true;
-      } else {
-        toast({ title: 'Skipped', description: 'Courses collection is not empty.' });
-      }
+      const coursesBatch = writeBatch(firestore);
+      coursesToSeed.forEach(course => {
+        const docRef = doc(coursesCollection);
+        coursesBatch.set(docRef, course);
+      });
+      await coursesBatch.commit();
+      toast({ title: 'Success', description: `${coursesToSeed.length} courses have been added.` });
 
+      // Only seed events if the collection is empty to avoid duplicates
       const eventsCollection = collection(firestore, 'events');
       const eventsSnapshot = await getDocs(eventsCollection);
       if (eventsSnapshot.empty) {
-         const batch = writeBatch(firestore);
+         const eventsBatch = writeBatch(firestore);
          eventsToSeed.forEach(event => {
             const docRef = doc(eventsCollection);
-            batch.set(docRef, event);
+            eventsBatch.set(docRef, event);
          });
-         await batch.commit();
+         await eventsBatch.commit();
         toast({ title: 'Success', description: `${eventsToSeed.length} events have been added.` });
-        seededSomething = true;
       } else {
-         toast({ title: 'Skipped', description: 'Events collection is not empty.' });
+         toast({ title: 'Skipped', description: 'Events collection was not empty.' });
       }
       
       setCompleted(true);
@@ -80,7 +74,7 @@ export default function SeedPage() {
         <CardHeader>
           <CardTitle>Seed Database</CardTitle>
           <CardDescription>
-            Click the button below to populate your Firestore database with the initial course and event data. This will only run if the collections are empty.
+            Click the button below to populate your Firestore database with the initial course and event data. This will add all courses and will only add events if the collection is empty.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center space-y-4">
@@ -89,7 +83,7 @@ export default function SeedPage() {
             {completed && !loading && <CheckCircle className="mr-2 h-4 w-4" />}
             {completed && !loading ? 'Seeding Complete' : (loading ? 'Seeding...' : 'Start Seeding')}
           </Button>
-           {completed && !loading && <p className="text-sm text-green-600 text-center">Your database has been checked. Populated if it was empty. You can now visit the courses and events pages.</p>}
+           {completed && !loading && <p className="text-sm text-green-600 text-center">Your database has been populated. You can now visit the courses and events pages.</p>}
         </CardContent>
       </Card>
     </div>
