@@ -49,7 +49,7 @@ export type CalendarEvent = {
 export type AppEvent = {
   id: string;
   title: string;
-  category: 'Conference' | 'Workshop' | 'Webinar' | 'Networking';
+  category: 'Conference' | 'Workshop' | 'Webinar' | 'Networking' | 'Seminar';
   date: string;
   location: string;
   price?: number;

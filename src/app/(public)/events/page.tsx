@@ -22,16 +22,101 @@ import { mockAppEvents } from "@/lib/data";
 import { format } from 'date-fns';
 import { Calendar, DollarSign, MapPin, Search, Tag, Users } from "lucide-react";
 import Image from "next/image";
-import React from "react";
+import React, { useState, useMemo } from "react";
+import type { AppEvent } from "@/lib/types";
 
 export default function EventsPage() {
     
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortOrder, setSortOrder] = useState("date");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
+  const [selectedPrices, setSelectedPrices] = useState<string[]>([]);
+
   const filterCategories = [
-    { id: 'conference', label: 'Conference' },
-    { id: 'workshop', label: 'Workshop' },
-    { id: 'webinar', label: 'Webinar' },
-    { id: 'networking', label: 'Networking' },
+    { id: 'Conference', label: 'Conference' },
+    { id: 'Workshop', label: 'Workshop' },
+    { id: 'Webinar', label: 'Webinar' },
+    { id: 'Networking', label: 'Networking' },
+    { id: 'Seminar', label: 'Seminar' },
   ]
+
+  const quickSearchCategories = ['Conference', 'Workshop', 'Webinar', 'Networking', 'Seminar'];
+
+  const handleCategoryChange = (categoryId: string) => {
+    setSelectedCategories(prev =>
+      prev.includes(categoryId)
+        ? prev.filter(c => c !== categoryId)
+        : [...prev, categoryId]
+    );
+  };
+  
+  const handleLocationChange = (location: string) => {
+    setSelectedLocations(prev =>
+      prev.includes(location)
+        ? prev.filter(l => l !== location)
+        : [...prev, location]
+    );
+  };
+
+  const handlePriceChange = (price: string) => {
+    setSelectedPrices(prev =>
+      prev.includes(price)
+        ? prev.filter(p => p !== price)
+        : [...prev, price]
+    );
+  };
+
+  const clearAllFilters = () => {
+    setSearchQuery("");
+    setSortOrder("date");
+    setSelectedCategories([]);
+    setSelectedLocations([]);
+    setSelectedPrices([]);
+  };
+
+  const filteredAndSortedEvents = useMemo(() => {
+    let filtered = mockAppEvents.filter(event => {
+      // Search query filter
+      const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                            event.organizer.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      // Category filter
+      const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(event.category);
+
+      // Location filter
+      const matchesLocation = selectedLocations.length === 0 || 
+        (selectedLocations.includes('online') && event.location.toLowerCase().includes('virtual', 'online')) ||
+        (selectedLocations.includes('in-person') && !event.location.toLowerCase().includes('virtual', 'online'));
+
+      // Price filter
+      const matchesPrice = selectedPrices.length === 0 ||
+        (selectedPrices.includes('free') && (event.price === 0 || !event.price)) ||
+        (selectedPrices.includes('paid') && event.price && event.price > 0);
+
+      return matchesSearch && matchesCategory && matchesLocation && matchesPrice;
+    });
+
+    // Sorting logic
+    switch (sortOrder) {
+      case 'date':
+        filtered.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        break;
+      case 'popular':
+        // Assuming no popularity metric, we'll just reverse for variety
+        filtered.reverse();
+        break;
+      case 'price-asc':
+        filtered.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
+        break;
+      case 'price-desc':
+        filtered.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
+        break;
+    }
+
+    return filtered;
+  }, [searchQuery, sortOrder, selectedCategories, selectedLocations, selectedPrices]);
+
 
   return (
     <div className="space-y-8">
@@ -45,15 +130,26 @@ export default function EventsPage() {
             <div className="flex">
               <div className="relative flex-grow">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input placeholder="Search events, topics, or organizers..." className="h-14 pl-12 text-base" />
+                <Input 
+                  placeholder="Search events, topics, or organizers..." 
+                  className="h-14 pl-12 text-base" 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
               </div>
               <Button size="lg" className="h-14 rounded-l-none">Search</Button>
             </div>
             <div className="mt-4 flex flex-wrap justify-center gap-2">
-              <Button variant="outline" className="rounded-full">Conference</Button>
-              <Button variant="outline" className="rounded-full">Workshop</Button>
-              <Button variant="outline" className="rounded-full">Webinar</Button>
-              <Button variant="outline" className="rounded-full">Networking</Button>
+              {quickSearchCategories.map(cat => (
+                  <Button 
+                    key={cat} 
+                    variant={selectedCategories.includes(cat) ? "default" : "outline"} 
+                    className="rounded-full"
+                    onClick={() => handleCategoryChange(cat)}
+                  >
+                    {cat}
+                  </Button>
+              ))}
             </div>
           </div>
         </div>
@@ -68,7 +164,11 @@ export default function EventsPage() {
               <div className="space-y-3">
                 {filterCategories.map(cat => (
                   <div key={cat.id} className="flex items-center space-x-2">
-                    <Checkbox id={cat.id} />
+                    <Checkbox 
+                      id={cat.id} 
+                      checked={selectedCategories.includes(cat.id)}
+                      onCheckedChange={() => handleCategoryChange(cat.id)}
+                    />
                     <Label htmlFor={cat.id} className="flex items-center gap-2 font-normal cursor-pointer">
                       {cat.label}
                     </Label>
@@ -84,11 +184,19 @@ export default function EventsPage() {
               <h3 className="text-lg font-semibold mb-4">Location</h3>
               <div className="space-y-3">
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="online" />
+                    <Checkbox 
+                      id="online" 
+                      checked={selectedLocations.includes('online')}
+                      onCheckedChange={() => handleLocationChange('online')}
+                    />
                     <Label htmlFor="online" className="font-normal">Online / Virtual</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="in-person" />
+                    <Checkbox 
+                      id="in-person"
+                      checked={selectedLocations.includes('in-person')}
+                      onCheckedChange={() => handleLocationChange('in-person')}
+                    />
                     <Label htmlFor="in-person" className="font-normal">In-person</Label>
                   </div>
               </div>
@@ -101,26 +209,34 @@ export default function EventsPage() {
               <h3 className="text-lg font-semibold mb-4">Price</h3>
               <div className="space-y-3">
                  <div className="flex items-center space-x-2">
-                    <Checkbox id="free" />
+                    <Checkbox 
+                      id="free"
+                      checked={selectedPrices.includes('free')}
+                      onCheckedChange={() => handlePriceChange('free')}
+                    />
                     <Label htmlFor="free" className="font-normal">Free</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Checkbox id="paid" />
+                    <Checkbox 
+                      id="paid"
+                      checked={selectedPrices.includes('paid')}
+                      onCheckedChange={() => handlePriceChange('paid')}
+                    />
                     <Label htmlFor="paid" className="font-normal">Paid</Label>
                   </div>
               </div>
             </CardContent>
           </Card>
           
-          <Button variant="outline" className="w-full">Clear All Filters</Button>
+          <Button variant="outline" className="w-full" onClick={clearAllFilters}>Clear All Filters</Button>
         </aside>
 
         <main className="lg:col-span-3">
           <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-            <p className="text-muted-foreground">Showing {mockAppEvents.length} events</p>
+            <p className="text-muted-foreground">Showing {filteredAndSortedEvents.length} of {mockAppEvents.length} events</p>
             <div className="flex items-center gap-2">
               <Label htmlFor="sort">Sort by:</Label>
-              <Select defaultValue="date">
+              <Select value={sortOrder} onValueChange={setSortOrder}>
                 <SelectTrigger id="sort" className="w-[180px]">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
@@ -135,7 +251,7 @@ export default function EventsPage() {
           </div>
 
           <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2">
-            {mockAppEvents.map((event) => (
+            {filteredAndSortedEvents.map((event) => (
               <Card key={event.id} className="flex flex-col overflow-hidden group">
                 <div className="relative">
                   <Image
@@ -172,6 +288,15 @@ export default function EventsPage() {
                 </CardContent>
               </Card>
             ))}
+            {filteredAndSortedEvents.length === 0 && (
+              <div className="md:col-span-2 text-center py-16">
+                <h3 className="text-xl font-semibold">No Events Found</h3>
+                <p className="text-muted-foreground mt-2">Try adjusting your filters to find what you're looking for.</p>
+                <Button variant="link" onClick={clearAllFilters} className="mt-4">
+                  Clear All Filters
+                </Button>
+              </div>
+            )}
           </div>
         </main>
       </div>
