@@ -1,10 +1,9 @@
 
 "use client";
 
-import React, { useMemo } from 'react';
-import { useUser, useFirestore, useCollection } from '@/firebase';
-import { collection, query, where } from 'firebase/firestore';
-import type { Enrollment, Course } from '@/lib/types';
+import React from 'react';
+import { useUser } from '@/firebase';
+import type { Enrollment } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -14,17 +13,27 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 function MyCoursesPage() {
   const { user, loading: userLoading } = useUser();
-  const firestore = useFirestore();
 
-  const enrollmentsQuery = useMemo(() => {
-    if (!user || !firestore) return null;
-    return query(
-      collection(firestore, 'enrollments'),
-      where('userId', '==', user.uid)
-    );
-  }, [user, firestore]);
+  const [enrollments, setEnrollments] = React.useState<Enrollment[]>([]);
+  const [enrollmentsLoading, setEnrollmentsLoading] = React.useState(true);
 
-  const { data: enrollments, loading: enrollmentsLoading } = useCollection<Enrollment>(enrollmentsQuery);
+  React.useEffect(() => {
+    if (!user) return;
+
+    const fetchEnrollments = async () => {
+      try {
+        const res = await fetch(`/api/enrollments?userId=${user.uid}`);
+        const data = await res.json();
+        setEnrollments(data);
+      } catch (error) {
+        console.error('Error fetching enrollments:', error);
+      } finally {
+        setEnrollmentsLoading(false);
+      }
+    };
+
+    fetchEnrollments();
+  }, [user]);
 
   const loading = userLoading || enrollmentsLoading;
 
@@ -36,7 +45,7 @@ function MyCoursesPage() {
           <p className="text-muted-foreground">Continue your learning journey.</p>
         </div>
         <Button asChild>
-            <Link href="/courses">Browse All Courses</Link>
+          <Link href="/courses">Browse All Courses</Link>
         </Button>
       </div>
 

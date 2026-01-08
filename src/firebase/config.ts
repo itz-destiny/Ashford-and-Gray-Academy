@@ -3,10 +3,10 @@
 // in the browser and are necessary for the Firebase SDKs to work.
 
 export const firebaseConfig = {
-  apiKey: "AIzaSyCQfPxc9CTdPeiV8MA7ZB3na3RvSpu2w9o",
-  authDomain: "studio-6301887284-1e730.firebaseapp.com",
-  projectId: "studio-6301887284-1e730",
-  storageBucket: "studio-6301887284-1e730.firebasestorage.app",
-  messagingSenderId: "442078159048",
-  appId: "1:442078159048:web:675216b748ac20d0c305fd"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 };

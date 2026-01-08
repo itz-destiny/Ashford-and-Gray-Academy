@@ -3,7 +3,7 @@ import type { Course, AppEvent } from './types';
 
 // This data is now used for seeding the database, not for direct display.
 export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
-    {
+  {
     title: 'Protocol and Crown Control Training Etiquette',
     description: 'Master the art of etiquette for formal and professional settings.',
     category: 'Hospitality',
@@ -14,7 +14,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     level: 'All Levels',
     price: 150,
     originalPrice: 200,
-    imageUrl: 'https://picsum.photos/seed/course1/600/400',
+    imageUrl: '/course1.jpeg',
     imageHint: 'formal dining setup',
   },
   {
@@ -28,7 +28,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     level: 'Beginner',
     price: 99,
     originalPrice: 149,
-    imageUrl: 'https://picsum.photos/seed/course2/600/400',
+    imageUrl: '/course2.jpeg',
     imageHint: 'cleaning supplies',
   },
   {
@@ -42,7 +42,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     level: 'Intermediate',
     price: 220,
     originalPrice: 280,
-    imageUrl: 'https://picsum.photos/seed/course3/600/400',
+    imageUrl: '/course3.jpeg',
     imageHint: 'ledger and calculator',
   },
   {
@@ -56,7 +56,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     level: 'Advanced',
     price: 350,
     originalPrice: 420,
-    imageUrl: 'https://picsum.photos/seed/course4/600/400',
+    imageUrl: '/course4.jpeg',
     imageHint: 'fine dining restaurant',
   },
   {
@@ -69,7 +69,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     duration: 10,
     level: 'Intermediate',
     price: 180,
-    imageUrl: 'https://picsum.photos/seed/course5/600/400',
+    imageUrl: '/course5.jpeg',
     imageHint: 'hotel room cleaning',
   },
   {
@@ -83,10 +83,10 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     level: 'Advanced',
     price: 250,
     originalPrice: 300,
-    imageUrl: 'https://picsum.photos/seed/course6/600/400',
+    imageUrl: '/course6.jpeg',
     imageHint: 'industrial cleaning machine',
   },
-   {
+  {
     title: 'Customer Service Excellence',
     category: 'Business',
     description: 'Develop key skills for providing outstanding customer service.',
@@ -96,7 +96,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     duration: 4,
     level: 'Beginner',
     price: 120,
-    imageUrl: 'https://picsum.photos/seed/course7/600/400',
+    imageUrl: '/course7.jpeg',
     imageHint: 'customer service representative',
   },
 ];
@@ -109,7 +109,7 @@ export const eventsToSeed: Omit<AppEvent, 'id'>[] = [
     date: '2024-11-15',
     location: 'Virtual',
     price: 150,
-    imageUrl: 'https://picsum.photos/seed/course1/600/300',
+    imageUrl: '/course1.jpeg',
     imageHint: 'formal dining setup',
     organizer: 'Etiquette Experts'
   },
@@ -119,7 +119,7 @@ export const eventsToSeed: Omit<AppEvent, 'id'>[] = [
     date: '2024-12-02',
     location: 'New York, NY',
     price: 99,
-    imageUrl: 'https://picsum.photos/seed/course2/600/300',
+    imageUrl: '/course2.jpeg',
     imageHint: 'cleaning supplies',
     organizer: 'CleanCo'
   },
@@ -129,7 +129,7 @@ export const eventsToSeed: Omit<AppEvent, 'id'>[] = [
     date: '2024-11-20',
     location: 'Online',
     price: 220,
-    imageUrl: 'https://picsum.photos/seed/course3/600/300',
+    imageUrl: '/course3.jpeg',
     imageHint: 'ledger and calculator',
     organizer: 'Biz Solutions'
   },
@@ -139,7 +139,7 @@ export const eventsToSeed: Omit<AppEvent, 'id'>[] = [
     date: '2024-12-10',
     location: 'San Francisco, CA',
     price: 350,
-    imageUrl: 'https://picsum.photos/seed/course4/600/300',
+    imageUrl: '/course4.jpeg',
     imageHint: 'fine dining restaurant',
     organizer: 'Hospitality Masters'
   },
@@ -177,16 +177,16 @@ export const mockUser = {
 };
 
 export const mockResources = [
-    { id: '1', title: 'Quantum Mechanics 101', type: 'PDF', course: 'Physics 101', dateAdded: '2023-10-15' },
-    { id: '2', title: 'Intro to UX Design', type: 'Video', course: 'UX Design', dateAdded: '2023-10-12' },
-    { id: '3', title: 'Data Structures Cheatsheet', type: 'PDF', course: 'Data Science', dateAdded: '2023-10-10' },
-    { id: '4', title: 'Bauhaus Movement', type: 'Slides', course: 'Design History', dateAdded: '2023-10-08' },
+  { id: '1', title: 'Quantum Mechanics 101', type: 'PDF', course: 'Physics 101', dateAdded: '2023-10-15' },
+  { id: '2', title: 'Intro to UX Design', type: 'Video', course: 'UX Design', dateAdded: '2023-10-12' },
+  { id: '3', title: 'Data Structures Cheatsheet', type: 'PDF', course: 'Data Science', dateAdded: '2023-10-10' },
+  { id: '4', title: 'Bauhaus Movement', type: 'Slides', course: 'Design History', dateAdded: '2023-10-08' },
 ];
 
 export const mockEvents = [
-    { id: '1', title: 'Physics 101 Live', course: 'Quantum Physics', startTime: '10:00 AM', type: 'Live Class' },
-    { id: '2', title: 'Python Quiz 2 Due', course: 'Data Science', startTime: '11:59 PM', type: 'Quiz Due' },
-    { id: '3', title: 'Bauhaus Essay Due', course: 'Design History', startTime: '11:59 PM', type: 'Assignment' },
+  { id: '1', title: 'Physics 101 Live', course: 'Quantum Physics', startTime: '10:00 AM', type: 'Live Class' },
+  { id: '2', title: 'Python Quiz 2 Due', course: 'Data Science', startTime: '11:59 PM', type: 'Quiz Due' },
+  { id: '3', title: 'Bauhaus Essay Due', course: 'Design History', startTime: '11:59 PM', type: 'Assignment' },
 ]
 
 export const mockCourses = [
@@ -194,8 +194,8 @@ export const mockCourses = [
 ]
 
 export const mockAssignments = [
-    { id: '1', course: 'Design History', title: 'Essay: Evolution of Bauhaus', dueDate: 'Tomorrow' },
-    { id: '2', course: 'Data Science', title: 'Python Quiz 2', dueDate: 'In 3 days' },
+  { id: '1', course: 'Design History', title: 'Essay: Evolution of Bauhaus', dueDate: 'Tomorrow' },
+  { id: '2', course: 'Data Science', title: 'Python Quiz 2', dueDate: 'In 3 days' },
 ];
 
 
@@ -206,9 +206,8 @@ export const mockRecentEnrollments = [
 ];
 
 export const mockInstructorMessages: any[] = [
-    { id: '1', student: { name: 'Maria Garcia', avatarUrl: 'https://picsum.photos/seed/s4/100' }, message: 'I have a question about the final project deadline.', time: '2h ago' },
-    { id: '2', student: { name: 'David Lee', avatarUrl: 'https://picsum.photos/seed/s5/100' }, message: 'Could you clarify the lecture notes from yesterday?', time: '5h ago' },
-    { id: '3', student: { name: 'Sophia Chen', avatarUrl: 'https://picsum.photos/seed/s6/100' }, message: 'Thank you for the extension!', time: '1d ago' },
+  { id: '1', student: { name: 'Maria Garcia', avatarUrl: 'https://picsum.photos/seed/s4/100' }, message: 'I have a question about the final project deadline.', time: '2h ago' },
+  { id: '2', student: { name: 'David Lee', avatarUrl: 'https://picsum.photos/seed/s5/100' }, message: 'Could you clarify the lecture notes from yesterday?', time: '5h ago' },
+  { id: '3', student: { name: 'Sophia Chen', avatarUrl: 'https://picsum.photos/seed/s6/100' }, message: 'Thank you for the extension!', time: '1d ago' },
 ];
 
-    

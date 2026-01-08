@@ -2,8 +2,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useFirestore } from '@/firebase';
-import { collection, getDocs, writeBatch, doc } from 'firebase/firestore';
 import { coursesToSeed, eventsToSeed } from '@/lib/data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,53 +9,27 @@ import { CheckCircle, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function SeedPage() {
-  const firestore = useFirestore();
   const [loading, setLoading] = useState(false);
   const [completed, setCompleted] = useState(false);
   const { toast } = useToast();
 
   const handleSeed = async () => {
-    if (!firestore) {
-        toast({
-            variant: "destructive",
-            title: "Error",
-            description: "Firestore is not available.",
-        });
-        return;
-    }
     setLoading(true);
     setCompleted(false);
 
     try {
-      // Forcibly seed courses
-      const coursesCollection = collection(firestore, 'courses');
-      const coursesBatch = writeBatch(firestore);
-      coursesToSeed.forEach(course => {
-        const docRef = doc(coursesCollection);
-        coursesBatch.set(docRef, course);
-      });
-      await coursesBatch.commit();
-      toast({ title: 'Success', description: `${coursesToSeed.length} courses have been added.` });
+      const res = await fetch('/api/seed');
+      const data = await res.json();
 
-      // Only seed events if the collection is empty to avoid duplicates
-      const eventsCollection = collection(firestore, 'events');
-      const eventsSnapshot = await getDocs(eventsCollection);
-      if (eventsSnapshot.empty) {
-         const eventsBatch = writeBatch(firestore);
-         eventsToSeed.forEach(event => {
-            const docRef = doc(eventsCollection);
-            eventsBatch.set(docRef, event);
-         });
-         await eventsBatch.commit();
-        toast({ title: 'Success', description: `${eventsToSeed.length} events have been added.` });
+      if (res.ok) {
+        toast({ title: 'Success', description: data.message });
+        setCompleted(true);
       } else {
-         toast({ title: 'Skipped', description: 'Events collection was not empty.' });
+        throw new Error(data.error || 'Failed to seed database');
       }
-      
-      setCompleted(true);
 
     } catch (error: any) {
-       toast({
+      toast({
         variant: "destructive",
         title: "Error seeding database",
         description: error.message,
@@ -83,11 +55,10 @@ export default function SeedPage() {
             {completed && !loading && <CheckCircle className="mr-2 h-4 w-4" />}
             {completed && !loading ? 'Seeding Complete' : (loading ? 'Seeding...' : 'Start Seeding')}
           </Button>
-           {completed && !loading && <p className="text-sm text-green-600 text-center">Your database has been populated. You can now visit the courses and events pages.</p>}
+          {completed && !loading && <p className="text-sm text-green-600 text-center">Your database has been populated. You can now visit the courses and events pages.</p>}
         </CardContent>
       </Card>
     </div>
   );
 }
 
-    

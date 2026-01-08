@@ -32,10 +32,8 @@ import Image from "next/image";
 import React, { useState, useMemo } from "react";
 import type { AppEvent } from "@/lib/types";
 import { useRouter, usePathname } from "next/navigation";
-import { useUser, useFirestore, useCollection } from "@/firebase";
+import { useUser } from "@/firebase";
 import { useToast } from "@/hooks/use-toast";
-import { collection, query } from "firebase/firestore";
-import { registerForEvent } from "@/firebase/firestore/registrations";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function EventsPage() {
@@ -43,15 +41,24 @@ export default function EventsPage() {
   const pathname = usePathname();
   const { user } = useUser();
   const { toast } = useToast();
-  const firestore = useFirestore();
+  const [appEvents, setAppEvents] = useState<AppEvent[]>([]);
+  const [eventsLoading, setEventsLoading] = useState(true);
 
-  const eventsQuery = useMemo(() => {
-    if (!firestore) return null;
-    return query(collection(firestore, "events"));
-  }, [firestore]);
+  React.useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const res = await fetch('/api/events');
+        const data = await res.json();
+        setAppEvents(data);
+      } catch (error) {
+        console.error('Error fetching events:', error);
+      } finally {
+        setEventsLoading(false);
+      }
+    };
+    fetchEvents();
+  }, []);
 
-  const { data: appEvents, loading: eventsLoading } = useCollection<AppEvent>(eventsQuery);
-    
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState("date");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -75,7 +82,7 @@ export default function EventsPage() {
         : [...prev, categoryId]
     );
   };
-  
+
   const handleLocationChange = (location: string) => {
     setSelectedLocations(prev =>
       prev.includes(location)
@@ -96,11 +103,28 @@ export default function EventsPage() {
     if (!user) {
       router.push(`/login?redirectUrl=${pathname}?dialog=${event.id}`);
     } else {
-      await registerForEvent(firestore, user.uid, event.id);
-      toast({
-        title: "Successfully Registered!",
-        description: `You have registered for "${event.title}".`,
-      });
+      try {
+        const res = await fetch('/api/registrations', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: user.uid, eventId: event.id }),
+        });
+
+        if (res.ok) {
+          toast({
+            title: "Successfully Registered!",
+            description: `You have registered for "${event.title}".`,
+          });
+        } else {
+          throw new Error('Failed to register');
+        }
+      } catch (error) {
+        toast({
+          variant: "destructive",
+          title: "Registration Error",
+          description: "There was a problem registering you for this event.",
+        });
+      }
     }
   };
 
@@ -116,14 +140,14 @@ export default function EventsPage() {
     if (!appEvents) return [];
     let filtered = appEvents.filter(event => {
       // Search query filter
-      const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                            event.organizer.toLowerCase().includes(searchQuery.toLowerCase());
-      
+      const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        event.organizer.toLowerCase().includes(searchQuery.toLowerCase());
+
       // Category filter
       const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(event.category);
 
       // Location filter
-      const matchesLocation = selectedLocations.length === 0 || 
+      const matchesLocation = selectedLocations.length === 0 ||
         (selectedLocations.includes('online') && (event.location.toLowerCase().includes('virtual') || event.location.toLowerCase().includes('online'))) ||
         (selectedLocations.includes('in-person') && !(event.location.toLowerCase().includes('virtual') || event.location.toLowerCase().includes('online')));
 
@@ -168,9 +192,9 @@ export default function EventsPage() {
             <div className="flex">
               <div className="relative flex-grow">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input 
-                  placeholder="Search events, topics, or organizers..." 
-                  className="h-14 pl-12 text-base" 
+                <Input
+                  placeholder="Search events, topics, or organizers..."
+                  className="h-14 pl-12 text-base"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -179,14 +203,14 @@ export default function EventsPage() {
             </div>
             <div className="mt-4 flex flex-wrap justify-center gap-2">
               {quickSearchCategories.map(cat => (
-                  <Button 
-                    key={cat} 
-                    variant={selectedCategories.includes(cat) ? "default" : "outline"} 
-                    className="rounded-full"
-                    onClick={() => handleCategoryChange(cat)}
-                  >
-                    {cat}
-                  </Button>
+                <Button
+                  key={cat}
+                  variant={selectedCategories.includes(cat) ? "default" : "outline"}
+                  className="rounded-full"
+                  onClick={() => handleCategoryChange(cat)}
+                >
+                  {cat}
+                </Button>
               ))}
             </div>
           </div>
@@ -202,8 +226,8 @@ export default function EventsPage() {
               <div className="space-y-3">
                 {filterCategories.map(cat => (
                   <div key={cat.id} className="flex items-center space-x-2">
-                    <Checkbox 
-                      id={cat.id} 
+                    <Checkbox
+                      id={cat.id}
                       checked={selectedCategories.includes(cat.id)}
                       onCheckedChange={() => handleCategoryChange(cat.id)}
                     />
@@ -215,57 +239,57 @@ export default function EventsPage() {
               </div>
             </CardContent>
           </Card>
-          
+
           {/* Location Filter */}
           <Card>
             <CardContent className="pt-6">
               <h3 className="text-lg font-semibold mb-4">Location</h3>
               <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="online" 
-                      checked={selectedLocations.includes('online')}
-                      onCheckedChange={() => handleLocationChange('online')}
-                    />
-                    <Label htmlFor="online" className="font-normal">Online / Virtual</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="in-person"
-                      checked={selectedLocations.includes('in-person')}
-                      onCheckedChange={() => handleLocationChange('in-person')}
-                    />
-                    <Label htmlFor="in-person" className="font-normal">In-person</Label>
-                  </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="online"
+                    checked={selectedLocations.includes('online')}
+                    onCheckedChange={() => handleLocationChange('online')}
+                  />
+                  <Label htmlFor="online" className="font-normal">Online / Virtual</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="in-person"
+                    checked={selectedLocations.includes('in-person')}
+                    onCheckedChange={() => handleLocationChange('in-person')}
+                  />
+                  <Label htmlFor="in-person" className="font-normal">In-person</Label>
+                </div>
               </div>
             </CardContent>
           </Card>
 
-           {/* Price Filter */}
-           <Card>
+          {/* Price Filter */}
+          <Card>
             <CardContent className="pt-6">
               <h3 className="text-lg font-semibold mb-4">Price</h3>
               <div className="space-y-3">
-                 <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="free"
-                      checked={selectedPrices.includes('free')}
-                      onCheckedChange={() => handlePriceChange('free')}
-                    />
-                    <Label htmlFor="free" className="font-normal">Free</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="paid"
-                      checked={selectedPrices.includes('paid')}
-                      onCheckedChange={() => handlePriceChange('paid')}
-                    />
-                    <Label htmlFor="paid" className="font-normal">Paid</Label>
-                  </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="free"
+                    checked={selectedPrices.includes('free')}
+                    onCheckedChange={() => handlePriceChange('free')}
+                  />
+                  <Label htmlFor="free" className="font-normal">Free</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="paid"
+                    checked={selectedPrices.includes('paid')}
+                    onCheckedChange={() => handlePriceChange('paid')}
+                  />
+                  <Label htmlFor="paid" className="font-normal">Paid</Label>
+                </div>
               </div>
             </CardContent>
           </Card>
-          
+
           <Button variant="outline" className="w-full" onClick={clearAllFilters}>Clear All Filters</Button>
         </aside>
 
@@ -291,21 +315,21 @@ export default function EventsPage() {
           </div>
 
           <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2">
-             {eventsLoading ? (
-                Array.from({ length: 4 }).map((_, index) => (
-                    <Card key={index}>
-                    <Skeleton className="h-48 w-full" />
-                    <CardContent className="pt-4 space-y-2">
-                        <Skeleton className="h-5 w-3/4" />
-                        <Skeleton className="h-4 w-1/2" />
-                        <Skeleton className="h-4 w-1/3" />
-                    </CardContent>
-                    </Card>
-                ))
+            {eventsLoading ? (
+              Array.from({ length: 4 }).map((_, index) => (
+                <Card key={index}>
+                  <Skeleton className="h-48 w-full" />
+                  <CardContent className="pt-4 space-y-2">
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-4 w-1/2" />
+                    <Skeleton className="h-4 w-1/3" />
+                  </CardContent>
+                </Card>
+              ))
             ) : filteredAndSortedEvents.map((event) => (
               <Dialog key={event.id}>
                 <DialogTrigger asChild>
-                  <Card className="flex flex-col overflow-hidden group cursor-pointer">
+                  <Card className="flex flex-col overflow-hidden group cursor-pointer motion-safe:animate-fade-in-up">
                     <div className="relative">
                       <Image
                         src={event.imageUrl}
@@ -320,7 +344,7 @@ export default function EventsPage() {
                     <CardContent className="flex-grow pt-4 flex flex-col">
                       <h3 className="font-bold text-xl leading-tight group-hover:text-primary transition-colors">{event.title}</h3>
                       <p className="text-sm text-muted-foreground mt-1">by {event.organizer}</p>
-                      
+
                       <div className="flex items-center gap-4 mt-4 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1.5">
                           <Calendar className="w-4 h-4" />
@@ -334,7 +358,7 @@ export default function EventsPage() {
 
                       <div className="mt-4 pt-4 border-t flex items-end justify-between flex-grow">
                         <div>
-                            <p className="text-2xl font-bold">{event.price ? `$${event.price}` : 'Free'}</p>
+                          <p className="text-2xl font-bold">{event.price ? `$${event.price}` : 'Free'}</p>
                         </div>
                         <Button variant="outline" className="pointer-events-none">Details</Button>
                       </div>
@@ -342,7 +366,7 @@ export default function EventsPage() {
                   </Card>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-3xl">
-                   <div className="grid md:grid-cols-2 gap-8">
+                  <div className="grid md:grid-cols-2 gap-8">
                     <div>
                       <Image
                         src={event.imageUrl}
@@ -364,16 +388,16 @@ export default function EventsPage() {
 
                       <div className="mt-4 space-y-3 text-sm">
                         <div className="flex items-center gap-2">
-                           <Calendar className="w-4 h-4 text-muted-foreground"/> 
-                           <span className="font-semibold">{format(new Date(event.date), 'EEEE, MMMM d, yyyy')}</span>
+                          <Calendar className="w-4 h-4 text-muted-foreground" />
+                          <span className="font-semibold">{format(new Date(event.date), 'EEEE, MMMM d, yyyy')}</span>
                         </div>
-                         <div className="flex items-center gap-2">
-                           <MapPin className="w-4 h-4 text-muted-foreground"/> 
-                           <span className="font-semibold">{event.location}</span>
+                        <div className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4 text-muted-foreground" />
+                          <span className="font-semibold">{event.location}</span>
                         </div>
-                         <div className="flex items-center gap-2">
-                           <Users className="w-4 h-4 text-muted-foreground"/> 
-                           <span>Organized by <span className="font-semibold">{event.organizer}</span></span>
+                        <div className="flex items-center gap-2">
+                          <Users className="w-4 h-4 text-muted-foreground" />
+                          <span>Organized by <span className="font-semibold">{event.organizer}</span></span>
                         </div>
                       </div>
 
@@ -399,11 +423,11 @@ export default function EventsPage() {
         </main>
       </div>
 
-       <section className="py-16 bg-primary/10">
+      <section className="py-16 bg-primary/10">
         <div className="container text-center">
-            <h2 className="text-3xl font-bold font-headline">Host Your Own Event</h2>
-            <p className="mt-2 text-muted-foreground max-w-xl mx-auto">Our platform provides all the tools you need to create, manage, and promote your events seamlessly. Reach a wider audience and manage registrations with ease.</p>
-            <Button size="lg" className="mt-6">Become an Organizer</Button>
+          <h2 className="text-3xl font-bold font-headline">Host Your Own Event</h2>
+          <p className="mt-2 text-muted-foreground max-w-xl mx-auto">Our platform provides all the tools you need to create, manage, and promote your events seamlessly. Reach a wider audience and manage registrations with ease.</p>
+          <Button size="lg" className="mt-6">Become an Organizer</Button>
         </div>
       </section>
     </div>

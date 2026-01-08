@@ -43,7 +43,7 @@ export default function PublicLayout({
                 <li><Link href="/events" className="text-primary-foreground/70 hover:text-primary-foreground">Events</Link></li>
                 <li><Link href="/about" className="text-primary-foreground/70 hover:text-primary-foreground">About Us</Link></li>
                 <li><Link href="#" className="text-primary-foreground/70 hover:text-primary-foreground">Blog</Link></li>
-                 <li><Link href="/seed" className="flex items-center text-primary-foreground/70 hover:text-primary-foreground"><Database className="mr-2 h-4 w-4" />Seed Data</Link></li>
+                <li><Link href="/seed" className="flex items-center text-primary-foreground/70 hover:text-primary-foreground"><Database className="mr-2 h-4 w-4" />Seed Data</Link></li>
               </ul>
             </div>
             <div>
@@ -67,7 +67,7 @@ export default function PublicLayout({
             </div>
           </div>
           <div className="mt-8 border-t border-primary-foreground/20 pt-8 text-center text-sm text-primary-foreground/70">
-            <p>&copy; {new Date().getFullYear()} Ashford & Gray. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} Ashford & Gray Fusion Academy. All rights reserved.</p>
           </div>
         </div>
       </footer>
@@ -75,4 +75,3 @@ export default function PublicLayout({
   );
 }
 
-    

@@ -41,13 +41,12 @@ export default function DashboardLayout({
     { href: "/messages", label: "Messages", icon: MessageSquare },
     { href: "/resources", label: "Resources", icon: FileText },
     { href: "/schedule", label: "Schedule", icon: Clock },
-    { href: "/live-classes", label: "AI Review", icon: Sparkles },
   ];
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
-       <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 sm:px-6">
-        <Link href="/dashboard">
+      <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 sm:px-6">
+        <Link href="/dashboard" className="flex items-center gap-2">
           <Logo />
         </Link>
         <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6 ml-10">
@@ -80,7 +79,7 @@ export default function DashboardLayout({
               <Link href="/dashboard" className="flex items-center gap-2 text-lg font-semibold">
                 <Logo />
               </Link>
-               {navItems.map((item) => (
+              {navItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
@@ -106,7 +105,7 @@ export default function DashboardLayout({
               />
             </div>
           </form>
-           <Button variant="ghost" size="icon" className="rounded-full">
+          <Button variant="ghost" size="icon" className="rounded-full">
             <Bell className="h-5 w-5" />
             <span className="sr-only">Toggle notifications</span>
           </Button>
@@ -125,4 +124,4 @@ export default function DashboardLayout({
     </div>
   );
 }
-    
+

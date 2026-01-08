@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,8 +19,82 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useUser } from "@/firebase/auth/use-user";
+import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function SettingsPage() {
+  const { user, loading: userLoading } = useUser();
+  const { toast } = useToast();
+  const [saving, setSaving] = useState(false);
+
+  const [formData, setFormData] = useState({
+    displayName: "",
+    email: "",
+    bio: "",
+    school: "",
+    title: "", // For instructors/admins often used as "Job Title"
+    organization: ""
+  });
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        displayName: user.displayName || "",
+        email: user.email || "",
+        bio: (user as any).bio || "",
+        school: (user as any).school || "",
+        title: (user as any).title || "",
+        organization: (user as any).organization || ""
+      });
+    }
+  }, [user]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({ ...prev, [id]: value }));
+  };
+
+  const handleSaveProfile = async () => {
+    if (!user) return;
+    setSaving(true);
+    try {
+      const res = await fetch('/api/users', {
+        method: 'POST', // Using POST as upsert/update based on our API design
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          uid: user.uid,
+          email: formData.email,
+          displayName: formData.displayName,
+          bio: formData.bio,
+          school: formData.school,
+          title: formData.title,
+          organization: formData.organization
+        })
+      });
+
+      if (!res.ok) throw new Error("Failed to update profile");
+
+      toast({
+        title: "Success",
+        description: "Profile updated successfully.",
+      });
+    } catch (error) {
+      console.error(error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Could not save changes.",
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (userLoading) {
+    return <div className="flex justify-center p-8"><Loader2 className="animate-spin h-8 w-8 text-indigo-600" /></div>;
+  }
+
   return (
     <Tabs defaultValue="profile" className="w-full">
       <TabsList className="grid w-full grid-cols-4">
@@ -37,20 +114,34 @@ export default function SettingsPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
-              <Input id="name" defaultValue="Alex Johnson" />
+              <Label htmlFor="displayName">Name</Label>
+              <Input id="displayName" value={formData.displayName} onChange={handleInputChange} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" defaultValue="alex.johnson@example.com" />
+              <Input id="email" type="email" value={formData.email} disabled className="bg-slate-100 cursor-not-allowed" />
+              <p className="text-[0.8rem] text-muted-foreground">Email cannot be changed.</p>
             </div>
-             <div className="space-y-2">
+            <div className="space-y-2">
               <Label htmlFor="bio">Bio</Label>
-              <Input id="bio" defaultValue="Lifelong learner and aspiring web developer." />
+              <Input id="bio" value={formData.bio} onChange={handleInputChange} placeholder="Tell us about yourself" />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="school">School / University</Label>
+                <Input id="school" value={formData.school} onChange={handleInputChange} placeholder="Ex: Harvard University" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="organization">Organization</Label>
+                <Input id="organization" value={formData.organization} onChange={handleInputChange} placeholder="Ex: Ashford & Gray" />
+              </div>
             </div>
           </CardContent>
           <CardFooter>
-            <Button>Save Changes</Button>
+            <Button onClick={handleSaveProfile} disabled={saving}>
+              {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Save Changes
+            </Button>
           </CardFooter>
         </Card>
       </TabsContent>
@@ -95,7 +186,7 @@ export default function SettingsPage() {
                 Platform Announcements
               </label>
             </div>
-             <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2">
               <Checkbox id="new-courses" defaultChecked />
               <label htmlFor="new-courses" className="text-sm font-medium leading-none">
                 New Course Alerts
@@ -124,13 +215,13 @@ export default function SettingsPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <Card>
-                <CardHeader className="flex-row justify-between items-center">
-                    <CardTitle className="text-base">Visa ending in 4242</CardTitle>
-                    <Button variant="outline" size="sm">Remove</Button>
-                </CardHeader>
-                <CardContent>
-                    <p className="text-sm text-muted-foreground">Expires 12/2026</p>
-                </CardContent>
+              <CardHeader className="flex-row justify-between items-center">
+                <CardTitle className="text-base">Visa ending in 4242</CardTitle>
+                <Button variant="outline" size="sm">Remove</Button>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">Expires 12/2026</p>
+              </CardContent>
             </Card>
             <Button variant="secondary">Add New Payment Method</Button>
           </CardContent>

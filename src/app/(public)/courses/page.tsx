@@ -34,10 +34,8 @@ import Image from "next/image";
 import React, { useState, useMemo } from "react";
 import type { Course } from "@/lib/types";
 import { useRouter, usePathname } from "next/navigation";
-import { useUser, useFirestore, useCollection } from "@/firebase";
+import { useUser } from "@/firebase";
 import { useToast } from "@/hooks/use-toast";
-import { enrollInCourse } from "@/firebase/firestore/enrollments";
-import { collection, query, where } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function CoursesPage() {
@@ -45,14 +43,23 @@ export default function CoursesPage() {
   const pathname = usePathname();
   const { user } = useUser();
   const { toast } = useToast();
-  const firestore = useFirestore();
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [coursesLoading, setCoursesLoading] = useState(true);
 
-  const coursesQuery = useMemo(() => {
-    if (!firestore) return null;
-    return query(collection(firestore, "courses"));
-  }, [firestore]);
-
-  const { data: courses, loading: coursesLoading } = useCollection<Course>(coursesQuery);
+  React.useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const res = await fetch('/api/courses');
+        const data = await res.json();
+        setCourses(data);
+      } catch (error) {
+        console.error('Error fetching courses:', error);
+      } finally {
+        setCoursesLoading(false);
+      }
+    };
+    fetchCourses();
+  }, []);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState("popular");
@@ -71,15 +78,14 @@ export default function CoursesPage() {
       stars.push(
         <Star
           key={i}
-          className={`w-4 h-4 ${
-            i <= Math.floor(rating) ? "text-yellow-500 fill-yellow-500" : "text-gray-300"
-          }`}
+          className={`w-4 h-4 ${i <= Math.floor(rating) ? "text-yellow-500 fill-yellow-500" : "text-gray-300"
+            }`}
         />
       );
     }
     return stars;
   };
-  
+
   const filterCategories = [
     { id: 'Hospitality', label: 'Hospitality', icon: Handshake },
     { id: 'Facilities Management', label: 'Facilities Management', icon: Wrench },
@@ -93,25 +99,25 @@ export default function CoursesPage() {
   ];
 
   const handleCategoryChange = (categoryId: string) => {
-    setSelectedCategories(prev => 
-      prev.includes(categoryId) 
-        ? prev.filter(c => c !== categoryId) 
+    setSelectedCategories(prev =>
+      prev.includes(categoryId)
+        ? prev.filter(c => c !== categoryId)
         : [...prev, categoryId]
     );
   };
-  
+
   const handleDurationChange = (duration: string) => {
-    setSelectedDurations(prev => 
-      prev.includes(duration) 
-        ? prev.filter(d => d !== duration) 
+    setSelectedDurations(prev =>
+      prev.includes(duration)
+        ? prev.filter(d => d !== duration)
         : [...prev, duration]
     );
   };
 
   const handleRatingChange = (rating: number) => {
-    setSelectedRatings(prev => 
-      prev.includes(rating) 
-        ? prev.filter(r => r !== rating) 
+    setSelectedRatings(prev =>
+      prev.includes(rating)
+        ? prev.filter(r => r !== rating)
         : [...prev, rating]
     );
   };
@@ -120,11 +126,28 @@ export default function CoursesPage() {
     if (!user) {
       router.push(`/login?redirectUrl=${pathname}?dialog=${course.id}`);
     } else {
-      await enrollInCourse(firestore, user.uid, course.id);
-      toast({
-        title: "Successfully Enrolled!",
-        description: `You have been enrolled in "${course.title}".`,
-      });
+      try {
+        const res = await fetch('/api/enrollments', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: user.uid, courseId: course.id }),
+        });
+
+        if (res.ok) {
+          toast({
+            title: "Successfully Enrolled!",
+            description: `You have been enrolled in "${course.title}".`,
+          });
+        } else {
+          throw new Error('Failed to enroll');
+        }
+      } catch (error) {
+        toast({
+          variant: "destructive",
+          title: "Enrollment Error",
+          description: "There was a problem enrolling you in this course.",
+        });
+      }
     }
   };
 
@@ -137,15 +160,15 @@ export default function CoursesPage() {
     setPriceRange([500]);
     setSelectedRatings([]);
   };
-  
+
   const filteredAndSortedCourses = useMemo(() => {
     if (!courses) return [];
 
     let filtered = courses.filter(course => {
       // Search query filter
-      const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                            (course.instructor && course.instructor.name.toLowerCase().includes(searchQuery.toLowerCase()));
-      
+      const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (course.instructor && course.instructor.name.toLowerCase().includes(searchQuery.toLowerCase()));
+
       // Category filter
       const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(course.category);
 
@@ -212,9 +235,9 @@ export default function CoursesPage() {
             <div className="flex">
               <div className="relative flex-grow">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input 
-                  placeholder="Search courses, topics, or instructors..." 
-                  className="h-14 pl-12 text-base" 
+                <Input
+                  placeholder="Search courses, topics, or instructors..."
+                  className="h-14 pl-12 text-base"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -222,16 +245,16 @@ export default function CoursesPage() {
               <Button size="lg" className="h-14 rounded-l-none">Search</Button>
             </div>
             <div className="mt-4 flex flex-wrap justify-center gap-2">
-                {quickSearchCategories.map(cat => (
-                    <Button 
-                      key={cat} 
-                      variant={selectedCategories.includes(cat) ? "default" : "outline"} 
-                      className="rounded-full"
-                      onClick={() => handleCategoryChange(cat)}
-                    >
-                      {cat}
-                    </Button>
-                ))}
+              {quickSearchCategories.map(cat => (
+                <Button
+                  key={cat}
+                  variant={selectedCategories.includes(cat) ? "default" : "outline"}
+                  className="rounded-full"
+                  onClick={() => handleCategoryChange(cat)}
+                >
+                  {cat}
+                </Button>
+              ))}
             </div>
           </div>
         </div>
@@ -246,8 +269,8 @@ export default function CoursesPage() {
               <div className="space-y-3">
                 {filterCategories.map(cat => (
                   <div key={cat.id} className="flex items-center space-x-2">
-                    <Checkbox 
-                      id={cat.id} 
+                    <Checkbox
+                      id={cat.id}
                       checked={selectedCategories.includes(cat.id)}
                       onCheckedChange={() => handleCategoryChange(cat.id)}
                     />
@@ -260,7 +283,7 @@ export default function CoursesPage() {
               </div>
             </CardContent>
           </Card>
-          
+
           {/* Difficulty Level Filter */}
           <Card>
             <CardContent className="pt-6">
@@ -288,21 +311,21 @@ export default function CoursesPage() {
             </CardContent>
           </Card>
 
-           {/* Duration Filter */}
-           <Card>
+          {/* Duration Filter */}
+          <Card>
             <CardContent className="pt-6">
               <h3 className="text-lg font-semibold mb-4">Duration</h3>
               <div className="space-y-3">
-                 {durationFilters.map(d => (
-                    <div key={d.id} className="flex items-center space-x-2">
-                      <Checkbox 
-                        id={d.id} 
-                        checked={selectedDurations.includes(d.id)}
-                        onCheckedChange={() => handleDurationChange(d.id)}
-                      />
-                      <Label htmlFor={d.id} className="font-normal">{d.label}</Label>
-                    </div>
-                  ))}
+                {durationFilters.map(d => (
+                  <div key={d.id} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={d.id}
+                      checked={selectedDurations.includes(d.id)}
+                      onCheckedChange={() => handleDurationChange(d.id)}
+                    />
+                    <Label htmlFor={d.id} className="font-normal">{d.label}</Label>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
@@ -311,11 +334,11 @@ export default function CoursesPage() {
           <Card>
             <CardContent className="pt-6">
               <h3 className="text-lg font-semibold mb-4">Price Range</h3>
-              <Slider 
-                value={priceRange} 
-                onValueChange={setPriceRange} 
-                max={500} 
-                step={10} 
+              <Slider
+                value={priceRange}
+                onValueChange={setPriceRange}
+                max={500}
+                step={10}
               />
               <div className="flex justify-between text-sm text-muted-foreground mt-2">
                 <span>$0</span>
@@ -331,8 +354,8 @@ export default function CoursesPage() {
               <div className="space-y-3">
                 {[4, 3, 2].map(rating => (
                   <div key={rating} className="flex items-center space-x-2">
-                    <Checkbox 
-                      id={`rating-${rating}`} 
+                    <Checkbox
+                      id={`rating-${rating}`}
                       checked={selectedRatings.includes(rating)}
                       onCheckedChange={() => handleRatingChange(rating)}
                     />
@@ -345,7 +368,7 @@ export default function CoursesPage() {
               </div>
             </CardContent>
           </Card>
-          
+
           <Button variant="outline" className="w-full" onClick={clearAllFilters}>Clear All Filters</Button>
         </aside>
 
@@ -383,9 +406,9 @@ export default function CoursesPage() {
                 </Card>
               ))
             ) : filteredAndSortedCourses.map((course) => (
-               <Dialog key={course.id}>
+              <Dialog key={course.id}>
                 <DialogTrigger asChild>
-                  <Card className="flex flex-col overflow-hidden group cursor-pointer">
+                  <Card className="flex flex-col overflow-hidden group hover:shadow-lg transition-shadow duration-300 motion-safe:animate-fade-in-up">
                     <div className="relative">
                       <Image
                         src={course.imageUrl}
@@ -401,8 +424,8 @@ export default function CoursesPage() {
                       <h3 className="font-bold text-lg leading-tight group-hover:text-primary transition-colors">{course.title}</h3>
                       <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
                         <Avatar className="h-6 w-6">
-                            <AvatarImage src={course.instructor.avatarUrl} />
-                            <AvatarFallback>{getInitials(course.instructor.name)}</AvatarFallback>
+                          <AvatarImage src={course.instructor.avatarUrl} />
+                          <AvatarFallback>{getInitials(course.instructor.name)}</AvatarFallback>
                         </Avatar>
                         <span>{course.instructor.name}</span>
                         {course.instructor.verified && <CheckCircle className="w-4 h-4 text-blue-500" />}
@@ -413,7 +436,7 @@ export default function CoursesPage() {
                         <div className="flex">{renderStars(course.rating)}</div>
                         <span className="text-sm text-muted-foreground">({course.reviews})</span>
                       </div>
-                      
+
                       <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1.5">
                           <BookOpen className="w-4 h-4" />
@@ -427,8 +450,8 @@ export default function CoursesPage() {
 
                       <div className="mt-4 pt-4 border-t flex items-end justify-between flex-grow">
                         <div>
-                            <p className="text-2xl font-bold">${course.price}</p>
-                            {course.originalPrice && <p className="text-sm text-muted-foreground line-through">${course.originalPrice}</p>}
+                          <p className="text-2xl font-bold">${course.price}</p>
+                          {course.originalPrice && <p className="text-sm text-muted-foreground line-through">${course.originalPrice}</p>}
                         </div>
                         <Button variant="outline" className="pointer-events-none">Details</Button>
                       </div>
@@ -453,15 +476,15 @@ export default function CoursesPage() {
                         <DialogTitle className="text-3xl font-headline mt-2">{course.title}</DialogTitle>
                         <DialogDescription className="text-base">{course.description}</DialogDescription>
                       </DialogHeader>
-                      
+
                       <div className="flex items-center gap-2 mt-4 text-sm text-muted-foreground">
                         <Avatar className="h-8 w-8">
-                            <AvatarImage src={course.instructor.avatarUrl} />
-                            <AvatarFallback>{getInitials(course.instructor.name)}</AvatarFallback>
+                          <AvatarImage src={course.instructor.avatarUrl} />
+                          <AvatarFallback>{getInitials(course.instructor.name)}</AvatarFallback>
                         </Avatar>
                         <div>
                           <p>Taught by <span className="font-semibold text-foreground">{course.instructor.name}</span></p>
-                          {course.instructor.verified && <div className="flex items-center gap-1 text-xs text-blue-500"><CheckCircle className="w-3 h-3"/> Verified Instructor</div>}
+                          {course.instructor.verified && <div className="flex items-center gap-1 text-xs text-blue-500"><CheckCircle className="w-3 h-3" /> Verified Instructor</div>}
                         </div>
                       </div>
 
@@ -490,7 +513,7 @@ export default function CoursesPage() {
                 </DialogContent>
               </Dialog>
             ))}
-             {(filteredAndSortedCourses.length === 0 && !coursesLoading) && (
+            {(filteredAndSortedCourses.length === 0 && !coursesLoading) && (
               <div className="sm:col-span-2 xl:col-span-3 text-center py-16">
                 <h3 className="text-xl font-semibold">No Courses Found</h3>
                 <p className="text-muted-foreground mt-2">Try adjusting your filters to find what you're looking for.</p>
@@ -503,11 +526,11 @@ export default function CoursesPage() {
         </main>
       </div>
 
-       <section className="py-16 bg-primary/10">
+      <section className="py-16 bg-primary/10">
         <div className="container text-center">
-            <h2 className="text-3xl font-bold font-headline">Not sure where to start?</h2>
-            <p className="mt-2 text-muted-foreground max-w-xl mx-auto">Let us help you find the perfect course for your goals. Get personalized recommendations based on your interests and career aspirations.</p>
-            <Button size="lg" className="mt-6">Get Personalized Recommendations</Button>
+          <h2 className="text-3xl font-bold font-headline">Not sure where to start?</h2>
+          <p className="mt-2 text-muted-foreground max-w-xl mx-auto">Let us help you find the perfect course for your goals. Get personalized recommendations based on your interests and career aspirations.</p>
+          <Button size="lg" className="mt-6">Get Personalized Recommendations</Button>
         </div>
       </section>
     </div>

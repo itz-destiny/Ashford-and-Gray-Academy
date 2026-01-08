@@ -3,10 +3,9 @@
 
 import { useEffect, useState } from "react";
 import { onAuthStateChanged, type User } from "firebase/auth";
-import { doc, getDoc, onSnapshot } from "firebase/firestore";
 import { useRouter, usePathname } from 'next/navigation';
 
-import { useAuth, useFirestore } from "@/firebase/provider";
+import { useAuth } from "@/firebase/provider";
 
 export interface AppUser extends User {
   role?: string;
@@ -15,53 +14,60 @@ export interface AppUser extends User {
 
 export const useUser = () => {
   const auth = useAuth();
-  const firestore = useFirestore();
   const router = useRouter();
   const pathname = usePathname();
   const [user, setUser] = useState<AppUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!auth || !firestore) {
+    if (!auth) {
       return;
     }
-    const unsubscribeAuth = onAuthStateChanged(auth, (firebaseUser) => {
+    const unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        const userDocRef = doc(firestore, `users/${firebaseUser.uid}`);
-        
-        const unsubscribeSnapshot = onSnapshot(userDocRef, (doc) => {
-          if (doc.exists()) {
-            const userData = doc.data();
-            const appUser: AppUser = {
-              ...firebaseUser,
-              role: userData.role,
-              ...userData,
-            };
-            setUser(appUser);
+        try {
+          // Sync user to MongoDB
+          const res = await fetch('/api/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              uid: firebaseUser.uid,
+              email: firebaseUser.email,
+              displayName: firebaseUser.displayName,
+              photoURL: firebaseUser.photoURL
+            })
+          });
 
-            const isAuthPage = pathname.startsWith('/login');
-            if (isAuthPage) {
-               if (userData.role === 'instructor') {
-                router.push('/instructor');
-              } else {
-                router.push('/dashboard');
-              }
-            }
-
-          } else {
-            // Document doesn't exist yet, might be in the process of being created
-            // We set the basic user and wait for the document to be created.
-            setUser(firebaseUser as AppUser);
+          let userData = {};
+          if (res.ok) {
+            userData = await res.json();
           }
-          setLoading(false);
-        }, (error) => {
-          console.error("Error fetching user document:", error);
-          // Set basic user info even if Firestore doc fails
-          setUser(firebaseUser as AppUser);
-          setLoading(false);
-        });
 
-        return () => unsubscribeSnapshot();
+          const appUser: AppUser = {
+            ...firebaseUser,
+            ...userData,
+            role: (userData as any).role || 'student'
+          };
+
+          setUser(appUser);
+
+          const isAuthPage = pathname.startsWith('/login');
+          if (isAuthPage) {
+            if (appUser.role === 'instructor') {
+              router.push('/instructor');
+            } else if (appUser.role === 'admin') {
+              router.push('/admin');
+            } else {
+              router.push('/dashboard');
+            }
+          }
+
+        } catch (error) {
+          console.error("Error creating/fetching user:", error);
+          setUser(firebaseUser as AppUser);
+        } finally {
+          setLoading(false);
+        }
       } else {
         setUser(null);
         setLoading(false);
@@ -69,7 +75,7 @@ export const useUser = () => {
     });
 
     return () => unsubscribeAuth();
-  }, [auth, firestore, router, pathname]);
+  }, [auth, router, pathname]);
 
   return { user, loading };
 };
