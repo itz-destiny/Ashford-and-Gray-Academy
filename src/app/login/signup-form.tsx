@@ -100,22 +100,17 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
               <span>Account Created!</span>
             </div>
           ),
-          description: "Please log in with your new credentials.",
+          description: "Redirecting you to your dashboard...",
         });
 
         if (onSwitchToLogin) {
-          // Pass the redirectUrl to the login view
-          const url = new URL(window.location.href);
-          if (redirectUrl) {
-            url.searchParams.set('redirectUrl', redirectUrl);
-          } else {
-            url.searchParams.delete('redirectUrl');
-          }
-          url.searchParams.delete('view'); // switch to login view
-          // We don't use router.push here because onSwitchToLogin updates the state
-          // of the parent component, which re-renders the login form.
-          window.history.replaceState({}, '', url.toString());
-          onSwitchToLogin();
+          // If successful, the user is ALREADY logged in via Firebase.
+          // We should just redirect them to the correct page.
+          // Force a hard navigation or router push to ensure role is picked up.
+          const target = role === 'instructor' ? '/instructor' : '/dashboard';
+
+          // Using window.location to ensure a full refresh so useUser gets the fresh data
+          window.location.href = target;
         }
 
       } catch (err) {

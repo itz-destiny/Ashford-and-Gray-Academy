@@ -26,33 +26,30 @@ export const useUser = () => {
     const unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         try {
-          // Sync user to MongoDB
-          const res = await fetch('/api/users', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              uid: firebaseUser.uid,
-              email: firebaseUser.email,
-              displayName: firebaseUser.displayName,
-              photoURL: firebaseUser.photoURL
-            })
-          });
-
-          let userData = {};
-          if (res.ok) {
-            userData = await res.json();
+          // Fetch user profile from MongoDB
+          let userData: any = {};
+          try {
+            const res = await fetch(`/api/users?uid=${firebaseUser.uid}`);
+            if (res.ok) {
+              userData = await res.json();
+            }
+          } catch (err) {
+            console.error("Failed to fetch user profile", err);
           }
 
           const appUser: AppUser = {
             ...firebaseUser,
             ...userData,
-            role: (userData as any).role || 'student'
+            // Do NOT default to student if role is missing. 
+            // If missing, it means profile isn't synced yet (signup race condition).
+            role: userData.role
           };
 
           setUser(appUser);
 
           const isAuthPage = pathname.startsWith('/login');
-          if (isAuthPage) {
+          if (isAuthPage && appUser.role) {
+            // Only redirect if we effectively know the role
             if (appUser.role === 'instructor') {
               router.push('/instructor');
             } else if (appUser.role === 'admin') {
