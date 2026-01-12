@@ -35,7 +35,7 @@ export default function DashboardPage() {
       try {
         const res = await fetch(`/api/enrollments?userId=${user.uid}`);
         const data = await res.json();
-        setEnrollments(data);
+        setEnrollments(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Error fetching enrollments:', error);
       } finally {
@@ -47,7 +47,7 @@ export default function DashboardPage() {
       try {
         const res = await fetch(`/api/registrations?userId=${user.uid}`);
         const data = await res.json();
-        setRegistrations(data);
+        setRegistrations(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Error fetching registrations:', error);
       } finally {

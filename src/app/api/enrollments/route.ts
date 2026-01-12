@@ -7,19 +7,19 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
 
-    if (!userId) {
-        return NextResponse.json({ error: 'userId is required' }, { status: 400 });
-    }
+    // If no userId provided, it means we are fetching all (for admin)
+    // In a real app, verify admin role from session/token here
 
     try {
         await dbConnect();
-        const enrollments = await Enrollment.find({ userId }).populate('courseId').exec();
+        const query = userId ? { userId } : {};
+        const enrollments = await Enrollment.find(query).populate('courseId').exec();
 
-        // Map to match the previous structure if needed, or adjust frontend
+        // Map to match the previous structure
         const formattedEnrollments = enrollments.map(enr => ({
             id: enr._id,
             userId: enr.userId,
-            courseId: enr.courseId._id,
+            courseId: enr.courseId?._id,
             enrolledAt: enr.enrolledAt,
             course: enr.courseId, // This is populated
         }));

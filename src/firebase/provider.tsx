@@ -3,10 +3,12 @@
 import { createContext, useContext } from "react";
 import type { FirebaseApp } from "firebase/app";
 import type { Auth } from "firebase/auth";
+import type { FirebaseStorage } from "firebase/storage";
 
 export type FirebaseServices = {
   firebaseApp: FirebaseApp;
   auth: Auth;
+  storage: FirebaseStorage;
 };
 
 const FirebaseContext = createContext<FirebaseServices | null>(null);
@@ -32,3 +34,4 @@ export const useFirebase = () => {
 
 export const useFirebaseApp = () => useFirebase().firebaseApp;
 export const useAuth = () => useFirebase().auth;
+export const useStorage = () => useFirebase().storage;

@@ -46,8 +46,10 @@ export default function Home() {
       try {
         const res = await fetch('/api/courses');
         const data = await res.json();
-        setAllCourses(data);
-        setTrendingCourses(data.slice(0, 4));
+        if (Array.isArray(data)) {
+          setAllCourses(data);
+          setTrendingCourses(data.slice(0, 4));
+        }
       } catch (error) {
         console.error('Error fetching courses:', error);
       } finally {

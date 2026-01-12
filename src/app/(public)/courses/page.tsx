@@ -51,7 +51,7 @@ export default function CoursesPage() {
       try {
         const res = await fetch('/api/courses');
         const data = await res.json();
-        setCourses(data);
+        setCourses(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Error fetching courses:', error);
       } finally {

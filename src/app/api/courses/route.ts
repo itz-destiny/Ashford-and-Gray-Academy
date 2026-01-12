@@ -15,3 +15,13 @@ export async function GET() {
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
+export async function POST(request: Request) {
+    try {
+        await dbConnect();
+        const body = await request.json();
+        const course = await Course.create(body);
+        return NextResponse.json(course);
+    } catch (error: any) {
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+}

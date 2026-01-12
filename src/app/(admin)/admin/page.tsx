@@ -11,20 +11,41 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AlertTriangle, BookOpen, Calendar, CheckSquare, ChevronRight, Filter, MoreVertical, TrendingUp, UserPlus, Users, MessageSquare } from "lucide-react";
+import React from "react";
 import Image from "next/image";
 
 export default function AdminDashboardPage() {
-    const stats = [
-        { label: "Total Students", value: "2,543", icon: Users, sub: "+5% this week", subType: "success", bg: "bg-indigo-50", iconColor: "text-indigo-600" },
-        { label: "Active Courses", value: "124", icon: BookOpen, sub: "+2% this month", subType: "success", bg: "bg-blue-50", iconColor: "text-blue-600" },
-        { label: "Upcoming Events", value: "8", icon: Calendar, sub: "Same as last week", subType: "neutral", bg: "bg-purple-50", iconColor: "text-purple-600" },
-        { label: "Completion Rate", value: "87%", icon: CheckSquare, sub: "+1.5% increase", subType: "success", bg: "bg-emerald-50", iconColor: "text-emerald-600" },
-    ];
+    const [statsData, setStatsData] = React.useState({ students: 0, courses: 0, events: 0, completion: 87 });
+    const [recentEnrollments, setRecentEnrollments] = React.useState<any[]>([]);
 
-    const recentEnrollments = [
-        { id: 1, name: "Sarah Johnson", email: "sarah.j@example.com", course: "Advanced React Patterns", date: "Oct 24, 2023", status: "Active", avatar: "SJ" },
-        { id: 2, name: "Michael Chen", email: "m.chen@example.com", course: "Data Science Fundamentals", date: "Oct 23, 2023", status: "Pending", avatar: "MC" },
-        { id: 3, name: "Emily Davis", email: "emily.d@example.com", course: "UI/UX Design Principles", date: "Oct 22, 2023", status: "Active", avatar: "ED" },
+    React.useEffect(() => {
+        const fetchData = async () => {
+            const [uRes, cRes, eRes, enRes] = await Promise.all([
+                fetch('/api/users'),
+                fetch('/api/courses'),
+                fetch('/api/events'),
+                fetch('/api/enrollments')
+            ]);
+            const [users, courses, events, enrollments] = await Promise.all([
+                uRes.json(), cRes.json(), eRes.json(), enRes.json()
+            ]);
+
+            setStatsData({
+                students: Array.isArray(users) ? users.filter((u: any) => u.role === 'student').length : 0,
+                courses: Array.isArray(courses) ? courses.length : 0,
+                events: Array.isArray(events) ? events.length : 0,
+                completion: 87
+            });
+            setRecentEnrollments(Array.isArray(enrollments) ? enrollments.slice(0, 5) : []);
+        };
+        fetchData();
+    }, []);
+
+    const stats = [
+        { label: "Total Students", value: statsData.students.toLocaleString(), icon: Users, sub: "+5% this week", subType: "success", bg: "bg-indigo-50", iconColor: "text-indigo-600" },
+        { label: "Active Courses", value: statsData.courses.toString(), icon: BookOpen, sub: "+2% this month", subType: "success", bg: "bg-blue-50", iconColor: "text-blue-600" },
+        { label: "Upcoming Events", value: statsData.events.toString(), icon: Calendar, sub: "Same as last week", subType: "neutral", bg: "bg-purple-50", iconColor: "text-purple-600" },
+        { label: "Completion Rate", value: statsData.completion + "%", icon: CheckSquare, sub: "+1.5% increase", subType: "success", bg: "bg-emerald-50", iconColor: "text-emerald-600" },
     ];
 
     return (
@@ -127,24 +148,19 @@ export default function AdminDashboardPage() {
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">
                                                     <Avatar className="w-9 h-9 border border-slate-200">
-                                                        <AvatarImage src={`/avatar-${student.id}.png`} />
-                                                        <AvatarFallback className="bg-slate-100 text-slate-600 font-bold text-xs">{student.avatar}</AvatarFallback>
+                                                        <AvatarImage src={student.userId?.photoURL} />
+                                                        <AvatarFallback className="bg-slate-100 text-slate-600 font-bold text-xs">U</AvatarFallback>
                                                     </Avatar>
                                                     <div>
-                                                        <p className="font-semibold text-slate-900">{student.name}</p>
-                                                        <p className="text-xs text-slate-500">{student.email}</p>
+                                                        <p className="font-semibold text-slate-900">{student.userId}</p>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 text-slate-600 font-medium">{student.course}</td>
-                                            <td className="px-6 py-4 text-slate-500">{student.date}</td>
+                                            <td className="px-6 py-4 text-slate-600 font-medium">{student.course?.title}</td>
+                                            <td className="px-6 py-4 text-slate-500">{new Date(student.enrolledAt).toLocaleDateString()}</td>
                                             <td className="px-6 py-4">
-                                                <Badge variant="outline" className={
-                                                    student.status === 'Active'
-                                                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                                                        : "bg-amber-50 text-amber-700 border-amber-200"
-                                                }>
-                                                    {student.status}
+                                                <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
+                                                    Active
                                                 </Badge>
                                             </td>
                                             <td className="px-6 py-4 text-right">

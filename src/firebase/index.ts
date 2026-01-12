@@ -1,6 +1,7 @@
 
 import { initializeApp, getApp, getApps, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
+import { getStorage, type FirebaseStorage } from "firebase/storage";
 
 import { firebaseConfig } from "./config";
 
@@ -9,6 +10,7 @@ import { firebaseConfig } from "./config";
 export function initializeFirebase(): {
   firebaseApp: FirebaseApp;
   auth: Auth;
+  storage: FirebaseStorage;
 } {
   const appName = "default";
   let firebaseApp;
@@ -19,6 +21,7 @@ export function initializeFirebase(): {
   }
 
   const auth = getAuth(firebaseApp);
+  const storage = getStorage(firebaseApp);
   // This is a workaround for the "auth/unauthorized-domain" error
   // which can occur in some development environments.
   if (typeof window !== "undefined" && window.location.hostname === "localhost") {
@@ -31,7 +34,7 @@ export function initializeFirebase(): {
   }
 
 
-  return { firebaseApp, auth };
+  return { firebaseApp, auth, storage };
 }
 
 export {

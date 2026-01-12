@@ -11,38 +11,54 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ArrowLeft, ArrowRight, BarChart, BookOpen, Calendar, CheckSquare, GraduationCap, LineChart, Mail, MessageSquare, MoreHorizontal, Users, Video } from "lucide-react";
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useUser } from "@/firebase";
 
 export default function InstructorDashboardPage() {
-  const courses = [
-    {
-      id: "bio-101",
-      code: "BIO-101",
-      title: "Intro to Biology",
-      dept: "Science Dept.",
-      students: 45,
-      schedule: "Mon/Wed",
-      progress: 65,
-      imageUrl: "/course1.jpeg",
-      imageHint: "biology lab",
-    },
-    {
-      id: "chm-202",
-      code: "CHM-202",
-      title: "Organic Chemistry",
-      dept: "Science Dept.",
-      students: 32,
-      schedule: "Tue/Thu",
-      progress: 32,
-      imageUrl: "/course2.jpeg",
-      imageHint: "chemistry beaker",
-    }
-  ];
+  const { user } = useUser();
+  const [instructorCourses, setInstructorCourses] = React.useState<any[]>([]);
+  const [stats, setStats] = React.useState({ activeCourses: 0, enrollments: 0, assignments: 0, messages: 0 });
+  const [recentEnrollments, setRecentEnrollments] = React.useState<any[]>([]);
+  const [messages, setMessages] = React.useState<any[]>([]);
 
-  const recentMessages = [
-    { id: 1, name: "Sarah Jenkins", message: "Question about the assignment...", time: "2m ago", avatar: "SJ" },
-    { id: 2, name: "Mike Ross", message: "Can I get an extension on...", time: "1h ago", avatar: "MR" },
+  React.useEffect(() => {
+    if (!user) return;
+
+    const fetchData = async () => {
+      const [cRes, enRes, mRes] = await Promise.all([
+        fetch('/api/courses'),
+        fetch('/api/enrollments'),
+        fetch(`/api/messages?userId=${user.uid}`)
+      ]);
+      const [courses, allEnrollments, messages] = await Promise.all([
+        cRes.json(), enRes.json(), mRes.json()
+      ]);
+
+      const mine = Array.isArray(courses) ? courses.filter((c: any) => c.instructor.name === user.displayName) : [];
+      setInstructorCourses(mine);
+
+      const myCourseIds = mine.map((c: any) => c._id);
+      const myEnrollments = Array.isArray(allEnrollments) ? allEnrollments.filter((en: any) => myCourseIds.includes(en.courseId)) : [];
+      setRecentEnrollments(myEnrollments.slice(0, 5));
+
+      setMessages(Array.isArray(messages) ? messages.slice(0, 3) : []);
+      setStats({
+        activeCourses: mine.length,
+        enrollments: myEnrollments.length,
+        assignments: 0, // Placeholder
+        messages: Array.isArray(messages) ? messages.filter((m: any) => !m.isRead && m.receiverId === user.uid).length : 0
+      });
+    };
+    fetchData();
+  }, [user]);
+
+  const statsItems = [
+    { label: "Active Courses", value: stats.activeCourses.toString(), icon: GraduationCap, sub: "Live", subType: "success", subText: "", bg: "bg-indigo-50", iconColor: "text-indigo-600" },
+    { label: "Total Enrollments", value: stats.enrollments.toString(), icon: Users, sub: "Students", subType: "success", subText: "", bg: "bg-blue-50", iconColor: "text-blue-600" },
+    { label: "Assignments", value: stats.assignments.toString(), icon: CheckSquare, sub: "Pending", subType: "warning", subText: "", bg: "bg-amber-50", iconColor: "text-amber-600" },
+    { label: "Unread Messages", value: stats.messages.toString(), icon: Mail, sub: "New", subType: "neutral", subText: "", bg: "bg-rose-50", iconColor: "text-rose-600" },
   ];
 
   return (
@@ -65,12 +81,7 @@ export default function InstructorDashboardPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        {[
-          { label: "Active Courses", value: "12", icon: GraduationCap, sub: "2 New", subType: "success", subText: "vs last term", bg: "bg-indigo-50", iconColor: "text-indigo-600" },
-          { label: "Total Enrollments", value: "1,240", icon: Users, sub: "15%", subType: "success", subText: "growth", bg: "bg-blue-50", iconColor: "text-blue-600" },
-          { label: "Assignments", value: "28", icon: CheckSquare, sub: "5 Pending Review", subType: "warning", subText: "", bg: "bg-amber-50", iconColor: "text-amber-600" },
-          { label: "Unread Messages", value: "34", icon: Mail, sub: "Response time:", subType: "neutral", subText: "2h avg", bg: "bg-rose-50", iconColor: "text-rose-600" },
-        ].map((stat, i) => (
+        {statsItems.map((stat, i) => (
           <Card key={i} className="border-none shadow-sm">
             <CardContent className="p-6">
               <div className="flex justify-between items-start">
@@ -81,24 +92,6 @@ export default function InstructorDashboardPage() {
                 <div className={`${stat.bg} p-2 rounded-lg`}>
                   <stat.icon className={`w-5 h-5 ${stat.iconColor}`} />
                 </div>
-              </div>
-              <div className="mt-4 flex items-center gap-2 text-xs">
-                {stat.subType === 'success' && (
-                  <span className="text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded font-medium flex items-center gap-1">
-                    <LineChart className="w-3 h-3" /> {stat.sub}
-                  </span>
-                )}
-                {stat.subType === 'warning' && (
-                  <span className="text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded font-medium">
-                    {stat.sub}
-                  </span>
-                )}
-                {stat.subType === 'neutral' && (
-                  <span className="text-slate-500">
-                    {stat.sub}
-                  </span>
-                )}
-                <span className="text-slate-400">{stat.subText}</span>
               </div>
             </CardContent>
           </Card>
@@ -119,35 +112,28 @@ export default function InstructorDashboardPage() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-6">
-            {courses.map(course => (
-              <Card key={course.id} className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow">
+            {instructorCourses.map(course => (
+              <Card key={course._id} className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow">
                 <div className="relative h-48 w-full">
                   <Image src={course.imageUrl} alt={course.title} fill className="object-cover" />
-                  <Badge className="absolute top-4 right-4 bg-white text-slate-900 hover:bg-white">{course.code}</Badge>
+                  <Badge className="absolute top-4 right-4 bg-white text-slate-900 hover:bg-white">{course.category}</Badge>
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 pt-12">
-                    <p className="text-xs text-white/80 font-medium mb-1">{course.dept}</p>
                     <h3 className="text-white font-bold text-xl">{course.title}</h3>
                   </div>
                 </div>
                 <CardContent className="p-4 space-y-4">
                   <div className="flex justify-between text-sm text-slate-500">
                     <div className="flex items-center gap-2">
-                      <Users className="w-4 h-4" /> {course.students} Students
+                      <Users className="w-4 h-4" /> {course.reviews * 3}+ Students
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4" /> {course.schedule}
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-xs font-medium">
-                      <span className="text-slate-500">Course Progress</span>
-                      <span className="text-slate-900">{course.progress}%</span>
-                    </div>
-                    <Progress value={course.progress} className="h-2" />
                   </div>
                   <div className="flex gap-3 pt-2">
-                    <Button variant="outline" className="flex-1">Syllabus</Button>
-                    <Button className="flex-1 bg-indigo-600 hover:bg-indigo-700">Manage Course</Button>
+                    <Button variant="outline" asChild className="flex-1">
+                      <Link href={`/instructor/students?courseId=${course._id}`}>Students</Link>
+                    </Button>
+                    <Button asChild className="flex-1 bg-indigo-600 hover:bg-indigo-700">
+                      <Link href={`/instructor/courses/edit/${course._id}`}>Manage</Link>
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -172,32 +158,29 @@ export default function InstructorDashboardPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y">
-                  <tr className="bg-white">
-                    <td className="px-4 py-3 flex items-center gap-3">
-                      <Avatar className="w-8 h-8"><AvatarImage src="/avatar-1.png" /><AvatarFallback>LJ</AvatarFallback></Avatar>
-                      <div>
-                        <p className="font-medium text-slate-900">Liam Johnson</p>
-                        <p className="text-xs text-slate-500">ID: 882910</p>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-slate-600">Intro to Biology</td>
-                    <td className="px-4 py-3 text-slate-600">Oct 24, 2023</td>
-                    <td className="px-4 py-3"><Badge variant="outline" className="bg-amber-50 text-amber-600 border-amber-200">Pending</Badge></td>
-                    <td className="px-4 py-3 text-right"><Button variant="secondary" size="sm" className="bg-indigo-50 text-indigo-600 hover:bg-indigo-100">Review</Button></td>
-                  </tr>
-                  <tr className="bg-white">
-                    <td className="px-4 py-3 flex items-center gap-3">
-                      <Avatar className="w-8 h-8"><AvatarImage src="/avatar-2.png" /><AvatarFallback>EW</AvatarFallback></Avatar>
-                      <div>
-                        <p className="font-medium text-slate-900">Emma Wilson</p>
-                        <p className="text-xs text-slate-500">ID: 882911</p>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-slate-600">Organic Chemistry</td>
-                    <td className="px-4 py-3 text-slate-600">Oct 23, 2023</td>
-                    <td className="px-4 py-3"><Badge variant="outline" className="bg-emerald-50 text-emerald-600 border-emerald-200">Approved</Badge></td>
-                    <td className="px-4 py-3 text-right"><Button variant="ghost" size="icon"><MoreHorizontal className="w-4 h-4 text-slate-400" /></Button></td>
-                  </tr>
+                  {recentEnrollments.map((enr: any) => (
+                    <tr key={enr.id} className="bg-white">
+                      <td className="px-4 py-3 flex items-center gap-3">
+                        <Avatar className="w-8 h-8"><AvatarFallback>{enr.userId[0]}</AvatarFallback></Avatar>
+                        <div>
+                          <p className="font-medium text-slate-900 truncate max-w-[100px]">{enr.userId}</p>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-slate-600">{enr.course?.title}</td>
+                      <td className="px-4 py-3 text-slate-600">{new Date(enr.enrolledAt).toLocaleDateString()}</td>
+                      <td className="px-4 py-3"><Badge variant="outline" className="bg-emerald-50 text-emerald-600 border-emerald-200">Active</Badge></td>
+                      <td className="px-4 py-3 text-right">
+                        <Button variant="secondary" size="sm" asChild className="bg-indigo-50 text-indigo-600 hover:bg-indigo-100">
+                          <Link href={`/instructor/students?studentId=${enr.userId}`}>Review</Link>
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                  {recentEnrollments.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="p-8 text-center text-slate-400 italic">No recent enrollments.</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -258,23 +241,27 @@ export default function InstructorDashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {recentMessages.map(msg => (
-                  <div key={msg.id} className="flex gap-3">
+                {messages.map(msg => (
+                  <div key={msg._id} className="flex gap-3">
                     <Avatar className="w-10 h-10 border-2 border-white shadow-sm">
-                      <AvatarImage src={`/avatar-${msg.id}.png`} />
-                      <AvatarFallback className="bg-indigo-100 text-indigo-600 font-bold">{msg.avatar}</AvatarFallback>
+                      <AvatarFallback className="bg-indigo-100 text-indigo-600 font-bold">{msg.senderId[0]}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-baseline mb-0.5">
-                        <p className="text-sm font-bold text-slate-900">{msg.name}</p>
-                        <p className="text-[10px] text-slate-400">{msg.time}</p>
+                        <p className="text-sm font-bold text-slate-900">{msg.senderId}</p>
+                        <p className="text-[10px] text-slate-400">{new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
                       </div>
-                      <p className="text-xs text-slate-500 truncate">{msg.message}</p>
+                      <p className="text-xs text-slate-500 truncate">{msg.content}</p>
                     </div>
                   </div>
                 ))}
+                {messages.length === 0 && (
+                  <p className="text-center text-slate-400 text-xs py-4 italic">No messages yet.</p>
+                )}
               </div>
-              <Button variant="outline" className="w-full mt-4 text-xs font-bold uppercase tracking-wide">Go to Inbox</Button>
+              <Button variant="outline" asChild className="w-full mt-4 text-xs font-bold uppercase tracking-wide">
+                <Link href="/instructor/communications">Go to Inbox</Link>
+              </Button>
             </CardContent>
           </Card>
         </div>

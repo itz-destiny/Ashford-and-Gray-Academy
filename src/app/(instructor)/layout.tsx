@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useUser } from "@/firebase";
 
 export default function InstructorLayout({
   children,
@@ -134,8 +135,10 @@ export default function InstructorLayout({
             />
           </div>
 
-          <Button className="bg-[#0f172a] hover:bg-[#1e293b] text-white rounded-md gap-2">
-            <Plus className="h-4 w-4" /> New Material
+          <Button asChild className="bg-[#0f172a] hover:bg-[#1e293b] text-white rounded-md gap-2">
+            <Link href="/instructor/courses/new">
+              <Plus className="h-4 w-4" /> New Material
+            </Link>
           </Button>
 
           <Button variant="ghost" size="icon" className="text-slate-500">
@@ -144,8 +147,8 @@ export default function InstructorLayout({
 
           <div className="border-l pl-4 flex items-center gap-3">
             <div className="text-right hidden md:block">
-              <p className="text-sm font-bold leading-none">Prof. A. Smith</p>
-              <p className="text-xs text-muted-foreground">Senior Instructor</p>
+              <p className="text-sm font-bold leading-none">{useUser()?.user?.displayName || 'Instructor'}</p>
+              <p className="text-xs text-muted-foreground">Instructor</p>
             </div>
             <UserNav />
           </div>
