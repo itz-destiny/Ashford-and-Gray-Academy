@@ -10,11 +10,12 @@ import {
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ArrowLeft, ArrowRight, BarChart, BookOpen, Calendar, CheckSquare, GraduationCap, LineChart, Mail, MessageSquare, MoreHorizontal, Users, Video } from "lucide-react";
+import { ArrowLeft, ArrowRight, BarChart, BookOpen, Calendar, CheckSquare, GraduationCap, LineChart, Mail, MessageSquare, MoreHorizontal, Plus, Users, Video } from "lucide-react";
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useUser } from "@/firebase";
+import { cn } from "@/lib/utils";
 
 export default function InstructorDashboardPage() {
   const { user } = useUser();
@@ -55,42 +56,41 @@ export default function InstructorDashboardPage() {
   }, [user]);
 
   const statsItems = [
-    { label: "Active Courses", value: stats.activeCourses.toString(), icon: GraduationCap, sub: "Live", subType: "success", subText: "", bg: "bg-indigo-50", iconColor: "text-indigo-600" },
-    { label: "Total Enrollments", value: stats.enrollments.toString(), icon: Users, sub: "Students", subType: "success", subText: "", bg: "bg-blue-50", iconColor: "text-blue-600" },
-    { label: "Assignments", value: stats.assignments.toString(), icon: CheckSquare, sub: "Pending", subType: "warning", subText: "", bg: "bg-amber-50", iconColor: "text-amber-600" },
-    { label: "Unread Messages", value: stats.messages.toString(), icon: Mail, sub: "New", subType: "neutral", subText: "", bg: "bg-rose-50", iconColor: "text-rose-600" },
+    { label: "Active Courses", value: stats.activeCourses.toString(), icon: GraduationCap, bg: "bg-indigo-50", iconColor: "text-indigo-600" },
+    { label: "Total Students", value: stats.enrollments.toString(), icon: Users, bg: "bg-blue-50", iconColor: "text-blue-600" },
+    { label: "Unread Messages", value: stats.messages.toString(), icon: Mail, bg: "bg-rose-50", iconColor: "text-rose-600" },
   ];
 
   return (
-    <div className="space-y-6">
-      {/* Welcome & System Status - Optional derived from context, omitting for strict design match or keeping simple */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Overview</h1>
-          <p className="text-slate-500">Welcome to Ashford and Gray Fusion Academy Instructor Dashboard.</p>
+    <div className="space-y-10 animate-in fade-in duration-700">
+      {/* Overview Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Instructor Overview</h1>
+          <p className="text-slate-500 font-medium">Monitoring academic performance and course engagement.</p>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2 px-3 py-1 bg-white border rounded text-xs text-slate-600">
-            <div className="w-2 h-2 rounded-full bg-emerald-500" />
-            System Online
-          </div>
-          <div className="px-3 py-1 bg-white border rounded text-xs text-slate-600">
-            Fall Semester 2023
+        <div className="flex items-center gap-3">
+          <Button asChild className="bg-indigo-600 hover:bg-indigo-700 text-white font-black h-11 px-6 rounded-xl shadow-none transition-all active:scale-95">
+            <Link href="/instructor/courses/new"><Plus className="w-4 h-4 mr-2" /> Create New Course</Link>
+          </Button>
+          <div className="flex items-center gap-2 px-4 h-11 bg-white border border-slate-100 rounded-xl text-xs font-bold text-slate-500">
+            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            Live Session Ready
           </div>
         </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-3">
         {statsItems.map((stat, i) => (
-          <Card key={i} className="border-none shadow-sm">
-            <CardContent className="p-6">
+          <Card key={i} className="border-none bg-white rounded-3xl group hover:bg-slate-50 transition-colors shadow-none">
+            <CardContent className="p-8">
               <div className="flex justify-between items-start">
-                <div>
-                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">{stat.label}</p>
-                  <h2 className="text-3xl font-bold text-slate-900">{stat.value}</h2>
+                <div className="space-y-2">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
+                  <h2 className="text-4xl font-black text-slate-900">{stat.value}</h2>
                 </div>
-                <div className={`${stat.bg} p-2 rounded-lg`}>
-                  <stat.icon className={`w-5 h-5 ${stat.iconColor}`} />
+                <div className={cn("p-4 rounded-2xl transition-transform group-hover:scale-110", stat.bg)}>
+                  <stat.icon className={cn("w-6 h-6", stat.iconColor)} />
                 </div>
               </div>
             </CardContent>
@@ -98,87 +98,99 @@ export default function InstructorDashboardPage() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
         {/* Main Column */}
-        <div className="xl:col-span-2 space-y-6">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <Video className="w-5 h-5 text-indigo-600" />
-              <h2 className="text-lg font-bold text-slate-900">Active Courses</h2>
+        <div className="xl:col-span-2 space-y-10">
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+                <BookOpen className="w-6 h-6 text-indigo-600" />
+                Active Curriculum
+              </h2>
+              <Button variant="ghost" className="text-indigo-600 hover:text-indigo-700 font-bold text-sm" asChild>
+                <Link href="/instructor/courses">Manage All <ArrowRight className="ml-2 w-4 h-4" /></Link>
+              </Button>
             </div>
-            <Button variant="ghost" className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 text-sm">
-              View All <ArrowRight className="ml-1 w-4 h-4" />
-            </Button>
-          </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            {instructorCourses.map(course => (
-              <Card key={course._id} className="overflow-hidden border-none shadow-sm hover:shadow-md transition-shadow">
-                <div className="relative h-48 w-full">
-                  <Image src={course.imageUrl} alt={course.title} fill className="object-cover" />
-                  <Badge className="absolute top-4 right-4 bg-white text-slate-900 hover:bg-white">{course.category}</Badge>
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 pt-12">
-                    <h3 className="text-white font-bold text-xl">{course.title}</h3>
-                  </div>
-                </div>
-                <CardContent className="p-4 space-y-4">
-                  <div className="flex justify-between text-sm text-slate-500">
-                    <div className="flex items-center gap-2">
-                      <Users className="w-4 h-4" /> {course.reviews * 3}+ Students
+            <div className="grid md:grid-cols-2 gap-8">
+              {instructorCourses.map(course => (
+                <Card key={course._id} className="overflow-hidden border-none rounded-[32px] group hover:-translate-y-1 transition-all duration-500 shadow-none bg-white border border-slate-50">
+                  <div className="relative h-48 w-full overflow-hidden">
+                    <Image src={course.imageUrl} alt={course.title} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
+                    <div className="absolute top-4 right-4">
+                      <Badge className="bg-white/90 backdrop-blur text-slate-900 font-black text-[9px] uppercase tracking-widest border-none px-3 py-1">
+                        {course.category}
+                      </Badge>
                     </div>
                   </div>
-                  <div className="flex gap-3 pt-2">
-                    <Button variant="outline" asChild className="flex-1">
-                      <Link href={`/instructor/students?courseId=${course._id}`}>Students</Link>
+                  <CardContent className="p-8 space-y-6">
+                    <h3 className="text-xl font-black text-slate-900 leading-snug line-clamp-2">{course.title}</h3>
+                    <div className="flex items-center gap-6">
+                      <div className="flex items-center gap-2 text-slate-400">
+                        <Users className="w-4 h-4" />
+                        <span className="text-xs font-bold">{course.reviews * 3}+ Students</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-slate-400">
+                        <BarChart className="w-4 h-4" />
+                        <span className="text-xs font-bold">85% Avg</span>
+                      </div>
+                    </div>
+                    <Button asChild className="w-full bg-slate-900 hover:bg-slate-800 text-white font-black h-11 rounded-xl shadow-none">
+                      <Link href={`/instructor/courses/${course._id}`}>Manage Content</Link>
                     </Button>
-                    <Button asChild className="flex-1 bg-indigo-600 hover:bg-indigo-700">
-                      <Link href={`/instructor/courses/edit/${course._id}`}>Manage</Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
 
-          <div className="bg-white rounded-xl border p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Users className="w-5 h-5 text-indigo-600" />
-              <h2 className="text-lg font-bold text-slate-900">Recent Enrollments</h2>
+          <div className="bg-white rounded-[32px] p-8 border border-slate-100">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+                <Users className="w-6 h-6 text-indigo-600" />
+                Enrollment Stream
+              </h2>
+              <Badge variant="outline" className="border-indigo-100 bg-indigo-50 text-indigo-600 font-black text-[10px] tracking-widest px-3 py-1 uppercase">Live Updates</Badge>
             </div>
-            {/* Simplified table placeholder as requested to match layout structure primarily */}
-            <div className="rounded-lg border overflow-hidden">
+
+            <div className="rounded-2xl border border-slate-50 overflow-hidden">
               <table className="w-full text-sm text-left">
-                <thead className="bg-slate-50 text-slate-500 font-medium">
+                <thead className="bg-slate-50/50 text-slate-400 font-black uppercase text-[10px] tracking-widest border-b border-slate-50">
                   <tr>
-                    <th className="px-4 py-3">Student Name</th>
-                    <th className="px-4 py-3">Course</th>
-                    <th className="px-4 py-3">Date</th>
-                    <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3 text-right">Action</th>
+                    <th className="px-6 py-4">Identity</th>
+                    <th className="px-6 py-4">Selected Course</th>
+                    <th className="px-6 py-4">Status</th>
+                    <th className="px-6 py-4 text-right">Activity</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y">
+                <tbody className="divide-y divide-slate-50">
                   {recentEnrollments.map((enr: any) => (
-                    <tr key={enr.id} className="bg-white">
-                      <td className="px-4 py-3 flex items-center gap-3">
-                        <Avatar className="w-8 h-8"><AvatarFallback>{enr.userId[0]}</AvatarFallback></Avatar>
-                        <div>
-                          <p className="font-medium text-slate-900 truncate max-w-[100px]">{enr.userId}</p>
+                    <tr key={enr.id} className="bg-white hover:bg-slate-50/50 transition-colors">
+                      <td className="px-6 py-5">
+                        <div className="flex items-center gap-3">
+                          <Avatar className="w-9 h-9 border-2 border-slate-50">
+                            <AvatarFallback className="bg-indigo-50 text-indigo-600 font-black text-xs">{enr.userId[0]}</AvatarFallback>
+                          </Avatar>
+                          <p className="font-bold text-slate-900 truncate max-w-[120px]">{enr.userId}</p>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-slate-600">{enr.course?.title}</td>
-                      <td className="px-4 py-3 text-slate-600">{new Date(enr.enrolledAt).toLocaleDateString()}</td>
-                      <td className="px-4 py-3"><Badge variant="outline" className="bg-emerald-50 text-emerald-600 border-emerald-200">Active</Badge></td>
-                      <td className="px-4 py-3 text-right">
-                        <Button variant="secondary" size="sm" asChild className="bg-indigo-50 text-indigo-600 hover:bg-indigo-100">
-                          <Link href={`/instructor/students?studentId=${enr.userId}`}>Review</Link>
+                      <td className="px-6 py-5">
+                        <p className="font-bold text-slate-600 truncate max-w-[150px]">{enr.course?.title}</p>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Enrolled {new Date(enr.enrolledAt).toLocaleDateString()}</p>
+                      </td>
+                      <td className="px-6 py-5">
+                        <Badge className="bg-emerald-50 text-emerald-600 hover:bg-emerald-50 border-emerald-100 font-bold px-3 py-0.5 rounded-full text-[10px]">VERIFIED</Badge>
+                      </td>
+                      <td className="px-6 py-5 text-right">
+                        <Button variant="ghost" size="sm" asChild className="text-indigo-600 hover:bg-indigo-50 font-black text-xs uppercase tracking-tight">
+                          <Link href={`/instructor/students?studentId=${enr.userId}`}>Full Bio</Link>
                         </Button>
                       </td>
                     </tr>
                   ))}
                   {recentEnrollments.length === 0 && (
                     <tr>
-                      <td colSpan={5} className="p-8 text-center text-slate-400 italic">No recent enrollments.</td>
+                      <td colSpan={4} className="p-16 text-center text-slate-400 font-bold italic bg-slate-50/30">No recent enrollment activity detected.</td>
                     </tr>
                   )}
                 </tbody>
@@ -187,80 +199,87 @@ export default function InstructorDashboardPage() {
           </div>
         </div>
 
-        {/* Side Column */}
-        <div className="space-y-6">
-          <Card className="bg-indigo-600 text-white border-none shadow-lg overflow-hidden relative">
-            <div className="absolute top-0 right-0 p-4 opacity-10">
-              <Calendar className="w-32 h-32" />
-            </div>
-            <CardContent className="p-6 relative z-10">
-              <div className="flex justify-between items-start mb-6">
-                <div>
-                  <p className="text-indigo-200 text-sm">October 2023</p>
-                  <h2 className="text-2xl font-bold">Tuesday, 26</h2>
-                </div>
-                <div className="bg-white/20 p-2 rounded-lg backdrop-blur-sm">
-                  <Calendar className="w-5 h-5" />
-                </div>
-              </div>
+        {/* Side Column: Redesigned Event Matrix */}
+        <div className="space-y-10">
+          <div className="space-y-6">
+            <h2 className="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+              <Calendar className="w-6 h-6 text-indigo-600" />
+              Event Matrix
+            </h2>
 
-              <div className="space-y-3">
-                <div className="bg-white/10 p-3 rounded-lg backdrop-blur-sm border border-white/10">
-                  <div className="flex justify-between mb-1">
-                    <p className="text-xs text-indigo-200">10:00 AM - 11:30 AM</p>
-                    <Badge className="bg-white/20 hover:bg-white/30 text-xs py-0 h-5">LIVE</Badge>
+            <Card className="border-none bg-slate-900 text-white rounded-[40px] overflow-hidden relative shadow-none">
+              <div className="absolute -top-10 -right-10 w-40 h-40 bg-indigo-500 rounded-full blur-3xl opacity-20" />
+              <CardContent className="p-8 space-y-8">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <p className="text-indigo-400 text-[10px] font-black uppercase tracking-widest mb-1">{new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
+                    <h3 className="text-3xl font-black">{new Date().toLocaleDateString('en-US', { weekday: 'long', day: 'numeric' })}</h3>
                   </div>
-                  <p className="font-bold">BIO-101 Lecture</p>
-                  <p className="text-xs text-indigo-200">Room 302 / Zoom</p>
-                </div>
-
-                <div className="bg-indigo-800/50 p-3 rounded-lg border border-white/5">
-                  <div className="flex justify-between mb-1">
-                    <p className="text-xs text-indigo-300">02:00 PM - 04:00 PM</p>
+                  <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center border border-white/10">
+                    <Calendar className="w-6 h-6" />
                   </div>
-                  <p className="font-medium">Office Hours</p>
-                  <p className="text-xs text-indigo-300">Faculty Office</p>
                 </div>
-              </div>
 
-              <Button className="w-full mt-6 bg-white text-indigo-600 hover:bg-indigo-50 font-bold">
-                View Full Calendar
-              </Button>
-            </CardContent>
-          </Card>
+                <div className="space-y-4">
+                  <div className="bg-indigo-600 p-5 rounded-3xl border border-indigo-500 relative group cursor-pointer hover:bg-indigo-500 transition-colors">
+                    <div className="flex justify-between items-center mb-3">
+                      <span className="text-[10px] font-black text-indigo-200 uppercase tracking-widest">10:00 AM — 11:30 AM</span>
+                      <Badge className="bg-white/20 text-white font-black text-[8px] tracking-widest border-none px-2 py-0.5">LIVE NOW</Badge>
+                    </div>
+                    <h4 className="text-lg font-black leading-tight mb-1">Advanced Cell Biology</h4>
+                    <p className="text-xs text-indigo-200 font-medium">Room 302 / Zoom Relay</p>
+                  </div>
 
-          <Card className="border-none shadow-sm">
-            <CardHeader className="pb-2">
+                  <div className="bg-white/5 p-5 rounded-3xl border border-white/5 group cursor-pointer hover:bg-white/10 transition-colors">
+                    <div className="flex justify-between items-center mb-3">
+                      <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">02:00 PM — 04:00 PM</span>
+                    </div>
+                    <h4 className="text-lg font-black leading-tight mb-1 font-medium text-slate-300">Office Consultation</h4>
+                    <p className="text-xs text-slate-500 font-medium">Faculty Wing Office</p>
+                  </div>
+                </div>
+
+                <Button className="w-full h-12 bg-white text-slate-900 hover:bg-slate-100 font-black rounded-2xl shadow-none text-xs uppercase tracking-tight">
+                  Launch Calendar Matrix
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+
+          <Card className="border-none bg-white rounded-[32px] border border-slate-50 shadow-none">
+            <CardHeader className="p-8 pb-4">
               <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
+                <h3 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
                   <MessageSquare className="w-5 h-5 text-slate-400" />
-                  <CardTitle className="text-base text-slate-800">Messages</CardTitle>
-                </div>
-                <Badge variant="secondary" className="bg-rose-100 text-rose-600 hover:bg-rose-200">3 New</Badge>
+                  Communications
+                </h3>
+                <Badge className="bg-rose-100 text-rose-600 hover:bg-rose-100 border-none px-3 py-1 font-bold text-[10px]">3 PENDING</Badge>
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
+            <CardContent className="p-8 pt-0 space-y-6">
+              <div className="space-y-5">
                 {messages.map(msg => (
-                  <div key={msg._id} className="flex gap-3">
-                    <Avatar className="w-10 h-10 border-2 border-white shadow-sm">
-                      <AvatarFallback className="bg-indigo-100 text-indigo-600 font-bold">{msg.senderId[0]}</AvatarFallback>
+                  <div key={msg._id} className="flex gap-4 group cursor-pointer">
+                    <Avatar className="w-10 h-10 border-2 border-white shadow-none ring-1 ring-slate-100">
+                      <AvatarFallback className="bg-slate-50 text-slate-600 font-black text-xs">{msg.senderId[0]}</AvatarFallback>
                     </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-baseline mb-0.5">
-                        <p className="text-sm font-bold text-slate-900">{msg.senderId}</p>
-                        <p className="text-[10px] text-slate-400">{new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                    <div className="flex-1 min-w-0 py-0.5">
+                      <div className="flex justify-between items-baseline mb-1">
+                        <p className="text-sm font-black text-slate-900 group-hover:text-indigo-600 transition-colors truncate">{msg.senderId}</p>
+                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">{new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
                       </div>
-                      <p className="text-xs text-slate-500 truncate">{msg.content}</p>
+                      <p className="text-xs text-slate-500 font-medium truncate leading-relaxed">{msg.content}</p>
                     </div>
                   </div>
                 ))}
                 {messages.length === 0 && (
-                  <p className="text-center text-slate-400 text-xs py-4 italic">No messages yet.</p>
+                  <div className="py-8 text-center bg-slate-50/50 rounded-2xl border border-dashed border-slate-100">
+                    <p className="text-slate-400 font-bold text-[10px] uppercase tracking-widest italic">Signal Inbox Clear</p>
+                  </div>
                 )}
               </div>
-              <Button variant="outline" asChild className="w-full mt-4 text-xs font-bold uppercase tracking-wide">
-                <Link href="/instructor/communications">Go to Inbox</Link>
+              <Button variant="outline" asChild className="w-full h-11 rounded-xl border-slate-100 bg-slate-50 hover:bg-slate-100 text-slate-600 font-black text-[10px] uppercase tracking-widest transition-all">
+                <Link href="/instructor/communications">Open Communication Hub</Link>
               </Button>
             </CardContent>
           </Card>

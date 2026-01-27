@@ -56,10 +56,10 @@ export function UserNav() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+        <Button variant="ghost" className="relative h-11 w-11 rounded-2xl bg-slate-50 hover:bg-slate-100 transition-all active:scale-95 border border-slate-100 shadow-sm">
           <Avatar className="h-9 w-9">
             <AvatarImage src={user.photoURL ?? ""} alt={user.displayName ?? ""} />
-            <AvatarFallback>{user.displayName ? getInitials(user.displayName) : 'U'}</AvatarFallback>
+            <AvatarFallback className="bg-white font-black text-xs">{user.displayName ? getInitials(user.displayName) : 'U'}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
@@ -91,8 +91,8 @@ export function UserNav() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut}>
-            <LogOut className="mr-2 h-4 w-4" />
-            <span>Log out</span>
+          <LogOut className="mr-2 h-4 w-4" />
+          <span>Log out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

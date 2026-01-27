@@ -15,12 +15,14 @@ export async function GET(request: Request) {
             return NextResponse.json(users);
         }
 
-        let user = await User.findOne({ uid });
+        const user = await User.findOne({ uid });
 
         if (!user) {
+            console.warn(`GET /api/users: User with UID ${uid} not found in DB`);
             return NextResponse.json({ message: 'User not found' }, { status: 404 });
         }
 
+        console.log(`GET /api/users: Found user ${user.email} with role ${user.role}`);
         return NextResponse.json(user);
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 });
@@ -51,20 +53,22 @@ export async function POST(request: Request) {
             organization
         };
 
-        // Only set role if provided, otherwise leave it (or set default on insert)
-        if (role) {
+        // Important: Explicitly set role if it's passed, otherwise let MongoDB use default for NEW users
+        if (email === 'admin@ashfordgrayfusionacademy.com') {
+            updateData.role = 'admin';
+            console.log(`POST /api/users: Auto-promoting ${email} to admin`);
+        } else if (role) {
             updateData.role = role;
+            console.log(`POST /api/users: Setting role to ${role} for user ${email}`);
         }
 
         const user = await User.findOneAndUpdate(
             { uid },
-            {
-                ...updateData,
-                $setOnInsert: { role: 'student' } // fallback if role is missing on insert
-            },
+            { $set: updateData },
             { new: true, upsert: true, setDefaultsOnInsert: true }
         );
 
+        console.log(`POST /api/users: Upserted user ${user.email}, final role in DB: ${user.role}`);
         return NextResponse.json(user);
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 });

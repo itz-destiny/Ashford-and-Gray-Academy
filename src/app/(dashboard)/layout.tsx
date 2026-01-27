@@ -1,21 +1,12 @@
-
 "use client";
 
-import { Logo } from "@/components/logo";
+import { Sidebar } from "@/components/dashboard/sidebar";
 import { UserNav } from "@/components/user-nav";
 import {
-  BookOpen,
-  Calendar,
-  GraduationCap,
   Bell,
   Settings,
   Search,
   Menu,
-  MessageSquare,
-  FileText,
-  Clock,
-  Sparkles,
-  Home,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -33,94 +24,67 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
 
-  const navItems = [
-    { href: "/dashboard", label: "Home", icon: Home },
-    { href: "/my-courses", label: "My Courses", icon: BookOpen },
-    { href: "/events", label: "Events", icon: Calendar },
-    { href: "/grades", label: "Grades", icon: GraduationCap },
-    { href: "/messages", label: "Messages", icon: MessageSquare },
-    { href: "/resources", label: "Resources", icon: FileText },
-    { href: "/schedule", label: "Schedule", icon: Clock },
-  ];
-
   return (
-    <div className="flex min-h-screen w-full flex-col bg-muted/40">
-      <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-4 sm:px-6">
-        <Link href="/dashboard" className="flex items-center gap-2">
-          <Logo />
-        </Link>
-        <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6 ml-10">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "transition-colors hover:text-foreground",
-                pathname === item.href ? "text-foreground font-semibold" : "text-muted-foreground"
-              )}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              className="shrink-0 md:hidden"
-            >
-              <Menu className="h-5 w-5" />
-              <span className="sr-only">Toggle navigation menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left">
-            <nav className="grid gap-6 text-lg font-medium">
-              <Link href="/dashboard" className="flex items-center gap-2 text-lg font-semibold">
-                <Logo />
-              </Link>
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "transition-colors hover:text-foreground",
-                    pathname === item.href ? "text-foreground" : "text-muted-foreground"
-                  )}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
-          </SheetContent>
-        </Sheet>
-        <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
-          <form className="ml-auto flex-1 sm:flex-initial">
-            <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+    <div className="flex min-h-screen w-full bg-[#FCFCFE]">
+      {/* Desktop Sidebar */}
+      <Sidebar className="hidden md:flex" />
+
+      <div className="flex flex-col flex-1 md:pl-72">
+        {/* Top Navigation Bar */}
+        <header className="sticky top-0 z-30 flex h-20 items-center gap-4 bg-white/80 backdrop-blur-md px-6 md:px-10 border-b border-slate-100">
+          {/* Mobile Sidebar Trigger */}
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="shrink-0 md:hidden"
+              >
+                <Menu className="h-6 w-6 text-slate-600" />
+                <span className="sr-only">Toggle navigation menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="p-0 border-none w-72">
+              <Sidebar className="relative w-72" />
+            </SheetContent>
+          </Sheet>
+
+          {/* Search Engine Area */}
+          <div className="flex-1 flex justify-center max-w-xl">
+            <div className="relative w-full group">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
               <Input
                 type="search"
-                placeholder="Search courses, events, or resources..."
-                className="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px]"
+                placeholder="Ask anything or find courses..."
+                className="pl-12 w-full h-12 bg-slate-50 border-none rounded-2xl focus-visible:ring-2 focus-visible:ring-indigo-100 transition-all text-sm font-medium"
               />
             </div>
-          </form>
-          <Button variant="ghost" size="icon" className="rounded-full">
-            <Bell className="h-5 w-5" />
-            <span className="sr-only">Toggle notifications</span>
-          </Button>
-          <Button variant="ghost" size="icon" className="rounded-full" asChild>
-            <Link href="/settings">
-              <Settings className="h-5 w-5" />
-              <span className="sr-only">Settings</span>
-            </Link>
-          </Button>
-          <UserNav />
-        </div>
-      </header>
-      <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-        {children}
-      </main>
+          </div>
+
+          {/* Action Icons & User Nav */}
+          <div className="flex items-center gap-3 md:gap-5 ml-auto">
+            <Button variant="ghost" size="icon" className="rounded-2xl hover:bg-slate-50 transition-colors relative">
+              <Bell className="h-5 w-5 text-slate-600" />
+              <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
+            </Button>
+
+            <Button variant="ghost" size="icon" className="rounded-2xl hover:bg-slate-50 transition-colors" asChild>
+              <Link href="/settings">
+                <Settings className="h-5 w-5 text-slate-600" />
+              </Link>
+            </Button>
+
+            <div className="h-8 w-px bg-slate-100 mx-2 hidden sm:block" />
+
+            <UserNav />
+          </div>
+        </header>
+
+        {/* Page Content Container */}
+        <main className="flex-1 animate-in fade-in duration-700">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }

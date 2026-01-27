@@ -69,7 +69,8 @@ export default function SettingsPage() {
           bio: formData.bio,
           school: formData.school,
           title: formData.title,
-          organization: formData.organization
+          organization: formData.organization,
+          role: (user as any).role // PERSIST THE ROLE
         })
       });
 
@@ -135,6 +136,38 @@ export default function SettingsPage() {
                 <Label htmlFor="organization">Organization</Label>
                 <Input id="organization" value={formData.organization} onChange={handleInputChange} placeholder="Ex: Ashford & Gray" />
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="role">Account Type (Role)</Label>
+              <select
+                id="role"
+                value={(user as any).role}
+                onChange={async (e) => {
+                  if (!user) return;
+                  const newRole = e.target.value;
+                  setSaving(true);
+                  try {
+                    await fetch('/api/users', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ uid: user.uid, email: user.email, role: newRole })
+                    });
+                    toast({ title: "Role Updated", description: `Account type changed to ${newRole}. Please reload to see changes.` });
+                    window.location.reload();
+                  } catch (err) {
+                    toast({ variant: "destructive", title: "Update Failed" });
+                  } finally {
+                    setSaving(false);
+                  }
+                }}
+                className="w-full p-2 rounded-md border border-input bg-background"
+              >
+                <option value="student">Student</option>
+                <option value="instructor">Instructor</option>
+                <option value="admin">Admin</option>
+              </select>
+              <p className="text-[0.7rem] text-muted-foreground italic">Caution: Changing your role will change your dashboard access.</p>
             </div>
           </CardContent>
           <CardFooter>

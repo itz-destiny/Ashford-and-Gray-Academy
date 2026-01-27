@@ -108,8 +108,7 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
           // We should just redirect them to the correct page.
           // Force a hard navigation or router push to ensure role is picked up.
           const target = role === 'instructor' ? '/instructor' : '/dashboard';
-
-          // Using window.location to ensure a full refresh so useUser gets the fresh data
+          console.log("SignUpForm: Redirecting to target:", target);
           window.location.href = target;
         }
 

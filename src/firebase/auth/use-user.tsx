@@ -40,23 +40,26 @@ export const useUser = () => {
           const appUser: AppUser = {
             ...firebaseUser,
             ...userData,
-            // Do NOT default to student if role is missing. 
-            // If missing, it means profile isn't synced yet (signup race condition).
-            role: userData.role
+            role: userData.role // Ensure we use the role from MongoDB
           };
+
+          console.log("useUser: Profile status:", userData.role ? `Found role: ${userData.role}` : "No profile in DB");
 
           setUser(appUser);
 
           const isAuthPage = pathname.startsWith('/login');
           if (isAuthPage && appUser.role) {
-            // Only redirect if we effectively know the role
+            console.log("useUser: Role found, redirecting to:", appUser.role);
             if (appUser.role === 'instructor') {
               router.push('/instructor');
             } else if (appUser.role === 'admin') {
               router.push('/admin');
-            } else {
+            } else if (appUser.role === 'student') {
               router.push('/dashboard');
             }
+          } else if (isAuthPage && !appUser.role) {
+            console.warn("useUser: Authenticated but no role found in DB. Waiting for profile sync...");
+            // Do not redirect, let the user stay on the auth page or wait for a subsequent sync
           }
 
         } catch (error) {

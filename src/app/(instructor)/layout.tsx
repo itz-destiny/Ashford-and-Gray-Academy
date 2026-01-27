@@ -61,7 +61,7 @@ export default function InstructorLayout({
                   href="/instructor"
                   className={cn(
                     "flex items-center gap-3 rounded-lg px-3 py-3 transition-all",
-                    pathname === "/instructor" ? "bg-[#6366f1] text-white shadow-lg" : "text-slate-400 hover:text-white hover:bg-white/10"
+                    pathname === "/instructor" ? "bg-[#6366f1] text-white shadow-none" : "text-slate-400 hover:text-white hover:bg-white/10"
                   )}
                 >
                   <div className="bg-white/20 p-1 rounded text-white"><Home className="h-4 w-4" /></div>

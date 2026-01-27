@@ -60,14 +60,14 @@ export default function InstructorResourcesPage() {
                         <FolderPlus className="w-4 h-4" />
                         Archive Structure
                     </Button>
-                    <Button className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold h-11 px-6 rounded-xl shadow-lg shadow-indigo-100 gap-2">
+                    <Button className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold h-11 px-6 rounded-xl shadow-none gap-2">
                         <Upload className="w-4 h-4" />
                         Upload Manuscript
                     </Button>
                 </div>
             </div>
 
-            <Card className="border-none shadow-xl bg-white/60 backdrop-blur-xl border border-white/20 rounded-3xl overflow-hidden">
+            <Card className="border-none shadow-none bg-white/60 backdrop-blur-xl border border-white/20 rounded-3xl overflow-hidden">
                 <CardContent className="p-8">
                     <div className="flex flex-col gap-6 md:flex-row">
                         <div className="relative flex-1 group">
@@ -84,7 +84,7 @@ export default function InstructorResourcesPage() {
             </Card>
 
             <div className="grid gap-6">
-                <Card className="border-none shadow-sm bg-white/40 backdrop-blur-md rounded-[2rem] overflow-hidden">
+                <Card className="border-none shadow-none bg-white/40 backdrop-blur-md rounded-[2rem] overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
@@ -112,7 +112,7 @@ export default function InstructorResourcesPage() {
                                         <tr key={resource._id} className="group hover:bg-slate-50/50 transition-colors duration-300">
                                             <td className="p-6 pl-10">
                                                 <div className="flex items-center gap-4">
-                                                    <div className="p-3 bg-white rounded-2xl shadow-sm border border-slate-100 group-hover:scale-110 transition-transform duration-500">
+                                                    <div className="p-3 bg-white rounded-2xl shadow-none border border-slate-100 group-hover:scale-110 transition-transform duration-500">
                                                         {getResourceTypeIcon(resource.type)}
                                                     </div>
                                                     <div>

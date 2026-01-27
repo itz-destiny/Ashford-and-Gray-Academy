@@ -102,7 +102,7 @@ export default function InstructorStudentsPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card className="border-none shadow-sm bg-indigo-50/50">
+                <Card className="border-none bg-indigo-50/50 shadow-none">
                     <CardContent className="p-6 flex items-center gap-4">
                         <div className="bg-indigo-600 p-3 rounded-xl text-white">
                             <UserCheck className="w-6 h-6" />
@@ -113,7 +113,7 @@ export default function InstructorStudentsPage() {
                         </div>
                     </CardContent>
                 </Card>
-                <Card className="border-none shadow-sm bg-emerald-50/50">
+                <Card className="border-none bg-emerald-50/50 shadow-none">
                     <CardContent className="p-6 flex items-center gap-4">
                         <div className="bg-emerald-600 p-3 rounded-xl text-white">
                             <Award className="w-6 h-6" />
@@ -124,7 +124,7 @@ export default function InstructorStudentsPage() {
                         </div>
                     </CardContent>
                 </Card>
-                <Card className="border-none shadow-sm bg-amber-50/50">
+                <Card className="border-none bg-amber-50/50 shadow-none">
                     <CardContent className="p-6 flex items-center gap-4">
                         <div className="bg-amber-600 p-3 rounded-xl text-white">
                             <Clock className="w-6 h-6" />
@@ -137,7 +137,7 @@ export default function InstructorStudentsPage() {
                 </Card>
             </div>
 
-            <Card className="border-none shadow-sm overflow-hidden">
+            <Card className="border-none shadow-none overflow-hidden">
                 <CardContent className="p-0">
                     <Table>
                         <TableHeader className="bg-slate-50">

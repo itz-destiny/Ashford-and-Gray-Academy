@@ -2,9 +2,11 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart3, TrendingUp, Users, BookOpen, Download, Filter, Calendar, Share2, MoreHorizontal } from "lucide-react";
+import { BarChart3, TrendingUp, Users, BookOpen, Download, Filter, Calendar, Share2, MoreHorizontal, Star, Clock } from "lucide-react";
 import React from "react";
+import { cn } from "@/lib/utils";
 
 export default function InstructorReportsPage() {
     const stats = [
@@ -29,7 +31,7 @@ export default function InstructorReportsPage() {
                         <Share2 className="w-4 h-4" />
                         Export Analytics
                     </Button>
-                    <Button className="bg-slate-900 hover:bg-slate-800 text-white font-bold h-11 px-6 rounded-xl shadow-lg shadow-slate-200 gap-2">
+                    <Button className="bg-slate-900 hover:bg-slate-800 text-white font-bold h-11 px-6 rounded-xl shadow-none gap-2">
                         <Calendar className="w-4 h-4" />
                         This Semester
                     </Button>
@@ -38,7 +40,7 @@ export default function InstructorReportsPage() {
 
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
                 {stats.map((stat, i) => (
-                    <Card key={i} className="border-none shadow-sm hover:shadow-xl transition-all duration-500 bg-white/80 backdrop-blur-md rounded-[2rem] overflow-hidden border border-white/20">
+                    <Card key={i} className="border-none shadow-none hover:bg-slate-50 transition-all duration-500 bg-white/80 backdrop-blur-md rounded-[2rem] overflow-hidden border border-white/20">
                         <CardContent className="p-8">
                             <div className="flex justify-between items-start mb-4">
                                 <div className={`p-3 rounded-2xl ${stat.bg} ${stat.color}`}>
@@ -55,7 +57,7 @@ export default function InstructorReportsPage() {
                 ))}
             </div>
 
-            <Card className="border-none shadow-2xl rounded-[3rem] overflow-hidden bg-white/50 backdrop-blur-xl border border-white/20">
+            <Card className="border-none shadow-none rounded-[3rem] overflow-hidden bg-white/50 backdrop-blur-xl border border-white/20">
                 <CardHeader className="p-10 pb-0">
                     <div className="flex justify-between items-center">
                         <div>
@@ -79,7 +81,7 @@ export default function InstructorReportsPage() {
             </Card>
 
             <div className="grid gap-8 lg:grid-cols-2">
-                <Card className="border-none shadow-xl rounded-[2.5rem] bg-indigo-600 text-white overflow-hidden relative group">
+                <Card className="border-none shadow-none rounded-[2.5rem] bg-indigo-600 text-white overflow-hidden relative group">
                     <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-indigo-800" />
                     <CardHeader className="relative z-10 p-10">
                         <CardTitle className="text-2xl font-black uppercase tracking-tighter">Enrolled Demographics</CardTitle>
@@ -106,7 +108,7 @@ export default function InstructorReportsPage() {
                     </CardContent>
                 </Card>
 
-                <Card className="border-none shadow-xl rounded-[2.5rem] bg-white border border-slate-100 overflow-hidden group">
+                <Card className="border-none shadow-none rounded-[2.5rem] bg-white border border-slate-100 overflow-hidden group">
                     <CardHeader className="p-10">
                         <div className="flex justify-between items-center">
                             <CardTitle className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Recent Achievements</CardTitle>
@@ -140,6 +142,3 @@ export default function InstructorReportsPage() {
     );
 }
 
-function Badge({ children, variant, className }: { children: React.ReactNode, variant?: string, className?: string }) {
-    return <span className={cn("px-2 py-0.5 rounded-full text-xs font-bold", className)}>{children}</span>;
-}

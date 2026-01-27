@@ -2,10 +2,15 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Course from '@/models/Course';
 
-export async function GET() {
+export async function GET(request: Request) {
     try {
         await dbConnect();
-        const courses = await Course.find({});
+        const { searchParams } = new URL(request.url);
+        const instructorName = searchParams.get('instructorName');
+
+        const query = instructorName ? { 'instructor.name': instructorName } : {};
+        const courses = await Course.find(query);
+
         const coursesWithId = courses.map(course => ({
             ...course.toObject(),
             id: course._id.toString()

@@ -146,7 +146,7 @@ export default function InstructorCommunicationsPage() {
                             <div className="space-y-4">
                                 {messages.map((msg, i) => (
                                     <div key={i} className={`flex ${msg.senderId === user?.uid ? 'justify-end' : 'justify-start'}`}>
-                                        <div className={`max-w-[70%] p-3 rounded-2xl text-sm shadow-sm ${msg.senderId === user?.uid ? 'bg-indigo-600 text-white' : 'bg-white text-slate-900 border'
+                                        <div className={`max-w-[70%] p-3 rounded-2xl text-sm shadow-none ${msg.senderId === user?.uid ? 'bg-indigo-600 text-white' : 'bg-white text-slate-900 border'
                                             }`}>
                                             {msg.content}
                                             <p className={`text-[9px] mt-1 text-right ${msg.senderId === user?.uid ? 'text-indigo-200' : 'text-slate-400'}`}>

@@ -17,14 +17,19 @@ export default function InstructorCoursesPage() {
     const [search, setSearch] = useState("");
 
     useEffect(() => {
+        if (!user) return;
         const fetchCourses = async () => {
             try {
-                const res = await fetch('/api/courses');
+                // Strictly filter by instructor name. 
+                // Note: The API should ideally handle this server-side, 
+                // but we're reinforcing it here as requested.
+                const url = `/api/courses?instructorName=${encodeURIComponent(user.displayName || '')}`;
+                const res = await fetch(url);
                 const data = await res.json();
                 if (Array.isArray(data)) {
-                    // In a real app, we'd filter by instructor ID.
-                    // For now, we'll show all courses or filter by name if available in user profile.
-                    setCourses(data);
+                    // Safety frontend filter just in case API returns more
+                    const mine = data.filter(c => c.instructor?.name === user.displayName);
+                    setCourses(mine);
                 }
             } catch (error) {
                 console.error(error);
@@ -33,7 +38,7 @@ export default function InstructorCoursesPage() {
             }
         };
         fetchCourses();
-    }, []);
+    }, [user]);
 
     const filteredCourses = courses.filter(c =>
         c.title.toLowerCase().includes(search.toLowerCase())
@@ -50,7 +55,7 @@ export default function InstructorCoursesPage() {
                     <p className="text-slate-500 font-medium tracking-tight">Oversee your educational offerings and track academic engagement.</p>
                 </div>
                 <div className="flex gap-3">
-                    <Button asChild className="bg-indigo-600 hover:bg-indigo-700 text-white font-black h-12 px-8 rounded-2xl shadow-xl shadow-indigo-100 gap-2 transition-all hover:scale-105 active:scale-95">
+                    <Button asChild className="bg-indigo-600 hover:bg-indigo-700 text-white font-black h-12 px-8 rounded-2xl shadow-none gap-2 transition-all hover:scale-105 active:scale-95">
                         <Link href="/instructor/courses/new">
                             <Plus className="w-5 h-5" />
                             Develop New Course
@@ -59,7 +64,7 @@ export default function InstructorCoursesPage() {
                 </div>
             </div>
 
-            <Card className="border-none shadow-xl bg-white/60 backdrop-blur-xl border border-white/20 rounded-3xl overflow-hidden">
+            <Card className="border-none shadow-none bg-white/60 backdrop-blur-xl border border-white/20 rounded-3xl overflow-hidden">
                 <CardContent className="p-8">
                     <div className="flex flex-col gap-6 md:flex-row">
                         <div className="relative flex-1 group">
@@ -72,11 +77,11 @@ export default function InstructorCoursesPage() {
                             />
                         </div>
                         <div className="flex gap-4">
-                            <Button variant="outline" className="h-14 px-6 rounded-2xl border-slate-100 bg-white shadow-sm font-bold text-slate-600 gap-2">
+                            <Button variant="outline" className="h-14 px-6 rounded-2xl border-slate-100 bg-white shadow-none font-bold text-slate-600 gap-2">
                                 <Filter className="w-4 h-4" />
                                 Refine
                             </Button>
-                            <Button variant="outline" className="h-14 px-6 rounded-2xl border-slate-100 bg-white shadow-sm font-bold text-slate-600 gap-2">
+                            <Button variant="outline" className="h-14 px-6 rounded-2xl border-slate-100 bg-white shadow-none font-bold text-slate-600 gap-2">
                                 <Layers className="w-4 h-4" />
                                 Categories
                             </Button>
@@ -88,7 +93,7 @@ export default function InstructorCoursesPage() {
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
                 {loading ? (
                     Array.from({ length: 6 }).map((_, i) => (
-                        <Card key={i} className="border-none shadow-sm rounded-3xl overflow-hidden animate-pulse">
+                        <Card key={i} className="border-none shadow-none rounded-3xl overflow-hidden animate-pulse">
                             <div className="h-48 bg-slate-100" />
                             <CardHeader className="space-y-2">
                                 <Skeleton className="h-4 w-1/4" />
@@ -97,7 +102,7 @@ export default function InstructorCoursesPage() {
                         </Card>
                     ))
                 ) : filteredCourses.map((course) => (
-                    <Card key={course._id} className="group border-none shadow-sm hover:shadow-2xl transition-all duration-500 bg-white/80 backdrop-blur-md rounded-3xl overflow-hidden flex flex-col border border-white/20 hover:-translate-y-2">
+                    <Card key={course._id} className="group border-none hover:shadow-2xl transition-all duration-500 bg-white/80 backdrop-blur-md rounded-3xl overflow-hidden flex flex-col border border-white/20 hover:-translate-y-2 shadow-none">
                         <div className="relative h-48 overflow-hidden bg-slate-200">
                             <img
                                 src={course.imageUrl}
@@ -106,7 +111,7 @@ export default function InstructorCoursesPage() {
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                             <div className="absolute top-4 right-4">
-                                <Badge className="bg-white/90 backdrop-blur text-slate-900 font-black border-none px-3 py-1 shadow-sm">
+                                <Badge className="bg-white/90 backdrop-blur text-slate-900 font-black border-none px-3 py-1 shadow-none">
                                     {course.category}
                                 </Badge>
                             </div>
@@ -145,7 +150,7 @@ export default function InstructorCoursesPage() {
                         </CardContent>
                         <div className="p-6 pt-0 border-t border-slate-50 mt-auto">
                             <div className="flex gap-2 pt-6">
-                                <Button asChild className="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold h-11 rounded-xl shadow-lg shadow-slate-200 transition-all active:scale-95">
+                                <Button asChild className="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold h-11 rounded-xl shadow-none transition-all active:scale-95">
                                     <Link href={`/instructor/courses/${course._id}`}>Manage Content</Link>
                                 </Button>
                                 <Button variant="outline" size="icon" className="h-11 w-11 rounded-xl border-slate-100 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all">

@@ -445,7 +445,7 @@ export default function NewCoursePage() {
                                 </div>
                             </div>
                             <div className="space-y-4">
-                                <div className="bg-white rounded-xl border p-4 shadow-sm">
+                                <div className="bg-white rounded-xl border p-4 shadow-none">
                                     <img src={courseData.imageUrl} className="w-full aspect-video object-cover rounded-lg mb-4" />
                                     <h5 className="font-bold">{courseData.title || 'Untitled Course'}</h5>
                                     <div className="flex items-center gap-2 mt-2">

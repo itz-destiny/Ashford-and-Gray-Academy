@@ -94,17 +94,17 @@ export default function StudentGradesPage() {
                     <p className="text-slate-500 font-medium">Track your scholarly progress and institutional standing.</p>
                 </div>
                 <div className="flex gap-3">
-                    <Button variant="outline" className="gap-2 border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold shadow-sm transition-all">
+                    <Button variant="outline" className="gap-2 border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold shadow-none transition-all">
                         <FileText className="w-4 h-4" /> Export Transcript
                     </Button>
-                    <Button className="gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow-md shadow-indigo-100 transition-all">
+                    <Button className="gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow-none transition-all">
                         <Award className="w-4 h-4" /> Share Success
                     </Button>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <Card className="bg-gradient-to-br from-indigo-700 to-indigo-900 text-white border-none shadow-xl relative overflow-hidden group">
+                <Card className="bg-gradient-to-br from-indigo-700 to-indigo-900 text-white border-none shadow-none relative overflow-hidden group">
                     <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
                     <CardContent className="p-6 relative z-10">
                         <div className="flex justify-between items-start mb-6">
@@ -123,7 +123,7 @@ export default function StudentGradesPage() {
                     { label: "Certificates", value: stats.certificates, icon: Award, color: "text-emerald-600", bg: "bg-emerald-50", badge: "Earned" },
                     { label: "Class Percentile", value: stats.percentile, icon: TrendingUp, color: "text-amber-600", bg: "bg-amber-50", badge: "Rank" },
                 ].map((item, i) => (
-                    <Card key={i} className="border-none shadow-sm bg-white/80 backdrop-blur-xl border border-white/20 hover:shadow-md transition-all group">
+                    <Card key={i} className="border-none shadow-none bg-white/80 backdrop-blur-xl border border-white/20 hover:bg-slate-50/50 transition-all group">
                         <CardContent className="p-6">
                             <div className="flex justify-between items-start mb-6">
                                 <div className={`p-2 ${item.bg} rounded-lg group-hover:scale-110 transition-transform`}>
@@ -138,7 +138,7 @@ export default function StudentGradesPage() {
                 ))}
             </div>
 
-            <Card className="border-none shadow-lg bg-white/50 backdrop-blur-2xl border border-white/20 overflow-hidden">
+            <Card className="border-none shadow-none bg-white/50 backdrop-blur-2xl border border-white/20 overflow-hidden">
                 <CardHeader className="bg-white/80 border-b border-slate-100 px-8 py-6">
                     <div className="flex justify-between items-end">
                         <div>
@@ -201,9 +201,9 @@ export default function StudentGradesPage() {
                                             </div>
                                         </TableCell>
                                         <TableCell className="text-center">
-                                            <div className={`mx-auto w-10 h-10 rounded-full flex items-center justify-center font-black text-sm shadow-sm ${['A', 'A+'].includes(data.grade) ? "bg-emerald-100 text-emerald-700" :
-                                                    ['B', 'B+'].includes(data.grade) ? "bg-blue-100 text-blue-700" :
-                                                        "bg-amber-100 text-amber-700"
+                                            <div className={`mx-auto w-10 h-10 rounded-full flex items-center justify-center font-black text-sm shadow-none ${['A', 'A+'].includes(data.grade) ? "bg-emerald-100 text-emerald-700" :
+                                                ['B', 'B+'].includes(data.grade) ? "bg-blue-100 text-blue-700" :
+                                                    "bg-amber-100 text-amber-700"
                                                 }`}>
                                                 {data.grade}
                                             </div>

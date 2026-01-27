@@ -13,6 +13,8 @@ export default function SeedPage() {
   const [completed, setCompleted] = useState(false);
   const { toast } = useToast();
 
+  const [repairing, setRepairing] = useState(false);
+
   const handleSeed = async () => {
     setLoading(true);
     setCompleted(false);
@@ -40,22 +42,51 @@ export default function SeedPage() {
     }
   };
 
+  const handleRepair = async () => {
+    setRepairing(true);
+    try {
+      const res = await fetch('/api/instructor-repair');
+      const data = await res.json();
+      if (res.ok) {
+        toast({ title: 'Repair Complete', description: data.message });
+      } else {
+        throw new Error(data.error || 'Repair failed');
+      }
+    } catch (error: any) {
+      toast({ variant: "destructive", title: "Error", description: error.message });
+    } finally {
+      setRepairing(false);
+    }
+  };
+
   return (
-    <div className="container py-24">
+    <div className="container py-24 space-y-8">
       <Card className="max-w-md mx-auto">
         <CardHeader>
           <CardTitle>Seed Database</CardTitle>
           <CardDescription>
-            Click the button below to populate your Firestore database with the initial course and event data. This will add all courses and will only add events if the collection is empty.
+            Populate database with initial course and event data.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center space-y-4">
           <Button onClick={handleSeed} disabled={loading} className="w-full">
-            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {completed && !loading && <CheckCircle className="mr-2 h-4 w-4" />}
-            {completed && !loading ? 'Seeding Complete' : (loading ? 'Seeding...' : 'Start Seeding')}
+            {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Start Seeding'}
           </Button>
-          {completed && !loading && <p className="text-sm text-green-600 text-center">Your database has been populated. You can now visit the courses and events pages.</p>}
+          {completed && !loading && <p className="text-sm text-green-600 text-center">Seeding complete.</p>}
+        </CardContent>
+      </Card>
+
+      <Card className="max-w-md mx-auto border-orange-200 bg-orange-50/10">
+        <CardHeader>
+          <CardTitle className="text-orange-700">Database Repair</CardTitle>
+          <CardDescription>
+            Fix instructor accounts mislabeled as students.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button onClick={handleRepair} disabled={repairing} variant="outline" className="w-full border-orange-200 text-orange-700 hover:bg-orange-50">
+            {repairing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Repair Instructor Roles'}
+          </Button>
         </CardContent>
       </Card>
     </div>

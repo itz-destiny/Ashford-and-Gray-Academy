@@ -22,9 +22,7 @@ export function AuthForm({ title, description, children, footerText, footerLinkT
 
     const handleGoogleSignIn = async () => {
         const user = await signInWithGoogle();
-        if (user) {
-            router.push('/dashboard');
-        }
+        // Redirection is handled by the useUser hook or the login page's effect
     };
 
     return (
@@ -46,11 +44,11 @@ export function AuthForm({ title, description, children, footerText, footerLinkT
                         <FaGoogle className="mr-2 h-4 w-4" /> Google
                     </Button>
                 </div>
-                 {footerText && footerLinkText && (
+                {footerText && footerLinkText && (
                     <div className="mt-6 text-center text-sm">
                         {footerText}{" "}
                         <button onClick={onFooterLinkClick} className="text-primary hover:underline font-semibold">
-                        {footerLinkText}
+                            {footerLinkText}
                         </button>
                     </div>
                 )}

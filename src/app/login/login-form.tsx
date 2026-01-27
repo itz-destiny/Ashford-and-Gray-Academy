@@ -23,7 +23,7 @@ export function LoginForm({ onSwitchToSignUp }: LoginFormProps) {
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get('redirectUrl');
   const { toast } = useToast();
-  const { user } = useUser();
+  const { user, loading: userLoading } = useUser();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,7 +33,7 @@ export function LoginForm({ onSwitchToSignUp }: LoginFormProps) {
     const password = (form.elements.namedItem("password") as HTMLInputElement).value;
 
     const { error, user: signedInUser } = await signInWithEmail(email, password);
-    
+
     setIsLoading(false);
 
     if (error) {
@@ -43,22 +43,30 @@ export function LoginForm({ onSwitchToSignUp }: LoginFormProps) {
         description: error,
       });
     } else if (signedInUser) {
-        // Redirection is now handled by the useEffect below
+      // Redirection is now handled by the useEffect below
     }
   };
 
-  // Redirect if user object is available
+  // Redirect if user object is available and loading is finished
   React.useEffect(() => {
-    if (user) {
+    if (!userLoading && user) {
+      console.log("LoginForm: User loaded, role:", user.role);
+
       if (redirectUrl) {
         router.push(redirectUrl);
       } else if (user.role === 'instructor') {
         router.push("/instructor");
-      } else {
+      } else if (user.role === 'admin') {
+        router.push("/admin");
+      } else if (user.role === 'student') {
         router.push("/dashboard");
+      } else {
+        // If role is missing, stay on the page and log it
+        // This prevents the default 'student' redirection for instructors
+        console.warn("LoginForm: User authenticated but role is unknown or missing in DB.");
       }
     }
-  }, [user, router, redirectUrl]);
+  }, [user, userLoading, router, redirectUrl]);
 
   return (
     <AuthForm
@@ -83,7 +91,7 @@ export function LoginForm({ onSwitchToSignUp }: LoginFormProps) {
           <Input id="password" name="password" type="password" required placeholder="Enter your password" disabled={isLoading} />
         </div>
         <Button type="submit" className="w-full h-11" disabled={isLoading}>
-           {isLoading ? (
+          {isLoading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             <>Log In <ArrowRight className="ml-2 h-4 w-4" /></>
@@ -94,4 +102,3 @@ export function LoginForm({ onSwitchToSignUp }: LoginFormProps) {
   );
 }
 
-    

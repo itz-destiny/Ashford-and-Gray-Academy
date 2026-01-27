@@ -78,13 +78,13 @@ export default function ResourcesPage() {
           <p className="text-slate-500 font-medium tracking-tight">Access highly curated academic materials and scholarly resources.</p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" className="gap-2 border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold shadow-sm transition-all rounded-full px-6">
+          <Button variant="outline" className="gap-2 border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold shadow-none transition-all rounded-full px-6">
             Latest Additions
           </Button>
         </div>
       </div>
 
-      <Card className="border-none shadow-xl bg-white/60 backdrop-blur-xl border border-white/20 rounded-3xl overflow-hidden">
+      <Card className="border-none shadow-none bg-white/60 backdrop-blur-xl border border-white/20 rounded-3xl overflow-hidden">
         <CardContent className="p-8">
           <div className="flex flex-col gap-6 md:flex-row">
             <div className="relative flex-1 group">
@@ -98,7 +98,7 @@ export default function ResourcesPage() {
             </div>
             <div className="flex gap-4">
               <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger className="w-full md:w-[220px] h-14 bg-white border-slate-100 shadow-sm rounded-2xl font-bold text-slate-700">
+                <SelectTrigger className="w-full md:w-[220px] h-14 bg-white border-slate-100 shadow-none rounded-2xl font-bold text-slate-700">
                   <SelectValue placeholder="Manifest Type" />
                 </SelectTrigger>
                 <SelectContent className="rounded-2xl border-slate-100 shadow-2xl">
@@ -109,7 +109,7 @@ export default function ResourcesPage() {
                   <SelectItem value="code" className="font-bold py-3">Computational Source</SelectItem>
                 </SelectContent>
               </Select>
-              <Button variant="outline" size="icon" className="h-14 w-14 rounded-2xl border-slate-100 hover:bg-slate-50 shadow-sm transition-all">
+              <Button variant="outline" size="icon" className="h-14 w-14 rounded-2xl border-slate-100 hover:bg-slate-50 shadow-none transition-all">
                 <SlidersHorizontal className="h-5 w-5 text-slate-500" />
               </Button>
             </div>
@@ -137,7 +137,7 @@ export default function ResourcesPage() {
                     <ArrowUpRight className="w-4 h-4 text-slate-400" />
                   </div>
                 </div>
-                <div className="bg-white p-6 rounded-2xl shadow-xl shadow-slate-200/50 transform group-hover:rotate-12 transition-transform duration-500">
+                <div className="bg-white p-6 rounded-2xl shadow-none transform group-hover:rotate-12 transition-transform duration-500">
                   {getResourceTypeIcon(resource.type)}
                 </div>
                 <div className="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -157,7 +157,7 @@ export default function ResourcesPage() {
                 </CardDescription>
               </CardHeader>
               <CardFooter className="pt-0 p-6">
-                <Button className="w-full bg-slate-900 hover:bg-indigo-600 text-white font-bold h-12 rounded-xl transition-all shadow-lg shadow-slate-200 hover:shadow-indigo-200 gap-2">
+                <Button className="w-full bg-slate-900 hover:bg-indigo-600 text-white font-bold h-12 rounded-xl transition-all shadow-none gap-2">
                   <Download className="h-4 w-4" />
                   Download Asset
                 </Button>
@@ -167,7 +167,7 @@ export default function ResourcesPage() {
         ) : (
           <div className="col-span-full py-32 text-center bg-slate-50/50 rounded-[3rem] border-4 border-dashed border-slate-200/50 select-none">
             <div className="flex flex-col items-center gap-6 opacity-40">
-              <div className="bg-white p-8 rounded-full shadow-2xl">
+              <div className="bg-white p-8 rounded-full shadow-none">
                 <Search className="w-16 h-16 text-slate-300" />
               </div>
               <div className="space-y-2">

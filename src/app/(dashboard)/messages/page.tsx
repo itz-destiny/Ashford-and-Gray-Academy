@@ -112,7 +112,7 @@ export default function MessagesPage() {
   const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').slice(0, 2);
 
   return (
-    <Card className="h-[calc(100vh-12rem)] w-full grid md:grid-cols-3 lg:grid-cols-4 border-none shadow-2xl rounded-3xl overflow-hidden bg-white/50 backdrop-blur-3xl animate-in zoom-in-95 duration-500">
+    <Card className="h-[calc(100vh-12rem)] w-full grid md:grid-cols-3 lg:grid-cols-4 border-none shadow-none rounded-3xl overflow-hidden bg-white/50 backdrop-blur-3xl animate-in zoom-in-95 duration-500">
       {/* Sidebar: Contacts */}
       <div className="md:col-span-1 lg:col-span-1 border-r border-slate-100 flex flex-col bg-white/40">
         <div className="p-6 border-b border-slate-100">
@@ -131,13 +131,13 @@ export default function MessagesPage() {
               <div
                 key={contact.id}
                 className={`p-4 flex gap-4 cursor-pointer rounded-2xl transition-all duration-300 transform active:scale-95 ${selectedContact?.id === contact.id
-                    ? "bg-indigo-600 shadow-lg shadow-indigo-100 scale-[1.02]"
-                    : "hover:bg-slate-50"
+                  ? "bg-indigo-600 shadow-none scale-[1.02]"
+                  : "hover:bg-slate-50"
                   }`}
                 onClick={() => setSelectedContact(contact)}
               >
                 <div className="relative">
-                  <Avatar className="h-12 w-12 border-2 border-white shadow-sm">
+                  <Avatar className="h-12 w-12 border-2 border-white shadow-none">
                     <AvatarImage src={contact.avatar} />
                     <AvatarFallback className="bg-slate-200 text-slate-600 font-bold">{getInitials(contact.name)}</AvatarFallback>
                   </Avatar>
@@ -168,7 +168,7 @@ export default function MessagesPage() {
           <>
             <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-white/60 backdrop-blur-md">
               <div className="flex items-center gap-4">
-                <Avatar className="h-12 w-12 border-2 border-white shadow-md">
+                <Avatar className="h-12 w-12 border-2 border-white shadow-none">
                   <AvatarImage src={selectedContact.avatar} />
                   <AvatarFallback className="bg-indigo-100 text-indigo-700 font-bold">{getInitials(selectedContact.name)}</AvatarFallback>
                 </Avatar>
@@ -205,9 +205,9 @@ export default function MessagesPage() {
                           <AvatarFallback className="bg-slate-200 text-[10px] font-bold">{getInitials(selectedContact.name)}</AvatarFallback>
                         </Avatar>
                       )}
-                      <div className={`group relative max-w-[70%] p-4 rounded-3xl shadow-sm transition-all hover:shadow-md ${isMe
-                          ? "bg-indigo-600 text-white rounded-br-none"
-                          : "bg-white text-slate-800 rounded-bl-none border border-slate-100"
+                      <div className={`group relative max-w-[70%] p-4 rounded-3xl shadow-none transition-all hover:bg-slate-50 ${isMe
+                        ? "bg-indigo-600 text-white rounded-br-none"
+                        : "bg-white text-slate-800 rounded-bl-none border border-slate-100"
                         }`}>
                         <p className="text-sm font-medium leading-relaxed">{msg.content}</p>
                         <p className={`text-[9px] font-bold mt-2 float-right opacity-60 ${isMe ? "text-indigo-100" : "text-slate-400"}`}>
@@ -238,7 +238,7 @@ export default function MessagesPage() {
                   <Button
                     size="sm"
                     onClick={handleSendMessage}
-                    className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-indigo-600 text-white hover:bg-indigo-700 h-9 w-9 p-0 rounded-xl shadow-lg shadow-indigo-200 transition-all hover:scale-110 active:scale-95"
+                    className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-indigo-600 text-white hover:bg-indigo-700 h-9 w-9 p-0 rounded-xl shadow-none transition-all hover:scale-110 active:scale-95"
                   >
                     <Send className="h-4 w-4" />
                   </Button>
