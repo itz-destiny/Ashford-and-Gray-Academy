@@ -3,6 +3,7 @@
 
 import { Logo } from "@/components/logo";
 import { UserNav } from "@/components/user-nav";
+import { useUser } from "@/firebase/auth/use-user";
 import {
     Bell,
     Book,
@@ -28,6 +29,7 @@ export default function AdminLayout({
     children: React.ReactNode;
 }) {
     const pathname = usePathname();
+    const { user } = useUser();
 
     const navItems = [
         { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -67,12 +69,14 @@ export default function AdminLayout({
                     <div className="mt-auto p-6 border-t">
                         <div className="flex items-center gap-3 mb-4">
                             <Avatar>
-                                <AvatarImage src="/admin-avatar.png" />
-                                <AvatarFallback className="bg-orange-100 text-orange-600">AM</AvatarFallback>
+                                <AvatarImage src={user?.photoURL || ""} />
+                                <AvatarFallback className="bg-orange-100 text-orange-600">
+                                    {user?.displayName ? user.displayName.split(' ').map(n => n[0]).join('') : 'AD'}
+                                </AvatarFallback>
                             </Avatar>
                             <div className="overflow-hidden">
-                                <p className="font-bold text-sm truncate">Alex Morgan</p>
-                                <p className="text-xs text-slate-500 truncate">Super Admin</p>
+                                <p className="font-bold text-sm truncate">{user?.displayName || "Admin User"}</p>
+                                <p className="text-xs text-slate-500 truncate capitalize">{user?.role || "Administrator"}</p>
                             </div>
                         </div>
                     </div>

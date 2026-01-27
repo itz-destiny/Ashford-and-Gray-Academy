@@ -74,3 +74,25 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
+
+export async function DELETE(request: Request) {
+    try {
+        await dbConnect();
+        const { searchParams } = new URL(request.url);
+        const uid = searchParams.get('uid');
+
+        if (!uid) {
+            return NextResponse.json({ error: 'Missing UID' }, { status: 400 });
+        }
+
+        const user = await User.findOneAndDelete({ uid });
+
+        if (!user) {
+            return NextResponse.json({ error: 'User not found' }, { status: 404 });
+        }
+
+        return NextResponse.json({ message: 'User deleted successfully' });
+    } catch (error: any) {
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+}

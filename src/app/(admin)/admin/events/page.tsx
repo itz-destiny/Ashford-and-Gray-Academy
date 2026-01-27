@@ -19,20 +19,58 @@ export default function AdminEventsPage() {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
 
+    const fetchEvents = async () => {
+        try {
+            const res = await fetch('/api/events');
+            const data = await res.json();
+            setEvents(data);
+        } catch (error) {
+            console.error('Error fetching events:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchEvents = async () => {
-            try {
-                const res = await fetch('/api/events');
-                const data = await res.json();
-                setEvents(data);
-            } catch (error) {
-                console.error('Error fetching events:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchEvents();
     }, []);
+
+    const handleDelete = async (id: string) => {
+        if (!confirm('Are you sure you want to delete this event?')) return;
+
+        try {
+            const res = await fetch(`/api/events/${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                fetchEvents();
+            } else {
+                alert('Failed to delete event');
+            }
+        } catch (error) {
+            console.error('Error deleting event:', error);
+        }
+    };
+
+    const handleExport = () => {
+        if (events.length === 0) return;
+        const headers = ["Title", "Date", "Time", "Location", "Registrations"];
+        const rows = events.map(e => [
+            e.title,
+            new Date(e.date).toLocaleDateString(),
+            e.time,
+            e.location,
+            e.registrationCount
+        ]);
+        const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.setAttribute('hidden', '');
+        a.setAttribute('href', url);
+        a.setAttribute('download', 'events_export.csv');
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    };
 
     const filteredEvents = events.filter(e =>
         e.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -90,7 +128,7 @@ export default function AdminEventsPage() {
                         />
                     </div>
                     <div className="flex gap-2">
-                        <Button variant="ghost" size="sm" className="text-slate-500 font-bold">Export CSV</Button>
+                        <Button variant="ghost" size="sm" onClick={handleExport} className="text-slate-500 font-bold">Export CSV</Button>
                     </div>
                 </CardHeader>
                 <CardContent className="p-0">
@@ -131,12 +169,7 @@ export default function AdminEventsPage() {
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex items-center gap-2">
-                                            <div className="flex -space-x-2">
-                                                {[1, 2, 3].map(i => (
-                                                    <div key={i} className="w-6 h-6 rounded-full border-2 border-white bg-slate-200 text-[10px] flex items-center justify-center font-bold">U{i}</div>
-                                                ))}
-                                            </div>
-                                            <span className="text-xs font-bold text-slate-400">+{Math.floor(Math.random() * 50)}</span>
+                                            <span className="text-xs font-bold text-slate-700">{event.registrationCount} Attendee(s)</span>
                                         </div>
                                     </TableCell>
                                     <TableCell>
@@ -150,9 +183,18 @@ export default function AdminEventsPage() {
                                                 <Button variant="ghost" size="icon"><MoreVertical className="w-4 h-4" /></Button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
-                                                <DropdownMenuItem className="gap-2 text-indigo-600 font-bold"><Edit2 className="w-4 h-4" /> Edit Event</DropdownMenuItem>
+                                                <DropdownMenuItem
+                                                    className="gap-2 text-indigo-600 font-bold cursor-pointer"
+                                                >
+                                                    <Edit2 className="w-4 h-4" /> Edit Event
+                                                </DropdownMenuItem>
                                                 <DropdownMenuItem className="gap-2"><Users className="w-4 h-4" /> View Attendees</DropdownMenuItem>
-                                                <DropdownMenuItem className="gap-2 text-red-600 font-bold"><Trash2 className="w-4 h-4" /> Delete</DropdownMenuItem>
+                                                <DropdownMenuItem
+                                                    className="gap-2 text-red-600 font-bold cursor-pointer"
+                                                    onClick={() => handleDelete(event._id)}
+                                                >
+                                                    <Trash2 className="w-4 h-4" /> Delete
+                                                </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>

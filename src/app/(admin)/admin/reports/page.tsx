@@ -2,15 +2,38 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BarChart3, TrendingUp, Users, BookOpen, Download, Filter, Calendar, Share2, MoreHorizontal, Globe, ShieldCheck, Activity } from "lucide-react";
+import { BarChart3, TrendingUp, Users, BookOpen, Download, Filter, Calendar, Share2, MoreHorizontal, Globe, ShieldCheck, Activity, Loader2 } from "lucide-react";
 import React from "react";
 import { cn } from "@/lib/utils";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function AdminReportsPage() {
-    const systemStats = [
-        { title: "Total Revenue", value: "$128,450", trend: "+15.2%", color: "text-emerald-600", bg: "bg-emerald-50" },
-        { title: "Active Students", value: "1,240", trend: "+8.1%", color: "text-indigo-600", bg: "bg-indigo-50" },
-        { title: "Course Catalog", value: "42", trend: "+2", color: "text-amber-600", bg: "bg-amber-50" },
+    const [stats, setStats] = React.useState<any>(null);
+    const [trends, setTrends] = React.useState<any[]>([]);
+    const [loading, setLoading] = React.useState(true);
+
+    React.useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const res = await fetch('/api/admin/stats');
+                const data = await res.json();
+                if (res.ok) {
+                    setStats(data.stats);
+                    setTrends(data.trends);
+                }
+            } catch (err) {
+                console.error("Error fetching reports stats:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchStats();
+    }, []);
+
+    const reportCards = [
+        { title: "Total Revenue", value: stats ? `$${stats.revenue.toLocaleString()}` : "$0", trend: "+12.5%", color: "text-emerald-600", bg: "bg-emerald-50" },
+        { title: "Active Students", value: stats ? stats.students.toString() : "0", trend: "+8.1%", color: "text-indigo-600", bg: "bg-indigo-50" },
+        { title: "Course Catalog", value: stats ? stats.courses.toString() : "0", trend: "+2", color: "text-amber-600", bg: "bg-amber-50" },
         { title: "System Uptime", value: "99.98%", trend: "Stable", color: "text-sky-600", bg: "bg-sky-50" },
     ];
 
@@ -37,7 +60,7 @@ export default function AdminReportsPage() {
             </div>
 
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                {systemStats.map((stat, i) => (
+                {reportCards.map((stat: any, i: number) => (
                     <Card key={i} className="border-none shadow-sm hover:shadow-xl transition-all duration-500 bg-white/80 backdrop-blur-md rounded-[2rem] overflow-hidden border border-white/20">
                         <CardContent className="p-8">
                             <div className="flex justify-between items-start mb-4">
@@ -61,11 +84,30 @@ export default function AdminReportsPage() {
                         <CardTitle className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Growth Trajectory</CardTitle>
                     </CardHeader>
                     <CardContent className="p-10">
-                        <div className="h-[300px] w-full bg-slate-50/50 rounded-[2rem] border-4 border-dashed border-slate-100 flex items-center justify-center">
-                            <div className="text-center opacity-30 select-none">
-                                <BarChart3 className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-                                <p className="font-black text-slate-900 uppercase tracking-tighter">Analytical Engine Initializing</p>
-                            </div>
+                        <div className="h-[300px] w-full">
+                            {loading ? (
+                                <div className="h-full w-full flex items-center justify-center bg-slate-50 rounded-[2rem] border-4 border-dashed border-slate-100">
+                                    <Loader2 className="w-8 h-8 animate-spin text-indigo-400" />
+                                </div>
+                            ) : (
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart data={trends}>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                                        <XAxis
+                                            dataKey="_id"
+                                            axisLine={false}
+                                            tickLine={false}
+                                            tick={{ fontSize: 10, fill: '#94a3b8' }}
+                                        />
+                                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8' }} />
+                                        <Tooltip
+                                            cursor={{ fill: '#f8fafc' }}
+                                            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                                        />
+                                        <Bar dataKey="revenue" fill="#6366f1" radius={[6, 6, 0, 0]} />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            )}
                         </div>
                     </CardContent>
                 </Card>

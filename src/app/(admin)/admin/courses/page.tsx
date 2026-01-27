@@ -19,26 +19,69 @@ export default function AdminCoursesPage() {
     const [courses, setCourses] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
+    const [filterCategory, setFilterCategory] = useState('All');
+
+    const fetchCourses = async () => {
+        try {
+            const res = await fetch('/api/courses');
+            const data = await res.json();
+            setCourses(data);
+        } catch (error) {
+            console.error('Error fetching courses:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleExport = () => {
+        if (courses.length === 0) return;
+        const headers = ["Title", "Instructor", "Category", "Price", "Enrollments"];
+        const rows = courses.map(c => [
+            c.title,
+            c.instructor.name,
+            c.category,
+            c.price,
+            c.enrollmentCount
+        ]);
+        const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.setAttribute('hidden', '');
+        a.setAttribute('href', url);
+        a.setAttribute('download', 'courses_export.csv');
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    };
+
+    const filteredCourses = courses.filter(c => {
+        const matchesSearch = c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            c.instructor.name.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesCategory = filterCategory === 'All' || c.category === filterCategory;
+        return matchesSearch && matchesCategory;
+    });
+
+    const categories = ['All', ...Array.from(new Set(courses.map(c => c.category)))];
 
     useEffect(() => {
-        const fetchCourses = async () => {
-            try {
-                const res = await fetch('/api/courses');
-                const data = await res.json();
-                setCourses(data);
-            } catch (error) {
-                console.error('Error fetching courses:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchCourses();
     }, []);
 
-    const filteredCourses = courses.filter(c =>
-        c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        c.instructor.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const handleDelete = async (id: string) => {
+        if (!confirm('Are you sure you want to delete this course? This action cannot be undone.')) return;
+
+        try {
+            const res = await fetch(`/api/courses/${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                fetchCourses();
+            } else {
+                alert('Failed to delete course');
+            }
+        } catch (error) {
+            console.error('Error deleting course:', error);
+        }
+    };
 
     return (
         <div className="space-y-6">
@@ -58,16 +101,30 @@ export default function AdminCoursesPage() {
             </div>
 
             <Card className="border-none shadow-sm overflow-hidden">
-                <CardHeader className="bg-white border-b px-6 py-4">
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                        <Input
-                            placeholder="Search by title or instructor..."
-                            className="pl-10 max-w-sm bg-slate-50 border-none focus-visible:ring-1"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
+                <CardHeader className="bg-white border-b px-6 py-4 flex flex-row items-center justify-between space-y-0">
+                    <div className="flex gap-4 items-center">
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                            <Input
+                                placeholder="Search by title or instructor..."
+                                className="pl-10 max-w-sm bg-slate-50 border-none focus-visible:ring-1"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </div>
+                        <select
+                            className="h-10 px-3 bg-slate-50 border-none rounded-md text-sm text-slate-600 focus:ring-1 focus:ring-indigo-500"
+                            value={filterCategory}
+                            onChange={(e) => setFilterCategory(e.target.value)}
+                        >
+                            {categories.map(cat => (
+                                <option key={cat} value={cat}>{cat}</option>
+                            ))}
+                        </select>
                     </div>
+                    <Button variant="ghost" size="sm" onClick={handleExport} className="text-indigo-600 font-bold">
+                        Export CSV
+                    </Button>
                 </CardHeader>
                 <CardContent className="p-0">
                     <Table>
@@ -100,7 +157,7 @@ export default function AdminCoursesPage() {
                                         </Badge>
                                     </TableCell>
                                     <TableCell className="font-bold text-slate-700">${course.price}</TableCell>
-                                    <TableCell className="text-slate-500 font-medium">{course.reviews * 2}+</TableCell>
+                                    <TableCell className="text-slate-500 font-medium">{course.enrollmentCount} Student(s)</TableCell>
                                     <TableCell>
                                         <Badge className="bg-emerald-50 text-emerald-700 hover:bg-emerald-50 border-none px-2 py-0.5 text-[10px] font-bold">
                                             Published
@@ -114,7 +171,12 @@ export default function AdminCoursesPage() {
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuItem className="gap-2"><Eye className="w-4 h-4" /> View Details</DropdownMenuItem>
                                                 <DropdownMenuItem className="gap-2 text-indigo-600 font-bold"><Edit2 className="w-4 h-4" /> Edit Course</DropdownMenuItem>
-                                                <DropdownMenuItem className="gap-2 text-red-600 font-bold"><Trash2 className="w-4 h-4" /> Delete</DropdownMenuItem>
+                                                <DropdownMenuItem
+                                                    className="gap-2 text-red-600 font-bold cursor-pointer"
+                                                    onClick={() => handleDelete(course._id)}
+                                                >
+                                                    <Trash2 className="w-4 h-4" /> Delete
+                                                </DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>

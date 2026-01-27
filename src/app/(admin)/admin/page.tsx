@@ -1,5 +1,6 @@
 
 "use client";
+import { cn } from "@/lib/utils";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,36 +11,75 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { AlertTriangle, BookOpen, Calendar, CheckSquare, ChevronRight, Filter, MoreVertical, TrendingUp, UserPlus, Users, MessageSquare } from "lucide-react";
+import { AlertTriangle, BookOpen, Calendar, CheckSquare, ChevronRight, Filter, MoreVertical, TrendingUp, UserPlus, Users, MessageSquare, Loader2 } from "lucide-react";
 import React from "react";
 import Image from "next/image";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export default function AdminDashboardPage() {
-    const [statsData, setStatsData] = React.useState({ students: 0, courses: 0, events: 0, completion: 87 });
+    const [statsData, setStatsData] = React.useState({
+        students: 0,
+        instructors: 0,
+        courses: 0,
+        events: 0,
+        completion: 87,
+        thirtyDayEnrollments: 0,
+        enrollmentGrowth: 0
+    });
     const [recentEnrollments, setRecentEnrollments] = React.useState<any[]>([]);
+    const [trends, setTrends] = React.useState<any[]>([]);
+    const [needsAttention, setNeedsAttention] = React.useState<any[]>([]);
+    const [loading, setLoading] = React.useState(true);
 
     React.useEffect(() => {
         const fetchData = async () => {
-            const [uRes, cRes, eRes, enRes] = await Promise.all([
-                fetch('/api/users'),
-                fetch('/api/courses'),
-                fetch('/api/events'),
-                fetch('/api/enrollments')
-            ]);
-            const [users, courses, events, enrollments] = await Promise.all([
-                uRes.json(), cRes.json(), eRes.json(), enRes.json()
-            ]);
+            try {
+                const res = await fetch('/api/admin/stats');
+                const data = await res.json();
 
-            setStatsData({
-                students: Array.isArray(users) ? users.filter((u: any) => u.role === 'student').length : 0,
-                courses: Array.isArray(courses) ? courses.length : 0,
-                events: Array.isArray(events) ? events.length : 0,
-                completion: 87
-            });
-            setRecentEnrollments(Array.isArray(enrollments) ? enrollments.slice(0, 5) : []);
+                if (res.ok) {
+                    setStatsData({
+                        students: data.stats.students,
+                        instructors: data.stats.instructors,
+                        courses: data.stats.courses,
+                        events: data.stats.events,
+                        completion: data.stats.completionRate,
+                        thirtyDayEnrollments: data.stats.thirtyDayEnrollments,
+                        enrollmentGrowth: data.stats.enrollmentGrowth
+                    });
+                    setRecentEnrollments(data.recentEnrollments);
+                    setTrends(data.trends);
+                    setNeedsAttention(data.needsAttention);
+                }
+            } catch (error) {
+                console.error("Error fetching admin stats:", error);
+            } finally {
+                setLoading(false);
+            }
         };
         fetchData();
     }, []);
+
+    const handleExport = () => {
+        if (recentEnrollments.length === 0) return;
+        const headers = ["Student Name", "Course", "Date", "Status"];
+        const rows = recentEnrollments.map(en => [
+            en.userName,
+            en.course?.title,
+            new Date(en.enrolledAt).toLocaleDateString(),
+            "Active"
+        ]);
+        const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.setAttribute('hidden', '');
+        a.setAttribute('href', url);
+        a.setAttribute('download', 'recent_enrollments.csv');
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    };
 
     const stats = [
         { label: "Total Students", value: statsData.students.toLocaleString(), icon: Users, sub: "+5% this week", subType: "success", bg: "bg-indigo-50", iconColor: "text-indigo-600" },
@@ -87,34 +127,54 @@ export default function AdminDashboardPage() {
                             </div>
                             <div className="flex items-center gap-2">
                                 <div className="text-right">
-                                    <span className="text-2xl font-bold text-slate-900">1,204</span>
-                                    <Badge className="ml-2 bg-emerald-100 text-emerald-700 hover:bg-emerald-100">+12%</Badge>
+                                    <span className="text-2xl font-bold text-slate-900">{statsData.thirtyDayEnrollments.toLocaleString()}</span>
+                                    <Badge className={cn(
+                                        "ml-2",
+                                        statsData.enrollmentGrowth >= 0 ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-100" : "bg-red-100 text-red-700 hover:bg-red-100"
+                                    )}>
+                                        {statsData.enrollmentGrowth >= 0 ? "+" : ""}{statsData.enrollmentGrowth}%
+                                    </Badge>
                                 </div>
                             </div>
                         </CardHeader>
                         <CardContent>
-                            {/* Placeholder for Chart - In a real app, use Recharts */}
-                            <div className="h-[300px] w-full bg-gradient-to-b from-indigo-50/50 to-transparent rounded-lg border border-dashed border-indigo-200 flex items-center justify-center relative overflow-hidden group">
-                                <p className="text-indigo-400 font-medium z-10">Chart Visualization Placeholder</p>
-
-                                {/* CSS-only faux chart wave for visual effect */}
-                                <div className="absolute inset-x-0 bottom-0 h-32 opacity-30">
-                                    <svg viewBox="0 0 500 150" preserveAspectRatio="none" className="h-full w-full">
-                                        <path d="M0.00,49.98 C150.00,150.00 349.20,-49.98 500.00,49.98 L500.00,150.00 L0.00,150.00 Z" style={{ stroke: 'none', fill: '#6366f1' }}></path>
-                                    </svg>
-                                </div>
-                                <div className="absolute inset-x-0 bottom-0 h-32 opacity-50">
-                                    <svg viewBox="0 0 500 150" preserveAspectRatio="none" className="h-full w-full">
-                                        <path d="M0.00,49.98 C150.00,150.00 271.49,-49.98 500.00,49.98 L500.00,150.00 L0.00,150.00 Z" style={{ stroke: 'none', fill: '#818cf8' }}></path>
-                                    </svg>
-                                </div>
-                            </div>
-                            <div className="flex justify-between mt-4 text-xs text-slate-400 px-2">
-                                <span>Oct 1</span>
-                                <span>Oct 7</span>
-                                <span>Oct 14</span>
-                                <span>Oct 21</span>
-                                <span>Oct 30</span>
+                            <div className="h-[300px] w-full">
+                                {loading ? (
+                                    <div className="h-full w-full flex items-center justify-center bg-slate-50 rounded-lg border border-dashed border-indigo-200">
+                                        <Loader2 className="w-8 h-8 animate-spin text-indigo-400" />
+                                    </div>
+                                ) : (
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <AreaChart data={trends}>
+                                            <defs>
+                                                <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
+                                                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                                                </linearGradient>
+                                            </defs>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                                            <XAxis
+                                                dataKey="_id"
+                                                axisLine={false}
+                                                tickLine={false}
+                                                tick={{ fontSize: 10, fill: '#94a3b8' }}
+                                                dy={10}
+                                            />
+                                            <YAxis hide domain={[0, 'auto']} />
+                                            <Tooltip
+                                                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                                            />
+                                            <Area
+                                                type="monotone"
+                                                dataKey="enrollments"
+                                                stroke="#6366f1"
+                                                strokeWidth={3}
+                                                fillOpacity={1}
+                                                fill="url(#colorCount)"
+                                            />
+                                        </AreaChart>
+                                    </ResponsiveContainer>
+                                )}
                             </div>
                         </CardContent>
                     </Card>
@@ -126,7 +186,7 @@ export default function AdminDashboardPage() {
                                 <Button variant="outline" size="sm" className="gap-2 text-slate-600">
                                     <Filter className="w-3 h-3" /> Filter
                                 </Button>
-                                <Button variant="outline" size="sm" className="gap-2 text-slate-600">
+                                <Button variant="outline" size="sm" className="gap-2 text-slate-600" onClick={handleExport}>
                                     Export
                                 </Button>
                             </div>
@@ -148,11 +208,11 @@ export default function AdminDashboardPage() {
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">
                                                     <Avatar className="w-9 h-9 border border-slate-200">
-                                                        <AvatarImage src={student.userId?.photoURL} />
-                                                        <AvatarFallback className="bg-slate-100 text-slate-600 font-bold text-xs">U</AvatarFallback>
+                                                        <AvatarImage src={student.userPhoto} />
+                                                        <AvatarFallback className="bg-slate-100 text-slate-600 font-bold text-xs">{student.userName[0]}</AvatarFallback>
                                                     </Avatar>
                                                     <div>
-                                                        <p className="font-semibold text-slate-900">{student.userId}</p>
+                                                        <p className="font-semibold text-slate-900">{student.userName}</p>
                                                     </div>
                                                 </div>
                                             </td>
@@ -187,46 +247,34 @@ export default function AdminDashboardPage() {
                     </div>
 
                     <div className="space-y-4">
-                        <Card className="bg-orange-50 border-orange-100 shadow-sm">
-                            <CardContent className="p-4 flex gap-4">
-                                <div className="bg-white p-2 h-10 w-10 rounded-lg flex items-center justify-center text-orange-600 shadow-sm">
-                                    <AlertTriangle className="w-5 h-5" />
-                                </div>
-                                <div>
-                                    <h4 className="font-bold text-slate-900 text-sm">Server Maintenance</h4>
-                                    <p className="text-xs text-slate-600 mt-1">Scheduled for tonight at 2:00 AM.</p>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        <Card className="bg-indigo-50 border-indigo-100 shadow-sm">
-                            <CardContent className="p-4 flex flex-col gap-3">
-                                <div className="flex gap-4">
-                                    <div className="bg-white p-2 h-10 w-10 rounded-lg flex items-center justify-center text-indigo-600 shadow-sm">
-                                        <UserPlus className="w-5 h-5" />
+                        {needsAttention.map((item, i) => (
+                            <Card key={i} className={cn(
+                                "shadow-sm border-none transition-all hover:scale-[1.02]",
+                                item.type === 'orange' ? "bg-orange-50 border-orange-100" :
+                                    item.type === 'indigo' ? "bg-indigo-50 border-indigo-100" :
+                                        item.type === 'amber' ? "bg-amber-50 border-amber-100" :
+                                            "bg-emerald-50 border-emerald-100"
+                            )}>
+                                <CardContent className="p-4 flex gap-4">
+                                    <div className={cn(
+                                        "p-2 h-10 w-10 rounded-lg flex items-center justify-center shadow-sm",
+                                        item.type === 'orange' ? "bg-white text-orange-600" :
+                                            item.type === 'indigo' ? "bg-white text-indigo-600" :
+                                                item.type === 'amber' ? "bg-white text-amber-600" :
+                                                    "bg-white text-emerald-600"
+                                    )}>
+                                        {item.id === 'messages' ? <MessageSquare className="w-5 h-5" /> :
+                                            item.id === 'submissions' ? <CheckSquare className="w-5 h-5" /> :
+                                                item.type === 'emerald' ? <CheckSquare className="w-5 h-5" /> :
+                                                    <AlertTriangle className="w-5 h-5" />}
                                     </div>
-                                    <div>
-                                        <h4 className="font-bold text-slate-900 text-sm">5 New Instructor Requests</h4>
-                                        <p className="text-xs text-slate-600 mt-1">Pending approval for course creation.</p>
+                                    <div className="flex-1">
+                                        <h4 className="font-bold text-slate-900 text-sm">{item.title}</h4>
+                                        <p className="text-xs text-slate-600 mt-1">{item.description}</p>
                                     </div>
-                                </div>
-                                <Button size="sm" variant="ghost" className="self-end text-indigo-700 hover:text-indigo-800 hover:bg-indigo-100 h-8">
-                                    Review
-                                </Button>
-                            </CardContent>
-                        </Card>
-
-                        <Card className="bg-white border-slate-100 shadow-sm">
-                            <CardContent className="p-4 flex gap-4">
-                                <div className="bg-slate-100 p-2 h-10 w-10 rounded-lg flex items-center justify-center text-slate-600">
-                                    <MessageSquare className="w-5 h-5" />
-                                </div>
-                                <div>
-                                    <h4 className="font-bold text-slate-900 text-sm">Course Feedback</h4>
-                                    <p className="text-xs text-slate-600 mt-1">New reviews on "Intro to UX Design".</p>
-                                </div>
-                            </CardContent>
-                        </Card>
+                                </CardContent>
+                            </Card>
+                        ))}
                     </div>
                 </div>
             </div>
