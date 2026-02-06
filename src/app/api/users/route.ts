@@ -7,23 +7,31 @@ export async function GET(request: Request) {
         await dbConnect();
         const { searchParams } = new URL(request.url);
         const uid = searchParams.get('uid');
+        const role = searchParams.get('role');
 
-        if (!uid) {
-            // If no UID provided, return all users (for admin usage)
-            // In a real app, verify admin role here
-            const users = await User.find({}).sort({ createdAt: -1 });
-            return NextResponse.json(users);
+        if (uid) {
+            const user = await User.findOne({ uid });
+
+            if (!user) {
+                console.warn(`GET /api/users: User with UID ${uid} not found in DB`);
+                return NextResponse.json({ message: 'User not found' }, { status: 404 });
+            }
+
+            console.log(`GET /api/users: Found user ${user.email} with role ${user.role}`);
+            return NextResponse.json(user);
         }
 
-        const user = await User.findOne({ uid });
-
-        if (!user) {
-            console.warn(`GET /api/users: User with UID ${uid} not found in DB`);
-            return NextResponse.json({ message: 'User not found' }, { status: 404 });
+        // Filter by role if provided
+        let query: any = {};
+        if (role === 'staff') {
+            // Get all staff members (registrar, course_registrar, finance, admin, instructor)
+            query.role = { $in: ['registrar', 'course_registrar', 'finance', 'admin', 'instructor'] };
+        } else if (role) {
+            query.role = role;
         }
 
-        console.log(`GET /api/users: Found user ${user.email} with role ${user.role}`);
-        return NextResponse.json(user);
+        const users = await User.find(query).sort({ createdAt: -1 });
+        return NextResponse.json(users);
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 });
     }

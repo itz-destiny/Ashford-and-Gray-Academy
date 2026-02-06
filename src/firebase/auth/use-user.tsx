@@ -54,6 +54,12 @@ export const useUser = () => {
               router.push('/instructor');
             } else if (appUser.role === 'admin') {
               router.push('/admin');
+            } else if (appUser.role === 'registrar') {
+              router.push('/registrar');
+            } else if (appUser.role === 'course_registrar') {
+              router.push('/course-registrar');
+            } else if (appUser.role === 'finance') {
+              router.push('/finance');
             } else if (appUser.role === 'student') {
               router.push('/dashboard');
             }

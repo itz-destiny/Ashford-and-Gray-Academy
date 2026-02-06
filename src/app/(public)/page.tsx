@@ -373,10 +373,15 @@ export default function Home() {
             <CarouselContent>
               {testimonials.map((t) => (
                 <CarouselItem key={t.id}>
-                  <Card className="p-8 text-center bg-white shadow-xl">
-                    <Image src={t.avatarUrl} alt={t.name} width={80} height={80} className="rounded-full mx-auto" data-ai-hint="person portrait" />
-                    <Quote className="w-12 h-12 text-primary/20 mx-auto mt-6" />
-                    <p className="text-muted-foreground text-lg mt-4">"{t.quote}"</p>
+                  <div className="bg-white p-8 rounded-xl shadow-sm border border-slate-200">
+                    <div className="flex items-center gap-4 mb-4">
+                      <Image src={t.avatarUrl} alt={t.name} width={60} height={60} className="rounded-full" data-ai-hint="person portrait" />
+                      <div>
+                        <h4 className="font-bold text-slate-900">{t.name}</h4>
+                        <p className="text-sm text-slate-500">{t.title}</p>
+                      </div>
+                    </div>
+                    <p className="text-slate-600 italic">"{t.quote}"</p>
                     <div className="mt-6">
                       <div className="flex items-center justify-center gap-1">
                         {[...Array(5)].map((_, i) => (
@@ -386,7 +391,7 @@ export default function Home() {
                       <p className="font-bold mt-4">{t.name}</p>
                       <p className="text-sm text-muted-foreground">{t.title}</p>
                     </div>
-                  </Card>
+                  </div>
                 </CarouselItem>
               ))}
             </CarouselContent>

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -18,10 +17,32 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+    DialogFooter
+} from "@/components/ui/dialog";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, MoreVertical, Search, Trash } from "lucide-react";
+import { Loader2, Search, Trash, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+
+// Firebase imports for Secondary App
+import { initializeApp, getApps, getApp, deleteApp } from "firebase/app";
+import { getAuth, createUserWithEmailAndPassword, updateProfile, signOut } from "firebase/auth";
+import { firebaseConfig } from "@/firebase/config";
 
 interface User {
     _id: string;
@@ -40,6 +61,16 @@ export default function UsersPage() {
     const [searchTerm, setSearchTerm] = useState("");
     const [filterRole, setFilterRole] = useState("All");
     const { toast } = useToast();
+
+    // Create User State
+    const [isCreateOpen, setIsCreateOpen] = useState(false);
+    const [isCreating, setIsCreating] = useState(false);
+    const [newUser, setNewUser] = useState({
+        displayName: "",
+        email: "",
+        password: "",
+        role: "student"
+    });
 
     useEffect(() => {
         fetchUsers();
@@ -98,6 +129,73 @@ export default function UsersPage() {
         }
     };
 
+    const handleCreateUser = async () => {
+        if (!newUser.email || !newUser.password || !newUser.displayName) {
+            toast({ variant: "destructive", title: "Missing Fields", description: "Please fill in all fields." });
+            return;
+        }
+
+        setIsCreating(true);
+        let secondaryApp;
+
+        try {
+            // 1. Initialize Secondary App to avoid logging out the current admin
+            const secondaryAppName = "secondaryApp";
+            try {
+                secondaryApp = getApp(secondaryAppName);
+            } catch (e) {
+                secondaryApp = initializeApp(firebaseConfig, secondaryAppName);
+            }
+
+            const secondaryAuth = getAuth(secondaryApp);
+
+            // 2. Create User in Firebase Auth
+            const userCredential = await createUserWithEmailAndPassword(secondaryAuth, newUser.email, newUser.password);
+            const user = userCredential.user;
+
+            // 3. Update Profile (Display Name)
+            await updateProfile(user, {
+                displayName: newUser.displayName
+            });
+
+            // 4. Create User Request to our API (MongoDB)
+            const res = await fetch('/api/users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: newUser.displayName,
+                    role: newUser.role,
+                    photoURL: '',
+                    bio: 'New Staff Member',
+                    school: 'Ashford & Gray Academy'
+                })
+            });
+
+            if (!res.ok) throw new Error("Failed to save user to database");
+
+            // 5. Cleanup
+            await signOut(secondaryAuth);
+            // We don't delete the app immediately to avoid errors if logic continues, but ideally we should.
+            // deleteApp(secondaryApp); 
+
+            toast({ title: "User Created", description: `${newUser.displayName} has been created as a ${newUser.role}.` });
+            setIsCreateOpen(false);
+            setNewUser({ displayName: "", email: "", password: "", role: "student" });
+            fetchUsers();
+
+        } catch (error: any) {
+            console.error("Creation Error:", error);
+            toast({ variant: "destructive", title: "Creation Failed", description: error.message });
+        } finally {
+            if (secondaryApp) {
+                // await deleteApp(secondaryApp).catch(()=> {}); // Optional cleanup
+            }
+            setIsCreating(false);
+        }
+    };
+
     const handleExport = () => {
         if (users.length === 0) return;
         const headers = ["Name", "Email", "Role", "School", "Joined"];
@@ -127,7 +225,15 @@ export default function UsersPage() {
         return matchesSearch && matchesRole;
     });
 
-    const roles = ["All", "admin", "instructor", "student"];
+    const roles = ["All", "admin", "registrar", "course_registrar", "finance", "instructor", "student"];
+    const createRoles = [
+        { value: "admin", label: "Super Admin" },
+        { value: "registrar", label: "Acting Registrar" },
+        { value: "course_registrar", label: "Course Registrar" },
+        { value: "finance", label: "Finance Manager" },
+        { value: "instructor", label: "Instructor" },
+        { value: "student", label: "Student" }
+    ];
 
     const getInitials = (name: string) => name?.substring(0, 2).toUpperCase() || '??';
 
@@ -138,6 +244,76 @@ export default function UsersPage() {
                     <h1 className="text-2xl font-bold tracking-tight text-slate-900">User Management</h1>
                     <p className="text-slate-500">Manage students, instructors, and admins.</p>
                 </div>
+
+                {/* Create User Dialog */}
+                <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+                    <DialogTrigger asChild>
+                        <Button className="bg-indigo-600 hover:bg-indigo-700">
+                            <Plus className="w-4 h-4 mr-2" /> Create User
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                            <DialogTitle>Create New Account</DialogTitle>
+                            <DialogDescription>
+                                Create a new login for staff or students. They can change their password later.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <div className="grid gap-4 py-4">
+                            <div className="grid gap-2">
+                                <Label htmlFor="name">Full Name</Label>
+                                <Input
+                                    id="name"
+                                    value={newUser.displayName}
+                                    onChange={(e) => setNewUser({ ...newUser, displayName: e.target.value })}
+                                />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="email">Email</Label>
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    value={newUser.email}
+                                    onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                                />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="password">Initial Password</Label>
+                                <Input
+                                    id="password"
+                                    type="password"
+                                    value={newUser.password}
+                                    onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                                />
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="role">Role</Label>
+                                <Select
+                                    value={newUser.role}
+                                    onValueChange={(val) => setNewUser({ ...newUser, role: val })}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select a role" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {createRoles.map(role => (
+                                            <SelectItem key={role.value} value={role.value}>
+                                                {role.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                        <DialogFooter>
+                            <Button variant="outline" onClick={() => setIsCreateOpen(false)}>Cancel</Button>
+                            <Button onClick={handleCreateUser} disabled={isCreating} className="bg-indigo-600">
+                                {isCreating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                                Create Account
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </div>
 
             <Card>
@@ -151,7 +327,7 @@ export default function UsersPage() {
                                 onChange={(e) => setFilterRole(e.target.value)}
                             >
                                 {roles.map(role => (
-                                    <option key={role} value={role}>{role.charAt(0).toUpperCase() + role.slice(1)}</option>
+                                    <option key={role} value={role}>{role.charAt(0).toUpperCase() + role.slice(1).replace('_', ' ')}</option>
                                 ))}
                             </select>
                         </div>
@@ -207,11 +383,14 @@ export default function UsersPage() {
                                                 variant="outline"
                                                 className={
                                                     user.role === 'admin' ? "bg-purple-50 text-purple-700 border-purple-200" :
-                                                        user.role === 'instructor' ? "bg-blue-50 text-blue-700 border-blue-200" :
-                                                            "bg-slate-50 text-slate-700 border-slate-200"
+                                                        user.role === 'registrar' ? "bg-orange-50 text-orange-700 border-orange-200" :
+                                                            user.role === 'course_registrar' ? "bg-cyan-50 text-cyan-700 border-cyan-200" :
+                                                                user.role === 'finance' ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
+                                                                    user.role === 'instructor' ? "bg-blue-50 text-blue-700 border-blue-200" :
+                                                                        "bg-slate-50 text-slate-700 border-slate-200"
                                                 }
                                             >
-                                                {user.role}
+                                                {user.role?.replace('_', ' ').toUpperCase()}
                                             </Badge>
                                         </TableCell>
                                         <TableCell>
@@ -222,14 +401,6 @@ export default function UsersPage() {
                                         </TableCell>
                                         <TableCell className="text-right">
                                             <div className="flex justify-end gap-2">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    className="text-indigo-600 font-bold"
-                                                    onClick={() => handleRoleUpdate(user.uid, user.email, user.role === 'admin' ? 'student' : user.role === 'instructor' ? 'admin' : 'instructor')}
-                                                >
-                                                    Cycle Role
-                                                </Button>
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"

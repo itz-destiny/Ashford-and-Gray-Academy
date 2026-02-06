@@ -3,6 +3,7 @@
 
 import { Logo } from "@/components/logo";
 import { UserNav } from "@/components/user-nav";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { useUser } from "@/firebase/auth/use-user";
 import {
     Bell,
@@ -36,6 +37,7 @@ export default function AdminLayout({
         { href: "/admin/users", label: "Users", icon: Users },
         { href: "/admin/courses", label: "Courses", icon: Book },
         { href: "/admin/events", label: "Events", icon: Calendar },
+        { href: "/admin/communications", label: "Communications", icon: MessageSquare },
         { href: "/admin/reports", label: "Reports", icon: MessageSquare }, // Using MessageSquare as placeholder for Reports icon if BarChart is not desired or redundant
         { href: "/admin/settings", label: "Settings", icon: Settings },
     ];
@@ -79,6 +81,23 @@ export default function AdminLayout({
                                 <p className="text-xs text-slate-500 truncate capitalize">{user?.role || "Administrator"}</p>
                             </div>
                         </div>
+                        <Button
+                            variant="outline"
+                            className="w-full justify-start gap-2 text-slate-600 hover:text-red-600 hover:hover:bg-red-50 hover:border-red-200"
+                            onClick={async () => {
+                                try {
+                                    const { auth } = await import('@/firebase/config');
+                                    const { signOut } = await import('firebase/auth');
+                                    await signOut(auth);
+                                    window.location.href = '/login';
+                                } catch (error) {
+                                    console.error('Logout error:', error);
+                                }
+                            }}
+                        >
+                            <LogOut className="h-4 w-4" />
+                            Logout
+                        </Button>
                     </div>
                 </div>
             </div>
@@ -95,13 +114,7 @@ export default function AdminLayout({
                         />
                     </div>
 
-                    <Button variant="ghost" size="icon" className="text-slate-500">
-                        <Bell className="h-5 w-5" />
-                    </Button>
-
-                    <Button className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-md gap-2 shadow-sm">
-                        <Plus className="h-4 w-4" /> Create New
-                    </Button>
+                    <NotificationBell />
                 </header>
                 <main className="flex flex-1 flex-col gap-6 p-6 md:p-8">
                     {children}

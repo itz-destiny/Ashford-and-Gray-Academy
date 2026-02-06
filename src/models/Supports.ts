@@ -89,6 +89,7 @@ export interface IMessage extends Document {
     senderId: string; // Firebase UID
     receiverId: string; // Firebase UID
     courseId?: mongoose.Types.ObjectId;
+    conversationId?: mongoose.Types.ObjectId;
     content: string;
     isRead: boolean;
 }
@@ -97,11 +98,27 @@ const MessageSchema: Schema = new Schema({
     senderId: { type: String, required: true },
     receiverId: { type: String, required: true },
     courseId: { type: Schema.Types.ObjectId, ref: 'Course' },
+    conversationId: { type: Schema.Types.ObjectId, ref: 'Conversation' },
     content: { type: String, required: true },
     isRead: { type: Boolean, default: false },
 }, { timestamps: true });
 
 export const Message = mongoose.models.Message || mongoose.model<IMessage>('Message', MessageSchema);
+
+// --- Conversation Model ---
+export interface IConversation extends Document {
+    participants: string[]; // Array of User UIDs
+    lastMessage?: string;
+    lastMessageAt?: Date;
+}
+
+const ConversationSchema: Schema = new Schema({
+    participants: [{ type: String, required: true }],
+    lastMessage: { type: String },
+    lastMessageAt: { type: Date, default: Date.now },
+}, { timestamps: true });
+
+export const Conversation = mongoose.models.Conversation || mongoose.model<IConversation>('Conversation', ConversationSchema);
 
 // --- Resource Model ---
 export interface IResource extends Document {

@@ -6,8 +6,15 @@ import { FirebaseClientProvider } from "@/firebase/client-provider";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "Ashford and Gray Fusion Academy",
-  description: "A modern learning platform.",
+  title: "Ashford & Gray Fusion Academy",
+  description: "Premier online learning platform offering world-class courses in technology, business, and creative arts. Join thousands of students advancing their careers with expert-led instruction.",
+  keywords: ["online learning", "education", "courses", "Ashford Gray", "e-learning", "professional development"],
+  authors: [{ name: "Ashford & Gray Fusion Academy" }],
+  openGraph: {
+    title: "Ashford & Gray Fusion Academy",
+    description: "Transform your future with world-class online education",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -18,6 +25,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="antialiased" suppressHydrationWarning>
       <head>
+        {/* Favicon */}
+        <link rel="icon" href="/icon.png" sizes="any" />
+        <link rel="apple-touch-icon" href="/icon.png" />
+
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"

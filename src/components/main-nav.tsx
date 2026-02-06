@@ -35,7 +35,10 @@ export function MainNav() {
                 <Link href={
                   (user as any).role === 'instructor' ? '/instructor' :
                     (user as any).role === 'admin' ? '/admin' :
-                      '/dashboard'
+                      (user as any).role === 'registrar' ? '/registrar' :
+                        (user as any).role === 'course_registrar' ? '/course-registrar' :
+                          (user as any).role === 'finance' ? '/finance' :
+                            '/dashboard'
                 }>Dashboard</Link>
               </Button>
               <UserNav />

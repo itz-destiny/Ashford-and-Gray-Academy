@@ -23,7 +23,7 @@ const sidebarItems = [
     { href: "/my-courses", label: "Courses", icon: BookOpen },
     { href: "/my-events", label: "Events", icon: Calendar },
     { href: "/grades", label: "Grades", icon: GraduationCap },
-    { href: "/messages", label: "Messages", icon: MessageSquare },
+    { href: "/communications", label: "Communications", icon: MessageSquare },
     { href: "/resources", label: "Resources", icon: FileText },
     { href: "/schedule", label: "Schedule", icon: Clock },
 ];

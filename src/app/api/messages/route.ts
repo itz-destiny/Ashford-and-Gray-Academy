@@ -6,9 +6,15 @@ export async function GET(request: Request) {
     try {
         await dbConnect();
         const { searchParams } = new URL(request.url);
-        const userId = searchParams.get('userId'); // Current user
-        const contactId = searchParams.get('contactId'); // Person they are chatting with
+        const userId = searchParams.get('userId');
+        const contactId = searchParams.get('contactId');
         const courseId = searchParams.get('courseId');
+        const conversationId = searchParams.get('conversationId');
+
+        if (conversationId) {
+            const messages = await Message.find({ conversationId }).sort({ createdAt: 1 });
+            return NextResponse.json(messages);
+        }
 
         if (!userId) {
             return NextResponse.json({ error: 'userId is required' }, { status: 400 });
@@ -36,7 +42,20 @@ export async function POST(request: Request) {
     try {
         await dbConnect();
         const body = await request.json();
+
+        // If conversationId is provided, use it. If not, try to find or create one (optional optimization)
+        // For now, assume client might pass existing conversationId or we just save the message.
+
         const message = await Message.create(body);
+
+        // Update conversation if linked
+        if (body.conversationId) {
+            await import('@/models/Supports').then(mod => mod.Conversation.findByIdAndUpdate(body.conversationId, {
+                lastMessage: body.content,
+                lastMessageAt: new Date()
+            }));
+        }
+
         return NextResponse.json(message);
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 });
