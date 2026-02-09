@@ -1,6 +1,12 @@
+require('dotenv').config();
 const mongoose = require('mongoose');
 
-const uri = "mongodb+srv://jonathandestiny693_db_user:U9ZxyQN1gOT7s0HD@ashford.swptmgw.mongodb.net/?appName=Ashford";
+const uri = process.env.MONGODB_URI;
+
+if (!uri) {
+    console.error("FAILURE: MONGODB_URI not found in environment variables.");
+    process.exit(1);
+}
 
 console.log("Attempting to connect to MongoDB...");
 console.log("URI:", uri.replace(/:([^:@]+)@/, ':****@')); // hiding password

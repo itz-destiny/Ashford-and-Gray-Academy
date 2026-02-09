@@ -34,37 +34,46 @@ export function FilePicker({ label, value, onChange, accept = "image/*", placeho
         setProgress(0);
 
         try {
-            const storageRef = ref(storage, `uploads/${Date.now()}_${file.name}`);
-            const uploadTask = uploadBytesResumable(storageRef, file);
+            // Use server-side proxy instead of client-side Firebase to bypass CORS
+            const formData = new FormData();
+            formData.append('file', file);
 
-            uploadTask.on('state_changed',
-                (snapshot) => {
-                    const p = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/api/upload', true);
+
+            xhr.upload.onprogress = (event) => {
+                if (event.lengthComputable) {
+                    const p = (event.loaded / event.total) * 100;
                     setProgress(p);
-                },
-                (error) => {
-                    console.error("Upload error:", error);
-                    toast({
-                        variant: "destructive",
-                        title: "Upload Failed",
-                        description: error.message
-                    });
-                    setIsUploading(false);
-                },
-                async () => {
-                    const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-                    onChange(downloadURL);
+                }
+            };
+
+            xhr.onload = () => {
+                if (xhr.status === 200) {
+                    const response = JSON.parse(xhr.responseText);
+                    onChange(response.url);
                     setIsUploading(false);
                     toast({
                         title: "Success",
                         description: "File uploaded successfully"
                     });
+                } else {
+                    const error = JSON.parse(xhr.responseText);
+                    throw new Error(error.error || "Upload failed");
                 }
-            );
+            };
+
+            xhr.onerror = () => {
+                throw new Error("Network error during upload");
+            };
+
+            xhr.send(formData);
+
         } catch (error: any) {
+            console.error("Upload error:", error);
             toast({
                 variant: "destructive",
-                title: "Error",
+                title: "Upload Failed",
                 description: error.message
             });
             setIsUploading(false);

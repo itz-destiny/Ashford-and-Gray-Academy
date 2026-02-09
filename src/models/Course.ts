@@ -17,6 +17,7 @@ export interface ICourse extends Document {
     imageUrl: string;
     imageHint: string;
     description: string;
+    status: 'draft' | 'pending' | 'published' | 'archived';
 }
 
 const CourseSchema: Schema = new Schema({
@@ -36,6 +37,7 @@ const CourseSchema: Schema = new Schema({
     imageUrl: { type: String, required: true },
     imageHint: { type: String, required: true },
     description: { type: String, required: true },
+    status: { type: String, enum: ['draft', 'pending', 'published', 'archived'], default: 'draft' },
 }, { timestamps: true });
 
 export default mongoose.models.Course || mongoose.model<ICourse>('Course', CourseSchema);

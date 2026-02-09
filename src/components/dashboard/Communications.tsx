@@ -9,6 +9,7 @@ import { useUser } from "@/firebase/auth/use-user";
 import { Paperclip, Search, Send, Smile, MoreVertical, Phone, Video, Loader2 } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
 import Link from 'next/link';
+import EmojiPicker from 'emoji-picker-react';
 
 export function Communications() {
     const { user } = useUser();
@@ -20,6 +21,7 @@ export function Communications() {
     const [activeTab, setActiveTab] = useState<'conversations' | 'staff'>('conversations');
     const scrollRef = useRef<HTMLDivElement>(null);
     const [loading, setLoading] = useState(true);
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
     // Fetch staff directory (for admins to see all staff members)
     useEffect(() => {
@@ -365,7 +367,7 @@ export function Communications() {
             </div>
 
             {/* Main Chat Area */}
-            <div className="md:col-span-2 lg:col-span-3 flex flex-col h-full bg-white/20">
+            <div className="md:col-span-2 lg:col-span-3 flex flex-col h-full bg-white/20 overflow-hidden">
                 {selectedConversation ? (
                     <>
                         <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-white/60 backdrop-blur-md">
@@ -401,7 +403,7 @@ export function Communications() {
                             </div>
                         </div>
 
-                        <ScrollArea className="flex-1 p-8 bg-gradient-to-b from-slate-50/50 to-white/50">
+                        <ScrollArea className="flex-1 min-h-0 p-8 bg-gradient-to-b from-slate-50/50 to-white/50">
                             <div className="space-y-8 max-w-4xl mx-auto">
                                 {messages.map((msg, i) => {
                                     const isMe = msg.senderId === user?.uid;
@@ -445,9 +447,35 @@ export function Communications() {
 
                         <div className="p-6 border-t border-slate-100 bg-white/80 backdrop-blur-md">
                             <div className="max-w-4xl mx-auto relative flex items-center gap-3">
-                                <div className="flex gap-1 shrink-0">
-                                    <Button variant="ghost" size="icon" className="text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full"><Smile className="h-5 w-5" /></Button>
-                                    <Button variant="ghost" size="icon" className="text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full"><Paperclip className="h-5 w-5" /></Button>
+                                <div className="flex gap-1 shrink-0 relative">
+                                    <div className="relative">
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full"
+                                            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                                        >
+                                            <Smile className="h-5 w-5" />
+                                        </Button>
+                                        {showEmojiPicker && (
+                                            <div className="absolute bottom-12 left-0 z-50">
+                                                <EmojiPicker
+                                                    onEmojiClick={(emojiData) => {
+                                                        setNewMessage((prev) => prev + emojiData.emoji);
+                                                        setShowEmojiPicker(false);
+                                                    }}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full"
+                                        onClick={() => alert("File upload coming soon!")}
+                                    >
+                                        <Paperclip className="h-5 w-5" />
+                                    </Button>
                                 </div>
                                 <div className="relative flex-1">
                                     <Input

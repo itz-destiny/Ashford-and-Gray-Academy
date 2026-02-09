@@ -10,9 +10,5 @@ export const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase only if it hasn't been initialized
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-
-// Initialize and export auth
-export const auth = getAuth(app);
-export default app;
+// This file should only export the configuration object.
+// Initialization is handled centrally in src/firebase/index.ts

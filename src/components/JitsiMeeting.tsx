@@ -22,21 +22,27 @@ export default function JitsiMeetingWrapper({ roomId }: JitsiMeetingProps) {
     const hostId = searchParams.get('hostId');
 
     React.useEffect(() => {
+        console.log("JitsiMeeting: Initializing with roomId:", roomId);
+        console.log("JitsiMeeting: JaaS App ID:", process.env.NEXT_PUBLIC_JAAS_APP_ID);
+
         const fetchToken = async () => {
             try {
                 const res = await fetch('/api/auth/jaas-token');
                 if (res.ok) {
                     const data = await res.json();
+                    console.log("JitsiMeeting: Token fetched successfully");
                     setJwt(data.token);
+                } else {
+                    console.error("JitsiMeeting: Failed to fetch token, status:", res.status);
                 }
             } catch (error) {
-                console.error("Failed to fetch JaaS token", error);
+                console.error("JitsiMeeting: Error during token fetch:", error);
             } finally {
                 setLoading(false);
             }
         };
         fetchToken();
-    }, []);
+    }, [roomId]);
 
     const handleReadyToClose = async () => {
         // If we have context, post "Meeting Ended" message
@@ -55,6 +61,23 @@ export default function JitsiMeetingWrapper({ roomId }: JitsiMeetingProps) {
                 console.error("Failed to send end meeting message", error);
             }
         }
+
+        // End Telemetry
+        if (roomId) {
+            try {
+                await fetch('/api/communications/meetings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        meetingId: roomId,
+                        action: 'end'
+                    })
+                });
+            } catch (error) {
+                console.error("Failed to send end meeting telemetry", error);
+            }
+        }
+
         router.back();
     };
 
@@ -106,6 +129,24 @@ export default function JitsiMeetingWrapper({ roomId }: JitsiMeetingProps) {
                     setLoading(false);
                     externalApi.on('readyToClose', handleReadyToClose);
                     externalApi.on('videoConferenceLeft', handleReadyToClose);
+
+                    // Start Telemetry
+                    if (user && roomId) {
+                        fetch('/api/communications/meetings', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                meetingId: roomId,
+                                conversationId: conversationId,
+                                action: 'start',
+                                participants: [{
+                                    uid: user.uid,
+                                    displayName: user.displayName || 'User',
+                                    role: (user as any).role || 'student'
+                                }]
+                            })
+                        }).catch(err => console.error("Telemetry error", err));
+                    }
                 }}
                 onReadyToClose={handleReadyToClose}
                 getIFrameRef={(iframeRef) => {

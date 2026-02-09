@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
-import { currentUser } from '@/lib/auth'; // Hypothetical auth helper, or use your existing session logic
+// import { currentUser } from '@/lib/auth'; 
 
 export async function GET() {
     try {
@@ -12,7 +12,25 @@ export async function GET() {
         // 2. Get JaaS credentials from env
         const JAAS_API_KEY = process.env.JAAS_API_KEY;
         const JAAS_APP_ID = process.env.JAAS_APP_ID;
-        const JAAS_PRIVATE_KEY = process.env.JAAS_PRIVATE_KEY?.replace(/\\n/g, '\n'); // Fix newline issues
+        let JAAS_PRIVATE_KEY = process.env.JAAS_PRIVATE_KEY;
+
+        if (JAAS_PRIVATE_KEY) {
+            // Robust PEM formatting for RS256
+            // 1. Remove escaped newlines and literals
+            let cleanKey = JAAS_PRIVATE_KEY.replace(/\\n/g, '\n').replace(/\n/g, '');
+
+            // 2. Remove existing headers/footers and whitespace to get raw base64
+            cleanKey = cleanKey
+                .replace('-----BEGIN PRIVATE KEY-----', '')
+                .replace('-----END PRIVATE KEY-----', '')
+                .replace(/\s/g, '');
+
+            // 3. Re-insert line breaks every 64 characters (Standard PEM)
+            const matches = cleanKey.match(/.{1,64}/g);
+            if (matches) {
+                JAAS_PRIVATE_KEY = `-----BEGIN PRIVATE KEY-----\n${matches.join('\n')}\n-----END PRIVATE KEY-----`;
+            }
+        }
 
         if (!JAAS_API_KEY || !JAAS_APP_ID || !JAAS_PRIVATE_KEY) {
             console.error("Missing JaaS credentials");
@@ -28,7 +46,7 @@ export async function GET() {
             aud: 'jitsi',
             iss: 'chat',
             sub: JAAS_APP_ID,
-            room: '*', // Allow access to any room, or scope to specific room
+            room: '*',
             nbf: nbf,
             exp: exp,
             context: {
@@ -39,11 +57,7 @@ export async function GET() {
                     "outbound-call": true
                 },
                 user: {
-                    // id: user.id,
-                    // name: user.name,
-                    // email: user.email,
-                    // avatar: user.image,
-                    "moderator": true // Set to true for staff, false for students if desired
+                    "moderator": true
                 }
             }
         };
@@ -51,14 +65,15 @@ export async function GET() {
         const token = jwt.sign(payload, JAAS_PRIVATE_KEY, {
             algorithm: 'RS256',
             header: {
-                kid: JAAS_API_KEY
+                kid: JAAS_API_KEY,
+                alg: 'RS256'
             }
         });
 
         return NextResponse.json({ token });
 
-    } catch (error) {
-        console.error("JaaS Token Generation Error:", error);
-        return new NextResponse("Internal Server Error", { status: 500 });
+    } catch (error: any) {
+        console.error("JaaS Token Generation Error:", error.message);
+        return new NextResponse(`Internal Server Error: ${error.message}`, { status: 500 });
     }
 }

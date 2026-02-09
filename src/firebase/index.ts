@@ -12,12 +12,11 @@ export function initializeFirebase(): {
   auth: Auth;
   storage: FirebaseStorage;
 } {
-  const appName = "default";
   let firebaseApp;
-  if (!getApps().some(app => app.name === appName)) {
-    firebaseApp = initializeApp(firebaseConfig, appName);
+  if (!getApps().length) {
+    firebaseApp = initializeApp(firebaseConfig);
   } else {
-    firebaseApp = getApp(appName);
+    firebaseApp = getApp();
   }
 
   const auth = getAuth(firebaseApp);
