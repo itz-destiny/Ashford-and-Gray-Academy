@@ -15,7 +15,6 @@ import {
     Calendar,
     Users,
     Settings,
-    GraduationCap
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
