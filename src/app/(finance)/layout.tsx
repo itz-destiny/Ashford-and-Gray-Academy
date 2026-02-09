@@ -12,7 +12,12 @@ import {
     Bell,
     Search,
     LogOut,
-    MessageSquare
+    MessageSquare,
+    GraduationCap,
+    Calendar,
+    ClipboardCheck,
+    Users,
+    Book
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -32,7 +37,10 @@ export default function FinanceLayout({
     const navItems = [
         { href: "/finance", label: "Dashboard", icon: LayoutDashboard },
         { href: "/finance/transactions", label: "Transactions", icon: DollarSign },
-        { href: "/finance/payouts", label: "Payouts", icon: CreditCard },
+        { href: "/finance/tuition", label: "Tuition Revenue", icon: PieChart },
+        { href: "/finance/tickets", label: "Event Tickets", icon: CreditCard },
+        { href: "/finance/payouts", label: "Instructor Payouts", icon: DollarSign },
+        { href: "/finance/scholarships", label: "Scholarships", icon: GraduationCap },
         { href: "/finance/communications", label: "Communications", icon: MessageSquare },
         { href: "/finance/reports", label: "Financial Reports", icon: PieChart },
         { href: "/finance/settings", label: "Settings", icon: Settings },
@@ -82,7 +90,8 @@ export default function FinanceLayout({
                             className="w-full justify-start gap-2 text-slate-600 hover:text-red-600 hover:bg-red-50 hover:border-red-200"
                             onClick={async () => {
                                 try {
-                                    const { auth } = await import('@/firebase/config');
+                                    const { initializeFirebase } = await import('@/firebase/index');
+                                    const { auth } = initializeFirebase();
                                     const { signOut } = await import('firebase/auth');
                                     await signOut(auth);
                                     window.location.href = '/login';

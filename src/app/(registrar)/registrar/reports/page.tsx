@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
     BarChart3,
     TrendingUp,
@@ -247,20 +248,23 @@ export default function RegistrarReportsPage() {
                 </CardHeader>
                 <CardContent className="p-0">
                     <div className="grid md:grid-cols-3 divide-x divide-slate-50">
-                        {[
+                        {(stats?.topPerformingCourses?.length > 0 ? stats.topPerformingCourses : [
                             { title: "Advanced Hospitality Management", enrollments: 1240, status: "Trending", icon: Clock },
                             { title: "Financial Systems Architecture", enrollments: 890, status: "High Yield", icon: CheckCircle2 },
                             { title: "Strategic Resource Governance", enrollments: 750, status: "Expanding", icon: Activity },
-                        ].map((course, i) => (
-                            <div key={i} className="p-10 hover:bg-slate-50/50 transition-colors group">
-                                <course.icon className="w-8 h-8 text-indigo-500 mb-6 group-hover:scale-110 transition-transform" />
-                                <h4 className="font-black text-slate-900 mb-2 leading-tight">{course.title}</h4>
-                                <div className="flex items-center gap-4 text-sm font-bold">
-                                    <span className="text-slate-400">{course.enrollments.toLocaleString()} Students</span>
-                                    <Badge variant="outline" className="text-[10px] uppercase font-black px-2">{course.status}</Badge>
+                        ]).map((course: any, i: number) => {
+                            const Icon = course.icon || (i === 0 ? Clock : i === 1 ? CheckCircle2 : Activity);
+                            return (
+                                <div key={i} className="p-10 hover:bg-slate-50/50 transition-colors group">
+                                    <Icon className="w-8 h-8 text-indigo-500 mb-6 group-hover:scale-110 transition-transform" />
+                                    <h4 className="font-black text-slate-900 mb-2 leading-tight">{course.title}</h4>
+                                    <div className="flex items-center gap-4 text-sm font-bold">
+                                        <span className="text-slate-400">{course.enrollments.toLocaleString()} Students</span>
+                                        <Badge variant="outline" className="text-[10px] uppercase font-black px-2">{course.status}</Badge>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 </CardContent>
             </Card>

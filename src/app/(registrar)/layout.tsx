@@ -30,7 +30,7 @@ export default function RegistrarLayout({
 
     const navItems = [
         { href: "/registrar", label: "Dashboard", icon: LayoutDashboard },
-        { href: "/registrar/users", label: "Staff & Admins", icon: Users },
+        { href: "/registrar/users", label: "Institutional Staff", icon: Users },
         { href: "/registrar/communications", label: "Communications", icon: MessageSquare },
         { href: "/registrar/reports", label: "Reports", icon: ClipboardList },
         { href: "/registrar/settings", label: "Settings", icon: Settings },

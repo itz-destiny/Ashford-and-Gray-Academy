@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -404,8 +405,18 @@ export default function UsersPage() {
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    onClick={() => handleDelete(user.uid)}
-                                                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                                                    onClick={() => {
+                                                        if (user.role === 'admin') {
+                                                            toast({ variant: "destructive", title: "Action Prohibited", description: "Super Admin accounts cannot be deleted." });
+                                                            return;
+                                                        }
+                                                        handleDelete(user.uid);
+                                                    }}
+                                                    disabled={user.role === 'admin'}
+                                                    className={cn(
+                                                        "text-red-500 hover:text-red-700 hover:bg-red-50",
+                                                        user.role === 'admin' && "opacity-50 cursor-not-allowed"
+                                                    )}
                                                 >
                                                     <Trash className="h-4 w-4" />
                                                 </Button>

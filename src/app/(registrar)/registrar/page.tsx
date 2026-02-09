@@ -37,8 +37,7 @@ export default function RegistrarDashboardPage() {
                 const users = await usersRes.json();
 
                 if (Array.isArray(users)) {
-                    const admins = users.filter(u => u.role === 'admin');
-                    const staff = users.filter(u => ['registrar', 'course_registrar', 'finance', 'admin', 'instructor'].includes(u.role));
+                    const staff = users.filter(u => ['registrar', 'course_registrar', 'finance', 'instructor'].includes(u.role));
                     const active = users.filter(u => u.status !== 'suspended');
                     const suspended = users.filter(u => u.status === 'suspended');
 
@@ -72,22 +71,13 @@ export default function RegistrarDashboardPage() {
 
     const statCards = [
         {
-            label: "Total Admins",
-            value: stats.totalAdmins.toString(),
-            icon: ShieldCheck,
-            sub: "Active System Admins",
-            bg: "bg-indigo-50",
-            iconColor: "text-indigo-600",
-            href: "/registrar/staff?role=admin"
-        },
-        {
-            label: "Staff Members",
+            label: "Institutional Staff",
             value: stats.totalStaff.toString(),
             icon: Users,
             sub: "Across all departments",
             bg: "bg-blue-50",
             iconColor: "text-blue-600",
-            href: "/registrar/staff"
+            href: "/registrar/users"
         },
         {
             label: "Active Users",
@@ -134,7 +124,7 @@ export default function RegistrarDashboardPage() {
                 </div>
                 <div className="flex gap-2">
                     <Button variant="outline" asChild>
-                        <Link href="/registrar/staff">
+                        <Link href="/registrar/users">
                             <Users className="h-4 w-4 mr-2" />
                             Manage Staff
                         </Link>

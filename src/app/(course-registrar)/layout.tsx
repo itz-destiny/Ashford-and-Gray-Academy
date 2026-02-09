@@ -11,7 +11,11 @@ import {
     Bell,
     Search,
     ClipboardCheck,
-    LogOut
+    LogOut,
+    Calendar,
+    Users,
+    Settings,
+    GraduationCap
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -31,6 +35,11 @@ export default function CourseRegistrarLayout({
     const navItems = [
         { href: "/course-registrar", label: "Dashboard", icon: LayoutDashboard },
         { href: "/course-registrar/courses", label: "Courses", icon: Book },
+        { href: "/course-registrar/approvals", label: "Course Approvals", icon: ClipboardCheck },
+        { href: "/course-registrar/calendar", label: "Master Calendar", icon: Calendar },
+        { href: "/course-registrar/instructors", label: "Instructors", icon: Users },
+        { href: "/course-registrar/enrollments", label: "Enrollment Tracking", icon: GraduationCap },
+        { href: "/course-registrar/departments", label: "Dept Settings", icon: Settings },
         { href: "/course-registrar/students", label: "Students", icon: GraduationCap },
         { href: "/course-registrar/grades", label: "Grades", icon: ClipboardCheck },
         { href: "/course-registrar/communications", label: "Communications", icon: MessageSquare },
@@ -80,7 +89,8 @@ export default function CourseRegistrarLayout({
                             className="w-full justify-start gap-2 text-slate-600 hover:text-red-600 hover:bg-red-50 hover:border-red-200"
                             onClick={async () => {
                                 try {
-                                    const { auth } = await import('@/firebase/config');
+                                    const { initializeFirebase } = await import('@/firebase/index');
+                                    const { auth } = initializeFirebase();
                                     const { signOut } = await import('firebase/auth');
                                     await signOut(auth);
                                     window.location.href = '/login';

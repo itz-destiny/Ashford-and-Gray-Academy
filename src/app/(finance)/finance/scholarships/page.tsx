@@ -5,44 +5,46 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-    ClipboardCheck,
+    GraduationCap,
     Clock,
     CheckCircle2,
     XCircle,
-    Eye,
-    MessageSquare,
+    UserCircle,
     Search,
     Filter,
     ArrowUpRight,
     FileText,
-    BookOpen
+    History
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
-export default function CourseApprovalsPage() {
+export default function ScholarshipsPage() {
     return (
         <div className="space-y-8 animate-in fade-in duration-700">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div className="space-y-1">
                     <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
-                        Course Approvals
-                        <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100 border-none rounded-full px-4">Review Queue</Badge>
+                        Scholarships
+                        <Badge className="bg-rose-100 text-rose-700 hover:bg-rose-100 border-none rounded-full px-4">Financial Aid</Badge>
                     </h1>
-                    <p className="text-slate-500 font-medium">Audit new course content for institutional quality and compliance.</p>
+                    <p className="text-slate-500 font-medium">Manage student financial aid, merit-based grants, and sponsorship approvals.</p>
                 </div>
                 <div className="flex items-center gap-3">
                     <Button variant="outline" className="h-11 px-6 rounded-xl border-slate-200 font-bold text-slate-600 hover:bg-slate-50">
-                        Approval Guidelines
+                        <History className="w-4 h-4 mr-2" /> View History
+                    </Button>
+                    <Button className="bg-indigo-600 hover:bg-indigo-700 text-white font-black h-11 px-8 rounded-xl shadow-lg shadow-indigo-100 transition-all active:scale-95">
+                        Define New Grant
                     </Button>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
-                    { label: "Pending Review", value: "12", trend: "08 Urgent", icon: Clock, color: "bg-amber-500" },
-                    { label: "Approved Today", value: "05", trend: "+2 from target", icon: CheckCircle2, color: "bg-emerald-500" },
-                    { label: "Request Changes", value: "03", trend: "Quality Issues", icon: MessageSquare, color: "bg-indigo-500" },
-                    { label: "Declined", value: "01", trend: "Duplicate", icon: XCircle, color: "bg-rose-500" },
+                    { label: "Active Grants", value: "₦12,400,000", trend: "18 Beneficiaries", icon: GraduationCap, color: "bg-indigo-500" },
+                    { label: "Pending Apps", value: "24", trend: "12 Priority", icon: Clock, color: "bg-amber-500" },
+                    { label: "Total Fund", value: "₦25,000,000", trend: "48% Allocated", icon: FileText, color: "bg-emerald-500" },
+                    { label: "Declined", value: "09", trend: "Term 1", icon: XCircle, color: "bg-slate-400" },
                 ].map((stat, i) => (
                     <Card key={i} className="border-none shadow-xl shadow-slate-100 rounded-[2rem] overflow-hidden group hover:scale-[1.02] transition-all duration-300">
                         <CardContent className="p-8">
@@ -64,16 +66,16 @@ export default function CourseApprovalsPage() {
             </div>
 
             <Card className="border-none shadow-xl shadow-slate-100 rounded-[2.5rem] overflow-hidden bg-white">
-                <CardHeader className="p-10 border-b border-slate-50">
+                <CardHeader className="p-10 border-b border-slate-50 bg-slate-50/20">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div>
-                            <CardTitle className="text-2xl font-black text-slate-900 leading-tight">Academic Audit Queue</CardTitle>
-                            <CardDescription className="text-slate-400 font-bold">New submissions awaiting registrar validation.</CardDescription>
+                            <CardTitle className="text-2xl font-black text-slate-900 leading-tight">Financial Aid Queue</CardTitle>
+                            <CardDescription className="text-slate-400 font-bold">Awaiting verification of academic and financial status.</CardDescription>
                         </div>
                         <div className="flex items-center gap-3">
                             <div className="relative">
                                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                                <Input placeholder="Filter by instructor..." className="pl-10 h-11 bg-slate-50 border-none rounded-xl w-[260px] font-medium" />
+                                <Input placeholder="Search applicants..." className="pl-10 h-11 bg-white border-none rounded-xl w-[260px] font-medium shadow-sm" />
                             </div>
                         </div>
                     </div>
@@ -83,52 +85,52 @@ export default function CourseApprovalsPage() {
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="border-b border-slate-50">
-                                    <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-slate-400">Course Detail</th>
-                                    <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-slate-400">Instructor</th>
-                                    <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-slate-400">Modules</th>
-                                    <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-slate-400">Complexity</th>
-                                    <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-slate-400">Deadline</th>
+                                    <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-slate-400">Applicant</th>
+                                    <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-slate-400">Award Title</th>
+                                    <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-slate-400">GPA / Merit</th>
+                                    <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-slate-400">Amount</th>
+                                    <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-slate-400">Review Status</th>
                                     <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right pr-8">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-50">
                                 {[
-                                    { title: "Advanced Neural Networks", instructor: "Dr. Sarah Chen", modules: 12, complexity: "Advanced", deadline: "Today" },
-                                    { title: "Modern Brand Strategy", instructor: "Prof. James Wilson", modules: 8, complexity: "Intermediate", deadline: "2 days" },
-                                    { title: "Introduction to Ethics", instructor: "Dr. Michael Ade", modules: 6, complexity: "Beginner", deadline: "5 days" },
-                                    { title: "Financial Risk Modeling", instructor: "Elena Rodriguez", modules: 15, complexity: "Expert", deadline: "Tomorrow" },
-                                ].map((course, i) => (
+                                    { name: "Fatima Yusuf", award: "Excellence Merit Grant", merit: "4.85 / 5.0", amount: "₦450,000", status: "Priority" },
+                                    { name: "Obinna Eze", award: "Tech Innovation Bursary", merit: "4.20 / 5.0", amount: "₦200,000", status: "Pending" },
+                                    { name: "Kemi Adeyemi", award: "Institutional Subsidy", merit: "Financial Need", amount: "₦150,000", status: "Verified" },
+                                    { name: "Ibrahim Danjuma", award: "Sports Leadership Award", merit: "Nat. Athlete", amount: "₦300,000", status: "Pending" },
+                                ].map((app, i) => (
                                     <tr key={i} className="hover:bg-slate-50/50 transition-colors group">
                                         <td className="px-10 py-6">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center font-black text-indigo-600 border border-slate-50 shadow-sm">
-                                                    <BookOpen className="w-5 h-5 opacity-40" />
+                                                <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-black text-indigo-600 border-2 border-white shadow-sm">
+                                                    <UserCircle className="w-6 h-6 opacity-30" />
                                                 </div>
-                                                <div className="flex flex-col text-sm">
-                                                    <span className="font-bold text-slate-900">{course.title}</span>
-                                                    <span className="text-[10px] font-black uppercase text-slate-400 opacity-70">STEM-902{i}X</span>
+                                                <div className="flex flex-col">
+                                                    <span className="font-bold text-slate-900">{app.name}</span>
+                                                    <span className="text-[10px] font-black uppercase text-slate-400 opacity-70">ID: AG-202{i + 1}44</span>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-10 py-6 font-bold text-slate-600 text-sm italic">{course.instructor}</td>
+                                        <td className="px-10 py-6 font-bold text-slate-700">{app.award}</td>
                                         <td className="px-10 py-6">
-                                            <Badge variant="outline" className="rounded-lg font-black border-slate-100 text-slate-500 bg-slate-50/50">
-                                                {course.modules} Units
+                                            <Badge variant="outline" className="rounded-lg font-black border-slate-200 text-slate-600 bg-white">
+                                                {app.merit}
                                             </Badge>
                                         </td>
-                                        <td className="px-10 py-6 font-black text-slate-900 text-sm uppercase tracking-tighter">{course.complexity}</td>
+                                        <td className="px-10 py-6 font-black text-indigo-600">{app.amount}</td>
                                         <td className="px-10 py-6">
                                             <div className="flex items-center gap-2">
-                                                <div className={`w-2 h-2 rounded-full ${course.deadline === 'Today' ? 'bg-rose-500 animate-ping' : 'bg-slate-300'}`} />
-                                                <span className={`font-bold text-sm ${course.deadline === 'Today' ? 'text-rose-600' : 'text-slate-500'}`}>{course.deadline}</span>
+                                                <div className={`w-2 h-2 rounded-full ${app.status === 'Priority' ? 'bg-rose-500 animate-pulse' : 'bg-amber-400'}`} />
+                                                <span className="font-bold text-sm text-slate-600">{app.status}</span>
                                             </div>
                                         </td>
                                         <td className="px-10 py-6 text-right pr-8">
                                             <div className="flex items-center justify-end gap-2">
-                                                <Button size="sm" variant="outline" className="rounded-xl border-slate-200 font-bold text-xs h-9 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200 transition-all">
-                                                    <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" /> Approve
+                                                <Button size="icon" variant="ghost" className="rounded-xl hover:bg-emerald-50 hover:text-emerald-600">
+                                                    <CheckCircle2 className="w-4 h-4" />
                                                 </Button>
-                                                <Button size="icon" variant="ghost" className="rounded-xl hover:bg-white hover:shadow-sm h-9 w-9">
+                                                <Button size="icon" variant="ghost" className="rounded-xl hover:bg-slate-50">
                                                     <ArrowUpRight className="w-4 h-4 text-slate-400" />
                                                 </Button>
                                             </div>
@@ -143,5 +145,3 @@ export default function CourseApprovalsPage() {
         </div>
     );
 }
-
-import { Clock as ClockIcon } from 'lucide-react';

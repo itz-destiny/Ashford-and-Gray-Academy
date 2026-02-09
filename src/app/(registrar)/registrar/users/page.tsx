@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -145,6 +146,7 @@ export default function RegistrarUsersPage() {
     };
 
     const filteredStaff = staff.filter(s => {
+        if (s.role === 'admin') return false;
         const matchesSearch = s.displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
             s.email.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesRole = roleFilter === 'all' || s.role === roleFilter;
@@ -167,8 +169,8 @@ export default function RegistrarUsersPage() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div className="space-y-1">
                     <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
-                        Staff & Admins
-                        <Badge variant="outline" className="rounded-full px-3">{staff.length} Total</Badge>
+                        Institutional Staff
+                        <Badge variant="outline" className="rounded-full px-3">{filteredStaff.length} Total</Badge>
                     </h1>
                     <p className="text-slate-500 font-medium">Manage institutional access and organizational roles.</p>
                 </div>
@@ -220,7 +222,6 @@ export default function RegistrarUsersPage() {
                                             <SelectItem value="course_registrar">Course Registrar</SelectItem>
                                             <SelectItem value="finance">Finance Officer</SelectItem>
                                             <SelectItem value="registrar">Registrar</SelectItem>
-                                            <SelectItem value="admin">Admin</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -265,7 +266,6 @@ export default function RegistrarUsersPage() {
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="all">All Roles</SelectItem>
-                                        <SelectItem value="admin">Admins</SelectItem>
                                         <SelectItem value="registrar">Registrars</SelectItem>
                                         <SelectItem value="course_registrar">Course Registrars</SelectItem>
                                         <SelectItem value="finance">Finance</SelectItem>
@@ -348,8 +348,18 @@ export default function RegistrarUsersPage() {
                                                     </DropdownMenuItem>
                                                     <DropdownMenuSeparator className="bg-slate-50 my-2" />
                                                     <DropdownMenuItem
-                                                        onClick={() => handleDeleteStaff(member.uid)}
-                                                        className="rounded-xl flex items-center gap-3 p-3 cursor-pointer text-red-500 focus:text-red-600 focus:bg-red-50"
+                                                        onClick={() => {
+                                                            if (member.role === 'admin') {
+                                                                toast({ variant: "destructive", title: "Action Prohibited", description: "Super Admin accounts cannot be removed by institutional staff." });
+                                                                return;
+                                                            }
+                                                            handleDeleteStaff(member.uid);
+                                                        }}
+                                                        disabled={member.role === 'admin'}
+                                                        className={cn(
+                                                            "rounded-xl flex items-center gap-3 p-3 cursor-pointer text-red-500 focus:text-red-600 focus:bg-red-50",
+                                                            member.role === 'admin' && "opacity-50 cursor-not-allowed"
+                                                        )}
                                                     >
                                                         <Trash2 className="h-4 w-4" />
                                                         <span className="font-bold text-sm">Revoke Access</span>

@@ -70,6 +70,12 @@ export async function POST(request: Request) {
             console.log(`POST /api/users: Setting role to ${role} for user ${email}`);
         }
 
+        // Security Guard: Prevent changing the role of an existing Super Admin
+        const existingUser = await User.findOne({ uid });
+        if (existingUser && existingUser.role === 'admin' && role && role !== 'admin') {
+            return NextResponse.json({ error: 'Super Admin roles cannot be downgraded for security reasons.' }, { status: 403 });
+        }
+
         const user = await User.findOneAndUpdate(
             { uid },
             { $set: updateData },
@@ -93,11 +99,18 @@ export async function DELETE(request: Request) {
             return NextResponse.json({ error: 'Missing UID' }, { status: 400 });
         }
 
-        const user = await User.findOneAndDelete({ uid });
+        const userToDelete = await User.findOne({ uid });
 
-        if (!user) {
+        if (!userToDelete) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 });
         }
+
+        // Prevent deletion of Super Admins
+        if (userToDelete.role === 'admin') {
+            return NextResponse.json({ error: 'Super Admin accounts cannot be deleted for security reasons.' }, { status: 403 });
+        }
+
+        await User.findOneAndDelete({ uid });
 
         return NextResponse.json({ message: 'User deleted successfully' });
     } catch (error: any) {

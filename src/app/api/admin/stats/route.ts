@@ -131,6 +131,34 @@ export async function GET() {
 
         const enrollmentGrowth = prev30 === 0 ? 100 : Math.round(((curr30 - prev30) / prev30) * 100);
 
+        // 7. Top Performing Courses (Aggregation)
+        const topPerformingCoursesRaw = await Enrollment.aggregate([
+            {
+                $group: {
+                    _id: '$courseId',
+                    count: { $sum: 1 }
+                }
+            },
+            { $sort: { count: -1 } },
+            { $limit: 3 },
+            {
+                $lookup: {
+                    from: 'courses',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'course'
+                }
+            },
+            { $unwind: '$course' }
+        ]);
+
+        const topPerformingCourses = topPerformingCoursesRaw.map(item => ({
+            title: item.course.title,
+            enrollments: item.count,
+            status: item.count > 100 ? "Trending" : item.count > 50 ? "High Yield" : "Expanding",
+            id: item._id.toString()
+        }));
+
         return NextResponse.json({
             stats: {
                 students: studentCount,
@@ -140,7 +168,8 @@ export async function GET() {
                 revenue: totalRevenue,
                 completionRate: 87,
                 thirtyDayEnrollments: curr30,
-                enrollmentGrowth: enrollmentGrowth
+                enrollmentGrowth: enrollmentGrowth,
+                topPerformingCourses
             },
             recentEnrollments,
             trends: trendsRaw,
