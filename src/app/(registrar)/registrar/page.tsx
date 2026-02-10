@@ -9,7 +9,6 @@ import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface DashboardStats {
-    totalAdmins: number;
     totalStaff: number;
     auditLogsThisWeek: number;
     pendingApprovals: number;
@@ -19,7 +18,6 @@ interface DashboardStats {
 
 export default function RegistrarDashboardPage() {
     const [stats, setStats] = useState<DashboardStats>({
-        totalAdmins: 0,
         totalStaff: 0,
         auditLogsThisWeek: 0,
         pendingApprovals: 0,
@@ -42,7 +40,6 @@ export default function RegistrarDashboardPage() {
                     const suspended = users.filter(u => u.status === 'suspended');
 
                     setStats({
-                        totalAdmins: admins.length,
                         totalStaff: staff.length,
                         auditLogsThisWeek: 0, // Will be populated from audit API
                         pendingApprovals: 0, // Will be populated from approvals API

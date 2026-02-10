@@ -80,8 +80,9 @@ export default function RegistrarLayout({
                             className="w-full justify-start gap-2 text-slate-600 hover:text-red-600 hover:bg-red-50 hover:border-red-200"
                             onClick={async () => {
                                 try {
-                                    const { auth } = await import('@/firebase/config');
+                                    const { initializeFirebase } = await import('@/firebase');
                                     const { signOut } = await import('firebase/auth');
+                                    const { auth } = initializeFirebase();
                                     await signOut(auth);
                                     window.location.href = '/login';
                                 } catch (error) {
