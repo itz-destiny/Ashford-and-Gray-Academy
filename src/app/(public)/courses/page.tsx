@@ -66,7 +66,7 @@ export default function CoursesPage() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedDifficulty, setSelectedDifficulty] = useState("all");
   const [selectedDurations, setSelectedDurations] = useState<string[]>([]);
-  const [priceRange, setPriceRange] = useState([500]);
+  const [priceRange, setPriceRange] = useState([3000000]);
   const [selectedRatings, setSelectedRatings] = useState<number[]>([]);
 
 
@@ -87,15 +87,15 @@ export default function CoursesPage() {
   };
 
   const filterCategories = [
-    { id: 'Hospitality', label: 'Hospitality', icon: Handshake },
-    { id: 'Facilities Management', label: 'Facilities Management', icon: Wrench },
-    { id: 'Business', label: 'Business', icon: Briefcase },
+    { id: 'Certification', label: 'Certification', icon: BookOpen },
+    { id: 'Diploma', label: 'Diploma Programs', icon: Briefcase },
+    { id: 'Executive MBA', label: 'Executive Masters', icon: Star },
   ];
 
   const quickSearchCategories = [
-    'Hospitality',
-    'Facilities Management',
-    'Business',
+    'Certification',
+    'Diploma',
+    'Executive MBA',
   ];
 
   const handleCategoryChange = (categoryId: string) => {
@@ -157,7 +157,7 @@ export default function CoursesPage() {
     setSelectedCategories([]);
     setSelectedDifficulty("all");
     setSelectedDurations([]);
-    setPriceRange([500]);
+    setPriceRange([15000]);
     setSelectedRatings([]);
   };
 
@@ -337,12 +337,12 @@ export default function CoursesPage() {
               <Slider
                 value={priceRange}
                 onValueChange={setPriceRange}
-                max={500}
-                step={10}
+                max={15000}
+                step={100}
               />
               <div className="flex justify-between text-sm text-muted-foreground mt-2">
                 <span>$0</span>
-                <span>${priceRange[0]}</span>
+                <span>${priceRange[0].toLocaleString()}</span>
               </div>
             </CardContent>
           </Card>
@@ -503,6 +503,20 @@ export default function CoursesPage() {
                           <span>{course.level}</span>
                         </div>
                       </div>
+
+                      {course.curriculum && course.curriculum.length > 0 && (
+                        <div className="mt-6">
+                          <h4 className="font-semibold mb-2">Curriculum</h4>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1">
+                            {course.curriculum.map((module, idx) => (
+                              <div key={idx} className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <CheckCircle className="w-3 h-3 text-green-500 shrink-0" />
+                                <span>{module}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
 
                       <div className="mt-auto pt-6 flex flex-col gap-2">
                         <p className="text-4xl font-bold">${course.price} {course.originalPrice && <span className="text-xl text-muted-foreground line-through ml-2">${course.originalPrice}</span>}</p>

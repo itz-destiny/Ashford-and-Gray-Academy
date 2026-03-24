@@ -24,7 +24,8 @@ export type Course = {
   imageUrl: string;
   imageHint: string;
   description: string;
-  progress?: number; 
+  curriculum?: string[];
+  progress?: number;
 };
 
 export type AppEvent = {
@@ -40,18 +41,18 @@ export type AppEvent = {
 };
 
 export type Assignment = {
-    id: string;
-    course: string;
-    title: string;
-    dueDate: string;
+  id: string;
+  course: string;
+  title: string;
+  dueDate: string;
 };
 
 export type Enrollment = {
-    id?: string;
-    userId: string;
-    courseId: string;
-    enrolledAt: any;
-    course?: Course;
+  id?: string;
+  userId: string;
+  courseId: string;
+  enrolledAt: any;
+  course?: Course;
 };
 
 export type Registration = {
@@ -63,11 +64,11 @@ export type Registration = {
 };
 
 export type InstructorMessage = {
-    id: string;
-    student: {
-        name: string;
-        avatarUrl: string;
-    };
-    message: string;
-    time: string;
+  id: string;
+  student: {
+    name: string;
+    avatarUrl: string;
+  };
+  message: string;
+  time: string;
 };

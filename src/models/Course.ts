@@ -17,6 +17,7 @@ export interface ICourse extends Document {
     imageUrl: string;
     imageHint: string;
     description: string;
+    curriculum?: string[];
     status: 'draft' | 'pending' | 'published' | 'archived';
 }
 
@@ -37,6 +38,7 @@ const CourseSchema: Schema = new Schema({
     imageUrl: { type: String, required: true },
     imageHint: { type: String, required: true },
     description: { type: String, required: true },
+    curriculum: { type: [String], default: [] },
     status: { type: String, enum: ['draft', 'pending', 'published', 'archived'], default: 'draft' },
 }, { timestamps: true });
 
