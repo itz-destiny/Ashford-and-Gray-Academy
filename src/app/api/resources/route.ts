@@ -10,6 +10,8 @@ export async function GET(request: Request) {
 
         const query: any = {};
         if (courseId) query.courseId = courseId;
+        const type = searchParams.get('type');
+        if (type) query.type = type;
 
         const resources = await Resource.find(query).populate('courseId').sort({ createdAt: -1 });
         return NextResponse.json(resources);

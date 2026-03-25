@@ -30,6 +30,7 @@ import type { Course } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { ScrollAnimation } from "@/components/ui/scroll-animation";
@@ -124,283 +125,282 @@ export default function Home() {
 
   return (
     <>
-      {/* Hero Section */}
-      <section className="relative bg-primary text-white py-20 md:py-32 overflow-hidden">
-        <div
-          className="absolute inset-0 bg-no-repeat bg-cover"
-          style={{ backgroundImage: "url('/wavy-background.svg')", opacity: 0.1, backgroundSize: '150%' }}
-        ></div>
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="">
-              <ScrollAnimation animation="fade-in-up">
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tight font-headline">
-                  Master New Skills, Advance with Confidence
+      {/* Hero Section: The Transformation */}
+      <section className="relative min-h-[90vh] bg-slate-950 text-white flex items-center overflow-hidden py-24">
+        {/* Animated Background Layers */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-950 via-[#0f172a] to-slate-900 opacity-90" />
+          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500/10 blur-[120px] rounded-full animate-pulse" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-600/10 blur-[150px] rounded-full" />
+          <div
+            className="absolute inset-0 bg-[url('/wavy-background.svg')] bg-cover opacity-5 mix-blend-overlay scale-125"
+            style={{ filter: 'brightness(2)' }}
+          />
+        </div>
+
+        <div className="container mx-auto px-6 lg:px-12 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div>
+              <ScrollAnimation animation="fade-in-up" delay={100}>
+                <Badge variant="secondary" className="bg-indigo-500/10 text-indigo-300 border-indigo-500/20 px-4 py-1.5 mb-8 backdrop-blur-md">
+                  ✨ Redefining Academic Excellence
+                </Badge>
+                <h1 className="text-5xl lg:text-7xl font-black tracking-tighter font-headline leading-[0.95] mb-8">
+                  Ignite Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Potential</span>.
+                  Master the Future.
                 </h1>
-                <p className="mt-6 text-lg text-white/80">
-                  Join thousands of learners and experts on a journey of growth, knowledge, and excellence.
+                <p className="text-lg lg:text-xl text-slate-400 font-medium leading-relaxed max-w-xl mb-10">
+                  Join the elite enclave of scholars at Ashford & Gray Academy. We provide the crucible where ambition meets world-class expertise to forge tomorrow's leaders.
                 </p>
-                <div className="mt-8 flex flex-wrap gap-4">
-                  <Button size="lg" variant="secondary" asChild>
-                    <Link href="/courses">Start Learning Now</Link>
+                <div className="flex flex-wrap gap-5">
+                  <Button size="lg" className="h-16 px-10 text-lg font-black bg-white text-slate-950 hover:bg-slate-200 transition-all shadow-[0_0_40px_rgba(255,255,255,0.15)] rounded-2xl" asChild>
+                    <Link href="/courses">Explore Elite Programs</Link>
                   </Button>
-                  <Button size="lg" variant="outline" className="bg-transparent text-white border-white hover:bg-white hover:text-primary">
-                    <PlayCircle className="mr-2" />
-                    Watch Video
+                  <Button size="lg" variant="outline" className="h-16 px-10 text-lg font-bold border-white/20 text-white hover:bg-white/10 hover:text-white rounded-2xl backdrop-blur-sm bg-transparent">
+                    <PlayCircle className="mr-3 w-6 h-6 text-indigo-400" />
+                    Academy Tour
                   </Button>
                 </div>
-              </ScrollAnimation>
-            </div>
-            <div className="relative hidden md:block">
-              <ScrollAnimation animation="scale-up" delay={200}>
-                <Image
-                  src="/imagefx-1.png"
-                  alt="Student with laptop"
-                  width={600}
-                  height={600}
-                  className="rounded-full aspect-square object-cover shadow-2xl"
-                  data-ai-hint="confident student"
-                />
-              </ScrollAnimation>
-              <div className="absolute top-1/4 -left-16 bg-white/10 backdrop-blur-md p-3 rounded-lg shadow-lg text-sm">
-                <p className="font-bold">✨ Expert-led Course</p>
-              </div>
-              <div className="absolute bottom-1/4 -right-10 bg-white/10 backdrop-blur-md p-4 rounded-lg shadow-lg text-sm">
-                <div className="flex items-center gap-2">
-                  <Avatar>
-                    <AvatarImage src="/imagefx-2.png" />
-                    <AvatarFallback>DL</AvatarFallback>
-                  </Avatar>
+
+                {/* Micro Trust Stats */}
+                <div className="mt-16 flex items-center gap-8 border-t border-white/5 pt-12">
                   <div>
-                    <p className="font-bold">Devon Lane</p>
-                    <p className="text-xs">UI/UX Mentor</p>
+                    <p className="text-3xl font-black text-white">20k<span className="text-indigo-500">+</span></p>
+                    <p className="text-[10px] uppercase tracking-[0.2em] font-black text-slate-500 mt-1">Global Scholars</p>
+                  </div>
+                  <div className="w-px h-10 bg-white/10" />
+                  <div>
+                    <p className="text-3xl font-black text-white">4.9<span className="text-yellow-500">★</span></p>
+                    <p className="text-[10px] uppercase tracking-[0.2em] font-black text-slate-500 mt-1">Excellence Rating</p>
                   </div>
                 </div>
-              </div>
+              </ScrollAnimation>
             </div>
-          </div>
-        </div>
-        <div className="absolute bottom-0 left-0 w-full h-20 bg-white" style={{ clipPath: "polygon(0 100%, 100% 100%, 100% 0)" }}></div>
-      </section>
 
-      {/* Strategy Section */}
-      <section className="py-24 bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-12 items-center">
-          <div className="relative flex justify-center items-center">
-            <div className="bg-primary/10 rounded-full p-4">
-              <Image
-                src="/imagefx-6.png"
-                alt="A smiling student holding books"
-                width={400}
-                height={400}
-                className="rounded-full shadow-xl"
-                data-ai-hint="smiling student"
-              />
-            </div>
-            <div className="absolute -top-4 -left-4 bg-white p-3 rounded-lg shadow-lg text-sm flex items-center gap-2">
-              <Star className="text-yellow-500 fill-yellow-500 w-5 h-5" />
-              <span className="font-bold">4.9 Star Rating</span>
-            </div>
-            <div className="absolute -bottom-4 -right-4 bg-white p-3 rounded-lg shadow-lg text-sm flex items-center gap-2">
-              <GraduationCap className="text-primary w-5 h-5" />
-              <span className="font-bold">20k+ Students</span>
-            </div>
-          </div>
-          <div>
-            <p className="text-primary font-semibold text-sm">FEATURES</p>
-            <h2 className="text-3xl font-bold font-headline mt-2">The Strategy for Exponential Learning Growth</h2>
-            <p className="mt-4 text-muted-foreground">We are a modern learning platform that provides you with the best online courses and resources. Our goal is to help you achieve your career goals.</p>
-            <div className="mt-6 space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="bg-primary/10 text-primary p-2 rounded-full"><Users /></div>
-                <p className="font-semibold">Expert Mentor</p>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="bg-primary/10 text-primary p-2 rounded-full"><BookOpen /></div>
-                <p className="font-semibold">Effective Method</p>
-              </div>
-            </div>
-            <Button className="mt-8" asChild><Link href="/about">Read More</Link></Button>
-          </div>
-        </div>
-      </section>
+            <div className="relative">
+              <ScrollAnimation animation="scale-up" delay={300} className="relative z-20">
+                <div className="relative group">
+                  {/* Decorative Frame */}
+                  <div className="absolute -inset-4 bg-gradient-to-tr from-indigo-500/20 to-blue-500/20 blur-2xl rounded-[3rem] opacity-50 group-hover:opacity-100 transition-opacity" />
+                  <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl">
+                    <Image
+                      src="/academy_hero_students.png"
+                      alt="Collective Learning"
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-1000"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
+                  </div>
 
-      {/* Categories Section */}
-      <section className="py-24 bg-secondary/50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold font-headline">Explore Our Categories</h2>
-          <p className="mt-2 text-muted-foreground max-w-2xl mx-auto">We offer a wide range of courses in various fields. Choose the one that best fits your career goals.</p>
-          <div className="mt-12 flex flex-wrap gap-4 justify-center">
-            {categories.map((cat) => (
-              <div key={cat.name} className="flex flex-col items-center gap-3 p-4 rounded-lg hover:bg-white hover:shadow-lg transition-all cursor-pointer w-32">
-                <div className="bg-primary/10 text-primary p-4 rounded-lg">
-                  <cat.icon className="w-8 h-8" />
+                  {/* Glass Floaties */}
+                  <div className="absolute top-1/4 -left-12 p-6 bg-slate-900/60 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl animate-bounce-slow">
+                    <div className="flex -space-x-3 mb-3">
+                      {[1, 2, 3].map(i => (
+                        <div key={i} className={`w-8 h-8 rounded-full border-2 border-slate-900 bg-indigo-${400 + i * 100}`} />
+                      ))}
+                      <div className="w-8 h-8 rounded-full border-2 border-slate-900 bg-slate-800 flex items-center justify-center text-[10px] font-bold">+18</div>
+                    </div>
+                    <p className="text-xs font-bold text-white">Join the Community</p>
+                  </div>
+
+                  <div className="absolute bottom-12 -right-12 p-5 bg-indigo-600 shadow-[0_0_50px_rgba(79,70,229,0.4)] rounded-3xl border border-indigo-400/30">
+                    <GraduationCap className="w-10 h-10 text-white" />
+                  </div>
                 </div>
-                <p className="font-semibold text-sm">{cat.name}</p>
-              </div>
+              </ScrollAnimation>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Philosophy Section: The Strategy */}
+      <section className="py-32 bg-white relative overflow-hidden">
+        <div className="container mx-auto px-6 lg:px-12 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-24 items-center">
+            <div className="relative">
+              <ScrollAnimation animation="fade-in" delay={100}>
+                <div className="relative rounded-[3rem] overflow-hidden border-8 border-slate-50 shadow-2xl">
+                  <Image
+                    src="/imagefx-6.png"
+                    alt="Strategic Learning"
+                    width={600}
+                    height={600}
+                    className="object-cover"
+                  />
+                </div>
+                {/* Floating Mentor Tag */}
+                <div className="absolute -bottom-10 right-10 p-6 bg-white rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.1)] border border-slate-100">
+                  <div className="flex items-center gap-4">
+                    <Avatar className="w-14 h-14 border-2 border-primary/20">
+                      <AvatarImage src="/academy_mentor_portrait.png" />
+                      <AvatarFallback>AM</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h4 className="font-black text-slate-900">Dr. Helena Vance</h4>
+                      <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Head of Pedagogy</p>
+                    </div>
+                  </div>
+                </div>
+              </ScrollAnimation>
+            </div>
+
+            <div>
+              <ScrollAnimation animation="fade-in-up">
+                <p className="text-indigo-600 font-black text-xs uppercase tracking-[0.3em] mb-4">Our DNA</p>
+                <h2 className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-8">
+                  Beyond Instruction: A Strategy for <span className="italic font-serif">Radical</span> Growth.
+                </h2>
+                <p className="text-lg text-slate-500 leading-relaxed mb-10">
+                  We don't just deliver content; we architect experiences. Our curriculum is built on the intersection of cognitive science and industry urgency, ensuring every hour spent is an investment in your mastery.
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                  <div className="group">
+                    <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all mb-4">
+                      <Users className="w-6 h-6" />
+                    </div>
+                    <h4 className="font-black text-slate-900 mb-2">Cohort Intelligence</h4>
+                    <p className="text-sm text-slate-500 font-medium">Learn alongside high-caliber peers in curated micro-communities.</p>
+                  </div>
+                  <div className="group">
+                    <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all mb-4">
+                      <BookOpen className="w-6 h-6" />
+                    </div>
+                    <h4 className="font-black text-slate-900 mb-2">Elite Methodology</h4>
+                    <p className="text-sm text-slate-500 font-medium">Project-centric learning that mimics real-world complexity.</p>
+                  </div>
+                </div>
+
+                <Button className="mt-12 h-14 px-10 rounded-2xl" asChild>
+                  <Link href="/about">Discover the Academy Philosophy</Link>
+                </Button>
+              </ScrollAnimation>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Disciplines: The Categories */}
+      <section className="py-32 bg-slate-50 border-y border-slate-100">
+        <div className="container mx-auto px-6 lg:px-12">
+          <div className="text-center max-w-3xl mx-auto mb-20">
+            <h2 className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tight mb-6">Select Your Discipline</h2>
+            <p className="text-lg text-slate-500 font-medium font-body">Refined pathways designed for maximum industry relevance. Choose your specialty.</p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+            {categories.map((cat, idx) => (
+              <ScrollAnimation key={cat.name} animation="fade-in-up" delay={idx * 50}>
+                <div className="group relative p-8 bg-white border border-slate-100 rounded-[2rem] hover:bg-slate-950 transition-all duration-500 cursor-pointer overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.03)]">
+                  <div className="relative z-10">
+                    <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 group-hover:bg-white/10 group-hover:text-white transition-all mb-6">
+                      <cat.icon className="w-7 h-7" />
+                    </div>
+                    <p className="font-black text-slate-900 group-hover:text-white transition-colors">{cat.name}</p>
+                    <ArrowRight className="w-5 h-5 mt-4 text-indigo-400 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                  </div>
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-600/5 rounded-full translate-x-16 -translate-y-16 group-hover:scale-150 group-hover:bg-white/5 transition-transform" />
+                </div>
+              </ScrollAnimation>
             ))}
           </div>
-          <Button variant="outline" className="mt-12" asChild>
-            <Link href="/courses">View All Categories</Link>
-          </Button>
+
+          <div className="mt-16 text-center">
+            <Button variant="ghost" className="font-black hover:bg-transparent hover:text-indigo-600 group" asChild>
+              <Link href="/courses">All Academy Domains <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-2 transition-transform" /></Link>
+            </Button>
+          </div>
         </div>
       </section>
 
-      {/* Live Class Section */}
-      <section className="py-24 bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <div className="flex items-center justify-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-green-500"></span>
-              <p className="text-green-600 font-semibold text-sm">Live Class</p>
+      {/* Live Broadcast Showcase */}
+      <section className="py-32 bg-white relative overflow-hidden">
+        <div className="container mx-auto px-6 lg:px-12">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <span className="w-3 h-3 rounded-full bg-red-500 animate-pulse border-4 border-red-500/20" />
+                <p className="text-red-600 font-black text-xs uppercase tracking-[0.3em]">Live Now</p>
+              </div>
+              <h2 className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tight">Active Faculty Broadcasts</h2>
             </div>
-            <h2 className="text-3xl font-bold font-headline mt-2">Join Now Our Live Class</h2>
+            <Button variant="outline" className="h-14 px-8 rounded-2xl border-slate-200">Global Schedule</Button>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {coursesLoading ? (
-              Array.from({ length: 4 }).map((_, index) => (
-                <Card key={index} className="bg-background overflow-hidden group">
-                  <Skeleton className="w-full h-40" />
-                  <CardContent className="p-4 space-y-2">
-                    <Skeleton className="h-5 w-3/4" />
-                    <Skeleton className="h-4 w-1/2" />
-                    <div className="flex items-center mt-4">
-                      <Skeleton className="h-6 w-1/4" />
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            ) : (
-              trendingCourses?.map((item, index) => (
-                <Card key={item.id} className="bg-white overflow-hidden group border rounded-lg shadow-sm">
-                  <div className="relative">
-                    <Image
-                      src={item.imageUrl}
-                      alt={item.title}
-                      width={600}
-                      height={400}
-                      className="w-full h-40 object-cover"
-                      data-ai-hint={item.imageHint}
-                    />
-                    <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Button variant="secondary">Join Class</Button>
-                    </div>
-                  </div>
-                  <CardContent className="p-4">
-                    <h3 className="font-semibold truncate group-hover:text-primary mt-2 h-12">{item.title}</h3>
-                    <div className="flex items-center gap-2 mt-4 text-sm text-muted-foreground">
-                      <Radio className="w-4 h-4 text-red-500 animate-pulse" />
-                      <span>Live - 01:34:47</span>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            )}
-          </div>
-        </div>
-      </section>
 
-      {/* Trending Courses Section */}
-      <section className="py-24 bg-primary/5">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <p className="text-primary font-semibold text-lg tracking-wider">TOP COURSES</p>
-            <h2 className="text-3xl font-bold font-headline mt-2">A Journey Built on Knowledge, Growth, and Excellence</h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
             {coursesLoading ? (
-              Array.from({ length: 4 }).map((_, index) => (
-                <Card key={index} className="bg-background overflow-hidden group motion-safe:animate-fade-in-up" style={{ animationDelay: `${index * 0.1 + 0.1}s` }}>
-                  <Skeleton className="w-full h-40" />
-                  <CardContent className="p-4 space-y-2">
-                    <Skeleton className="h-5 w-3/4" />
-                    <Skeleton className="h-4 w-1/2" />
-                    <div className="flex justify-between items-center mt-4">
-                      <Skeleton className="h-6 w-1/4" />
-                      <Skeleton className="h-9 w-1/3" />
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            ) : (
-              trendingCourses?.map((item, index) => (
-                <Card key={item.id} className="bg-background overflow-hidden group motion-safe:animate-fade-in-up" style={{ animationDelay: `${index * 0.1 + 0.1}s` }}>
-                  <div className="relative">
-                    <Image
-                      src={item.imageUrl}
-                      alt={item.title}
-                      width={600}
-                      height={400}
-                      className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
-                      data-ai-hint={item.imageHint}
-                    />
+              Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="aspect-[4/5] rounded-[2.5rem]" />)
+            ) : trendingCourses.map((item, idx) => (
+              <ScrollAnimation key={item.id} animation="fade-in-up" delay={idx * 100}>
+                <div className="group relative aspect-[4/5] rounded-[2.5rem] overflow-hidden bg-slate-900 border border-slate-100 shadow-2xl">
+                  <Image src={item.imageUrl} alt={item.title} fill className="object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
+
+                  <div className="absolute top-6 left-6 right-6 flex justify-between">
+                    <Badge className="bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold px-3 py-1">
+                      {item.category}
+                    </Badge>
+                    <div className="p-2 bg-red-600 rounded-lg text-white font-black text-[10px] uppercase">Live</div>
                   </div>
-                  <CardContent className="p-4">
-                    <div className="flex justify-between items-center text-xs">
-                      <Badge variant="secondary" className="bg-primary/10 text-primary">{item.category}</Badge>
-                      <div className="flex items-center gap-1">
-                        <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                        {item.rating}
+
+                  <div className="absolute bottom-8 left-8 right-8 text-white">
+                    <h3 className="text-xl font-black leading-tight mb-4 group-hover:translate-y-[-10px] transition-transform">{item.title}</h3>
+                    <div className="flex items-center justify-between opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all">
+                      <div className="flex items-center gap-2">
+                        <Avatar className="w-8 h-8">
+                          <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${item.id}`} />
+                        </Avatar>
+                        <p className="text-xs font-bold text-white/70">Lead Faculty</p>
                       </div>
+                      <Button size="sm" className="bg-white text-slate-950 rounded-xl font-black hover:bg-indigo-400 hover:text-white">Join</Button>
                     </div>
-                    <h3 className="font-semibold truncate group-hover:text-primary mt-2">{item.title}</h3>
-                    <div className="flex justify-between items-center mt-4">
-                      <p className="font-bold text-lg text-primary">${item.price}</p>
-                      <Button variant="ghost" size="sm" asChild>
-                        <Link href={`/courses?dialog=${item.id}`}>View Details <ArrowRight className="ml-2 h-4 w-4" /></Link>
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            )}
+                  </div>
+                </div>
+              </ScrollAnimation>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Testimonial Section */}
-      <section className="py-24 bg-secondary/50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <p className="text-primary font-semibold text-sm">TESTIMONIAL</p>
-            <h2 className="text-3xl font-bold font-headline mt-2">What Clients Have to Say About Us</h2>
+      {/* Voices of Success: Testimonials */}
+      <section className="py-32 bg-slate-950 relative overflow-hidden">
+        {/* Background Accents */}
+        <div className="absolute top-0 right-0 w-[60%] h-full bg-indigo-600/5 skew-x-[-15deg] translate-x-1/2" />
+
+        <div className="container mx-auto px-6 lg:px-12 relative z-10">
+          <div className="text-center max-w-3xl mx-auto mb-20">
+            <p className="text-indigo-400 font-black text-xs uppercase tracking-[0.3em] mb-4">Scholarly Alumni</p>
+            <h2 className="text-4xl lg:text-5xl font-black text-white tracking-tight">Voices of Modern Mastery</h2>
           </div>
-          <Carousel
-            setApi={setCarouselApi}
-            plugins={[Autoplay({ delay: 5000, stopOnInteraction: true })]}
-            className="max-w-3xl mx-auto"
-          >
+
+          <Carousel setApi={setCarouselApi} plugins={[Autoplay({ delay: 6000 })]} className="max-w-5xl mx-auto">
             <CarouselContent>
               {testimonials.map((t) => (
                 <CarouselItem key={t.id}>
-                  <div className="bg-white p-8 rounded-xl shadow-sm border border-slate-200">
-                    <div className="flex items-center gap-4 mb-4">
-                      <Image src={t.avatarUrl} alt={t.name} width={60} height={60} className="rounded-full" data-ai-hint="person portrait" />
-                      <div>
-                        <h4 className="font-bold text-slate-900">{t.name}</h4>
-                        <p className="text-sm text-slate-500">{t.title}</p>
+                  <div className="px-4">
+                    <div className="bg-white/5 border border-white/10 backdrop-blur-md p-10 md:p-16 rounded-[3rem] text-center">
+                      <Quote className="w-16 h-16 text-indigo-500/20 mx-auto mb-10" />
+                      <p className="text-2xl md:text-3xl font-medium text-slate-200 leading-relaxed italic mb-12">
+                        "{t.quote}"
+                      </p>
+                      <div className="flex flex-col items-center">
+                        <Avatar className="w-20 h-20 mb-6 ring-4 ring-indigo-500/20">
+                          <AvatarImage src={t.avatarUrl} />
+                        </Avatar>
+                        <h4 className="text-xl font-black text-white">{t.name}</h4>
+                        <p className="text-sm font-bold text-indigo-400 uppercase tracking-widest mt-1">{t.title}</p>
                       </div>
-                    </div>
-                    <p className="text-slate-600 italic">"{t.quote}"</p>
-                    <div className="mt-6">
-                      <div className="flex items-center justify-center gap-1">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} className="w-5 h-5 text-yellow-500 fill-yellow-500" />
-                        ))}
-                      </div>
-                      <p className="font-bold mt-4">{t.name}</p>
-                      <p className="text-sm text-muted-foreground">{t.title}</p>
                     </div>
                   </div>
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <div className="flex justify-center gap-2 mt-6">
+            <div className="flex justify-center gap-3 mt-12">
               {testimonials.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => carouselApi?.scrollTo(i)}
-                  className={`h-2 w-2 rounded-full ${i === current - 1 ? 'bg-primary' : 'bg-gray-300'}`}
+                  className={`h-1.5 transition-all rounded-full ${i === current - 1 ? 'w-12 bg-indigo-500' : 'w-1.5 bg-white/20 hover:bg-white/40'}`}
                 />
               ))}
             </div>
@@ -408,18 +408,24 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Newsletter Section */}
-      <section className="py-24 bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-primary/90 text-primary-foreground p-12 rounded-lg text-center relative overflow-hidden">
-            <div className="absolute -top-10 -left-10 w-32 h-32 bg-white/10 rounded-full"></div>
-            <div className="absolute -bottom-12 -right-8 w-40 h-40 bg-white/10 rounded-full"></div>
-            <div className="relative z-10">
-              <h2 className="text-3xl font-bold font-headline">Subscribe Our Newsletter</h2>
-              <p className="mt-2 text-white/80 max-w-xl mx-auto">Join our subscribers list to get the latest news, updates, and special offers delivered directly in your inbox.</p>
-              <div className="mt-6 flex max-w-md mx-auto">
-                <input type="email" placeholder="Your email address" className="w-full rounded-l-md px-4 text-gray-800 focus:outline-none focus:ring-2 focus:ring-secondary" />
-                <Button variant="secondary" className="rounded-l-none">Subscribe</Button>
+      {/* The Invitation: Newsletter */}
+      <section className="py-32 bg-white flex items-center justify-center">
+        <div className="container mx-auto px-6 lg:px-12">
+          <div className="relative rounded-[3rem] overflow-hidden bg-slate-950 p-12 md:p-24 shadow-2xl">
+            <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-indigo-600/20 to-transparent" />
+            <div className="relative z-10 grid lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <h2 className="text-4xl lg:text-5xl font-black text-white tracking-tight mb-6 leading-tight">Apply for the <br />Next Intake.</h2>
+                <p className="text-lg text-slate-400 font-medium">Join our curated intelligence digest. Receive quarterly insights, academic updates, and exclusive scholarship invitations.</p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Input
+                  className="h-16 px-6 bg-white/5 border-white/10 text-white placeholder:text-slate-500 rounded-2xl focus-visible:ring-indigo-500"
+                  placeholder="Official Email Address"
+                />
+                <Button className="h-16 px-10 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-lg rounded-2xl shadow-[0_10px_30px_rgba(79,70,229,0.3)]">
+                  Subscribe
+                </Button>
               </div>
             </div>
           </div>
