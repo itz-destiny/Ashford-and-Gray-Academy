@@ -132,9 +132,9 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
       footerLinkText="Log In"
       onFooterLinkClick={onSwitchToLogin}
     >
-      <form className="space-y-4" onSubmit={handleSignUp}>
+      <form className="space-y-6" onSubmit={handleSignUp}>
         <div className="space-y-3">
-          <Label className="text-base font-semibold">I am a...</Label>
+          <Label className="text-base font-black text-slate-950 ml-2">I am a...</Label>
           <RadioGroup
             value={role}
             onValueChange={setRole}
@@ -144,31 +144,31 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
               <RadioGroupItem value="student" id="role-student" className="peer sr-only" />
               <Label
                 htmlFor="role-student"
-                className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-indigo-600 [&:has([data-state=checked])]:border-indigo-600 cursor-pointer transition-all"
+                className="flex flex-col items-center justify-between rounded-2xl border-2 border-slate-100 bg-white p-6 hover:bg-slate-50 hover:border-slate-200 peer-data-[state=checked]:border-indigo-600 peer-data-[state=checked]:bg-indigo-50/50 cursor-pointer transition-all shadow-sm"
               >
-                <GraduationCap className="mb-2 h-6 w-6 text-slate-500 peer-data-[state=checked]:text-indigo-600" />
-                <span className="font-medium">Student</span>
+                <GraduationCap className="mb-3 h-8 w-8 text-slate-400 peer-data-[state=checked]:text-indigo-600 transition-colors" />
+                <span className="font-black text-slate-700 peer-data-[state=checked]:text-indigo-700">Student</span>
               </Label>
             </div>
             <div>
               <RadioGroupItem value="instructor" id="role-instructor" className="peer sr-only" />
               <Label
                 htmlFor="role-instructor"
-                className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-indigo-600 [&:has([data-state=checked])]:border-indigo-600 cursor-pointer transition-all"
+                className="flex flex-col items-center justify-between rounded-2xl border-2 border-slate-100 bg-white p-6 hover:bg-slate-50 hover:border-slate-200 peer-data-[state=checked]:border-indigo-600 peer-data-[state=checked]:bg-indigo-50/50 cursor-pointer transition-all shadow-sm"
               >
-                <User className="mb-2 h-6 w-6 text-slate-500 peer-data-[state=checked]:text-indigo-600" />
-                <span className="font-medium">Instructor</span>
+                <User className="mb-3 h-8 w-8 text-slate-400 peer-data-[state=checked]:text-indigo-600 transition-colors" />
+                <span className="font-black text-slate-700 peer-data-[state=checked]:text-indigo-700">Instructor</span>
               </Label>
             </div>
           </RadioGroup>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="name">Full Name</Label>
-          <Input id="name" name="name" type="text" placeholder="John Doe" required disabled={isLoading} />
+          <Label htmlFor="name" className="text-sm font-bold text-slate-700 ml-2">Full Name</Label>
+          <Input id="name" name="name" type="text" placeholder="John Doe" required disabled={isLoading} className="h-14 rounded-2xl bg-slate-50 border-slate-200 focus:bg-white px-5 font-medium placeholder:text-slate-400" />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="email-signup">Email address</Label>
+          <Label htmlFor="email-signup" className="text-sm font-bold text-slate-700 ml-2">Email address</Label>
           <Input
             id="email-signup"
             name="email-signup"
@@ -176,12 +176,13 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
             placeholder="name@company.com"
             required
             disabled={isLoading}
+            className="h-14 rounded-2xl bg-slate-50 border-slate-200 focus:bg-white px-5 font-medium placeholder:text-slate-400"
           />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="password-signup">Password</Label>
+            <Label htmlFor="password-signup" className="text-sm font-bold text-slate-700 ml-2">Password</Label>
             <Input
               id="password-signup"
               name="password-signup"
@@ -191,10 +192,11 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
               disabled={isLoading}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              className="h-14 rounded-2xl bg-slate-50 border-slate-200 focus:bg-white px-5 font-medium placeholder:text-slate-400"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="confirm-password">Confirm Password</Label>
+            <Label htmlFor="confirm-password" className="text-sm font-bold text-slate-700 ml-2">Confirm Password</Label>
             <Input
               id="confirm-password"
               type="password"
@@ -203,19 +205,20 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
               disabled={isLoading}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              className="h-14 rounded-2xl bg-slate-50 border-slate-200 focus:bg-white px-5 font-medium placeholder:text-slate-400"
             />
           </div>
         </div>
-        {passwordError && <p className="text-sm text-red-500 font-medium">{passwordError}</p>}
+        {passwordError && <p className="text-sm text-red-500 font-medium ml-2">{passwordError}</p>}
 
         {role === "student" && (
-          <div className="bg-slate-50 p-4 rounded-lg space-y-4 border border-slate-100 animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="bg-slate-50 p-6 rounded-3xl space-y-6 border border-slate-100 animate-in fade-in slide-in-from-top-2 duration-300">
             <div className="space-y-2">
-              <Label htmlFor="dob">Date of Birth</Label>
-              <Input id="dob" name="dob" type="date" required disabled={isLoading} className="bg-white" />
+              <Label htmlFor="dob" className="text-sm font-bold text-slate-700 ml-2">Date of Birth</Label>
+              <Input id="dob" name="dob" type="date" required disabled={isLoading} className="h-14 rounded-2xl bg-white border-slate-200 px-5 font-medium" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="school">School or University</Label>
+              <Label htmlFor="school" className="text-sm font-bold text-slate-700 ml-2">School or University</Label>
               <Input
                 id="school"
                 name="school"
@@ -223,16 +226,16 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
                 placeholder="e.g., Fusion University"
                 required
                 disabled={isLoading}
-                className="bg-white"
+                className="h-14 rounded-2xl bg-white border-slate-200 px-5 font-medium placeholder:text-slate-400"
               />
             </div>
           </div>
         )}
 
         {role === "instructor" && (
-          <div className="bg-slate-50 p-4 rounded-lg space-y-4 border border-slate-100 animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="bg-slate-50 p-6 rounded-3xl space-y-6 border border-slate-100 animate-in fade-in slide-in-from-top-2 duration-300">
             <div className="space-y-2">
-              <Label htmlFor="expertise">Area of Expertise</Label>
+              <Label htmlFor="expertise" className="text-sm font-bold text-slate-700 ml-2">Area of Expertise</Label>
               <Input
                 id="expertise"
                 name="expertise"
@@ -240,28 +243,28 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
                 placeholder="e.g., Data Science, Marketing"
                 required
                 disabled={isLoading}
-                className="bg-white"
+                className="h-14 rounded-2xl bg-white border-slate-200 px-5 font-medium placeholder:text-slate-400"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="organization">Organization / Company</Label>
+              <Label htmlFor="organization" className="text-sm font-bold text-slate-700 ml-2">Organization / Company</Label>
               <Input
                 id="organization"
                 name="organization"
                 type="text"
                 placeholder="e.g., Tech Corp"
                 disabled={isLoading}
-                className="bg-white"
+                className="h-14 rounded-2xl bg-white border-slate-200 px-5 font-medium placeholder:text-slate-400"
               />
             </div>
           </div>
         )}
 
-        <Button type="submit" className="w-full h-11 !mt-6 shadow-md hover:shadow-lg transition-shadow" disabled={isLoading}>
+        <Button type="submit" className="w-full h-14 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-lg shadow-xl hover:shadow-indigo-600/30 transition-all !mt-10" disabled={isLoading}>
           {isLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <Loader2 className="h-5 w-5 animate-spin" />
           ) : (
-            <>Sign Up <ArrowRight className="ml-2 h-4 w-4" /></>
+            <>Create Account <ArrowRight className="ml-2 h-5 w-5" /></>
           )}
         </Button>
       </form>

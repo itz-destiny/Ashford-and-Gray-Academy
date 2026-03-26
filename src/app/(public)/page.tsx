@@ -143,22 +143,22 @@ export default function Home() {
             <div>
               <ScrollAnimation animation="fade-in-up" delay={100}>
                 <Badge variant="secondary" className="bg-indigo-500/10 text-indigo-300 border-indigo-500/20 px-4 py-1.5 mb-8 backdrop-blur-md">
-                  ✨ Redefining Academic Excellence
+                  ✨ Professional Education & Training
                 </Badge>
                 <h1 className="text-5xl lg:text-7xl font-black tracking-tighter font-headline leading-[0.95] mb-8">
-                  Ignite Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Potential</span>.
-                  Master the Future.
+                  Learn New <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Skills</span>.
+                  Advance Your Career.
                 </h1>
                 <p className="text-lg lg:text-xl text-slate-400 font-medium leading-relaxed max-w-xl mb-10">
-                  Join the elite enclave of scholars at Ashford & Gray Academy. We provide the crucible where ambition meets world-class expertise to forge tomorrow's leaders.
+                  Join thousands of students learning from industry professionals. We offer practical courses designed to help you get ahead in your career.
                 </p>
                 <div className="flex flex-wrap gap-5">
                   <Button size="lg" className="h-16 px-10 text-lg font-black bg-white text-slate-950 hover:bg-slate-200 transition-all shadow-[0_0_40px_rgba(255,255,255,0.15)] rounded-2xl" asChild>
-                    <Link href="/courses">Explore Elite Programs</Link>
+                    <Link href="/courses">View All Courses</Link>
                   </Button>
                   <Button size="lg" variant="outline" className="h-16 px-10 text-lg font-bold border-white/20 text-white hover:bg-white/10 hover:text-white rounded-2xl backdrop-blur-sm bg-transparent">
                     <PlayCircle className="mr-3 w-6 h-6 text-indigo-400" />
-                    Academy Tour
+                    See How It Works
                   </Button>
                 </div>
 
@@ -166,12 +166,12 @@ export default function Home() {
                 <div className="mt-16 flex items-center gap-8 border-t border-white/5 pt-12">
                   <div>
                     <p className="text-3xl font-black text-white">20k<span className="text-indigo-500">+</span></p>
-                    <p className="text-[10px] uppercase tracking-[0.2em] font-black text-slate-500 mt-1">Global Scholars</p>
+                    <p className="text-[10px] uppercase tracking-[0.2em] font-black text-slate-500 mt-1">Active Students</p>
                   </div>
                   <div className="w-px h-10 bg-white/10" />
                   <div>
                     <p className="text-3xl font-black text-white">4.9<span className="text-yellow-500">★</span></p>
-                    <p className="text-[10px] uppercase tracking-[0.2em] font-black text-slate-500 mt-1">Excellence Rating</p>
+                    <p className="text-[10px] uppercase tracking-[0.2em] font-black text-slate-500 mt-1">Course Rating</p>
                   </div>
                 </div>
               </ScrollAnimation>
@@ -246,12 +246,12 @@ export default function Home() {
 
             <div>
               <ScrollAnimation animation="fade-in-up">
-                <p className="text-indigo-600 font-black text-xs uppercase tracking-[0.3em] mb-4">Our DNA</p>
+                <p className="text-indigo-600 font-black text-xs uppercase tracking-[0.3em] mb-4">Our Mission</p>
                 <h2 className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tight leading-tight mb-8">
-                  Beyond Instruction: A Strategy for <span className="italic font-serif">Radical</span> Growth.
+                  Get the skills you need for <span className="italic font-serif">real</span> career growth.
                 </h2>
                 <p className="text-lg text-slate-500 leading-relaxed mb-10">
-                  We don't just deliver content; we architect experiences. Our curriculum is built on the intersection of cognitive science and industry urgency, ensuring every hour spent is an investment in your mastery.
+                  We don't just teach theory; we focus on real-world application. Our curriculum is built by industry experts to help you apply what you learn immediately on the job.
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
@@ -259,15 +259,15 @@ export default function Home() {
                     <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-all mb-4">
                       <Users className="w-6 h-6" />
                     </div>
-                    <h4 className="font-black text-slate-900 mb-2">Cohort Intelligence</h4>
-                    <p className="text-sm text-slate-500 font-medium">Learn alongside high-caliber peers in curated micro-communities.</p>
+                    <h4 className="font-black text-slate-900 mb-2">Learn with Peers</h4>
+                    <p className="text-sm text-slate-500 font-medium">Connect and learn with others in small, focused study groups.</p>
                   </div>
                   <div className="group">
                     <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-all mb-4">
                       <BookOpen className="w-6 h-6" />
                     </div>
-                    <h4 className="font-black text-slate-900 mb-2">Elite Methodology</h4>
-                    <p className="text-sm text-slate-500 font-medium">Project-centric learning that mimics real-world complexity.</p>
+                    <h4 className="font-black text-slate-900 mb-2">Hands-on Learning</h4>
+                    <p className="text-sm text-slate-500 font-medium">Work on practical projects that prepare you for the workplace.</p>
                   </div>
                 </div>
 
@@ -284,8 +284,8 @@ export default function Home() {
       <section className="py-32 bg-slate-50 border-y border-slate-100">
         <div className="container mx-auto px-6 lg:px-12">
           <div className="text-center max-w-3xl mx-auto mb-20">
-            <h2 className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tight mb-6">Select Your Discipline</h2>
-            <p className="text-lg text-slate-500 font-medium font-body">Refined pathways designed for maximum industry relevance. Choose your specialty.</p>
+            <h2 className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tight mb-6">Choose Your Subject</h2>
+            <p className="text-lg text-slate-500 font-medium font-body">Carefully built programs designed to help you succeed in your industry.</p>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
@@ -322,7 +322,7 @@ export default function Home() {
                 <span className="w-3 h-3 rounded-full bg-red-500 animate-pulse border-4 border-red-500/20" />
                 <p className="text-red-600 font-black text-xs uppercase tracking-[0.3em]">Live Now</p>
               </div>
-              <h2 className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tight">Active Faculty Broadcasts</h2>
+              <h2 className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tight">Upcoming Live Classes</h2>
             </div>
             <Button variant="outline" className="h-14 px-8 rounded-2xl border-slate-200">Global Schedule</Button>
           </div>
@@ -369,8 +369,8 @@ export default function Home() {
 
         <div className="container mx-auto px-6 lg:px-12 relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-20">
-            <p className="text-indigo-400 font-black text-xs uppercase tracking-[0.3em] mb-4">Scholarly Alumni</p>
-            <h2 className="text-4xl lg:text-5xl font-black text-white tracking-tight">Voices of Modern Mastery</h2>
+            <p className="text-indigo-400 font-black text-xs uppercase tracking-[0.3em] mb-4">Student Stories</p>
+            <h2 className="text-4xl lg:text-5xl font-black text-white tracking-tight">What Our Students Say</h2>
           </div>
 
           <Carousel setApi={setCarouselApi} plugins={[Autoplay({ delay: 6000 })]} className="max-w-5xl mx-auto">
@@ -415,8 +415,8 @@ export default function Home() {
             <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-indigo-600/20 to-transparent" />
             <div className="relative z-10 grid lg:grid-cols-2 gap-12 items-center">
               <div>
-                <h2 className="text-4xl lg:text-5xl font-black text-white tracking-tight mb-6 leading-tight">Apply for the <br />Next Intake.</h2>
-                <p className="text-lg text-slate-400 font-medium">Join our curated intelligence digest. Receive quarterly insights, academic updates, and exclusive scholarship invitations.</p>
+                <h2 className="text-4xl lg:text-5xl font-black text-white tracking-tight mb-6 leading-tight">Join Our <br />Newsletter.</h2>
+                <p className="text-lg text-slate-400 font-medium">Get updates on new courses, upcoming events, and exclusive scholarship offers.</p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Input

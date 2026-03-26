@@ -76,25 +76,25 @@ export function LoginForm({ onSwitchToSignUp }: LoginFormProps) {
       footerLinkText="Sign Up"
       onFooterLinkClick={onSwitchToSignUp}
     >
-      <form className="space-y-4" onSubmit={handleLogin}>
+      <form className="space-y-6" onSubmit={handleLogin}>
         <div className="space-y-2">
-          <Label htmlFor="email">Email address</Label>
-          <Input id="email" name="email" type="email" placeholder="name@company.com" required disabled={isLoading} />
+          <Label htmlFor="email" className="text-sm font-bold text-slate-700 ml-2">Email address</Label>
+          <Input id="email" name="email" type="email" placeholder="name@company.com" required disabled={isLoading} className="h-14 rounded-2xl bg-slate-50 border-slate-200 focus:bg-white px-5 font-medium placeholder:text-slate-400" />
         </div>
         <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="password">Password</Label>
-            <Link href="#" className="text-sm text-primary hover:underline">
+          <div className="flex items-center justify-between ml-2 mr-2">
+            <Label htmlFor="password" className="text-sm font-bold text-slate-700">Password</Label>
+            <Link href="#" className="text-sm font-black text-indigo-600 hover:text-indigo-700 transition-colors">
               Forgot Password?
             </Link>
           </div>
-          <Input id="password" name="password" type="password" required placeholder="Enter your password" disabled={isLoading} />
+          <Input id="password" name="password" type="password" required placeholder="Enter your password" disabled={isLoading} className="h-14 rounded-2xl bg-slate-50 border-slate-200 focus:bg-white px-5 font-medium placeholder:text-slate-400" />
         </div>
-        <Button type="submit" className="w-full h-11" disabled={isLoading}>
+        <Button type="submit" className="w-full h-14 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-lg shadow-xl hover:shadow-indigo-600/30 transition-all !mt-10" disabled={isLoading}>
           {isLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <Loader2 className="h-5 w-5 animate-spin" />
           ) : (
-            <>Log In <ArrowRight className="ml-2 h-4 w-4" /></>
+            <>Log In <ArrowRight className="ml-2 h-5 w-5" /></>
           )}
         </Button>
       </form>

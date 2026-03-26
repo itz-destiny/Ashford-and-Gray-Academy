@@ -31,7 +31,7 @@ export default function AdminReportsPage() {
     }, []);
 
     const reportCards = [
-        { title: "Total Revenue", value: stats ? `$${stats.revenue.toLocaleString()}` : "$0", trend: "+12.5%", color: "text-emerald-600", bg: "bg-emerald-50" },
+        { title: "Total Revenue", value: stats ? `₦${stats.revenue.toLocaleString()}` : "₦0", trend: "+12.5%", color: "text-emerald-600", bg: "bg-emerald-50" },
         { title: "Active Students", value: stats ? stats.students.toString() : "0", trend: "+8.1%", color: "text-indigo-600", bg: "bg-indigo-50" },
         { title: "Course Catalog", value: stats ? stats.courses.toString() : "0", trend: "+2", color: "text-amber-600", bg: "bg-amber-50" },
         { title: "System Uptime", value: "99.98%", trend: "Stable", color: "text-sky-600", bg: "bg-sky-50" },
@@ -123,7 +123,7 @@ export default function AdminReportsPage() {
                             {[
                                 { label: "North America", status: "Optimal", color: "bg-emerald-500" },
                                 { label: "Europe Central", status: "Optimal", color: "bg-emerald-500" },
-                                { label: "Asia Pacific", status: "Maintenance", color: "bg-amber-500" },
+                                { label: "Asia Pacific", status: "Optimal", color: "bg-emerald-500" },
                             ].map((node, i) => (
                                 <div key={i} className="flex justify-between items-center p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
                                     <div className="flex items-center gap-3">

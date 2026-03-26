@@ -45,10 +45,13 @@ export const signInWithEmail = async (email, password) => {
 export const signInWithGoogle = async () => {
   try {
     const { user } = await signInWithPopup(auth, googleProvider);
-    return user;
-  } catch (error) {
-    console.error("Error signing in with Google", error);
-    return null;
+    return { user };
+  } catch (error: any) {
+    // Only log if it's an unexpected error, suppress popup closures
+    if (error.code !== 'auth/cancelled-popup-request' && error.code !== 'auth/popup-closed-by-user') {
+      console.error("Error signing in with Google", error);
+    }
+    return { error: error.message, code: error.code };
   }
 };
 

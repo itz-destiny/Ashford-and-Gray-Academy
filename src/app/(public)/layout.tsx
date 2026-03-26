@@ -39,9 +39,10 @@ export default function PublicLayout({
             <div>
               <h3 className="font-semibold text-primary-foreground">Explore</h3>
               <ul className="mt-4 space-y-2 text-sm">
-                <li><Link href="/courses" className="text-primary-foreground/70 hover:text-primary-foreground">Courses</Link></li>
-                <li><Link href="/events" className="text-primary-foreground/70 hover:text-primary-foreground">Events</Link></li>
-                <li><Link href="/about" className="text-primary-foreground/70 hover:text-primary-foreground">About Us</Link></li>
+                <li><Link href="/courses" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">Courses</Link></li>
+                <li><Link href="/certification" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">Certification</Link></li>
+                <li><Link href="/events" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">Events</Link></li>
+                <li><Link href="/about" className="text-primary-foreground/70 hover:text-primary-foreground transition-colors">About Us</Link></li>
                 <li><Link href="#" className="text-primary-foreground/70 hover:text-primary-foreground">Blog</Link></li>
                 <li><Link href="/seed" className="flex items-center text-primary-foreground/70 hover:text-primary-foreground"><Database className="mr-2 h-4 w-4" />Seed Data</Link></li>
               </ul>

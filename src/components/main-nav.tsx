@@ -22,9 +22,10 @@ export function MainNav() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         <Logo />
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
-          <Link href="/courses" className="text-muted-foreground hover:text-foreground">Courses</Link>
-          <Link href="/events" className="text-muted-foreground hover:text-foreground">Events</Link>
-          <Link href="/about" className="text-muted-foreground hover:text-foreground">About</Link>
+          <Link href="/courses" className="text-muted-foreground hover:text-foreground transition-colors">Courses</Link>
+          <Link href="/certification" className="text-muted-foreground hover:text-foreground transition-colors">Certification</Link>
+          <Link href="/events" className="text-muted-foreground hover:text-foreground transition-colors">Events</Link>
+          <Link href="/about" className="text-muted-foreground hover:text-foreground transition-colors">About</Link>
         </nav>
         <div className="flex items-center gap-2">
           {loading ? (
