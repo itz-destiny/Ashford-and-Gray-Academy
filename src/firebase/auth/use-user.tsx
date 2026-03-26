@@ -33,10 +33,29 @@ export const useUser = () => {
           let userData: any = {};
           try {
             console.log("useUser: Fetching MongoDB profile for:", firebaseUser.uid);
-            const res = await fetch(`/api/users?uid=${firebaseUser.uid}`);
+            let res = await fetch(`/api/users?uid=${firebaseUser.uid}`);
             if (res.ok) {
               userData = await res.json();
               console.log("useUser: MongoDB profile found:", userData.role || "No role");
+            } else if (res.status === 404) {
+              // Auto-create user in MongoDB if not found
+              console.log("useUser: MongoDB profile not found, creating...");
+              await fetch('/api/users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  uid: firebaseUser.uid,
+                  email: firebaseUser.email,
+                  displayName: firebaseUser.displayName || firebaseUser.email,
+                  photoURL: firebaseUser.photoURL,
+                  // Optionally set default role here if needed
+                })
+              });
+              // Fetch again after creation
+              res = await fetch(`/api/users?uid=${firebaseUser.uid}`);
+              if (res.ok) {
+                userData = await res.json();
+              }
             } else {
               console.warn("useUser: MongoDB profile fetch failed. Status:", res.status);
             }
