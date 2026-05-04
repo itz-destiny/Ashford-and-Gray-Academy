@@ -18,7 +18,7 @@ type SignUpFormProps = {
 };
 
 export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
-  const [role, setRole] = useState("student");
+  const role = "student";
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -133,35 +133,7 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
       onFooterLinkClick={onSwitchToLogin}
     >
       <form className="space-y-6" onSubmit={handleSignUp}>
-        <div className="space-y-3">
-          <Label className="text-base font-black text-slate-950 ml-2">I am a...</Label>
-          <RadioGroup
-            value={role}
-            onValueChange={setRole}
-            className="grid grid-cols-2 gap-4"
-          >
-            <div>
-              <RadioGroupItem value="student" id="role-student" className="peer sr-only" />
-              <Label
-                htmlFor="role-student"
-                className="flex flex-col items-center justify-between rounded-2xl border-2 border-slate-100 bg-white p-6 hover:bg-slate-50 hover:border-slate-200 peer-data-[state=checked]:border-indigo-600 peer-data-[state=checked]:bg-indigo-50/50 cursor-pointer transition-all shadow-sm"
-              >
-                <GraduationCap className="mb-3 h-8 w-8 text-slate-400 peer-data-[state=checked]:text-indigo-600 transition-colors" />
-                <span className="font-black text-slate-700 peer-data-[state=checked]:text-indigo-700">Student</span>
-              </Label>
-            </div>
-            <div>
-              <RadioGroupItem value="instructor" id="role-instructor" className="peer sr-only" />
-              <Label
-                htmlFor="role-instructor"
-                className="flex flex-col items-center justify-between rounded-2xl border-2 border-slate-100 bg-white p-6 hover:bg-slate-50 hover:border-slate-200 peer-data-[state=checked]:border-indigo-600 peer-data-[state=checked]:bg-indigo-50/50 cursor-pointer transition-all shadow-sm"
-              >
-                <User className="mb-3 h-8 w-8 text-slate-400 peer-data-[state=checked]:text-indigo-600 transition-colors" />
-                <span className="font-black text-slate-700 peer-data-[state=checked]:text-indigo-700">Instructor</span>
-              </Label>
-            </div>
-          </RadioGroup>
-        </div>
+
 
         <div className="space-y-2">
           <Label htmlFor="name" className="text-sm font-bold text-slate-700 ml-2">Full Name</Label>
@@ -225,34 +197,6 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
                 type="text"
                 placeholder="e.g., Fusion University"
                 required
-                disabled={isLoading}
-                className="h-14 rounded-2xl bg-white border-slate-200 px-5 font-medium placeholder:text-slate-400"
-              />
-            </div>
-          </div>
-        )}
-
-        {role === "instructor" && (
-          <div className="bg-slate-50 p-6 rounded-3xl space-y-6 border border-slate-100 animate-in fade-in slide-in-from-top-2 duration-300">
-            <div className="space-y-2">
-              <Label htmlFor="expertise" className="text-sm font-bold text-slate-700 ml-2">Area of Expertise</Label>
-              <Input
-                id="expertise"
-                name="expertise"
-                type="text"
-                placeholder="e.g., Data Science, Marketing"
-                required
-                disabled={isLoading}
-                className="h-14 rounded-2xl bg-white border-slate-200 px-5 font-medium placeholder:text-slate-400"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="organization" className="text-sm font-bold text-slate-700 ml-2">Organization / Company</Label>
-              <Input
-                id="organization"
-                name="organization"
-                type="text"
-                placeholder="e.g., Tech Corp"
                 disabled={isLoading}
                 className="h-14 rounded-2xl bg-white border-slate-200 px-5 font-medium placeholder:text-slate-400"
               />

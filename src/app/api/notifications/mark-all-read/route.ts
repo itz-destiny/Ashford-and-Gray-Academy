@@ -6,7 +6,8 @@ export async function PATCH(req: NextRequest) {
     try {
         await dbConnect();
 
-        const userId = req.headers.get('x-user-id');
+        const { searchParams } = new URL(req.url);
+        const userId = searchParams.get('userId');
 
         if (!userId) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

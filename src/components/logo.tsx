@@ -1,5 +1,5 @@
-
 import Image from 'next/image';
+import Link from 'next/link';
 import { cn } from '@/lib/utils';
 
 type LogoProps = {
@@ -38,14 +38,16 @@ export function Logo({ className, showText = true, variant = 'default' }: LogoPr
 
   return (
     <div className={cn('flex items-center shrink-0', className)}>
-      <Image
-        src={getLogoSrc()}
-        alt="Ashford & Gray Fusion Academy"
-        width={showText ? 140 : 32}
-        height={showText ? 35 : 32}
-        className="object-contain"
-        priority
-      />
+      <Link href="/">
+        <Image
+          src={getLogoSrc()}
+          alt="Ashford & Gray Fusion Academy"
+          width={showText ? 140 : 32}
+          height={showText ? 35 : 32}
+          className="object-contain"
+          priority
+        />
+      </Link>
     </div>
   );
 }

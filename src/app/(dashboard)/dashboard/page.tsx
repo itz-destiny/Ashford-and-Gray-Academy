@@ -70,13 +70,15 @@ export default function DashboardPage() {
     ? Math.round(enrollments.reduce((acc, curr) => acc + (curr.course?.progress || 0), 0) / enrollments.length)
     : 0; // Removing fallback mock
 
-  const todayEvents = events.slice(0, 2).map((ev, i) => ({
-    id: ev.id || String(i),
+  const todayEvents = events.slice(0, 2).map((ev) => ({
+    id: ev.id || Math.random().toString(),
     title: ev.title,
-    time: "10:00 AM - 11:30 AM", // Should be real but model lacks it
-    location: ev.location || "Room 302 / Zoom",
-    isLive: i === 0 // Mocking first one as live for visual parity
+    time: ev.time || "10:00 AM - 11:30 AM",
+    location: ev.location || "Room 302",
+    isLive: ev.isLive || false
   }));
+
+  const liveEvent = events.find(ev => ev.isLive);
 
   const timelineEvents = [
     { date: "OCT 12", title: "Quantum Mechanics Live", time: "Starting in 20 minutes" },
@@ -128,11 +130,14 @@ export default function DashboardPage() {
       </div>
 
       {/* Featured Live Now */}
-      <LiveNowCard
-        title="Advanced Quantum Mechanics: The Wave Function"
-        subtitle="Prof. Richard Feynman is exploring the mysteries of particle behavior."
-        description="Don't miss the interactive Q&A session starting in 20 minutes."
-      />
+      {liveEvent && (
+        <LiveNowCard
+          title={liveEvent.title || "Live Session"}
+          subtitle={liveEvent.description || "Interactive Lecture"}
+          description="Join the ongoing session now."
+          roomId={liveEvent.id}
+        />
+      )}
 
       {/* Main Content Area */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">

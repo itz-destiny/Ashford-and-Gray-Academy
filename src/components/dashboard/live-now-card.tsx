@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Video } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 interface LiveNowCardProps {
     title: string;
@@ -14,13 +15,15 @@ interface LiveNowCardProps {
     description: string;
     instructor?: string;
     participants?: number;
+    roomId: string;
 }
 
 export function LiveNowCard({
     title = "Advanced Quantum Mechanics: The Wave Function",
     subtitle = "Prof. Richard Feynman is exploring the mysteries of particle behavior.",
-    description = "Don't miss the interactive Q&A session starting in 20 minutes.",
-    participants = 124
+    description = "Join the session now.",
+    participants = 12,
+    roomId
 }: LiveNowCardProps) {
     return (
         <Card className="relative overflow-hidden group min-h-[300px] border-none rounded-3xl">
@@ -53,9 +56,11 @@ export function LiveNowCard({
                 </p>
 
                 <div className="flex flex-col sm:flex-row items-center gap-6">
-                    <Button className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-8 py-6 rounded-2xl shadow-xl shadow-indigo-900/40 transition-all active:scale-95 flex items-center gap-3 w-full sm:w-auto">
-                        <Video size={18} />
-                        Join Lecture Room
+                    <Button asChild className="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-8 py-6 rounded-2xl shadow-xl shadow-indigo-900/40 transition-all active:scale-95 flex items-center gap-3 w-full sm:w-auto">
+                        <Link href={`/meeting/${roomId || "sandbox"}`}>
+                            <Video size={18} />
+                            Join Lecture Room
+                        </Link>
                     </Button>
 
                     <div className="flex -space-x-2">

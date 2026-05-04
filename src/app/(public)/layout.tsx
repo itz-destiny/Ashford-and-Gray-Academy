@@ -6,6 +6,7 @@ import Link from "next/link";
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { NewsletterForm } from "@/components/newsletter-form";
 
 export default function PublicLayout({
   children,
@@ -61,10 +62,7 @@ export default function PublicLayout({
               <p className="mt-4 text-sm text-primary-foreground/70">
                 Get the latest updates on new courses and upcoming events.
               </p>
-              <div className="flex mt-4">
-                <Input type="email" placeholder="Enter your email" className="rounded-r-none text-foreground" />
-                <Button variant="secondary" className="rounded-l-none">Subscribe</Button>
-              </div>
+              <NewsletterForm />
             </div>
           </div>
           <div className="mt-8 border-t border-primary-foreground/20 pt-8 text-center text-sm text-primary-foreground/70">

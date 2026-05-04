@@ -45,11 +45,14 @@ export default function CertificationPage() {
       try {
         const res = await fetch('/api/courses');
         const data = await res.json();
-        // Filter for certifications and diploma programs
-        const filtered = data.filter((c: Course) => 
-          c.category === 'Certification' || c.category === 'Diploma'
-        );
-        setCourses(filtered);
+        if (Array.isArray(data)) {
+          const filtered = data.filter((c: Course) => 
+            c.category === 'Certification' || c.category === 'Diploma'
+          );
+          setCourses(filtered);
+        } else {
+          setCourses([]);
+        }
       } catch (error) {
         console.error("Failed to fetch certifications:", error);
       } finally {
@@ -261,11 +264,11 @@ export default function CertificationPage() {
                              <section className="pt-16 border-t border-slate-100">
                                 <div className="flex gap-10">
                                    <Avatar className="h-24 w-24">
-                                      <AvatarImage src={c.instructor.avatarUrl} />
-                                      <AvatarFallback>{getInitials(c.instructor.name)}</AvatarFallback>
+                                      <AvatarImage src={c.instructor?.avatarUrl} />
+                                      <AvatarFallback>{getInitials(c.instructor?.name || '')}</AvatarFallback>
                                    </Avatar>
                                    <div>
-                                      <h4 className="text-2xl font-black text-slate-950 mb-2">{c.instructor.name}</h4>
+                                      <h4 className="text-2xl font-black text-slate-950 mb-2">{c.instructor?.name || 'Instructor'}</h4>
                                       <p className="text-indigo-600 font-bold text-xs uppercase tracking-widest mb-4">Lead Instructor</p>
                                       <p className="text-slate-500 font-medium leading-relaxed">Expert instructor with years of teaching at Ashford & Gray Academy.</p>
                                    </div>

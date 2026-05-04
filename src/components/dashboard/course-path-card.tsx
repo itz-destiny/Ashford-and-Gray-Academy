@@ -30,7 +30,7 @@ export function CoursePathCard({
             <div className="relative w-full md:w-48 h-48 rounded-2xl overflow-hidden flex-shrink-0">
                 <Image
                     src={imageUrl || "/placeholder-course.jpg"}
-                    alt={title}
+                    alt={title || "Course image"}
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-110"
                 />

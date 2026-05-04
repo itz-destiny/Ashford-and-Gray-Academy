@@ -21,8 +21,31 @@ export function AuthForm({ title, description, children, footerText, footerLinkT
     const router = useRouter();
 
     const handleGoogleSignIn = async () => {
-        const user = await signInWithGoogle();
-        // Redirection is handled by the useUser hook or the login page's effect
+        const { user, error } = await signInWithGoogle();
+        if (error) {
+            console.error("Google sign in failed:", error);
+            return;
+        }
+
+        if (user) {
+            try {
+                // Register user in MongoDB if not exists, default to student role
+                await fetch('/api/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        uid: user.uid,
+                        email: user.email,
+                        displayName: user.displayName || user.email?.split('@')[0],
+                        role: 'student'
+                    })
+                });
+                
+                router.push('/dashboard');
+            } catch (err) {
+                console.error("Error syncing Google user to DB:", err);
+            }
+        }
     };
 
     return (

@@ -27,6 +27,10 @@ export default function SettingsPage() {
   const { user, loading: userLoading } = useUser();
   const { toast } = useToast();
   const [saving, setSaving] = useState(false);
+  const [addingPayment, setAddingPayment] = useState(false);
+  const [cards, setCards] = useState([
+    { id: 1, type: "Visa", last4: "4242", exp: "12/2026" }
+  ]);
 
   const [formData, setFormData] = useState({
     displayName: "",
@@ -90,6 +94,27 @@ export default function SettingsPage() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleRemoveCard = (id: number) => {
+    // In a real app we'd call Stripe/API. Here we mock it:
+    setCards(prev => prev.filter(c => c.id !== id));
+    toast({
+      title: "Removed successfully",
+      description: "Payment method has been removed from your account.",
+    });
+  };
+
+  const handleAddPayment = () => {
+    setAddingPayment(true);
+    // Mocking an async request securely
+    setTimeout(() => {
+      setAddingPayment(false);
+      toast({
+        title: "Secure Gateway Opening...",
+        description: "In a production environment, this would redirect to a PCI-compliant payment gateway like Stripe.",
+      });
+    }, 1000);
   };
 
   if (userLoading) {
@@ -247,16 +272,25 @@ export default function SettingsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Card>
-              <CardHeader className="flex-row justify-between items-center">
-                <CardTitle className="text-base">Visa ending in 4242</CardTitle>
-                <Button variant="outline" size="sm">Remove</Button>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">Expires 12/2026</p>
-              </CardContent>
-            </Card>
-            <Button variant="secondary">Add New Payment Method</Button>
+            {cards.length === 0 ? (
+                <div className="p-6 text-center text-slate-500 bg-slate-50 rounded-xl">No saved payment methods.</div>
+            ) : (
+                cards.map(card => (
+                  <Card key={card.id}>
+                    <CardHeader className="flex-row justify-between items-center pb-2">
+                      <CardTitle className="text-base">{card.type} ending in {card.last4}</CardTitle>
+                      <Button variant="outline" size="sm" onClick={() => handleRemoveCard(card.id)}>Remove</Button>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground">Expires {card.exp}</p>
+                    </CardContent>
+                  </Card>
+                ))
+            )}
+            <Button variant="secondary" onClick={handleAddPayment} disabled={addingPayment}>
+              {addingPayment ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              Add New Payment Method
+            </Button>
           </CardContent>
           <CardFooter>
           </CardFooter>

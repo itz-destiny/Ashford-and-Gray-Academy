@@ -3,19 +3,48 @@ import dbConnect from '@/lib/mongodb';
 import { Notification } from '@/models/Notification';
 import { getUnreadCount } from '@/lib/notifications';
 
+// Simple memory-based rate limiting (60 requests per minute)
+const rateLimitStore = new Map<string, { count: number, resetTime: number }>();
+
+function rateLimit(ip: string): boolean {
+    const now = Date.now();
+    const windowMs = 60 * 1000; // 1 minute
+    const maxRequests = 60;
+
+    let record = rateLimitStore.get(ip);
+    if (!record || now > record.resetTime) {
+        record = { count: 1, resetTime: now + windowMs };
+        rateLimitStore.set(ip, record);
+        return true;
+    }
+    
+    if (record.count >= maxRequests) {
+        return false;
+    }
+    
+    record.count++;
+    rateLimitStore.set(ip, record);
+    return true;
+}
+
 // GET /api/notifications - Fetch user's notifications
 export async function GET(req: NextRequest) {
     try {
         await dbConnect();
 
-        // Get user ID from session/auth (you'll need to implement this based on your auth)
-        const userId = req.headers.get('x-user-id'); // Temporary - replace with actual auth
+        const { searchParams } = new URL(req.url);
+        const userId = searchParams.get('userId');
 
         if (!userId) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { searchParams } = new URL(req.url);
+        // Basic Rate Limiting
+        const ip = req.headers.get('x-forwarded-for') || '127.0.0.1';
+        if (!rateLimit(ip)) {
+            return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+        }
+
         const limit = parseInt(searchParams.get('limit') || '20');
         const unreadOnly = searchParams.get('unreadOnly') === 'true';
         const type = searchParams.get('type');

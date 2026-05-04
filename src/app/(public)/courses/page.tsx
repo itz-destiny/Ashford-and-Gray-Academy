@@ -59,6 +59,8 @@ import { useRouter, usePathname } from "next/navigation";
 import { useUser } from "@/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
+import Link from "next/link";
 
 export default function CoursesPage() {
   const router = useRouter();
@@ -195,7 +197,12 @@ export default function CoursesPage() {
       const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(course.category);
 
       // Difficulty filter
-      const matchesDifficulty = selectedDifficulty === 'all' || course.level === selectedDifficulty;
+      let matchesDifficulty = selectedDifficulty === 'all' || course.level === selectedDifficulty;
+      
+      // Ensure filtering logic requires a selected category before displaying results when a level is clicked
+      if (selectedDifficulty !== 'all' && selectedCategories.length === 0) {
+        matchesDifficulty = false;
+      }
 
       // Duration filter
       const matchesDuration = selectedDurations.length === 0 || selectedDurations.some(d => {
@@ -511,7 +518,7 @@ export default function CoursesPage() {
                           <div className="flex flex-wrap items-center gap-6 text-[10px] font-black uppercase tracking-widest text-slate-400">
                             <div className="flex items-center gap-2">
                               <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                              <span>Created by <span className="text-white underline cursor-pointer">{course.instructor.name}</span></span>
+                              <span>Created by <span className="text-white underline cursor-pointer">{course.instructor?.name || 'Instructor'}</span></span>
                             </div>
                             <div className="flex items-center gap-2">
                               <Info className="w-4 h-4" />
@@ -639,12 +646,12 @@ export default function CoursesPage() {
                           <div className="flex flex-col md:flex-row gap-10">
                             <div className="shrink-0 flex flex-col gap-6">
                               <Avatar className="h-40 w-40 ring-8 ring-slate-50 shadow-2xl">
-                                <AvatarImage src={course.instructor.avatarUrl} />
-                                <AvatarFallback>{getInitials(course.instructor.name)}</AvatarFallback>
+                              <AvatarImage src={course.instructor?.avatarUrl} />
+                                <AvatarFallback>{getInitials(course.instructor?.name || '')}</AvatarFallback>
                               </Avatar>
                             </div>
                             <div>
-                              <h4 className="text-3xl font-black text-slate-950 underline decoration-indigo-200 underline-offset-8 mb-4">{course.instructor.name}</h4>
+                              <h4 className="text-3xl font-black text-slate-950 underline decoration-indigo-200 underline-offset-8 mb-4">{course.instructor?.name || 'Instructor'}</h4>
                               <p className="text-indigo-600 font-bold text-sm uppercase tracking-widest mb-6">Master Instructor • Ashford & Gray Faculty</p>
                               <div className="flex gap-8 mb-8 text-sm font-black text-slate-400 uppercase tracking-widest">
                                 <div className="flex items-center gap-2">
@@ -657,7 +664,7 @@ export default function CoursesPage() {
                                 </div>
                               </div>
                               <p className="text-lg text-slate-500 font-medium leading-relaxed">
-                                {course.instructor.name} is a renowned expert in {course.category.toLowerCase()} and professional development. With over 15 years of industry experience, they have trained thousands of individuals worldwide, helping them achieve their career goals through practical, result-oriented teaching.
+                                {course.instructor?.name || 'This instructor'} is a renowned expert in {course.category.toLowerCase()} and professional development. With over 15 years of industry experience, they have trained thousands of individuals worldwide, helping them achieve their career goals through practical, result-oriented teaching.
                               </p>
                             </div>
                           </div>
@@ -688,7 +695,9 @@ export default function CoursesPage() {
           <div className="relative z-10">
             <h2 className="text-3xl md:text-5xl font-black tracking-tighter leading-none mb-6">Not sure where to start?</h2>
             <p className="text-lg text-indigo-100/70 font-medium max-w-2xl mx-auto mb-10">Get a personalized learning plan based on your career goals and interests.</p>
-            <Button className="h-16 px-10 rounded-2xl bg-white text-indigo-600 hover:bg-indigo-50 font-black text-lg">Get Started</Button>
+            <Button asChild className="h-16 px-10 rounded-2xl bg-white text-indigo-600 hover:bg-indigo-50 font-black text-lg">
+              <Link href="/login?view=signup">Get Started</Link>
+            </Button>
           </div>
         </div>
       </section>

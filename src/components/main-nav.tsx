@@ -5,6 +5,7 @@ import React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
+import { BackButton } from "@/components/back-button";
 import { cn } from "@/lib/utils";
 
 import { useUser } from "@/firebase";
@@ -20,7 +21,10 @@ export function MainNav() {
       )}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-        <Logo />
+        <div className="flex items-center gap-4">
+          <BackButton />
+          <Logo />
+        </div>
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
           <Link href="/courses" className="text-muted-foreground hover:text-foreground transition-colors">Courses</Link>
           <Link href="/certification" className="text-muted-foreground hover:text-foreground transition-colors">Certification</Link>

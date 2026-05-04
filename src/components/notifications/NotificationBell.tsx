@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useUser } from "@/firebase";
 
 interface Notification {
     _id: string;
@@ -25,13 +26,16 @@ interface Notification {
 }
 
 export function NotificationBell() {
+    const { user } = useUser();
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [open, setOpen] = useState(false);
 
     const fetchNotifications = async () => {
+        if (!user?.uid) return;
         try {
-            const res = await fetch('/api/notifications?limit=5');
+            const res = await fetch(`/api/notifications?limit=5&userId=${user.uid}`);
+            if (!res.ok) return;
             const data = await res.json();
             setNotifications(data.notifications || []);
             setUnreadCount(data.unreadCount || 0);
@@ -41,15 +45,17 @@ export function NotificationBell() {
     };
 
     useEffect(() => {
+        if (!user?.uid) return;
         fetchNotifications();
         // Poll for new notifications every 30 seconds
         const interval = setInterval(fetchNotifications, 30000);
         return () => clearInterval(interval);
-    }, []);
+    }, [user?.uid]);
 
     const markAsRead = async (id: string) => {
+        if (!user?.uid) return;
         try {
-            await fetch(`/api/notifications/${id}/read`, { method: 'PATCH' });
+            await fetch(`/api/notifications/${id}?userId=${user.uid}`, { method: 'PATCH' });
             fetchNotifications();
         } catch (error) {
             console.error('Error marking as read:', error);
@@ -57,8 +63,9 @@ export function NotificationBell() {
     };
 
     const markAllAsRead = async () => {
+        if (!user?.uid) return;
         try {
-            await fetch('/api/notifications/mark-all-read', { method: 'PATCH' });
+            await fetch(`/api/notifications/mark-all-read?userId=${user.uid}`, { method: 'PATCH' });
             fetchNotifications();
         } catch (error) {
             console.error('Error marking all as read:', error);

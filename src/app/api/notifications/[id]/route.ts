@@ -9,14 +9,15 @@ export async function PATCH(
     try {
         await dbConnect();
 
-        // Get user ID from session/auth
-        const userId = req.headers.get('x-user-id'); // Replace with actual auth
+        const { searchParams } = new URL(req.url);
+        const userId = searchParams.get('userId');
 
         if (!userId) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const result = await markAsRead(params.id, userId);
+        const { id } = await params;
+        const result = await markAsRead(id, userId);
 
         if (!result.success) {
             return NextResponse.json({ error: 'Failed to mark as read' }, { status: 500 });
@@ -36,7 +37,8 @@ export async function DELETE(
     try {
         await dbConnect();
 
-        const userId = req.headers.get('x-user-id');
+        const { searchParams } = new URL(req.url);
+        const userId = searchParams.get('userId');
 
         if (!userId) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

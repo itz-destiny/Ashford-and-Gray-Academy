@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 
 export function ActivityHeatmap() {
     // Mock data for a 7x8 grid (8 weeks)
-    const activityData = Array.from({ length: 56 }, () => Math.floor(Math.random() * 4));
+    const activityData = Array.from({ length: 56 }, () => 0);
 
     const getColor = (level: number) => {
         switch (level) {
