@@ -68,17 +68,17 @@ export default function MyCoursesPage() {
 
         <div className="flex gap-4 w-full lg:w-auto overflow-x-auto pb-2 sm:pb-0">
           <div className="bg-white border-slate-100 border p-4 rounded-2xl flex items-center gap-4 min-w-[160px]">
-            <div className="bg-indigo-50 p-3 rounded-xl"><BookOpen className="w-5 h-5 text-indigo-600" /></div>
+            <div className="bg-[#0B1F3A]/5 p-3 rounded-xl"><BookOpen className="w-5 h-5 text-[#0B1F3A]" /></div>
             <div>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Enrolled</p>
-              <p className="text-xl font-black text-slate-900">{enrollments.length}</p>
+              <p className="text-xl font-black text-[#0B1F3A]">{enrollments.length}</p>
             </div>
           </div>
           <div className="bg-white border-slate-100 border p-4 rounded-2xl flex items-center gap-4 min-w-[160px]">
-            <div className="bg-emerald-50 p-3 rounded-xl"><Award className="w-5 h-5 text-emerald-600" /></div>
+            <div className="bg-[#1F7A5A]/5 p-3 rounded-xl"><Award className="w-5 h-5 text-[#1F7A5A]" /></div>
             <div>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Completed</p>
-              <p className="text-xl font-black text-slate-900">{enrollments.filter(en => (en.course?.progress || 0) === 100).length}</p>
+              <p className="text-xl font-black text-[#0B1F3A]">{enrollments.filter(en => (en.course?.progress || 0) === 100).length}</p>
             </div>
           </div>
         </div>
@@ -86,8 +86,8 @@ export default function MyCoursesPage() {
 
       {/* Featured Resume Course */}
       {inProgress.length > 0 && (
-        <Card className="border-none bg-slate-900 rounded-[40px] overflow-hidden relative group">
-          <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-indigo-500/20 to-transparent z-0" />
+        <Card className="border-none bg-[#0B1F3A] rounded-[40px] overflow-hidden relative group">
+          <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-[#C8A96A]/10 to-transparent z-0" />
           <CardContent className="p-10 relative z-10 flex flex-col md:flex-row gap-10 items-center">
             <div className="relative w-full md:w-64 h-40 rounded-3xl overflow-hidden">
               <Image
@@ -105,9 +105,9 @@ export default function MyCoursesPage() {
 
             <div className="flex-1 space-y-6 text-center md:text-left">
               <div className="space-y-2">
-                <Badge className="bg-indigo-500/20 text-indigo-400 border-none px-3 py-1 font-black text-[10px] tracking-widest">RESUME LEARNING</Badge>
-                <h2 className="text-3xl font-black text-white leading-tight">{inProgress[0].course?.title}</h2>
-                <div className="flex items-center justify-center md:justify-start gap-4 text-indigo-300 text-sm font-medium">
+                <Badge className="bg-[#C8A96A]/20 text-[#C8A96A] border-none px-3 py-1 font-black text-[10px] tracking-widest">RESUME LEARNING</Badge>
+                <h2 className="text-3xl font-black text-white leading-tight font-serif">{inProgress[0].course?.title}</h2>
+                <div className="flex items-center justify-center md:justify-start gap-4 text-slate-300 text-sm font-medium">
                   <span className="flex items-center gap-1.5"><Clock className="w-4 h-4" /> 12h remaining</span>
                   <span>•</span>
                   <span>{inProgress[0].course?.category}</span>
@@ -115,7 +115,7 @@ export default function MyCoursesPage() {
               </div>
 
               <div className="space-y-3">
-                <div className="flex justify-between items-end text-xs font-black text-indigo-400 uppercase tracking-widest">
+                <div className="flex justify-between items-end text-xs font-black text-[#C8A96A] uppercase tracking-widest">
                   <span>Current Progress</span>
                   <span>{inProgress[0].course?.progress}%</span>
                 </div>
@@ -136,18 +136,18 @@ export default function MyCoursesPage() {
       <Tabs defaultValue="all" className="space-y-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <TabsList className="bg-slate-100/50 p-1.5 rounded-2xl h-auto border border-slate-200/50">
-            <TabsTrigger value="all" className="px-6 py-2.5 rounded-xl data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-none font-black text-xs uppercase tracking-tight">All Courses</TabsTrigger>
-            <TabsTrigger value="active" className="px-6 py-2.5 rounded-xl data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-none font-black text-xs uppercase tracking-tight">In Progress</TabsTrigger>
-            <TabsTrigger value="completed" className="px-6 py-2.5 rounded-xl data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-none font-black text-xs uppercase tracking-tight">Completed</TabsTrigger>
+            <TabsTrigger value="all" className="px-6 py-2.5 rounded-xl data-[state=active]:bg-[#0B1F3A] data-[state=active]:text-white data-[state=active]:shadow-none font-black text-xs uppercase tracking-tight">All Courses</TabsTrigger>
+            <TabsTrigger value="active" className="px-6 py-2.5 rounded-xl data-[state=active]:bg-[#0B1F3A] data-[state=active]:text-white data-[state=active]:shadow-none font-black text-xs uppercase tracking-tight">In Progress</TabsTrigger>
+            <TabsTrigger value="completed" className="px-6 py-2.5 rounded-xl data-[state=active]:bg-[#0B1F3A] data-[state=active]:text-white data-[state=active]:shadow-none font-black text-xs uppercase tracking-tight">Completed</TabsTrigger>
           </TabsList>
 
           <div className="relative w-full md:w-80 group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-[#0B1F3A] transition-colors" />
             <Input
               placeholder="Search your library..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 h-12 bg-white border-slate-100 rounded-2xl text-sm font-medium focus-visible:ring-indigo-100"
+              className="pl-12 h-12 bg-white border-slate-100 rounded-2xl text-sm font-medium focus-visible:ring-[#0B1F3A]/10"
             />
           </div>
         </div>
@@ -208,12 +208,12 @@ function CourseGrid({ items }: { items: Enrollment[] }) {
             <div className="space-y-3 mt-auto">
               <div className="flex justify-between items-end text-[10px] font-black text-slate-400 uppercase tracking-widest">
                 <span>Course Progress</span>
-                <span className="text-indigo-600">{en.course?.progress || 0}%</span>
+                <span className="text-[#1F7A5A]">{en.course?.progress || 0}%</span>
               </div>
               <Progress value={en.course?.progress} className="h-1.5 bg-slate-50" />
             </div>
 
-            <Button asChild variant="outline" className="w-full h-11 rounded-xl border-slate-100 bg-slate-50 hover:bg-slate-100 text-slate-600 font-bold transition-all group-hover:bg-indigo-600 group-hover:text-white group-hover:border-indigo-600">
+            <Button asChild variant="outline" className="w-full h-11 rounded-xl border-slate-100 bg-slate-50 hover:bg-[#0B1F3A] text-slate-600 font-bold transition-all group-hover:text-white group-hover:border-[#0B1F3A]">
               <Link href={`/my-courses/${en.id}`}>
                 {en.course?.progress === 100 ? "Review Material" : "Continue Lesson"}
               </Link>

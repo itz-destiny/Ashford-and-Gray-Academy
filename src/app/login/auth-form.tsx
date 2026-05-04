@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { signInWithGoogle } from "@/firebase/auth";
 import { useRouter } from "next/navigation";
 import { FaGoogle } from "react-icons/fa";
+import { useToast } from "@/hooks/use-toast";
 
 type AuthFormProps = {
     title: string;
@@ -19,11 +20,17 @@ type AuthFormProps = {
 
 export function AuthForm({ title, description, children, footerText, footerLinkText, onFooterLinkClick }: AuthFormProps) {
     const router = useRouter();
+    const { toast } = useToast();
 
     const handleGoogleSignIn = async () => {
         const { user, error } = await signInWithGoogle();
         if (error) {
             console.error("Google sign in failed:", error);
+            toast({
+                variant: "destructive",
+                title: "Authentication Failed",
+                description: error || "Could not complete Google sign-in. Please try again.",
+            });
             return;
         }
 

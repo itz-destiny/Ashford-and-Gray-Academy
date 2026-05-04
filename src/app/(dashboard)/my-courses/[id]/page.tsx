@@ -104,39 +104,54 @@ export default function CourseViewerPage() {
     return (
         <div className="flex h-[calc(100vh-4rem)] overflow-hidden -m-4 md:-m-8">
             {/* Sidebar - Course Content */}
-            <aside className={`${isSidebarOpen ? 'w-80' : 'w-0'} bg-white border-r transition-all duration-300 flex flex-col overflow-hidden`}>
-                <div className="p-4 border-b flex justify-between items-center">
-                    <h2 className="font-bold truncate">Course Content</h2>
-                    <Button variant="ghost" size="icon" onClick={() => setIsSidebarOpen(false)} className="md:hidden">
-                        <X className="w-4 h-4" />
+            <aside className={`${isSidebarOpen ? 'w-96' : 'w-0'} bg-white border-r transition-all duration-500 flex flex-col overflow-hidden shadow-2xl z-20`}>
+                <div className="p-8 border-b flex justify-between items-center bg-[#0B1F3A] text-white">
+                    <div>
+                        <h2 className="font-serif text-xl font-bold tracking-tight">Curriculum</h2>
+                        <p className="text-[9px] uppercase tracking-[0.3em] text-[#C8A96A] mt-1 font-black">Program Modules</p>
+                    </div>
+                    <Button variant="ghost" size="icon" onClick={() => setIsSidebarOpen(false)} className="text-white/60 hover:text-white hover:bg-white/10 rounded-full">
+                        <X className="w-5 h-5" />
                     </Button>
                 </div>
-                <ScrollArea className="flex-1">
+                <div className="flex-1 min-h-0 overflow-y-auto bg-white">
                     {modules.map((mod: any, mIdx: number) => (
-                        <div key={mod._id} className="border-b">
-                            <div className="p-4 bg-slate-50 font-semibold text-sm flex items-center justify-between">
-                                <span>Module {mIdx + 1}: {mod.title}</span>
+                        <div key={mod._id} className="border-b border-slate-100 last:border-0">
+                            <div className="px-8 py-6 bg-slate-50/50 flex flex-col gap-1">
+                                <span className="text-[9px] font-black text-[#C8A96A] uppercase tracking-[0.2em]">Module 0{mIdx + 1}</span>
+                                <h3 className="font-serif text-lg text-[#0B1F3A] font-bold">{mod.title}</h3>
                             </div>
                             <div className="py-2">
                                 {lessons.filter(l => l.moduleId === mod._id).map((lesson: any) => (
                                     <button
                                         key={lesson._id}
                                         onClick={() => setCurrentLesson(lesson)}
-                                        className={`w-full text-left px-6 py-3 flex items-center gap-3 hover:bg-indigo-50 transition-colors ${currentLesson?._id === lesson._id ? 'bg-indigo-50 border-r-4 border-indigo-600' : ''
+                                        className={`w-full text-left px-8 py-5 flex items-center gap-4 hover:bg-slate-50 transition-all group ${currentLesson?._id === lesson._id ? 'bg-slate-50 border-r-4 border-[#1F7A5A]' : ''
                                             }`}
                                     >
-                                        {lesson.isLive ? <Calendar className="w-4 h-4 text-orange-500" /> : <PlayCircle className="w-4 h-4 text-slate-400" />}
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-medium truncate">{lesson.title}</p>
-                                            <p className="text-xs text-slate-400">{lesson.duration}m</p>
+                                        <div className={cn(
+                                            "w-10 h-10 rounded-xl flex items-center justify-center transition-all",
+                                            currentLesson?._id === lesson._id ? "bg-[#1F7A5A] text-white" : "bg-slate-100 text-slate-400 group-hover:bg-slate-200"
+                                        )}>
+                                            {lesson.isLive ? <Calendar className="w-4 h-4" /> : <PlayCircle className="w-4 h-4" />}
                                         </div>
-                                        {lesson.completed && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
+                                        <div className="flex-1 min-w-0">
+                                            <p className={cn(
+                                                "text-sm font-bold tracking-tight mb-1",
+                                                currentLesson?._id === lesson._id ? "text-[#0B1F3A]" : "text-slate-600"
+                                            )}>{lesson.title}</p>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">{lesson.duration} Minutes</span>
+                                                {lesson.isLive && <Badge className="bg-orange-500/10 text-orange-600 border-none text-[8px] font-black uppercase tracking-tighter px-2 h-4">Live</Badge>}
+                                            </div>
+                                        </div>
+                                        {lesson.completed && <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />}
                                     </button>
                                 ))}
                             </div>
                         </div>
                     ))}
-                </ScrollArea>
+                </div>
             </aside>
 
             {/* Main Content - Player & Tabs */}
@@ -167,10 +182,20 @@ export default function CourseViewerPage() {
                                         <div className="w-full h-full flex flex-col items-center justify-center text-white p-8 text-center">
                                             {currentLesson.isLive ? (
                                                 <>
-                                                    <Calendar className="w-16 h-16 text-orange-500 mb-4 animate-pulse" />
-                                                    <h2 className="text-2xl font-bold">Live Class Scheduled</h2>
-                                                    <p className="opacity-70 mt-2">{new Date(currentLesson.scheduledAt).toLocaleString()}</p>
-                                                    <Button className="mt-6 bg-orange-600 hover:bg-orange-700">Add to Calendar</Button>
+                                                    <Calendar className="w-16 h-16 text-[#C8A96A] mb-4 animate-pulse" />
+                                                    <h2 className="text-2xl md:text-3xl font-serif font-bold text-white">Live Class Scheduled</h2>
+                                                    <p className="opacity-70 mt-4 text-slate-300 font-medium">{new Date(currentLesson.scheduledAt).toLocaleString()}</p>
+                                                    <div className="flex gap-4 mt-8">
+                                                        <Button 
+                                                            className="h-16 px-10 rounded-full bg-[#1F7A5A] hover:bg-[#1F7A5A]/90 text-white font-black text-[10px] uppercase tracking-widest transition-all shadow-xl"
+                                                            onClick={() => router.push(`/meeting/${courseId}`)}
+                                                        >
+                                                            Join Live Session
+                                                        </Button>
+                                                        <Button variant="outline" className="h-16 px-10 rounded-full border-white/20 text-white hover:bg-white/10 font-bold">
+                                                            Add to Calendar
+                                                        </Button>
+                                                    </div>
                                                 </>
                                             ) : (
                                                 <>
@@ -183,12 +208,18 @@ export default function CourseViewerPage() {
                                     )}
                                 </div>
 
-                                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 py-6">
                                     <div>
-                                        <h2 className="text-2xl font-bold">{currentLesson.title}</h2>
-                                        <p className="text-slate-500 mt-1">{course.title} • Module {modules.findIndex(m => m._id === currentLesson.moduleId) + 1}</p>
+                                        <div className="flex items-center gap-3 mb-3">
+                                            <div className="w-8 h-[1px] bg-[#C8A96A]" />
+                                            <p className="text-[#C8A96A] font-black text-[9px] uppercase tracking-[0.4em]">Current Lesson</p>
+                                        </div>
+                                        <h2 className="text-3xl md:text-4xl font-serif font-bold text-[#0B1F3A] tracking-tight">{currentLesson.title}</h2>
+                                        <p className="text-slate-500 mt-2 font-medium">{course.title} • Module 0{modules.findIndex(m => m._id === currentLesson.moduleId) + 1}</p>
                                     </div>
-                                    <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700">Mark as Complete</Button>
+                                    <Button size="lg" className="h-16 px-10 rounded-full bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black text-[10px] uppercase tracking-[0.3em] transition-all shadow-xl">
+                                        Mark as Complete
+                                    </Button>
                                 </div>
 
                                 <Tabs defaultValue="overview" className="w-full">

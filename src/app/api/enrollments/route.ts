@@ -2,15 +2,27 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Enrollment from '@/models/Enrollment';
 import Course from '@/models/Course';
+import { rateLimit } from '@/lib/rate-limit';
+
+const limiter = rateLimit({
+    interval: 60 * 1000,
+    uniqueTokenPerInterval: 500,
+});
+
+function getIP(request: Request) {
+    const forwarded = request.headers.get("x-forwarded-for");
+    return forwarded ? forwarded.split(/, /)[0] : "127.0.0.1";
+}
 
 export async function GET(request: Request) {
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
-
-    // If no userId provided, it means we are fetching all (for admin)
-    // In a real app, verify admin role from session/token here
-
     try {
+        try {
+            await limiter.check(null, 20, getIP(request));
+        } catch {
+            return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+        }
+        const { searchParams } = new URL(request.url);
+        const userId = searchParams.get('userId');
         await dbConnect();
         const query = userId ? { userId } : {};
         const enrollments = await Enrollment.find(query).populate('courseId').exec();
@@ -32,6 +44,11 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
     try {
+        try {
+            await limiter.check(null, 5, getIP(request)); // 5 per min for enrollments
+        } catch {
+            return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+        }
         const { userId, courseId } = await request.json();
         await dbConnect();
 
