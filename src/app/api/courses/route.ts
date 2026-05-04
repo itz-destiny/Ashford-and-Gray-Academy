@@ -2,6 +2,12 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Course from '@/models/Course';
 import Enrollment from '@/models/Enrollment';
+import { rateLimit } from '@/lib/rate-limit';
+
+const limiter = rateLimit({
+    interval: 60 * 1000,
+    uniqueTokenPerInterval: 500,
+});
 
 export async function GET(request: Request) {
     try {
@@ -33,6 +39,15 @@ export async function GET(request: Request) {
 }
 export async function POST(request: Request) {
     try {
+        const forwarded = request.headers.get("x-forwarded-for");
+        const ip = forwarded ? forwarded.split(/, /)[0] : "127.0.0.1";
+        
+        try {
+            await limiter.check(null, 3, ip); // 3 courses per minute (creation is rare)
+        } catch {
+            return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+        }
+
         await dbConnect();
         const body = await request.json();
         const course = await Course.create(body);

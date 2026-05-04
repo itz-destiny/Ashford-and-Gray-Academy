@@ -17,26 +17,27 @@ export function MainNav() {
   return (
     <header
       className={cn(
-        "bg-background sticky top-0 z-50 transition-all duration-300 border-b"
+        "bg-white sticky top-0 z-50 transition-all duration-300 border-b border-slate-100"
       )}
     >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <BackButton />
+      <div className="container mx-auto px-6 lg:px-12 h-24 flex items-center justify-between">
+        <div className="flex items-center gap-6">
           <Logo />
         </div>
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
-          <Link href="/courses" className="text-muted-foreground hover:text-foreground transition-colors">Courses</Link>
-          <Link href="/certification" className="text-muted-foreground hover:text-foreground transition-colors">Certification</Link>
-          <Link href="/events" className="text-muted-foreground hover:text-foreground transition-colors">Events</Link>
-          <Link href="/about" className="text-muted-foreground hover:text-foreground transition-colors">About</Link>
+        
+        <nav className="hidden lg:flex items-center gap-10 text-[10px] font-black uppercase tracking-[0.2em] text-[#0B1F3A]">
+          <Link href="/courses" className="hover:text-[#1F7A5A] transition-colors">Programs</Link>
+          <Link href="/certification" className="hover:text-[#1F7A5A] transition-colors">Certification</Link>
+          <Link href="/events" className="hover:text-[#1F7A5A] transition-colors">Events</Link>
+          <Link href="/about" className="hover:text-[#1F7A5A] transition-colors">About Us</Link>
         </nav>
-        <div className="flex items-center gap-2">
+
+        <div className="flex items-center gap-4">
           {loading ? (
-            <div className="h-9 w-20 bg-muted animate-pulse rounded-md" />
+            <div className="h-10 w-24 bg-slate-50 animate-pulse rounded-full" />
           ) : user ? (
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" asChild>
+            <div className="flex items-center gap-6">
+              <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest" asChild>
                 <Link href={
                   (user as any).role === 'instructor' ? '/instructor' :
                     (user as any).role === 'admin' ? '/admin' :
@@ -49,14 +50,12 @@ export function MainNav() {
               <UserNav />
             </div>
           ) : (
-            <>
-              <Button variant="ghost" asChild>
-                <Link href="/login">Log In</Link>
+            <div className="flex items-center gap-4">
+              <Link href="/login" className="text-[10px] font-black uppercase tracking-widest text-[#0B1F3A] mr-4 hover:text-[#1F7A5A]">Log In</Link>
+              <Button size="lg" className="h-12 px-8 rounded-full bg-[#0B1F3A] hover:bg-[#0B1F3A]/90 text-white font-black text-[10px] uppercase tracking-widest" asChild>
+                <Link href="/login?view=signup">Apply Now</Link>
               </Button>
-              <Button asChild>
-                <Link href="/login?view=signup">Sign Up</Link>
-              </Button>
-            </>
+            </div>
           )}
         </div>
       </div>

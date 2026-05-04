@@ -1,6 +1,12 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import User from '@/models/User';
+import { rateLimit } from '@/lib/rate-limit';
+
+const limiter = rateLimit({
+    interval: 60 * 1000, // 60 seconds
+    uniqueTokenPerInterval: 500, // Max 500 users per interval
+});
 
 export async function GET(request: Request) {
     try {
@@ -33,12 +39,23 @@ export async function GET(request: Request) {
         const users = await User.find(query).sort({ createdAt: -1 });
         return NextResponse.json(users);
     } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        console.error('CRITICAL: GET /api/users failed:', error);
+        return NextResponse.json({ error: 'Internal Server Error', details: error.message }, { status: 500 });
     }
 }
 
 export async function POST(request: Request) {
     try {
+        // Rate limiting: 10 requests per minute per IP (simplified for now)
+        const forwarded = request.headers.get("x-forwarded-for");
+        const ip = forwarded ? forwarded.split(/, /)[0] : "127.0.0.1";
+        
+        try {
+            await limiter.check(null, 10, ip);
+        } catch {
+            return NextResponse.json({ error: 'Too many requests. Please try again in a minute.' }, { status: 429 });
+        }
+
         await dbConnect();
         const body = await request.json();
         const { uid, email, displayName, photoURL, role, bio, title, school, dateOfBirth, expertise, organization } = body;
@@ -85,7 +102,8 @@ export async function POST(request: Request) {
         console.log(`POST /api/users: Upserted user ${user.email}, final role in DB: ${user.role}`);
         return NextResponse.json(user);
     } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        console.error('CRITICAL: POST /api/users failed:', error);
+        return NextResponse.json({ error: 'Internal Server Error', details: error.message }, { status: 500 });
     }
 }
 

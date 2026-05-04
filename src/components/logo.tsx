@@ -20,19 +20,18 @@ type LogoProps = {
 export function Logo({ className, showText = true, variant = 'default' }: LogoProps) {
   // Logo selection based on variant
   const getLogoSrc = () => {
-    if (!showText) {
-      // Icon-only versions
-      return variant === 'white' ? '/A&G just logo white.png' : '/A&G just logo.png';
+    if (!showText || variant === 'icon-only') {
+      return '/icon.png';
     }
 
     // Full logo versions
     switch (variant) {
       case 'white':
-        return '/A&G Logo white.png';
+        return '/A & G2.png';
       case 'blue':
         return '/A&G blue.png';
       default:
-        return '/A&G Logo.png';
+        return '/A & G1.png';
     }
   };
 
@@ -42,8 +41,8 @@ export function Logo({ className, showText = true, variant = 'default' }: LogoPr
         <Image
           src={getLogoSrc()}
           alt="Ashford & Gray Fusion Academy"
-          width={showText ? 140 : 32}
-          height={showText ? 35 : 32}
+          width={showText ? 180 : 40}
+          height={showText ? 45 : 40}
           className="object-contain"
           priority
         />

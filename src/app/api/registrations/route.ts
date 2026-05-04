@@ -2,6 +2,12 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Registration from '@/models/Registration';
 import Event from '@/models/Event';
+import { rateLimit } from '@/lib/rate-limit';
+
+const limiter = rateLimit({
+    interval: 60 * 1000,
+    uniqueTokenPerInterval: 500,
+});
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
@@ -31,6 +37,15 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
     try {
+        const forwarded = request.headers.get("x-forwarded-for");
+        const ip = forwarded ? forwarded.split(/, /)[0] : "127.0.0.1";
+        
+        try {
+            await limiter.check(null, 5, ip); // 5 registrations per minute
+        } catch {
+            return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+        }
+
         const { userId, eventId } = await request.json();
         await dbConnect();
 

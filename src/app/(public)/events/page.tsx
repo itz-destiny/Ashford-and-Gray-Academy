@@ -1,7 +1,3 @@
-
-
-"use client";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,7 +23,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { format } from 'date-fns';
-import { Calendar, DollarSign, MapPin, Search, Tag, Users } from "lucide-react";
+import { Calendar, DollarSign, MapPin, Search, Tag, Users, ArrowRight, Clock } from "lucide-react";
 import Image from "next/image";
 import React, { useState, useMemo } from "react";
 import type { AppEvent } from "@/lib/types";
@@ -35,6 +31,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useUser } from "@/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ScrollAnimation } from "@/components/ui/scroll-animation";
 
 export default function EventsPage() {
   const router = useRouter();
@@ -112,8 +109,8 @@ export default function EventsPage() {
 
         if (res.ok) {
           toast({
-            title: "Successfully Registered!",
-            description: `You have registered for "${event.title}".`,
+            title: "Registration Successful",
+            description: `You have been registered for "${event.title}".`,
           });
         } else {
           throw new Error('Failed to register');
@@ -122,7 +119,7 @@ export default function EventsPage() {
         toast({
           variant: "destructive",
           title: "Registration Error",
-          description: "There was a problem registering you for this event.",
+          description: "There was a problem processing your registration.",
         });
       }
     }
@@ -139,19 +136,12 @@ export default function EventsPage() {
   const filteredAndSortedEvents = useMemo(() => {
     if (!appEvents) return [];
     let filtered = appEvents.filter(event => {
-      // Search query filter
       const matchesSearch = event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         event.organizer.toLowerCase().includes(searchQuery.toLowerCase());
-
-      // Category filter
       const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(event.category);
-
-      // Location filter
       const matchesLocation = selectedLocations.length === 0 ||
         (selectedLocations.includes('online') && (event.location.toLowerCase().includes('virtual') || event.location.toLowerCase().includes('online'))) ||
         (selectedLocations.includes('in-person') && !(event.location.toLowerCase().includes('virtual') || event.location.toLowerCase().includes('online')));
-
-      // Price filter
       const matchesPrice = selectedPrices.length === 0 ||
         (selectedPrices.includes('free') && (event.price === 0 || !event.price)) ||
         (selectedPrices.includes('paid') && event.price && event.price > 0);
@@ -159,13 +149,11 @@ export default function EventsPage() {
       return matchesSearch && matchesCategory && matchesLocation && matchesPrice;
     });
 
-    // Sorting logic
     switch (sortOrder) {
       case 'date':
         filtered.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
         break;
       case 'popular':
-        // Assuming no popularity metric, we'll just reverse for variety
         filtered.reverse();
         break;
       case 'price-asc':
@@ -179,44 +167,47 @@ export default function EventsPage() {
     return filtered;
   }, [appEvents, searchQuery, sortOrder, selectedCategories, selectedLocations, selectedPrices]);
 
-
   return (
-    <div className="bg-slate-50/50 min-h-screen pb-24">
+    <div className="bg-white min-h-screen pb-24">
       {/* Event Hero */}
-      <header className="relative py-24 px-6 md:py-32 overflow-hidden bg-slate-950">
-        <div className="absolute inset-0">
-          <div className="absolute top-0 right-0 w-1/2 h-full bg-indigo-600/10 blur-[120px] rounded-full" />
-          <div className="absolute bottom-0 left-0 w-1/3 h-1/2 bg-blue-600/10 blur-[150px] rounded-full" />
-          <div className="absolute inset-0 bg-[url('/wavy-background.svg')] bg-cover opacity-5 mix-blend-overlay" />
+      <header className="relative py-32 px-6 md:py-48 overflow-hidden bg-[#0B1F3A]">
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-emerald-500/10 to-transparent" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-slate-500/10 blur-[100px] rounded-full" />
         </div>
 
-        <div className="container relative z-10 text-center">
-          <Badge className="bg-white/10 text-blue-300 border-white/20 mb-8 px-4 py-1.5 backdrop-blur-md">
-             🗓 Workshops & Webinars
-          </Badge>
-          <h1 className="text-4xl md:text-7xl font-black text-white tracking-tighter leading-none mb-8">
-            Upcoming <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Events.</span>
-          </h1>
-          <p className="text-xl text-slate-400 font-medium max-w-2xl mx-auto leading-relaxed mb-12">
-            Join our upcoming workshops and webinars to learn from industry experts and connect with other students.
-          </p>
+        <div className="container relative z-10 text-center max-w-4xl mx-auto">
+          <ScrollAnimation animation="fade-in-up">
+            <div className="flex justify-center items-center gap-3 mb-8">
+              <div className="w-8 h-[1px] bg-[#C8A96A]" />
+              <span className="text-[#C8A96A] font-black text-xs uppercase tracking-[0.4em]">Global Gatherings</span>
+              <div className="w-8 h-[1px] bg-[#C8A96A]" />
+            </div>
+            
+            <h1 className="text-5xl md:text-7xl font-serif text-white tracking-tight mb-8">
+              Institutional <span className="italic text-[#C8A96A]">Events.</span>
+            </h1>
+            <p className="text-xl text-slate-300 font-medium max-w-2xl mx-auto leading-relaxed mb-12">
+              Distinctive. Global. Authoritative. Engage with world-class faculty and industry visionaries.
+            </p>
 
-          <div className="max-w-2xl mx-auto">
-            <div className="relative group bg-white/5 p-1.5 rounded-[2rem] border border-white/10 backdrop-blur-xl shadow-2xl transition-all focus-within:border-blue-500/50">
-              <div className="flex">
-                <div className="relative flex-grow">
-                  <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
-                  <Input
-                    placeholder="Search for an event, topic, or speaker..."
-                    className="h-14 pl-14 bg-transparent border-none text-white text-base focus-visible:ring-0 placeholder:text-slate-500"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
+            <div className="max-w-2xl mx-auto">
+              <div className="relative group bg-white/5 p-1.5 rounded-full border border-white/10 backdrop-blur-xl shadow-2xl transition-all focus-within:border-[#C8A96A]/50">
+                <div className="flex">
+                  <div className="relative flex-grow">
+                    <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-[#C8A96A] transition-colors" />
+                    <Input
+                      placeholder="Search by event, speaker, or topic..."
+                      className="h-14 pl-14 bg-transparent border-none text-white text-base focus-visible:ring-0 placeholder:text-slate-500"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </div>
+                  <Button size="lg" className="h-14 px-8 rounded-full bg-[#C8A96A] hover:bg-[#B69759] text-white font-black">Search</Button>
                 </div>
-                <Button size="lg" className="h-14 px-8 rounded-[1.5rem] bg-indigo-600 hover:bg-indigo-700 text-white font-black">Search</Button>
               </div>
             </div>
-          </div>
+          </ScrollAnimation>
         </div>
       </header>
 
@@ -224,39 +215,39 @@ export default function EventsPage() {
         <div className="grid lg:grid-cols-4 gap-12">
           {/* Sidebar */}
           <aside className="lg:col-span-1 space-y-6">
-            <div className="sticky top-28 p-8 bg-white border border-slate-100 rounded-[2.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.03)] space-y-10">
+            <div className="sticky top-28 p-8 bg-white border border-slate-100 rounded-[2.5rem] shadow-sm space-y-10">
               <section>
-                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 mb-6 flex items-center gap-2">
-                   <div className="w-1.5 h-6 bg-blue-500 rounded-full" /> Event Type
+                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#0B1F3A] mb-6 flex items-center gap-2">
+                   <div className="w-1.5 h-6 bg-[#1F7A5A] rounded-full" /> Event Type
                 </h3>
                 <div className="grid grid-cols-1 gap-4">
                   {filterCategories.map(cat => (
                     <div key={cat.id} className="flex items-center gap-3">
                       <Checkbox
                         id={cat.id}
-                        className="rounded-md border-slate-200"
+                        className="rounded-md border-slate-200 data-[state=checked]:bg-[#1F7A5A] data-[state=checked]:border-[#1F7A5A]"
                         checked={selectedCategories.includes(cat.id)}
                         onCheckedChange={() => handleCategoryChange(cat.id)}
                       />
-                      <Label htmlFor={cat.id} className="text-sm font-bold text-slate-600 transition-colors group-hover:text-blue-600 cursor-pointer">{cat.label}</Label>
+                      <Label htmlFor={cat.id} className="text-sm font-bold text-slate-600 cursor-pointer">{cat.label}</Label>
                     </div>
                   ))}
                 </div>
               </section>
 
               <section>
-                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 mb-6 flex items-center gap-2">
-                   <div className="w-1.5 h-6 bg-indigo-500 rounded-full" /> Location
+                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#0B1F3A] mb-6 flex items-center gap-2">
+                   <div className="w-1.5 h-6 bg-[#0B1F3A] rounded-full" /> Location
                 </h3>
                 <div className="space-y-4">
                   {[
-                    { id: 'online', label: 'Online / Virtual' },
+                    { id: 'online', label: 'Virtual' },
                     { id: 'in-person', label: 'In-person' }
                   ].map(loc => (
                     <div key={loc.id} className="flex items-center gap-3">
                       <Checkbox
                         id={loc.id}
-                        className="rounded-md border-slate-200 data-[state=checked]:bg-indigo-600 data-[state=checked]:border-indigo-600"
+                        className="rounded-md border-slate-200 data-[state=checked]:bg-[#0B1F3A] data-[state=checked]:border-[#0B1F3A]"
                         checked={selectedLocations.includes(loc.id)}
                         onCheckedChange={() => handleLocationChange(loc.id)}
                       />
@@ -266,29 +257,7 @@ export default function EventsPage() {
                 </div>
               </section>
 
-              <section>
-                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400 mb-6 flex items-center gap-2">
-                   <div className="w-1.5 h-6 bg-emerald-500 rounded-full" /> Investment
-                </h3>
-                <div className="space-y-4">
-                  {[
-                    { id: 'free', label: 'Free Workshops' },
-                    { id: 'paid', label: 'Paid Sessions' }
-                  ].map(pr => (
-                    <div key={pr.id} className="flex items-center gap-3">
-                      <Checkbox
-                        id={pr.id}
-                        className="rounded-md border-slate-200 data-[state=checked]:bg-emerald-600 data-[state=checked]:border-emerald-600"
-                        checked={selectedPrices.includes(pr.id)}
-                        onCheckedChange={() => handlePriceChange(pr.id)}
-                      />
-                      <Label htmlFor={pr.id} className="text-sm font-bold text-slate-600 cursor-pointer">{pr.label}</Label>
-                    </div>
-                  ))}
-                </div>
-              </section>
-
-              <Button variant="ghost" className="w-full text-xs font-black uppercase tracking-widest text-slate-400 hover:bg-slate-50 rounded-xl" onClick={clearAllFilters}>
+              <Button variant="ghost" className="w-full text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-slate-50 rounded-xl" onClick={clearAllFilters}>
                  Clear Filters
               </Button>
             </div>
@@ -297,9 +266,9 @@ export default function EventsPage() {
           {/* Event List */}
           <div className="lg:col-span-3">
             <div className="flex flex-col sm:flex-row justify-between items-center mb-10 gap-6">
-              <h2 className="text-3xl font-black text-white md:text-slate-900 tracking-tighter">Event Schedule</h2>
-              <div className="flex items-center gap-4 md:bg-white md:p-1 md:rounded-2xl">
-                 <span className="text-xs font-black uppercase text-slate-400 tracking-widest ml-3">Sort:</span>
+              <h2 className="text-3xl font-serif text-[#0B1F3A] tracking-tight">Event Schedule</h2>
+              <div className="flex items-center gap-4">
+                 <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Sort:</span>
                 <Select value={sortOrder} onValueChange={setSortOrder}>
                   <SelectTrigger className="w-[180px] h-12 rounded-xl bg-white border-slate-100 font-bold shadow-sm">
                     <SelectValue />
@@ -313,126 +282,131 @@ export default function EventsPage() {
               </div>
             </div>
 
-            <div className="grid gap-10">
+            <div className="grid gap-12">
               {eventsLoading ? (
                 Array.from({ length: 3 }).map((_, i) => (
                   <Skeleton key={i} className="h-64 rounded-[3rem] bg-white" />
                 ))
               ) : filteredAndSortedEvents.map((event, idx) => (
-                <Dialog key={event.id}>
-                  <DialogTrigger asChild>
-                    <div className="group relative flex flex-col md:flex-row bg-white rounded-[3rem] border border-slate-50 shadow-[0_20px_60px_rgba(0,0,0,0.03)] hover:shadow-[0_40px_100px_rgba(0,0,0,0.08)] transition-all duration-700 overflow-hidden animate-in slide-in-from-bottom-6" style={{ animationDelay: `${idx * 150}ms` }}>
-                      {/* Image */}
-                      <div className="md:w-1/3 aspect-video md:aspect-auto overflow-hidden relative">
-                        <Image src={event.imageUrl} alt={event.title} fill className="object-cover group-hover:scale-110 transition-transform duration-1000" />
-                        <div className="absolute inset-0 bg-slate-950/20 group-hover:bg-transparent transition-all" />
-                      </div>
-
-                      {/* Info */}
-                      <div className="flex-1 p-10 flex flex-col justify-center">
-                        <div className="flex items-center gap-3 mb-6">
-                           <Badge className="bg-slate-950 text-white font-black text-[10px] uppercase rounded-lg border-none">{event.category}</Badge>
-                           <div className="flex items-center gap-1.5 text-xs font-bold text-slate-400">
-                              <Calendar className="w-3.5 h-3.5 text-indigo-500" />
-                              {format(new Date(event.date), 'MMM d, yyyy')}
-                           </div>
+                <ScrollAnimation key={event.id} animation="fade-in-up" delay={idx * 100}>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <div className="group relative flex flex-col md:flex-row bg-white rounded-[3rem] border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-700 overflow-hidden cursor-pointer">
+                        {/* Image */}
+                        <div className="md:w-1/3 aspect-video md:aspect-auto overflow-hidden relative">
+                          <Image src={event.imageUrl} alt={event.title} fill className="object-cover group-hover:scale-110 transition-transform duration-1000" />
+                          <div className="absolute inset-0 bg-[#0B1F3A]/20 group-hover:bg-transparent transition-all" />
                         </div>
 
-                        <h3 className="text-2xl font-black text-slate-950 group-hover:text-indigo-600 transition-colors mb-4 leading-tight">{event.title}</h3>
-                        
-                        <div className="flex flex-wrap items-center gap-6 mt-6 pt-6 border-t border-slate-50">
-                           <div className="flex items-center gap-2">
-                              <MapPin className="w-4 h-4 text-slate-400" />
-                              <span className="text-xs font-black text-slate-500 uppercase tracking-widest">{event.location}</span>
-                           </div>
-                           <div className="flex items-center gap-2">
-                              <Users className="w-4 h-4 text-slate-400" />
-                              <span className="text-xs font-black text-slate-500 uppercase tracking-widest">{event.organizer}</span>
-                           </div>
-                        </div>
-                      </div>
+                        {/* Info */}
+                        <div className="flex-1 p-12 flex flex-col justify-center">
+                          <div className="flex items-center gap-4 mb-6">
+                             <Badge className="bg-[#1F7A5A] text-white font-black text-[9px] uppercase tracking-widest rounded-full border-none px-3 py-1">{event.category}</Badge>
+                             <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                                <Calendar className="w-3.5 h-3.5 text-[#C8A96A]" />
+                                {format(new Date(event.date), 'MMMM d, yyyy')}
+                             </div>
+                          </div>
 
-                      {/* Price/Button */}
-                      <div className="p-10 border-t md:border-t-0 md:border-l border-slate-50 flex flex-col items-center justify-center bg-slate-50 group-hover:bg-slate-50/50 transition-colors lg:w-48">
-                         <p className="text-3xl font-black text-slate-950 tracking-tighter mb-4">{event.price ? `₦${event.price.toLocaleString()}` : 'Free'}</p>
-                         <Button className="w-full rounded-2xl bg-slate-950 text-white hover:scale-105 active:scale-95 transition-all font-black text-[10px] uppercase tracking-widest h-12">Register</Button>
-                      </div>
-                    </div>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-4xl p-0 overflow-hidden rounded-[4rem] border-none shadow-2xl">
-                    <div className="grid md:grid-cols-2">
-                      <div className="relative h-64 md:h-auto overflow-hidden">
-                        <Image src={event.imageUrl} alt={event.title} fill className="object-cover" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 to-transparent flex items-end p-12">
-                           <div>
-                              <Badge className="bg-indigo-600 mb-3">{event.category}</Badge>
-                              <DialogTitle asChild>
-                                <h2 className="text-4xl font-black text-white tracking-tighter">{event.title}</h2>
-                              </DialogTitle>
-                           </div>
+                          <h3 className="text-2xl font-serif text-[#0B1F3A] group-hover:text-[#1F7A5A] transition-colors mb-6 leading-tight">{event.title}</h3>
+                          
+                          <div className="flex flex-wrap items-center gap-8 pt-8 border-t border-slate-50">
+                             <div className="flex items-center gap-2">
+                                <MapPin className="w-4 h-4 text-[#1F7A5A]" />
+                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{event.location}</span>
+                             </div>
+                             <div className="flex items-center gap-2">
+                                <Users className="w-4 h-4 text-[#0B1F3A]" />
+                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{event.organizer}</span>
+                             </div>
+                          </div>
+                        </div>
+
+                        {/* Price/Button */}
+                        <div className="p-12 border-t md:border-t-0 md:border-l border-slate-50 flex flex-col items-center justify-center bg-slate-50 lg:w-56 group-hover:bg-slate-100 transition-colors">
+                           <p className="text-3xl font-serif text-[#0B1F3A] mb-6">{event.price ? `₦${event.price.toLocaleString()}` : 'Complimentary'}</p>
+                           <Button className="w-full rounded-full bg-[#0B1F3A] text-white hover:bg-[#0B1F3A]/90 transition-all font-black text-[10px] uppercase tracking-widest h-12 shadow-xl">Join Now</Button>
                         </div>
                       </div>
-                      <div className="p-12 md:py-24 bg-white flex flex-col">
-                        <DialogHeader>
-                          <DialogDescription className="text-lg text-slate-500 font-medium leading-relaxed mb-10">
-                            Join us for this {event.category.toLowerCase()}. You'll have the chance to learn from experts and meet others in your field.
+                    </DialogTrigger>
+                    
+                    <DialogContent className="sm:max-w-5xl p-0 overflow-hidden rounded-[3rem] border-none shadow-2xl bg-white max-h-[90vh] overflow-y-auto">
+                      <div className="grid md:grid-cols-2">
+                        <div className="relative h-64 md:h-auto overflow-hidden bg-[#0B1F3A]">
+                          <Image src={event.imageUrl} alt={event.title} fill className="object-cover opacity-60" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-[#0B1F3A] via-transparent to-transparent flex items-end p-12">
+                             <div className="space-y-4">
+                                <Badge className="bg-[#C8A96A] text-white border-none font-black text-[9px] uppercase tracking-[0.2em]">{event.category}</Badge>
+                                <DialogTitle asChild>
+                                  <h2 className="text-4xl font-serif text-white tracking-tight leading-tight">{event.title}</h2>
+                                </DialogTitle>
+                             </div>
+                          </div>
+                        </div>
+                        <div className="p-16 flex flex-col">
+                          <DialogDescription className="text-xl text-slate-500 font-medium leading-relaxed mb-12">
+                            An exclusive {event.category.toLowerCase()} curated for current and future industry leaders. Immerse yourself in institutional excellence.
                           </DialogDescription>
-                        </DialogHeader>
 
-                        <div className="space-y-6 mb-12">
-                          <div className="flex items-center gap-4 group">
-                             <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 font-black group-hover:bg-indigo-600 group-hover:text-white transition-all">
-                                <Calendar className="w-5 h-5" />
-                             </div>
-                             <div>
-                                <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Date</p>
-                                <p className="font-black text-slate-950">{format(new Date(event.date), 'EEEE, MMMM d, yyyy')}</p>
-                             </div>
+                          <div className="space-y-8 mb-12">
+                            <div className="flex items-center gap-6 group">
+                               <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center text-[#1F7A5A] shadow-sm">
+                                  <Calendar className="w-6 h-6" />
+                               </div>
+                               <div>
+                                  <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] mb-1">Date & Time</p>
+                                  <p className="text-lg font-serif text-[#0B1F3A]">{format(new Date(event.date), 'EEEE, MMMM d, yyyy')}</p>
+                               </div>
+                            </div>
+                            <div className="flex items-center gap-6 group">
+                               <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center text-[#0B1F3A] shadow-sm">
+                                  <MapPin className="w-6 h-6" />
+                               </div>
+                               <div>
+                                  <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] mb-1">Location</p>
+                                  <p className="text-lg font-serif text-[#0B1F3A]">{event.location}</p>
+                               </div>
+                            </div>
                           </div>
-                          <div className="flex items-center gap-4 group">
-                             <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 font-black group-hover:bg-indigo-600 group-hover:text-white transition-all">
-                                <MapPin className="w-5 h-5" />
-                             </div>
-                             <div>
-                                <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Location</p>
-                                <p className="font-black text-slate-950">{event.location}</p>
-                             </div>
-                          </div>
-                        </div>
 
-                        <div className="mt-auto pt-10 border-t border-slate-100 flex flex-col gap-4">
-                           <div className="flex justify-between items-end">
-                              <p className="text-4xl font-black text-slate-950 tracking-tighter">{event.price ? `₦${event.price.toLocaleString()}` : 'Free'}</p>
-                              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pb-1">Limited Seats Available</p>
-                           </div>
-                           <Button size="lg" className="h-16 rounded-[2rem] bg-indigo-600 hover:bg-indigo-700 text-white font-black text-lg" onClick={() => handleRegisterClick(event)}>Register Now</Button>
+                          <div className="mt-auto pt-12 border-t border-slate-100 flex flex-col gap-6">
+                             <div className="flex justify-between items-baseline">
+                                <p className="text-4xl font-serif text-[#0B1F3A]">{event.price ? `₦${event.price.toLocaleString()}` : 'Complimentary'}</p>
+                                <p className="text-[10px] font-black text-[#1F7A5A] uppercase tracking-[0.2em]">Limited Access</p>
+                             </div>
+                             <Button size="lg" className="h-16 rounded-full bg-[#0B1F3A] hover:bg-[#0B1F3A]/90 text-white font-black text-lg shadow-xl" onClick={() => handleRegisterClick(event)}>Confirm Attendance</Button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </DialogContent>
-                </Dialog>
+                    </DialogContent>
+                  </Dialog>
+                </ScrollAnimation>
               ))}
             </div>
 
             {filteredAndSortedEvents.length === 0 && !eventsLoading && (
-              <div className="text-center py-40 bg-white border border-dashed border-slate-200 rounded-[3rem] mt-10">
-                <Search className="w-16 h-16 text-slate-100 mx-auto mb-6" />
-                <h3 className="text-2xl font-black text-slate-900 tracking-tighter">No Events Found</h3>
-                <p className="text-slate-400 font-bold mt-2">Try adjusting your filters to find upcoming workshops and webinars.</p>
-                <Button variant="link" onClick={clearAllFilters} className="mt-6 font-black text-indigo-600">Clear Filters</Button>
+              <div className="text-center py-40 bg-slate-50 rounded-[4rem] mt-12 border-2 border-dashed border-slate-200">
+                <Search className="w-20 h-20 text-slate-200 mx-auto mb-8" />
+                <h3 className="text-2xl font-serif text-[#0B1F3A]">No Events Found</h3>
+                <p className="text-slate-500 font-medium mt-4">We could not find any events matching your current selection.</p>
+                <Button variant="link" onClick={clearAllFilters} className="mt-8 font-black text-[#1F7A5A] uppercase tracking-widest text-xs">Reset Filters</Button>
               </div>
             )}
           </div>
         </div>
       </div>
 
-      <section className="py-24 container px-6 lg:px-12">
-         <div className="bg-slate-950 rounded-[4rem] p-12 md:p-24 relative overflow-hidden text-center text-white">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 blur-[100px] rounded-full translate-x-1/3 -translate-y-1/3" />
-            <h2 className="text-3xl md:text-5xl font-black tracking-tighter leading-tight mb-8">Want to host an event?</h2>
-            <p className="text-slate-400 font-medium text-lg max-w-2xl mx-auto mb-12">We provide the tools you need to create and manage your own workshops and seminars on our platform.</p>
-            <Button size="lg" className="h-16 px-12 rounded-[2rem] bg-white text-slate-950 hover:bg-blue-50 hover:scale-105 transition-all font-black text-lg">Contact Us</Button>
-         </div>
+      <section className="py-32 container px-6 lg:px-12">
+         <ScrollAnimation animation="fade-in-up">
+            <div className="bg-[#0B1F3A] rounded-[4rem] p-24 md:p-32 relative overflow-hidden text-center text-white">
+               <div className="absolute top-0 right-0 w-[50%] h-full bg-emerald-500/5 blur-[120px] rounded-full translate-x-1/2" />
+               <h2 className="text-4xl md:text-6xl font-serif tracking-tight leading-tight mb-10">Host Your Next <br /><span className="italic text-[#C8A96A]">Signature Event.</span></h2>
+               <p className="text-slate-400 font-medium text-xl max-w-2xl mx-auto mb-12 leading-relaxed">
+                 Leverage our institutional infrastructure to host high-impact workshops, seminars, and corporate retreats.
+               </p>
+               <Button size="lg" className="h-16 px-12 rounded-full bg-[#C8A96A] hover:bg-[#B69759] text-white font-black text-lg shadow-2xl transition-all hover:scale-105">Request Partnership</Button>
+            </div>
+         </ScrollAnimation>
       </section>
     </div>
   );

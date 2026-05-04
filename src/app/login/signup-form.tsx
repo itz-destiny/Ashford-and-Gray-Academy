@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowRight, CheckCircle, Loader2, User, GraduationCap } from "lucide-react";
+import { ArrowRight, CheckCircle, Loader2, User, GraduationCap, Eye, EyeOff } from "lucide-react";
 import { AuthForm } from "./auth-form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { signUpWithEmail } from "@/firebase/auth";
@@ -20,6 +20,8 @@ type SignUpFormProps = {
 export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
   const role = "student";
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get('redirectUrl');
@@ -126,89 +128,109 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
 
   return (
     <AuthForm
-      title="Create Your Account"
-      description="Join our community to start learning and managing events."
+      title="Candidate Application"
+      description="Begin your journey toward institutional mastery and professional distinction."
       footerText="Already have an account?"
-      footerLinkText="Log In"
+      footerLinkText="Sign In"
       onFooterLinkClick={onSwitchToLogin}
     >
-      <form className="space-y-6" onSubmit={handleSignUp}>
-
-
-        <div className="space-y-2">
-          <Label htmlFor="name" className="text-sm font-bold text-slate-700 ml-2">Full Name</Label>
-          <Input id="name" name="name" type="text" placeholder="John Doe" required disabled={isLoading} className="h-14 rounded-2xl bg-slate-50 border-slate-200 focus:bg-white px-5 font-medium placeholder:text-slate-400" />
+      <form className="space-y-8" onSubmit={handleSignUp}>
+        <div className="space-y-3">
+          <Label htmlFor="name" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#0B1F3A] ml-4">Full Legal Name</Label>
+          <Input id="name" name="name" type="text" placeholder="Johnathan Doe" required disabled={isLoading} className="h-16 rounded-full bg-slate-50 border-slate-200 focus:bg-white px-8 font-medium placeholder:text-slate-400 shadow-sm" />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="email-signup" className="text-sm font-bold text-slate-700 ml-2">Email address</Label>
+        
+        <div className="space-y-3">
+          <Label htmlFor="email-signup" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#0B1F3A] ml-4">Email Address</Label>
           <Input
             id="email-signup"
             name="email-signup"
             type="email"
-            placeholder="name@company.com"
+            placeholder="executive@academy.com"
             required
             disabled={isLoading}
-            className="h-14 rounded-2xl bg-slate-50 border-slate-200 focus:bg-white px-5 font-medium placeholder:text-slate-400"
+            className="h-16 rounded-full bg-slate-50 border-slate-200 focus:bg-white px-8 font-medium placeholder:text-slate-400 shadow-sm"
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="password-signup" className="text-sm font-bold text-slate-700 ml-2">Password</Label>
-            <Input
-              id="password-signup"
-              name="password-signup"
-              type="password"
-              required
-              placeholder="Create a password"
-              disabled={isLoading}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="h-14 rounded-2xl bg-slate-50 border-slate-200 focus:bg-white px-5 font-medium placeholder:text-slate-400"
-            />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-3">
+            <Label htmlFor="password-signup" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#0B1F3A] ml-4">Security Code</Label>
+            <div className="relative">
+              <Input
+                id="password-signup"
+                name="password-signup"
+                type={showPassword ? "text" : "password"}
+                required
+                placeholder="••••••••"
+                disabled={isLoading}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="h-16 rounded-full bg-slate-50 border-slate-200 focus:bg-white px-8 pr-16 font-medium placeholder:text-slate-400 w-full shadow-sm"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#0B1F3A] transition-colors"
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              </button>
+            </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="confirm-password" className="text-sm font-bold text-slate-700 ml-2">Confirm Password</Label>
-            <Input
-              id="confirm-password"
-              type="password"
-              required
-              placeholder="Confirm password"
-              disabled={isLoading}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="h-14 rounded-2xl bg-slate-50 border-slate-200 focus:bg-white px-5 font-medium placeholder:text-slate-400"
-            />
+          <div className="space-y-3">
+            <Label htmlFor="confirm-password" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#0B1F3A] ml-4">Verify Code</Label>
+            <div className="relative">
+              <Input
+                id="confirm-password"
+                type={showConfirmPassword ? "text" : "password"}
+                required
+                placeholder="••••••••"
+                disabled={isLoading}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="h-16 rounded-full bg-slate-50 border-slate-200 focus:bg-white px-8 pr-16 font-medium placeholder:text-slate-400 w-full shadow-sm"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#0B1F3A] transition-colors"
+                tabIndex={-1}
+              >
+                {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+              </button>
+            </div>
           </div>
         </div>
-        {passwordError && <p className="text-sm text-red-500 font-medium ml-2">{passwordError}</p>}
+        
+        {passwordError && <p className="text-[10px] font-black uppercase tracking-widest text-red-500 ml-4">{passwordError}</p>}
 
         {role === "student" && (
-          <div className="bg-slate-50 p-6 rounded-3xl space-y-6 border border-slate-100 animate-in fade-in slide-in-from-top-2 duration-300">
-            <div className="space-y-2">
-              <Label htmlFor="dob" className="text-sm font-bold text-slate-700 ml-2">Date of Birth</Label>
-              <Input id="dob" name="dob" type="date" required disabled={isLoading} className="h-14 rounded-2xl bg-white border-slate-200 px-5 font-medium" />
+          <div className="bg-slate-50 p-10 rounded-[2.5rem] space-y-8 border border-slate-100 animate-in fade-in slide-in-from-top-2 duration-500 shadow-inner">
+            <div className="space-y-3">
+              <Label htmlFor="dob" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#0B1F3A] ml-4">Date of Birth</Label>
+              <Input id="dob" name="dob" type="date" required disabled={isLoading} className="h-16 rounded-full bg-white border-slate-200 px-8 font-medium shadow-sm" />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="school" className="text-sm font-bold text-slate-700 ml-2">School or University</Label>
+            <div className="space-y-3">
+              <Label htmlFor="school" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#0B1F3A] ml-4">Previous Institution</Label>
               <Input
                 id="school"
                 name="school"
                 type="text"
-                placeholder="e.g., Fusion University"
+                placeholder="e.g., University of Excellence"
                 required
                 disabled={isLoading}
-                className="h-14 rounded-2xl bg-white border-slate-200 px-5 font-medium placeholder:text-slate-400"
+                className="h-16 rounded-full bg-white border-slate-200 px-8 font-medium placeholder:text-slate-400 shadow-sm"
               />
             </div>
           </div>
         )}
 
-        <Button type="submit" className="w-full h-14 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-lg shadow-xl hover:shadow-indigo-600/30 transition-all !mt-10" disabled={isLoading}>
+        <Button type="submit" className="w-full h-16 rounded-full bg-[#0B1F3A] hover:bg-[#0B1F3A]/90 text-white font-black text-[10px] uppercase tracking-[0.3em] shadow-xl transition-all !mt-12" disabled={isLoading}>
           {isLoading ? (
             <Loader2 className="h-5 w-5 animate-spin" />
           ) : (
-            <>Create Account <ArrowRight className="ml-2 h-5 w-5" /></>
+            <>Apply for Membership <ArrowRight className="ml-3 h-4 w-4" /></>
           )}
         </Button>
       </form>

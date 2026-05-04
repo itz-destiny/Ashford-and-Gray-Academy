@@ -38,24 +38,9 @@ export const useUser = () => {
               userData = await res.json();
               console.log("useUser: MongoDB profile found:", userData.role || "No role");
             } else if (res.status === 404) {
-              // Auto-create user in MongoDB if not found
-              console.log("useUser: MongoDB profile not found, creating...");
-              await fetch('/api/users', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  uid: firebaseUser.uid,
-                  email: firebaseUser.email,
-                  displayName: firebaseUser.displayName || firebaseUser.email,
-                  photoURL: firebaseUser.photoURL,
-                  // Optionally set default role here if needed
-                })
-              });
-              // Fetch again after creation
-              res = await fetch(`/api/users?uid=${firebaseUser.uid}`);
-              if (res.ok) {
-                userData = await res.json();
-              }
+              console.log("useUser: MongoDB profile not found.");
+              // We do NOT auto-create here anymore to allow the login flow to handle it
+              // especially for Google sign-in which needs profile completion.
             } else {
               console.warn("useUser: MongoDB profile fetch failed. Status:", res.status);
             }
@@ -73,9 +58,23 @@ export const useUser = () => {
           console.log("useUser: Final user state set.");
 
           // Redirections logic
-          const isAuthPage = pathname.startsWith('/login');
-          if (isAuthPage && appUser.role) {
-            router.push(getDashboardByRole(appUser.role));
+          const isLoginPage = pathname === '/login';
+          const isCompleteProfilePage = pathname === '/login/complete-profile';
+          
+          if (isLoginPage) {
+            if (appUser.role) {
+                // If they have a role, they are fully registered
+                router.push(getDashboardByRole(appUser.role));
+            } else {
+                // If they have no role in DB, they need to complete their profile
+                const params = new URLSearchParams({
+                    uid: firebaseUser.uid,
+                    email: firebaseUser.email || '',
+                    displayName: firebaseUser.displayName || '',
+                    photoURL: firebaseUser.photoURL || ''
+                });
+                router.push(`/login/complete-profile?${params.toString()}`);
+            }
           }
 
         } catch (error) {

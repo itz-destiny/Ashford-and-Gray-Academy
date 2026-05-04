@@ -31,47 +31,49 @@ function LoginPageContent() {
   return (
     <div className="min-h-screen w-full grid grid-cols-1 lg:grid-cols-2 bg-slate-50">
       {/* Left Image Section */}
-      <div className="relative flex-col items-center justify-center hidden bg-slate-950 lg:flex overflow-hidden">
+      <div className="relative flex-col items-center justify-center hidden bg-[#0B1F3A] lg:flex overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
             src="/academy_hero_students.png"
             alt="Students at Ashford and Gray Academy"
             fill
-            className="object-cover opacity-60 mix-blend-overlay"
+            className="object-cover opacity-30 mix-blend-overlay"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0B1F3A] via-[#0B1F3A]/80 to-transparent" />
         </div>
         
-        <div className="relative z-10 p-12 lg:p-20 text-white w-full max-w-2xl mx-auto flex flex-col justify-between h-full">
+        <div className="relative z-10 p-12 lg:p-24 text-white w-full max-w-3xl mx-auto flex flex-col justify-between h-full">
             <div>
-                <Logo className="text-white w-48" />
-                <h1 className="text-5xl lg:text-7xl font-black mt-20 tracking-tighter leading-[1.1]">
-                    Welcome to the <br />
-                    <span className="text-indigo-400">Next Level.</span>
+                <Logo variant="white" />
+                <h1 className="text-5xl lg:text-8xl font-serif mt-24 tracking-tight leading-[0.9]">
+                    The Portal to <br />
+                    <span className="italic text-[#C8A96A]">Excellence.</span>
                 </h1>
-                <p className="mt-8 text-xl text-slate-300 font-medium max-w-lg leading-relaxed">
-                    Join an elite community of professionals mastering hospitality, domestic management, and global relations.
+                <p className="mt-10 text-xl text-slate-400 font-medium max-w-lg leading-relaxed">
+                    Enter the world’s most prestigious platform for executive mastery and professional distinction.
                 </p>
             </div>
             
-            <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-10 rounded-[2.5rem] mt-auto">
-               <div className="flex gap-1 text-yellow-500 mb-6">
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-12 rounded-[3rem] mt-auto">
+               <div className="flex gap-2 text-[#C8A96A] mb-8">
                  {Array.from({length: 5}).map((_, i) => (
                    <Star key={i} className="w-5 h-5 fill-current" />
                  ))}
                </div>
-               <p className="text-xl font-black text-white mb-8 tracking-tight leading-snug">"The certification program completely transformed my career trajectory in luxury hospitality."</p>
-               <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-full bg-indigo-500 border-2 border-white/20" />
+               <p className="text-2xl font-serif text-white mb-10 tracking-tight leading-relaxed">"The Ashford & Gray certification was the catalyst for my career transition into global leadership."</p>
+               <div className="flex items-center gap-6">
+                  <div className="w-16 h-16 rounded-full bg-slate-500 border-2 border-white/20 overflow-hidden relative">
+                    <Image src="/sarah-jenkins.jpg" alt="Sarah Jenkins" fill className="object-cover" />
+                  </div>
                   <div>
-                    <h4 className="font-black text-white text-lg">Sarah Jenkins</h4>
-                    <p className="text-xs font-bold uppercase tracking-widest text-indigo-300">Executive Butler</p>
+                    <h4 className="font-serif text-white text-xl">Sarah Jenkins</h4>
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#C8A96A]">Executive Alumna</p>
                   </div>
                </div>
             </div>
 
-            <div className="text-xs font-black text-white/30 uppercase tracking-[0.2em] mt-12 pb-8">
-                &copy; {new Date().getFullYear()} Ashford & Gray Academy.
+            <div className="text-[10px] font-black text-white/20 uppercase tracking-[0.4em] mt-16">
+                &copy; {new Date().getFullYear()} Ashford & Gray Academy. Distinction in every detail.
             </div>
         </div>
       </div>

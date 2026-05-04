@@ -60,7 +60,6 @@ import { useUser } from "@/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
-import Link from "next/link";
 
 export default function CoursesPage() {
   const router = useRouter();
@@ -255,50 +254,52 @@ export default function CoursesPage() {
   return (
     <div className="bg-slate-50/50 min-h-screen pb-24">
       {/* Premium Hero Section */}
-      <header className="relative py-24 px-6 md:py-32 overflow-hidden bg-slate-950">
+      <header className="relative py-32 px-6 md:py-48 overflow-hidden bg-[#0B1F3A]">
         {/* Abstract Background Accents */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-1/2 -left-1/4 w-[100%] h-[150%] bg-blue-600/10 blur-[120px] rounded-full animate-pulse" />
-          <div className="absolute top-1/2 -right-1/4 w-[80%] h-[100%] bg-indigo-600/10 blur-[150px] rounded-full" />
-          <div className="absolute inset-0 bg-[url('/wavy-background.svg')] bg-cover opacity-5 mix-blend-overlay" />
+        <div className="absolute inset-0 overflow-hidden opacity-20">
+          <div className="absolute -top-1/2 -left-1/4 w-[100%] h-[150%] bg-emerald-500/10 blur-[120px] rounded-full" />
+          <div className="absolute top-1/2 -right-1/4 w-[80%] h-[100%] bg-slate-500/10 blur-[150px] rounded-full" />
         </div>
 
         <div className="container relative z-10 text-center">
-          <Badge variant="secondary" className="bg-white/10 text-blue-300 border-white/20 mb-6 px-4 py-1.5 backdrop-blur-md">
-            🚀 Explore Our Courses
-          </Badge>
-          <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter font-headline mb-6 leading-none">
-            Find Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Path</span>
+          <div className="flex justify-center items-center gap-3 mb-8">
+            <div className="w-8 h-[1px] bg-[#C8A96A]" />
+            <span className="text-[#C8A96A] font-black text-xs uppercase tracking-[0.4em]">Curated Learning</span>
+            <div className="w-8 h-[1px] bg-[#C8A96A]" />
+          </div>
+          
+          <h1 className="text-5xl md:text-7xl font-serif text-white tracking-tight mb-8">
+            Explore Our <span className="italic text-[#C8A96A]">Programs</span>
           </h1>
-          <p className="mt-6 text-lg md:text-xl text-slate-400 font-medium max-w-3xl mx-auto leading-relaxed">
-            Our programs are designed to help you succeed in your career. Choose from our wide range of professional courses and start learning today.
+          <p className="text-xl md:text-2xl text-slate-300 font-medium max-w-3xl mx-auto leading-relaxed mb-12">
+            Distinctive. Professional. Authoritative. Find the pathway that defines your professional legacy.
           </p>
 
           <div className="mt-12 max-w-2xl mx-auto">
-            <div className="relative group bg-white/5 p-1.5 rounded-[2rem] border border-white/10 backdrop-blur-xl shadow-2xl transition-all focus-within:border-blue-500/50">
+            <div className="relative group bg-white/5 p-1.5 rounded-full border border-white/10 backdrop-blur-xl shadow-2xl transition-all focus-within:border-[#C8A96A]/50">
               <div className="flex">
                 <div className="relative flex-grow">
-                  <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500 group-focus-within:text-blue-400 transition-colors" />
+                  <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-[#C8A96A] transition-colors" />
                   <Input
-                    placeholder="Search for a course, skill, or instructor..."
+                    placeholder="Search by program, skill, or faculty..."
                     className="h-14 pl-14 bg-transparent border-none text-white text-base font-medium focus-visible:ring-0 placeholder:text-slate-500"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
-                <Button size="lg" className="h-14 px-8 rounded-[1.5rem] bg-indigo-600 hover:bg-indigo-700 text-white font-black">Search</Button>
+                <Button size="lg" className="h-14 px-8 rounded-full bg-[#C8A96A] hover:bg-[#B69759] text-white font-black">Search</Button>
               </div>
             </div>
 
-            <div className="mt-6 flex flex-wrap justify-center gap-3">
+            <div className="mt-8 flex flex-wrap justify-center gap-4">
               {quickSearchCategories.map(cat => (
                 <button
                   key={cat}
                   onClick={() => handleCategoryChange(cat)}
                   className={cn(
-                    "px-6 py-2 rounded-full text-xs font-black uppercase tracking-widest transition-all",
+                    "px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all",
                     selectedCategories.includes(cat)
-                      ? "bg-blue-500 text-white shadow-[0_0_20px_rgba(59,130,246,0.3)]"
+                      ? "bg-[#C8A96A] text-white shadow-xl"
                       : "bg-white/5 text-slate-400 border border-white/10 hover:bg-white/10"
                   )}
                 >
@@ -315,12 +316,12 @@ export default function CoursesPage() {
           {/* Refined Sidebar */}
           <aside className="lg:col-span-1 space-y-6">
             <div className="sticky top-28">
-              <div className="p-8 bg-white border border-slate-100 rounded-[2rem] shadow-[0_20px_60px_rgba(0,0,0,0.03)] backdrop-blur-3xl space-y-10">
+              <div className="p-8 bg-white border border-slate-100 rounded-[2rem] shadow-sm backdrop-blur-3xl space-y-10">
                 {/* Categories */}
                 <section>
                   <div className="flex items-center gap-2 mb-6">
-                    <div className="w-1.5 h-6 bg-blue-500 rounded-full" />
-                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Categories</h3>
+                    <div className="w-1.5 h-6 bg-[#1F7A5A] rounded-full" />
+                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-[#0B1F3A]">Categories</h3>
                   </div>
                   <div className="space-y-4">
                     {filterCategories.map(cat => (
@@ -328,11 +329,11 @@ export default function CoursesPage() {
                         <div className="flex items-center space-x-3">
                           <Checkbox
                             id={cat.id}
-                            className="rounded-md border-slate-200 data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
+                            className="rounded-md border-slate-200 data-[state=checked]:bg-[#1F7A5A] data-[state=checked]:border-[#1F7A5A]"
                             checked={selectedCategories.includes(cat.id)}
                             onCheckedChange={() => handleCategoryChange(cat.id)}
                           />
-                          <Label htmlFor={cat.id} className="text-sm font-bold text-slate-600 group-hover:text-blue-600 transition-colors cursor-pointer">
+                          <Label htmlFor={cat.id} className="text-sm font-bold text-slate-600 group-hover:text-[#1F7A5A] transition-colors cursor-pointer">
                             {cat.label}
                           </Label>
                         </div>
@@ -345,8 +346,8 @@ export default function CoursesPage() {
                 {/* Difficulty */}
                 <section>
                   <div className="flex items-center gap-2 mb-6">
-                    <div className="w-1.5 h-6 bg-indigo-500 rounded-full" />
-                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Level</h3>
+                    <div className="w-1.5 h-6 bg-[#0B1F3A] rounded-full" />
+                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-[#0B1F3A]">Level</h3>
                   </div>
                   <RadioGroup value={selectedDifficulty} onValueChange={setSelectedDifficulty} className="space-y-4">
                     {[
@@ -356,7 +357,7 @@ export default function CoursesPage() {
                       { id: 'Advanced', label: 'Advanced' }
                     ].map(lv => (
                       <div key={lv.id} className="flex items-center space-x-3">
-                        <RadioGroupItem value={lv.id} id={lv.id} className="border-slate-200 text-indigo-600 focus:ring-indigo-500" />
+                        <RadioGroupItem value={lv.id} id={lv.id} className="border-slate-200 text-[#0B1F3A] focus:ring-[#0B1F3A]" />
                         <Label htmlFor={lv.id} className="text-sm font-bold text-slate-600 cursor-pointer">{lv.label}</Label>
                       </div>
                     ))}
@@ -367,8 +368,8 @@ export default function CoursesPage() {
                 <section>
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-2">
-                      <div className="w-1.5 h-6 bg-emerald-500 rounded-full" />
-                      <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-400">Price Range</h3>
+                      <div className="w-1.5 h-6 bg-[#C8A96A] rounded-full" />
+                      <h3 className="text-xs font-black uppercase tracking-[0.2em] text-[#0B1F3A]">Price Range</h3>
                     </div>
                     <span className="text-xs font-black text-slate-400 tracking-tighter">Under ₦{(priceRange[0] / 1000).toFixed(0)}k</span>
                   </div>
@@ -385,17 +386,6 @@ export default function CoursesPage() {
                   Clear Filters
                 </Button>
               </div>
-
-              {/* Promo Card */}
-              <div className="mt-6 p-6 bg-slate-950 rounded-[2rem] overflow-hidden relative group">
-                <div className="absolute inset-0 bg-blue-600/10 blur-[40px] rounded-full scale-150 group-hover:bg-blue-600/20 transition-all" />
-                <div className="relative z-10">
-                  <BarChart className="w-10 h-10 text-blue-400 mb-4" />
-                  <h4 className="text-white font-black text-lg mb-2">Corporate Training?</h4>
-                  <p className="text-slate-500 text-xs font-medium mb-6">Customized pathways for high-growth engineering and design teams.</p>
-                  <Button className="w-full bg-white text-slate-950 hover:bg-slate-200 rounded-xl font-black text-[10px] uppercase">Get Quote</Button>
-                </div>
-              </div>
             </div>
           </aside>
 
@@ -403,13 +393,13 @@ export default function CoursesPage() {
           <main className="lg:col-span-3">
             <div className="flex flex-col sm:flex-row justify-between items-center mb-10 gap-6">
               <div>
-                <h2 className="text-3xl font-black text-white tracking-tight">Available Programs</h2>
-                <p className="text-sm font-bold text-slate-400 mt-1">
+                <h2 className="text-3xl font-serif text-[#0B1F3A] tracking-tight">Available Programs</h2>
+                <div className="text-sm font-bold text-slate-400 mt-1">
                   {coursesLoading ? <Skeleton className="h-4 w-32" /> : `Showing ${filteredAndSortedCourses.length} results`}
-                </p>
+                </div>
               </div>
               <div className="flex items-center gap-4 group">
-                <span className="text-xs font-black uppercase tracking-widest text-slate-400">Order by:</span>
+                <span className="text-xs font-black uppercase tracking-widest text-slate-400">Sort by:</span>
                 <Select value={sortOrder} onValueChange={setSortOrder}>
                   <SelectTrigger className="w-[200px] h-12 rounded-xl bg-white border-slate-100 shadow-sm font-bold">
                     <SelectValue />
@@ -432,51 +422,51 @@ export default function CoursesPage() {
               ) : filteredAndSortedCourses.map((course, idx) => (
                 <Dialog key={course.id}>
                   <DialogTrigger asChild>
-                    <div className="group relative aspect-[4/6] md:aspect-[4/5.5] rounded-[2.8rem] overflow-hidden bg-white border border-slate-100 shadow-[0_20px_60px_rgba(0,0,0,0.03)] cursor-pointer hover:shadow-[0_40px_100px_rgba(0,0,0,0.08)] transition-all duration-700 animate-in slide-in-from-bottom-5" style={{ animationDelay: `${idx * 100}ms` }}>
+                    <div className="group relative rounded-[2.8rem] overflow-hidden bg-white border border-slate-100 shadow-sm cursor-pointer hover:shadow-2xl transition-all duration-700 flex flex-col h-full animate-in slide-in-from-bottom-5" style={{ animationDelay: `${idx * 100}ms` }}>
                       {/* Course Image */}
-                      <div className="h-[45%] w-full overflow-hidden relative">
+                      <div className="h-64 w-full overflow-hidden relative">
                         <Image
                           src={course.imageUrl}
                           alt={course.title}
                           fill
                           className="object-cover group-hover:scale-110 transition-transform duration-1000"
                         />
-                        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-white to-transparent" />
                         <div className="absolute top-6 left-6">
-                          <Badge className="bg-white/80 backdrop-blur-md border border-slate-100 text-slate-950 font-black text-[10px] uppercase px-3 py-1 scale-100 group-hover:scale-110 transition-all">
+                          <Badge className="bg-white/90 backdrop-blur-md border-none text-[#0B1F3A] font-black text-[10px] uppercase px-3 py-1 scale-100 group-hover:scale-110 transition-all tracking-widest">
                             {course.category}
                           </Badge>
                         </div>
                       </div>
 
                       {/* Info */}
-                      <div className="p-8 flex flex-col h-[55%] relative z-10 bg-white">
-                        <div className="flex items-center gap-1.5 mb-2">
+                      <div className="p-8 flex flex-col flex-grow relative z-10 bg-white">
+                        <div className="flex items-center gap-1.5 mb-4">
                           <div className="flex">{renderStars(course.rating)}</div>
                           <span className="text-[10px] font-black text-slate-400">({course.reviews})</span>
                         </div>
 
-                        <h3 className="text-2xl font-black text-slate-900 leading-tight group-hover:text-blue-600 transition-colors mb-4">{course.title}</h3>
+                        <h3 className="text-2xl font-serif text-[#0B1F3A] leading-tight group-hover:text-[#1F7A5A] transition-colors mb-6">{course.title}</h3>
 
-                        <div className="mt-8 pt-8 border-t border-slate-50 grid grid-cols-2 gap-4 text-[10px] uppercase font-black tracking-widest text-slate-400">
-                          <div className="flex items-center gap-2">
-                            <BookOpen className="w-3.5 h-3.5 text-blue-500" />
-                            <span>{course.duration} Weeks</span>
+                        <div className="mt-auto">
+                          <div className="pt-6 border-t border-slate-50 flex items-center justify-between text-[10px] uppercase font-black tracking-widest text-slate-400 mb-6">
+                            <div className="flex items-center gap-2">
+                              <Clock3 className="w-3.5 h-3.5 text-[#1F7A5A]" />
+                              <span>{course.duration} Weeks</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <ShieldCheck className="w-3.5 h-3.5 text-[#0B1F3A]" />
+                              <span>{course.level}</span>
+                            </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <Video className="w-3.5 h-3.5 text-indigo-500" />
-                            <span>{course.level}</span>
-                          </div>
-                        </div>
 
-                        <div className="mt-auto flex items-center justify-between pt-6 border-t border-slate-50">
-                          <div className="flex flex-col">
-                            <span className="text-2xl font-black text-slate-950 tracking-tighter">₦{course.price.toLocaleString()}</span>
-                            {course.originalPrice && <span className="text-[10px] font-bold text-slate-400 line-through tracking-tighter">₦{course.originalPrice.toLocaleString()}</span>}
+                          <div className="flex items-center justify-between">
+                            <div className="flex flex-col">
+                              <span className="text-2xl font-serif text-[#0B1F3A] tracking-tighter">₦{course.price.toLocaleString()}</span>
+                            </div>
+                            <Button variant="outline" className="h-10 px-5 rounded-full border-slate-100 font-bold text-[10px] uppercase tracking-widest group-hover:bg-[#0B1F3A] group-hover:text-white transition-all">
+                              Details
+                            </Button>
                           </div>
-                          <Button variant="outline" className="h-10 px-5 rounded-xl border-slate-100 font-black text-[10px] group-hover:bg-slate-950 group-hover:text-white transition-all">
-                            Review
-                          </Button>
                         </div>
                       </div>
                     </div>
