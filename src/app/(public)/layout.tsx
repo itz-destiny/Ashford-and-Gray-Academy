@@ -1,7 +1,7 @@
 
 import { MainNav } from "@/components/main-nav";
 import { Logo } from "@/components/logo";
-import { Instagram, Twitter, Youtube, Database } from "lucide-react";
+import { Instagram, Twitter, Youtube, Database, Facebook, AtSign } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { Button } from "@/components/ui/button";
@@ -26,14 +26,17 @@ export default function PublicLayout({
                 Ashford & Gray Fusion Academy is a global leader in professional mastery and executive education.
               </p>
               <div className="flex space-x-6">
-                <Link href="#" className="text-slate-400 hover:text-[#C8A96A] transition-colors">
+                <Link href="https://x.com/AshfordFusion" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-[#C8A96A] transition-colors">
                   <Twitter className="w-5 h-5" />
                 </Link>
-                <Link href="#" className="text-slate-400 hover:text-[#C8A96A] transition-colors">
+                <Link href="https://www.instagram.com/ashfordgrayacademy?igsh=bGQyMmpiNWU1bXBk" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-[#C8A96A] transition-colors">
                   <Instagram className="w-5 h-5" />
                 </Link>
-                <Link href="#" className="text-slate-400 hover:text-[#C8A96A] transition-colors">
-                  <Youtube className="w-5 h-5" />
+                <Link href="https://www.facebook.com/share/1H8yi7mBSJ/" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-[#C8A96A] transition-colors">
+                  <Facebook className="w-5 h-5" />
+                </Link>
+                <Link href="https://www.threads.com/@ashfordgrayacademy" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-[#C8A96A] transition-colors">
+                  <AtSign className="w-5 h-5" />
                 </Link>
               </div>
             </div>

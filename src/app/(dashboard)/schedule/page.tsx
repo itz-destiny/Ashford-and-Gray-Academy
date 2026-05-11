@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { cn } from "@/lib/utils";
 import { CalendarCheck, FileText, Video, Clock, MapPin, ChevronRight, Bell } from "lucide-react";
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { useUser } from "@/firebase";
 
 export default function SchedulePage() {
@@ -66,7 +67,7 @@ export default function SchedulePage() {
               <CalendarCheck className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-4xl font-extrabold text-slate-900 tracking-tightest">
-              Academic <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-violet-600">Chronology</span>
+              Academic <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#C8A96A] to-amber-400">Agenda</span>
             </h1>
           </div>
           <p className="text-slate-500 font-medium text-lg leading-relaxed max-w-2xl">
@@ -213,23 +214,23 @@ export default function SchedulePage() {
           </Card>
 
           {/* Call to Action Card */}
-          <Card className="border-none shadow-none rounded-[2.5rem] bg-indigo-600 text-white overflow-hidden relative group cursor-pointer active:scale-95 transition-all">
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 via-indigo-600 to-violet-800" />
-            <div className="absolute top-0 right-0 p-10 transform group-hover:scale-125 group-hover:rotate-12 transition-all duration-1000 opacity-20">
-              <Video className="w-40 h-40" />
+          <Card className="border-none shadow-2xl rounded-[2.5rem] bg-[#0B1F3A] text-white overflow-hidden relative group cursor-pointer active:scale-95 transition-all hover:shadow-indigo-900/30">
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay" />
+            <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#C8A96A] rounded-full blur-[80px] opacity-20 group-hover:opacity-40 transition-opacity duration-1000" />
+            <div className="absolute top-0 right-0 p-10 transform group-hover:scale-110 group-hover:-rotate-6 transition-all duration-1000 opacity-20">
+              <Video className="w-40 h-40 text-[#C8A96A]" />
             </div>
-            <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-white/10 rounded-full blur-3xl" />
 
-            <CardContent className="p-10 relative z-10 flex flex-col gap-6">
-              <div className="p-4 bg-white/10 backdrop-blur-2xl rounded-[1.5rem] w-fit border border-white/20 shadow-none">
-                <Video className="w-8 h-8 text-white" />
+            <CardContent className="p-10 relative z-10 flex flex-col gap-8">
+              <div className="p-4 bg-white/5 backdrop-blur-2xl rounded-[1.5rem] w-fit border border-white/10 shadow-lg">
+                <Video className="w-8 h-8 text-[#C8A96A]" />
               </div>
-              <div className="space-y-2">
-                <h3 className="text-3xl font-black leading-none tracking-tight">Virtual Symposium</h3>
-                <p className="text-indigo-100/60 font-black text-[10px] uppercase tracking-[0.3em]">Advanced Scholastic Methods • Ongoing</p>
+              <div className="space-y-3">
+                <h3 className="text-4xl font-serif leading-none tracking-tight text-white">Virtual Symposium</h3>
+                <p className="text-[#C8A96A] font-black text-[10px] uppercase tracking-[0.3em]">Advanced Scholastic Methods • Ongoing</p>
               </div>
-              <Button className="w-full bg-white text-indigo-700 hover:bg-slate-50 hover:scale-[1.02] font-black h-14 rounded-2xl shadow-none transition-all uppercase tracking-widest text-xs">
-                Enter Symposium Hall
+              <Button className="w-full bg-[#C8A96A] text-white hover:bg-[#B69759] hover:scale-[1.02] font-black h-14 rounded-2xl shadow-xl shadow-amber-900/20 transition-all uppercase tracking-widest text-xs border-none" asChild>
+                <Link href="/live-classes/demo-room">Enter Symposium Hall</Link>
               </Button>
             </CardContent>
           </Card>

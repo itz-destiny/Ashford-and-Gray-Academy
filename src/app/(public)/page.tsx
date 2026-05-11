@@ -378,7 +378,7 @@ export default function Home() {
                   <div className="pt-6 md:pt-10 flex items-center gap-6">
                     <div className="w-12 md:w-20 h-[1px] bg-white/20" />
                     <div>
-                      <h4 className="text-2xl md:text-3xl font-serif">Dr. Julian Ashford</h4>
+                      <h4 className="text-2xl md:text-3xl font-serif">Wyne Wilfred</h4>
                       <p className="text-[#C8A96A] font-black text-[10px] uppercase tracking-[0.3em] mt-2">Founder & President</p>
                     </div>
                   </div>
