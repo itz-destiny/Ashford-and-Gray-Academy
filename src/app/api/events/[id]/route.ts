@@ -4,12 +4,13 @@ import Event from '@/models/Event';
 
 export async function PATCH(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
         await dbConnect();
         const body = await request.json();
-        const event = await Event.findByIdAndUpdate(params.id, body, { new: true });
+        const event = await Event.findByIdAndUpdate(id, body, { new: true });
 
         if (!event) {
             return NextResponse.json({ error: 'Event not found' }, { status: 404 });
@@ -23,11 +24,12 @@ export async function PATCH(
 
 export async function DELETE(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
         await dbConnect();
-        const event = await Event.findByIdAndDelete(params.id);
+        const event = await Event.findByIdAndDelete(id);
 
         if (!event) {
             return NextResponse.json({ error: 'Event not found' }, { status: 404 });

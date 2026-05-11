@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
-import { Message } from '@/models/Supports';
+import { Message, Conversation } from '@/models/Supports';
 import { rateLimit } from '@/lib/rate-limit';
 
 const limiter = rateLimit({
@@ -71,10 +71,10 @@ export async function POST(request: Request) {
 
         // Update conversation if linked
         if (body.conversationId) {
-            await import('@/models/Supports').then(mod => mod.Conversation.findByIdAndUpdate(body.conversationId, {
+            await Conversation.findByIdAndUpdate(body.conversationId, {
                 lastMessage: body.content,
                 lastMessageAt: new Date()
-            }));
+            });
         }
 
         return NextResponse.json(message);

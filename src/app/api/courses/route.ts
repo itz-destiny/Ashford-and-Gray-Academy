@@ -22,8 +22,10 @@ export async function GET(request: Request) {
         ]);
 
         const enrollmentCounts = enrollments.reduce((acc: any, en: any) => {
-            const cid = en.courseId.toString();
-            acc[cid] = (acc[cid] || 0) + 1;
+            if (en.courseId) {
+                const cid = en.courseId.toString();
+                acc[cid] = (acc[cid] || 0) + 1;
+            }
             return acc;
         }, {});
 

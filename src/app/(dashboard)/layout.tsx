@@ -2,6 +2,7 @@
 
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { UserNav } from "@/components/user-nav";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 import {
   Bell,
   Settings,
@@ -57,16 +58,23 @@ export default function DashboardLayout({
                 type="search"
                 placeholder="Ask anything or find courses..."
                 className="pl-12 w-full h-12 bg-slate-50 border-none rounded-2xl focus-visible:ring-2 focus-visible:ring-indigo-100 transition-all text-sm font-medium"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    const query = e.currentTarget.value;
+                    if (query.trim()) {
+                      window.location.href = `/courses?search=${encodeURIComponent(query.trim())}`;
+                    } else {
+                      window.location.href = `/courses`;
+                    }
+                  }
+                }}
               />
             </div>
           </div>
 
           {/* Action Icons & User Nav */}
           <div className="flex items-center gap-3 md:gap-5 ml-auto">
-            <Button variant="ghost" size="icon" className="rounded-2xl hover:bg-slate-50 transition-colors relative">
-              <Bell className="h-5 w-5 text-slate-600" />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
-            </Button>
+            <NotificationBell />
 
             <Button variant="ghost" size="icon" className="rounded-2xl hover:bg-slate-50 transition-colors" asChild>
               <Link href="/settings">

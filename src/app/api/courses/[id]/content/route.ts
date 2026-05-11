@@ -5,11 +5,11 @@ import mongoose from 'mongoose';
 
 export async function GET(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id: courseId } = await params;
         await dbConnect();
-        const courseId = params.id;
 
         const modules = await Module.find({ courseId }).sort({ order: 1 });
         const moduleIds = modules.map(m => m._id);
@@ -23,11 +23,11 @@ export async function GET(
 
 export async function POST(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id: courseId } = await params;
         await dbConnect();
-        const courseId = params.id;
         const body = await request.json();
         const { type, data } = body; // type: 'module' or 'lesson'
 
@@ -52,9 +52,10 @@ export async function POST(
 
 export async function PUT(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        await params;
         await dbConnect();
         const body = await request.json();
         const { type, id, data } = body;
@@ -75,9 +76,10 @@ export async function PUT(
 
 export async function DELETE(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        await params;
         await dbConnect();
         const { searchParams } = new URL(request.url);
         const type = searchParams.get('type');

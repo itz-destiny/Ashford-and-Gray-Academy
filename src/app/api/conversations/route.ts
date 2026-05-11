@@ -1,12 +1,6 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
-import { Conversation, User } from '@/models/Supports'; // Ensure User is imported if used, otherwise remove
-// Actually User model is in User.ts, let's just use Conversation for now and fetch User details from client or separate generic API
-// But we need to populated participant details? 
-// For now, let's just return the conversation with participant IDs, and let client fetch details 
-// OR we can aggregate if we have a User model in the same DB. 
-// The current User model is in src/models/User.ts (based on file list). Let's check imports.
-// Supports.ts does not export User.
+import { Conversation } from '@/models/Supports';
 
 export async function GET(request: Request) {
     try {

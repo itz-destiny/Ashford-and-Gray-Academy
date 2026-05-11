@@ -39,7 +39,7 @@ export default function MyCoursesPage() {
   }, [user]);
 
   const filteredEnrollments = enrollments.filter(en =>
-    en.course?.title.toLowerCase().includes(searchQuery.toLowerCase())
+    (en.course?.title || "").toLowerCase().includes((searchQuery || "").toLowerCase())
   );
 
   const inProgress = filteredEnrollments.filter(en => (en.course?.progress || 0) < 100);

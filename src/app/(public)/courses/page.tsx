@@ -90,6 +90,15 @@ export default function CoursesPage() {
   }, []);
 
   const [searchQuery, setSearchQuery] = useState("");
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const search = new URLSearchParams(window.location.search).get('search');
+      if (search) {
+        setSearchQuery(search);
+      }
+    }
+  }, []);
   const [sortOrder, setSortOrder] = useState("popular");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedDifficulty, setSelectedDifficulty] = useState("all");

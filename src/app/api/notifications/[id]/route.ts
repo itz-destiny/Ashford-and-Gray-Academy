@@ -4,7 +4,7 @@ import { markAsRead } from '@/lib/notifications';
 
 export async function PATCH(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         await dbConnect();
@@ -32,7 +32,7 @@ export async function PATCH(
 
 export async function DELETE(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         await dbConnect();
@@ -44,9 +44,10 @@ export async function DELETE(
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
+        const { id } = await params;
         const { Notification } = await import('@/models/Notification');
 
-        await Notification.findOneAndDelete({ _id: params.id, userId });
+        await Notification.findOneAndDelete({ _id: id, userId });
 
         return NextResponse.json({ success: true });
     } catch (error) {

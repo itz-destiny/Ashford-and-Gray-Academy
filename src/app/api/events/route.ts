@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import dbConnect from '@/lib/mongodb';
-import Event from '@/models/Event';
-import Registration from '@/models/Registration';
+import dbConnect from '../../../lib/mongodb';
+import Event from '../../../models/Event';
+import Registration from '../../../models/Registration';
 
 export async function GET() {
     try {
@@ -24,6 +24,11 @@ export async function GET() {
         }));
         return NextResponse.json(eventsWithData);
     } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        console.error('CRITICAL: GET /api/events failed:', error);
+        return NextResponse.json({ 
+            error: 'Internal Server Error', 
+            details: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        }, { status: 500 });
     }
 }
