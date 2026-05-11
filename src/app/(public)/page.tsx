@@ -122,7 +122,7 @@ export default function Home() {
                   Elevating Business.
                 </h1>
                 <p className="text-lg md:text-xl lg:text-2xl text-slate-400 font-medium leading-relaxed max-w-xl mb-12">
-                  Where Excellence is Refined, and Leaders are Distinct. Join an institution dedicated to global academic authority.
+                  Where Excellence is Refined, and Leaders are Distinct.<br />A global institution shaping elite professionals in hospitality, business, and innovation.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-6">
                   <Button size="lg" className="h-16 md:h-20 px-10 md:px-12 text-base md:text-lg font-black bg-white text-[#0B1F3A] hover:bg-slate-100 transition-all rounded-full shadow-2xl" asChild>
@@ -369,17 +369,58 @@ export default function Home() {
                     <span className="text-[#C8A96A] font-black text-[10px] uppercase tracking-[0.4em]">Founder's Vision</span>
                   </div>
                   <h2 className="text-4xl md:text-5xl lg:text-7xl font-serif tracking-tight leading-[1.1] md:leading-tight">
-                    The Promise of <br />
-                    <span className="italic text-[#C8A96A]">Distinction.</span>
+                    Message from the <br />
+                    <span className="italic text-[#C8A96A]">Founder & CEO.</span>
                   </h2>
-                  <p className="text-xl md:text-2xl text-slate-400 leading-relaxed font-medium italic">
-                    "We believe that education should be as refined as the industries it serves. Our mission is to empower the next generation of global leaders with the distinction and authority they deserve."
-                  </p>
+                  <div className="text-base md:text-lg text-slate-300 leading-relaxed font-medium space-y-6 max-h-[400px] overflow-y-auto pr-4 custom-scrollbar">
+                    <p>
+                      Welcome to Ashford & Gray Fusion Academy—an institution defined not by convention, but by distinction.
+                    </p>
+                    <p>
+                      Ashford & Gray Fusion Academy was established with a singular vision: to create a learning environment where excellence is not aspirational, but foundational… where individuals are not merely trained, but transformed into authorities within their fields.
+                    </p>
+                    <p>
+                      In a world where many seek recognition, we focus on something far more enduring—relevance, precision, and influence.
+                    </p>
+                    <p>
+                      At the core of our Academy lies a deliberate fusion of luxury hospitality expertise and advanced business innovation. This is not accidental. It is a strategic response to a global demand for professionals who possess not only technical knowledge, but also refinement, discretion, leadership presence, and executional intelligence.
+                    </p>
+                    <p>
+                      Our approach is intentionally different.<br/>
+                      We do not overwhelm with theory—we immerse in application.<br/>
+                      We do not produce participants—we develop professionals of consequence.
+                    </p>
+                    <p>
+                      Every program within this Academy has been meticulously designed to meet international standards while remaining deeply practical, ensuring that our graduates are not only competent, but distinguished, confident, and globally competitive.
+                    </p>
+                    <p>
+                      As Founder and Chief Executive Officer, my philosophy is anchored in a simple but powerful belief:<br/>
+                      <span className="italic text-[#C8A96A]">True luxury is not excess—it is precision, discipline, and excellence expressed effortlessly.</span>
+                    </p>
+                    <p>
+                      This belief shapes everything we do.<br/>
+                      We are building more than an academy—we are building a standard.<br/>
+                      A standard that speaks through the quality of our people.<br/>
+                      A standard that is recognized before introduction.<br/>
+                      A standard that endures.
+                    </p>
+                    <p>
+                      For those who desire more than certificates—for those who seek mastery, influence, and legacy—this is where your journey begins.
+                    </p>
+                    <p>
+                      I invite you to step into an environment where your potential is refined with intention, and your ambition is elevated with purpose.
+                    </p>
+                    <p>
+                      Welcome to a higher order of learning.<br/>
+                      Welcome to refined excellence.<br/>
+                      Welcome to Ashford & Gray Fusion Academy.
+                    </p>
+                  </div>
                   <div className="pt-6 md:pt-10 flex items-center gap-6">
                     <div className="w-12 md:w-20 h-[1px] bg-white/20" />
                     <div>
-                      <h4 className="text-2xl md:text-3xl font-serif">Wyne Wilfred</h4>
-                      <p className="text-[#C8A96A] font-black text-[10px] uppercase tracking-[0.3em] mt-2">Founder & President</p>
+                      <h4 className="text-2xl md:text-3xl font-serif">Myne Wilfred</h4>
+                      <p className="text-[#C8A96A] font-black text-[10px] uppercase tracking-[0.3em] mt-2">Founder & Chief Executive Officer</p>
                     </div>
                   </div>
                 </div>

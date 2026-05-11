@@ -23,7 +23,8 @@ export default function PublicLayout({
             <div className="space-y-8">
               <Logo variant="white" />
               <p className="text-slate-400 text-sm leading-relaxed max-w-xs">
-                Ashford & Gray Fusion Academy is a global leader in professional mastery and executive education.
+                Where Excellence is Refined, and Leaders are Distinct.<br />
+                Mastering Luxury. Elevating Business.
               </p>
               <div className="flex space-x-6">
                 <Link href="https://x.com/AshfordFusion" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-[#C8A96A] transition-colors">
