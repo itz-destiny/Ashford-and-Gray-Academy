@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find C:\\\\\\\\Users\\\\\\\\pc\\\\\\\\Desktop\\\\\\\\project\\\\\\\\Ashford-and-Gray-Academy\\\\\\\\src -type f \\\\\\( -name \"*.ts\" -o -name \"*.tsx\" \\\\\\))",
+      "Bash(ls C:\\\\Users\\\\pc\\\\Desktop\\\\project\\\\Ashford-and-Gray-Academy\\\\src\\\\firebase *)",
+      "Bash(npm install *)",
+      "PowerShell(Get-Process *)",
+      "Bash(echo \"EXIT=$?\")",
+      "Read(//c/Users/pc/AppData/Local/Temp/**)",
+      "Bash(npm test *)",
+      "Bash(npx tsc *)",
+      "PowerShell(Test-Path \".next\\\\BUILD_ID\"; Test-Path \".next\\\\server\\\\app\"; \\(Get-ChildItem \".next\" -ErrorAction SilentlyContinue | Measure-Object\\).Count)",
+      "Bash(npm run *)",
+      "Bash(echo \"BUILD_EXIT=$?\")",
+      "PowerShell(Test-Path \".env.local\"; if \\(Test-Path \".env.local\"\\) { \\(Get-Content \".env.local\" | Where-Object { $_ -match \"^NEXT_PUBLIC_FIREBASE_API_KEY=\" -and $_ -notmatch \"your_firebase_api_key|AIza\\\\.\\\\.\\\\.\" }\\).Count })",
+      "PowerShell(Test-Path \".env.local\"; Get-Content \".env.local\" | Where-Object { $_ -match \"^FIREBASE_ADMIN\" } | ForEach-Object { if \\($_ -match \"PRIVATE_KEY\"\\) { $line = $_.Substring\\(0, [Math]::Min\\(50, $_.Length\\)\\) + \"...\" + \" [len=\" + $_.Length + \"]\"; $line } else { $_ } })",
+      "PowerShell(Get-Content \".env.local\" | Where-Object { $_ -match \"FIREBASE\" -or $_ -match \"ADMIN\" -or $_ -match \"PRIVATE\" } | ForEach-Object { if \\($_ -match \"PRIVATE_KEY|API_KEY\"\\) { $eqIdx = $_.IndexOf\\(\"=\"\\); if \\($eqIdx -gt 0\\) { $_.Substring\\(0, $eqIdx\\) + \"=<redacted len=\" + \\($_.Length - $eqIdx - 1\\) + \">\" } else { $_ } } else { $_ } })",
+      "Bash(node diagnose-db.js)",
+      "Bash(node -e ' *)",
+      "Bash(node --experimental-strip-types -e ' *)",
+      "Bash(node scratch/provision-test-accounts.mjs)",
+      "Bash(npx tsx *)",
+      "Bash(GOOGLE_APPLICATION_CREDENTIALS=\"C:/Users/pc/AppData/Local/Temp/firebase-sa.json\" npx --yes firebase-tools@latest deploy --only firestore:rules --project studio-6301887284-1e730 --non-interactive)",
+      "Bash(GOOGLE_APPLICATION_CREDENTIALS=\"C:/Users/pc/AppData/Local/Temp/firebase-sa.json\" FIREBASE_CLI_PREVIEWS= FIREBASE_DEPLOY_AGENT=ci npx --yes firebase-tools@latest deploy --only firestore:rules --project studio-6301887284-1e730 --force --non-interactive)",
+      "Bash(npm ls *)",
+      "Bash(node scratch/deploy-firestore-rules.mjs)",
+      "Bash(node scratch/deploy-firestore-via-admin.mjs)",
+      "Bash(node scratch/import-firebase-admin-json.mjs \"C:/Users/pc/Downloads/studio-6301887284-1e730-firebase-adminsdk-fbsvc-55a4c1b479.json\")",
+      "Bash(node scratch/check-admin-key.mjs)",
+      "Bash(git add *)"
+    ]
+  }
+}

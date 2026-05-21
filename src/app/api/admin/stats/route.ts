@@ -1,51 +1,47 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import User from '@/models/User';
 import Course from '@/models/Course';
 import Event from '@/models/Event';
 import Enrollment from '@/models/Enrollment';
 import { Message, Submission } from '@/models/Supports';
+import { AuthError, requireRole, withAuth } from '@/lib/auth-server';
 
-export async function GET() {
+export const GET = withAuth(async (_req: NextRequest, { auth }) => {
+    try {
+        requireRole(auth, ['admin', 'registrar']);
+    } catch (err) {
+        if (err instanceof AuthError) {
+            return NextResponse.json({ error: err.message }, { status: err.status });
+        }
+        throw err;
+    }
+
     try {
         await dbConnect();
 
-        // 1. Basic Stats
-        const [studentCount, instructorCount, courseCount, eventCount, unreadMessages, ungradedSubmissions] = await Promise.all([
-            User.countDocuments({ role: 'student' }),
-            User.countDocuments({ role: 'instructor' }),
-            Course.countDocuments({}),
-            Event.countDocuments({}),
-            Message.countDocuments({ isRead: false }),
-            Submission.countDocuments({ grade: { $exists: false } })
-        ]);
+        const [studentCount, instructorCount, courseCount, eventCount, unreadMessages, ungradedSubmissions] =
+            await Promise.all([
+                User.countDocuments({ role: 'student' }),
+                User.countDocuments({ role: 'instructor' }),
+                Course.countDocuments({}),
+                Event.countDocuments({}),
+                Message.countDocuments({ isRead: false }),
+                Submission.countDocuments({ grade: { $exists: false } }),
+            ]);
 
-        // 2. Recent Enrollments (with basic course info)
-        const recentEnrollmentsRaw = await Enrollment.find({})
-            .sort({ enrolledAt: -1 })
-            .limit(5);
-
-        // Fetch course info and user info for these enrollments
+        const recentEnrollmentsRaw = await Enrollment.find({}).sort({ enrolledAt: -1 }).limit(5);
         const courseIds = recentEnrollmentsRaw.map(en => en.courseId);
         const uids = recentEnrollmentsRaw.map(en => en.userId);
-
         const [courses, users] = await Promise.all([
             Course.find({ _id: { $in: courseIds } }),
-            User.find({ uid: { $in: uids } })
+            User.find({ uid: { $in: uids } }),
         ]);
-
         const courseMap = Object.fromEntries(courses.map(c => [c._id.toString(), c]));
         const userMap = Object.fromEntries(users.map(u => [u.uid, u]));
 
-        console.log(`DEBUG: Found ${users.length} users for ${uids.length} uids`);
-        console.log(`DEBUG: UIDs requested: ${JSON.stringify(uids)}`);
-        console.log(`DEBUG: UIDs found: ${JSON.stringify(users.map(u => u.uid))}`);
-
         const recentEnrollments = recentEnrollmentsRaw.map(en => {
             const user = userMap[en.userId];
-            if (!user) {
-                console.log(`DEBUG: Mismatch for Enrollment ${en._id}: UserID ${en.userId} not found in userMap`);
-            }
             return {
                 id: en._id.toString(),
                 userId: en.userId,
@@ -53,11 +49,10 @@ export async function GET() {
                 userPhoto: user?.photoURL,
                 course: courseMap[en.courseId.toString()] || { title: 'Unknown Course' },
                 enrolledAt: en.enrolledAt,
-                progress: en.progress
+                progress: en.progress,
             };
         });
 
-        // 3. Trends (Last 7 days enrollment and revenue)
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
@@ -68,37 +63,35 @@ export async function GET() {
                     from: 'courses',
                     localField: 'courseId',
                     foreignField: '_id',
-                    as: 'course'
-                }
+                    as: 'course',
+                },
             },
             { $unwind: '$course' },
             {
                 $group: {
-                    _id: { $dateToString: { format: "%Y-%m-%d", date: "$enrolledAt" } },
+                    _id: { $dateToString: { format: '%Y-%m-%d', date: '$enrolledAt' } },
                     enrollments: { $sum: 1 },
-                    revenue: { $sum: { $ifNull: ['$course.price', 0] } }
-                }
+                    revenue: { $sum: { $ifNull: ['$course.price', 0] } },
+                },
             },
-            { $sort: { "_id": 1 } }
+            { $sort: { _id: 1 } },
         ]);
 
-        // 4. Revenue & Growth (Calculated from Course prices * Enrollments)
         const allEnrollments = await Enrollment.find({});
         const allCourses = await Course.find({});
         const priceMap = Object.fromEntries(allCourses.map(c => [c._id.toString(), c.price || 0]));
+        const totalRevenue = allEnrollments.reduce(
+            (sum, en) => sum + (priceMap[en.courseId.toString()] || 0),
+            0
+        );
 
-        const totalRevenue = allEnrollments.reduce((sum, en) => {
-            return sum + (priceMap[en.courseId.toString()] || 0);
-        }, 0);
-
-        // 5. Needs Attention (Dynamic items)
-        const needsAttention = [];
+        const needsAttention: { id: string; title: string; description: string; type: string }[] = [];
         if (unreadMessages > 0) {
             needsAttention.push({
                 id: 'messages',
                 title: `${unreadMessages} Unread Message(s)`,
                 description: 'Inquiries from students and instructors.',
-                type: 'indigo'
+                type: 'indigo',
             });
         }
         if (ungradedSubmissions > 0) {
@@ -106,7 +99,7 @@ export async function GET() {
                 id: 'submissions',
                 title: `${ungradedSubmissions} Ungraded Submission(s)`,
                 description: 'New assignments requiring review.',
-                type: 'amber'
+                type: 'amber',
             });
         }
         if (needsAttention.length === 0) {
@@ -114,11 +107,10 @@ export async function GET() {
                 id: 'status',
                 title: 'System Optimal',
                 description: 'No urgent items requiring attention.',
-                type: 'emerald'
+                type: 'emerald',
             });
         }
 
-        // 6. 30-Day Enrollment Total & Growth
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
         const sixtyDaysAgo = new Date();
@@ -126,19 +118,12 @@ export async function GET() {
 
         const [curr30, prev30] = await Promise.all([
             Enrollment.countDocuments({ enrolledAt: { $gte: thirtyDaysAgo } }),
-            Enrollment.countDocuments({ enrolledAt: { $gte: sixtyDaysAgo, $lt: thirtyDaysAgo } })
+            Enrollment.countDocuments({ enrolledAt: { $gte: sixtyDaysAgo, $lt: thirtyDaysAgo } }),
         ]);
-
         const enrollmentGrowth = prev30 === 0 ? 100 : Math.round(((curr30 - prev30) / prev30) * 100);
 
-        // 7. Top Performing Courses (Aggregation)
         const topPerformingCoursesRaw = await Enrollment.aggregate([
-            {
-                $group: {
-                    _id: '$courseId',
-                    count: { $sum: 1 }
-                }
-            },
+            { $group: { _id: '$courseId', count: { $sum: 1 } } },
             { $sort: { count: -1 } },
             { $limit: 3 },
             {
@@ -146,17 +131,17 @@ export async function GET() {
                     from: 'courses',
                     localField: '_id',
                     foreignField: '_id',
-                    as: 'course'
-                }
+                    as: 'course',
+                },
             },
-            { $unwind: '$course' }
+            { $unwind: '$course' },
         ]);
 
-        const topPerformingCourses = topPerformingCoursesRaw.map(item => ({
+        const topPerformingCourses = topPerformingCoursesRaw.map((item: any) => ({
             title: item.course.title,
             enrollments: item.count,
-            status: item.count > 100 ? "Trending" : item.count > 50 ? "High Yield" : "Expanding",
-            id: item._id.toString()
+            status: item.count > 100 ? 'Trending' : item.count > 50 ? 'High Yield' : 'Expanding',
+            id: item._id.toString(),
         }));
 
         return NextResponse.json({
@@ -168,14 +153,15 @@ export async function GET() {
                 revenue: totalRevenue,
                 completionRate: 87,
                 thirtyDayEnrollments: curr30,
-                enrollmentGrowth: enrollmentGrowth,
-                topPerformingCourses
+                enrollmentGrowth,
+                topPerformingCourses,
             },
             recentEnrollments,
             trends: trendsRaw,
-            needsAttention
+            needsAttention,
         });
     } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        console.error('GET /api/admin/stats failed:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
-}
+});

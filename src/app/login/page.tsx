@@ -34,7 +34,7 @@ function LoginPageContent() {
       <div className="relative flex-col items-center justify-center hidden bg-[#0B1F3A] lg:flex overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
-            src="/academy_hero_students.png"
+            src="/cohort-global-vision.jpg"
             alt="Students at Ashford and Gray Academy"
             fill
             className="object-cover opacity-30 mix-blend-overlay"

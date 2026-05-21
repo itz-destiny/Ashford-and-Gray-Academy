@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useUser } from "@/firebase";
+import { useUser, useUserConversations, useConversationMessages } from "@/firebase";
+import { apiFetch } from "@/lib/api-client";
 import { Paperclip, Search, Send, Smile, MoreVertical, Phone, Video, Loader2, ArrowLeft } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
 import Link from 'next/link';
@@ -34,7 +35,7 @@ export function Communications() {
         const fetchInstructorDirectory = async () => {
             try {
                 // 1. Get user enrollments
-                const enRes = await fetch(`/api/enrollments?userId=${user.uid}`);
+                const enRes = await apiFetch('/api/enrollments');
                 const enrollments = await enRes.json();
                 
                 if (Array.isArray(enrollments)) {
@@ -43,7 +44,7 @@ export function Communications() {
                     // For now, we fetch users with the role 'instructor' who match the names
                     const instructorNames = Array.from(new Set(enrollments.map(en => en.course?.instructor?.name)));
                     
-                    const res = await fetch('/api/users?role=instructor');
+                    const res = await apiFetch('/api/users?role=instructor');
                     const data = await res.json();
 
                     if (Array.isArray(data)) {
@@ -78,11 +79,10 @@ export function Communications() {
                 return;
             }
 
-            const res = await fetch('/api/conversations', {
+            const res = await apiFetch('/api/conversations', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    participants: [user.uid, staffMember.uid]
+                    participants: [staffMember.uid]
                 })
             });
 
@@ -94,7 +94,7 @@ export function Communications() {
                         id: staffMember.uid,
                         name: staffMember.displayName,
                         avatar: staffMember.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${staffMember.uid}`,
-                        online: true
+                        online: false
                     }
                 };
                 setConversations([...conversations, enriched]);
@@ -107,77 +107,72 @@ export function Communications() {
         }
     };
 
+    // Realtime conversation list — replaces 10s polling.
+    const { conversations: rtConversations } = useUserConversations(user?.uid);
+    const userCacheRef = useRef<Map<string, { name: string; avatar: string; role: string } | null>>(new Map());
+
     useEffect(() => {
-        if (!user) return;
-
-        const fetchConversations = async () => {
-            try {
-                const res = await fetch(`/api/conversations?userId=${user.uid}`);
-                const data = await res.json();
-
-                if (Array.isArray(data)) {
-                    const enriched = (await Promise.all(data.map(async (conv: any) => {
-                        const otherUserId = conv.participants.find((p: string) => p !== user.uid) || user.uid;
-                        const uRes = await fetch(`/api/users?uid=${otherUserId}`);
-                        const uData = await uRes.json();
-
-                        // Hide conversations with admins
-                        if (uData.role === 'admin' || uData.role === 'registrar' || uData.role === 'finance') return null;
-
-                        return {
-                            ...conv,
-                            otherUser: {
-                                id: otherUserId,
+        if (!user) {
+            setLoading(false);
+            return;
+        }
+        let cancelled = false;
+        (async () => {
+            const enriched = (await Promise.all(
+                rtConversations.map(async (conv) => {
+                    const otherUserId = conv.participants.find((p: string) => p !== user.uid) || user.uid;
+                    let info = userCacheRef.current.get(otherUserId);
+                    if (info === undefined) {
+                        try {
+                            const uRes = await apiFetch(`/api/users?uid=${otherUserId}`);
+                            const uData = await uRes.json();
+                            info = {
                                 name: uData.displayName || 'Institutional Member',
                                 avatar: uData.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${otherUserId}`,
-                                online: true
-                            }
-                        };
-                    }))).filter(c => c !== null);
-                    setConversations(enriched);
-
-                    if (enriched.length > 0 && !selectedConversation && !showMobileChat) {
-                        // On desktop, select first. On mobile, wait for click.
-                        if (window.innerWidth >= 768) {
-                           setSelectedConversation(enriched[0]);
+                                role: uData.role || 'student',
+                            };
+                            userCacheRef.current.set(otherUserId, info);
+                        } catch {
+                            info = null;
                         }
                     }
+                    if (!info) return null;
+                    // Hide conversations with elevated staff in this widget.
+                    if (info.role === 'admin' || info.role === 'registrar' || info.role === 'finance') return null;
+                    return {
+                        _id: conv.id,
+                        participants: conv.participants,
+                        lastMessage: conv.lastMessage,
+                        lastMessageAt: conv.lastMessageAt,
+                        otherUser: { id: otherUserId, name: info.name, avatar: info.avatar, online: false },
+                    };
+                })
+            )).filter((c) => c !== null) as any[];
+            if (cancelled) return;
+            setConversations(enriched);
+            if (enriched.length > 0 && !selectedConversation && !showMobileChat) {
+                if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+                    setSelectedConversation(enriched[0]);
                 }
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setLoading(false);
             }
-        };
+            setLoading(false);
+        })();
+        return () => { cancelled = true; };
+    }, [user, rtConversations, selectedConversation, showMobileChat]);
 
-        fetchConversations();
-        const interval = setInterval(fetchConversations, 10000);
-        return () => clearInterval(interval);
-    }, [user]);
-
+    // Realtime messages for the active conversation — replaces 5s polling.
+    const { messages: rtMessages } = useConversationMessages(selectedConversation?._id ?? null);
     useEffect(() => {
-        if (!user || !selectedConversation) return;
-
-        const fetchMessages = async () => {
-            try {
-                const query = selectedConversation._id
-                    ? `conversationId=${selectedConversation._id}`
-                    : `userId=${user.uid}&contactId=${selectedConversation.otherUser.id}`;
-
-                const res = await fetch(`/api/messages?${query}`);
-                const data = await res.json();
-                if (Array.isArray(data)) {
-                    setMessages(data);
-                }
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        fetchMessages();
-        const interval = setInterval(fetchMessages, 5000);
-        return () => clearInterval(interval);
-    }, [user, selectedConversation]);
+        setMessages(
+            rtMessages.map((m) => ({
+                _id: m.id,
+                senderId: m.senderId,
+                receiverId: m.receiverId,
+                content: m.content,
+                createdAt: m.createdAt,
+            }))
+        );
+    }, [rtMessages]);
 
     useEffect(() => {
         if (scrollRef.current) {
@@ -189,11 +184,9 @@ export function Communications() {
         if (!newMessage.trim() || !user || !selectedConversation) return;
 
         try {
-            const res = await fetch('/api/messages', {
+            const res = await apiFetch('/api/messages', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    senderId: user.uid,
                     receiverId: selectedConversation.otherUser.id,
                     conversationId: selectedConversation._id,
                     content: newMessage
@@ -202,8 +195,7 @@ export function Communications() {
 
             if (res.ok) {
                 setNewMessage("");
-                const sent = await res.json();
-                setMessages([...messages, sent]);
+                // Firestore listener will surface the new message to both sides.
             }
         } catch (error) {
             console.error(error);
@@ -218,20 +210,16 @@ export function Communications() {
         const messageContent = `I started a video meeting. Join here: ${window.location.origin}${meetingLink}`;
 
         try {
-            const res = await fetch('/api/messages', {
+            const res = await apiFetch('/api/messages', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    senderId: user.uid,
                     receiverId: selectedConversation.otherUser.id,
                     conversationId: selectedConversation._id,
                     content: messageContent
                 })
             });
-            if (res.ok) {
-                const sent = await res.json();
-                setMessages([...messages, sent]);
-            }
+            // Firestore listener fans the meeting message out.
+            void res;
         } catch (error) {
             console.error(error);
         }

@@ -2,6 +2,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
+import { initializeFirebase } from "@/firebase";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -21,6 +23,7 @@ import {
 } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useUser } from "@/firebase";
+import { apiFetch } from "@/lib/api-client";
 import { Loader2, User, Shield, Bell, CreditCard, Save, Trash2, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -29,8 +32,9 @@ export default function SettingsPage() {
   const { user, loading: userLoading } = useUser();
   const { toast } = useToast();
   const [saving, setSaving] = useState(false);
+  const [savingPassword, setSavingPassword] = useState(false);
+  const [savingPrefs, setSavingPrefs] = useState(false);
   const [addingPayment, setAddingPayment] = useState(false);
-  // Removed hardcoded "4242" card to fix the user's issue
   const [cards, setCards] = useState<any[]>([]);
 
   const [formData, setFormData] = useState({
@@ -42,6 +46,9 @@ export default function SettingsPage() {
     organization: ""
   });
 
+  const [passwordForm, setPasswordForm] = useState({ current: "", next: "" });
+  const [prefs, setPrefs] = useState({ announcements: true, "new-courses": true, reminders: true });
+
   useEffect(() => {
     if (user) {
       setFormData({
@@ -52,6 +59,11 @@ export default function SettingsPage() {
         title: (user as any).title || "",
         organization: (user as any).organization || ""
       });
+
+      const stored = typeof window !== "undefined" ? localStorage.getItem(`prefs:${user.uid}`) : null;
+      if (stored) {
+        try { setPrefs((p) => ({ ...p, ...JSON.parse(stored) })); } catch { /* ignore */ }
+      }
     }
   }, [user]);
 
@@ -64,9 +76,8 @@ export default function SettingsPage() {
     if (!user) return;
     setSaving(true);
     try {
-      const res = await fetch('/api/users', {
+      const res = await apiFetch('/api/users', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           uid: user.uid,
           email: formData.email,
@@ -106,14 +117,57 @@ export default function SettingsPage() {
   };
 
   const handleAddPayment = () => {
-    setAddingPayment(true);
-    setTimeout(() => {
-      setAddingPayment(false);
-      toast({
-        title: "Secure Gateway Opening...",
-        description: "Redirecting to our PCI-compliant payment partner.",
-      });
-    }, 1000);
+    toast({
+      title: "Per-course billing",
+      description:
+        "Payments are taken when you enroll in a course. Saved cards are not yet available.",
+    });
+  };
+
+  const handlePasswordChange = async () => {
+    if (!user || !user.email) return;
+    if (!passwordForm.current || !passwordForm.next) {
+      toast({ variant: "destructive", title: "Missing fields", description: "Enter both your current and new password." });
+      return;
+    }
+    if (passwordForm.next.length < 8) {
+      toast({ variant: "destructive", title: "Password too short", description: "Use at least 8 characters." });
+      return;
+    }
+    setSavingPassword(true);
+    try {
+      const { auth } = initializeFirebase();
+      const fbUser = auth.currentUser;
+      if (!fbUser || !fbUser.email) throw new Error("Not signed in.");
+      const credential = EmailAuthProvider.credential(fbUser.email, passwordForm.current);
+      await reauthenticateWithCredential(fbUser, credential);
+      await updatePassword(fbUser, passwordForm.next);
+      toast({ title: "Password updated", description: "Your sign-in credentials have been changed." });
+      setPasswordForm({ current: "", next: "" });
+    } catch (err: any) {
+      const code = err?.code || "";
+      const message =
+        code === "auth/wrong-password" ? "Current password is incorrect."
+        : code === "auth/weak-password" ? "Choose a stronger password."
+        : code === "auth/requires-recent-login" ? "Please sign out and back in, then try again."
+        : err?.message || "Could not update your password.";
+      toast({ variant: "destructive", title: "Update failed", description: message });
+    } finally {
+      setSavingPassword(false);
+    }
+  };
+
+  const handleSavePrefs = async () => {
+    if (!user) return;
+    setSavingPrefs(true);
+    try {
+      localStorage.setItem(`prefs:${user.uid}`, JSON.stringify(prefs));
+      toast({ title: "Preferences saved", description: "Your notification settings are committed." });
+    } catch (err: any) {
+      toast({ variant: "destructive", title: "Save failed", description: err?.message || "Could not save preferences." });
+    } finally {
+      setSavingPrefs(false);
+    }
   };
 
   if (userLoading) {
@@ -178,35 +232,13 @@ export default function SettingsPage() {
               </div>
 
               <div className="space-y-3">
-                <Label htmlFor="role" className="text-[10px] font-black uppercase tracking-widest text-slate-400">Institutional Role</Label>
-                <select
-                  id="role"
-                  value={(user as any).role}
-                  onChange={async (e) => {
-                    if (!user) return;
-                    const newRole = e.target.value;
-                    setSaving(true);
-                    try {
-                      await fetch('/api/users', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ uid: user.uid, email: user.email, role: newRole })
-                      });
-                      toast({ title: "Authority Updated", description: "Your access levels are being reconfigured." });
-                      window.location.reload();
-                    } catch (err) {
-                      toast({ variant: "destructive", title: "Transition Failed" });
-                    } finally {
-                      setSaving(false);
-                    }
-                  }}
-                  className="w-full h-14 px-6 rounded-2xl bg-slate-50 border-none focus:ring-1 focus:ring-[#1F7A5A] outline-none font-medium appearance-none"
-                >
-                  <option value="student">Student</option>
-                  <option value="instructor">Instructor</option>
-                  <option value="admin">Administrator</option>
-                </select>
-                <p className="text-[10px] text-slate-400 italic">Changing your role will re-route your dashboard access upon next login.</p>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Institutional Role</Label>
+                <div className="h-14 rounded-2xl bg-slate-50 px-6 flex items-center font-medium text-[#0B1F3A] capitalize">
+                  {(user as any)?.role?.replace('_', ' ') || 'student'}
+                </div>
+                <p className="text-[10px] text-slate-400 italic">
+                  Role changes are handled by an administrator. Contact your registrar to request a change.
+                </p>
               </div>
             </CardContent>
             <CardFooter className="p-10 bg-slate-50/50 flex justify-end">
@@ -228,16 +260,17 @@ export default function SettingsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-3">
                   <Label htmlFor="current-password" className="text-[10px] font-black uppercase tracking-widest text-slate-400">Current Authorization</Label>
-                  <Input id="current-password" type="password" className="h-14 rounded-2xl bg-slate-50 border-none px-6 focus-visible:ring-1 focus-visible:ring-[#1F7A5A]" />
+                  <Input id="current-password" type="password" value={passwordForm.current} onChange={(e) => setPasswordForm(f => ({ ...f, current: e.target.value }))} className="h-14 rounded-2xl bg-slate-50 border-none px-6 focus-visible:ring-1 focus-visible:ring-[#1F7A5A]" />
                 </div>
                 <div className="space-y-3">
                   <Label htmlFor="new-password" className="text-[10px] font-black uppercase tracking-widest text-slate-400">New Authorization</Label>
-                  <Input id="new-password" type="password" className="h-14 rounded-2xl bg-slate-50 border-none px-6 focus-visible:ring-1 focus-visible:ring-[#1F7A5A]" />
+                  <Input id="new-password" type="password" value={passwordForm.next} onChange={(e) => setPasswordForm(f => ({ ...f, next: e.target.value }))} className="h-14 rounded-2xl bg-slate-50 border-none px-6 focus-visible:ring-1 focus-visible:ring-[#1F7A5A]" />
                 </div>
               </div>
             </CardContent>
             <CardFooter className="p-10 bg-slate-50/50 flex justify-end">
-              <Button className="bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black px-12 py-6 rounded-2xl shadow-xl transition-all h-auto text-[10px] uppercase tracking-widest">
+              <Button onClick={handlePasswordChange} disabled={savingPassword} className="bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black px-12 py-6 rounded-2xl shadow-xl transition-all h-auto text-[10px] uppercase tracking-widest gap-2">
+                {savingPassword ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
                 Update Credentials
               </Button>
             </CardFooter>
@@ -258,7 +291,12 @@ export default function SettingsPage() {
                   { id: "reminders", label: "Academic Reminders", desc: "Critical alerts for upcoming events and assessment deadlines." }
                 ].map((notif) => (
                   <div key={notif.id} className="flex items-start gap-4 p-6 rounded-3xl bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer group">
-                    <Checkbox id={notif.id} className="mt-1 border-slate-300 data-[state=checked]:bg-[#1F7A5A] data-[state=checked]:border-[#1F7A5A]" />
+                    <Checkbox
+                      id={notif.id}
+                      checked={(prefs as any)[notif.id] ?? true}
+                      onCheckedChange={(checked) => setPrefs(p => ({ ...p, [notif.id]: !!checked }))}
+                      className="mt-1 border-slate-300 data-[state=checked]:bg-[#1F7A5A] data-[state=checked]:border-[#1F7A5A]"
+                    />
                     <label htmlFor={notif.id} className="space-y-1 cursor-pointer">
                       <p className="text-sm font-black text-[#0B1F3A] uppercase tracking-widest">{notif.label}</p>
                       <p className="text-xs text-slate-400">{notif.desc}</p>
@@ -268,7 +306,8 @@ export default function SettingsPage() {
               </div>
             </CardContent>
             <CardFooter className="p-10 bg-slate-50/50 flex justify-end">
-              <Button className="bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black px-12 py-6 rounded-2xl shadow-xl transition-all h-auto text-[10px] uppercase tracking-widest">
+              <Button onClick={handleSavePrefs} disabled={savingPrefs} className="bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black px-12 py-6 rounded-2xl shadow-xl transition-all h-auto text-[10px] uppercase tracking-widest gap-2">
+                {savingPrefs ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
                 Commit Preferences
               </Button>
             </CardFooter>

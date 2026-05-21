@@ -31,6 +31,7 @@ import React, { useState, useMemo } from "react";
 import type { AppEvent } from "@/lib/types";
 import { useRouter, usePathname } from "next/navigation";
 import { useUser } from "@/firebase";
+import { apiFetch } from "@/lib/api-client";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollAnimation } from "@/components/ui/scroll-animation";
@@ -103,10 +104,9 @@ export default function EventsPage() {
       router.push(`/login?redirectUrl=${pathname}?dialog=${event.id}`);
     } else {
       try {
-        const res = await fetch('/api/registrations', {
+        const res = await apiFetch('/api/registrations', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: user.uid, eventId: event.id }),
+          body: JSON.stringify({ eventId: event.id }),
         });
 
         if (res.ok) {

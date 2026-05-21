@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Sparkles } from "lucide-react";
-import { mockLiveClassTranscript } from "@/lib/data";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -35,9 +34,8 @@ export function LiveClassReviewer() {
           <CardContent>
             <Textarea
               name="transcript"
-              placeholder="Enter class transcript here..."
+              placeholder="Paste the class transcript here..."
               className="min-h-[300px] font-mono text-sm"
-              defaultValue={mockLiveClassTranscript}
             />
             {state.errors?.transcript &&
               state.errors.transcript.map((error: string) => (

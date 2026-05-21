@@ -52,3 +52,13 @@ export { FirebaseClientProvider } from "./client-provider";
 
 export { useUser } from "./auth/use-user";
 
+export {
+  useConversationMessages,
+  useDirectMessages,
+  useUserConversations,
+  useUserNotifications,
+  type RealtimeMessage,
+  type RealtimeConversation,
+  type RealtimeNotification,
+} from "./realtime";
+

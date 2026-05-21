@@ -21,7 +21,8 @@ import {
   GraduationCap,
   Handshake,
   Wrench,
-  Radio
+  Radio,
+  ShieldCheck
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -125,11 +126,11 @@ export default function Home() {
                   Where Excellence is Refined, and Leaders are Distinct.<br />A global institution shaping elite professionals in hospitality, business, and innovation.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-6">
+                  <Button size="lg" className="h-16 md:h-20 px-10 md:px-12 text-base md:text-lg font-black bg-[#C8A96A] text-[#0B1F3A] hover:bg-[#B69859] transition-all rounded-full shadow-2xl" asChild>
+                    <Link href="/login?view=signup">Apply for Admission</Link>
+                  </Button>
                   <Button size="lg" className="h-16 md:h-20 px-10 md:px-12 text-base md:text-lg font-black bg-white text-[#0B1F3A] hover:bg-slate-100 transition-all rounded-full shadow-2xl" asChild>
                     <Link href="/courses">Explore Programs</Link>
-                  </Button>
-                  <Button size="lg" variant="outline" className="h-16 md:h-20 px-10 md:px-12 text-base md:text-lg font-bold border-white/20 text-white hover:bg-white/10 hover:text-white rounded-full backdrop-blur-sm bg-transparent">
-                    Apply for Admission
                   </Button>
                 </div>
               </ScrollAnimation>
@@ -212,8 +213,8 @@ export default function Home() {
             <ScrollAnimation animation="fade-in" delay={200} className="relative">
               <div className="relative aspect-[4/5] rounded-[3rem] md:rounded-[4rem] overflow-hidden shadow-2xl border-4 md:border-8 border-white">
                 <Image
-                  src="/imagefx-6.png"
-                  alt="Academic Environment"
+                  src="/cohort-global-vision.jpg"
+                  alt="A new generation of distinguished professionals"
                   fill
                   className="object-cover"
                 />
@@ -224,39 +225,50 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Section 4: 3 Pillars (Cards Layout) */}
+      {/* Section 4: Why Ashford & Gray (4 Pillars) */}
       <section className="py-24 md:py-40 bg-slate-50 relative overflow-hidden">
         <div className="container mx-auto px-6 lg:px-12">
           <div className="text-center max-w-4xl mx-auto mb-16 md:mb-24">
-             <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif text-[#0B1F3A] tracking-tight mb-6 md:mb-8">The Pillars of Distinction</h2>
-             <p className="text-lg md:text-xl text-slate-500 font-medium">Refining the next generation of global leaders through three core values.</p>
+            <div className="inline-flex items-center gap-3 mb-6">
+              <div className="w-8 md:w-12 h-[1px] bg-[#C8A96A]" />
+              <span className="text-[#C8A96A] font-black text-[10px] uppercase tracking-[0.4em]">Our Difference</span>
+              <div className="w-8 md:w-12 h-[1px] bg-[#C8A96A]" />
+            </div>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif text-[#0B1F3A] tracking-tight mb-6 md:mb-8">Why Ashford &amp; Gray</h2>
+            <p className="text-lg md:text-xl text-slate-500 font-medium">Four pillars that distinguish our institution and define our graduates.</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 md:gap-12">
+          <div className="grid md:grid-cols-2 gap-8 md:gap-12">
             {[
-              { 
-                title: "Practical Mastery", 
-                desc: "Go beyond theory with hands-on training built by industry leaders for the real world.",
+              {
+                title: "Executive-Level Learning",
+                desc: "We train professionals to think, act, and lead at the highest level — preparing graduates who command attention and deliver impact.",
+                icon: GraduationCap,
+                color: "#0B1F3A"
+              },
+              {
+                title: "Industry-Driven Curriculum",
+                desc: "Every program is built from real-world application, not theory alone. Our courses reflect the demands of luxury hospitality, business, and global service.",
                 icon: Wrench,
                 color: "#1F7A5A"
               },
-              { 
-                title: "Luxury Standard", 
-                desc: "Refining professional conduct to the highest international levels of service and quality.",
+              {
+                title: "Luxury Service Philosophy",
+                desc: "We instill precision, discretion, and excellence — the foundation of elite service across hospitality, executive support, and protocol environments.",
                 icon: Star,
                 color: "#C8A96A"
               },
-              { 
-                title: "Global Relevance", 
-                desc: "Curriculum aligned with international business innovation and global market demands.",
+              {
+                title: "Global Relevance",
+                desc: "Our structure aligns with international standards while honouring African excellence — equipping graduates to compete and lead anywhere in the world.",
                 icon: Handshake,
                 color: "#0B1F3A"
               }
             ].map((pillar, idx) => (
               <ScrollAnimation key={pillar.title} animation="fade-in-up" delay={idx * 100}>
-                <div className="bg-white p-10 md:p-16 rounded-[3rem] md:rounded-[4rem] shadow-sm hover:shadow-2xl transition-all duration-700 border border-slate-100 group h-full">
-                  <div 
-                    className="w-16 md:w-20 h-16 md:h-20 rounded-2xl md:rounded-3xl flex items-center justify-center transition-all mb-8 md:mb-10 shadow-lg"
+                <div className="bg-white p-10 md:p-14 rounded-[2.5rem] md:rounded-[3rem] shadow-sm hover:shadow-2xl transition-all duration-700 border border-slate-100 group h-full">
+                  <div
+                    className="w-16 md:w-20 h-16 md:h-20 rounded-2xl md:rounded-3xl flex items-center justify-center transition-all mb-8 shadow-lg"
                     style={{ backgroundColor: `${pillar.color}10`, color: pillar.color }}
                   >
                     <pillar.icon className="w-8 md:w-10 h-8 md:h-10" />
@@ -333,6 +345,41 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Section: Career Outcomes */}
+      <section className="py-24 md:py-40 bg-slate-50">
+        <div className="container mx-auto px-6 lg:px-12">
+          <div className="text-center max-w-3xl mx-auto mb-16 md:mb-24">
+            <div className="inline-flex items-center gap-3 mb-6">
+              <div className="w-8 md:w-12 h-[1px] bg-[#1F7A5A]" />
+              <span className="text-[#1F7A5A] font-black text-[10px] uppercase tracking-[0.4em]">Career Pathways</span>
+              <div className="w-8 md:w-12 h-[1px] bg-[#1F7A5A]" />
+            </div>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif text-[#0B1F3A] tracking-tight mb-6">Where This Takes You</h2>
+            <p className="text-lg md:text-xl text-slate-500 font-medium">Graduates of Ashford &amp; Gray Fusion Academy are positioned for distinguished roles across global industries.</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-8">
+            {[
+              { title: "Hospitality Leadership", desc: "Executive roles in luxury hotels, resorts, and global brands.", icon: Star },
+              { title: "Business Consulting & Strategy", desc: "Advisors shaping enterprise growth and innovation.", icon: BarChart },
+              { title: "Event & Experience Management", desc: "Architects of high-profile events and brand experiences.", icon: Megaphone },
+              { title: "Estate & Protocol Management", desc: "Stewards of private residences and diplomatic engagements.", icon: ShieldCheck },
+              { title: "Entrepreneurship & Enterprise", desc: "Founders building distinguished service-led ventures.", icon: Briefcase },
+            ].map((o, idx) => (
+              <ScrollAnimation key={o.title} animation="fade-in-up" delay={idx * 60}>
+                <div className="bg-white h-full rounded-[2rem] p-8 border border-slate-100 hover:shadow-2xl transition-all duration-700 group">
+                  <div className="w-14 h-14 rounded-2xl bg-[#0B1F3A]/5 text-[#0B1F3A] flex items-center justify-center mb-6 group-hover:bg-[#C8A96A] group-hover:text-white transition-colors">
+                    <o.icon className="w-6 h-6" />
+                  </div>
+                  <h4 className="text-lg md:text-xl font-serif text-[#0B1F3A] mb-3 leading-tight">{o.title}</h4>
+                  <p className="text-sm text-slate-500 font-medium leading-relaxed">{o.desc}</p>
+                </div>
+              </ScrollAnimation>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Section 6: Founder Section */}
       <section className="py-24 md:py-40 bg-[#0B1F3A] relative overflow-hidden">
         <div className="absolute inset-0 opacity-10 pointer-events-none">
@@ -346,10 +393,10 @@ export default function Home() {
                 <div className="absolute -inset-6 bg-[#C8A96A]/20 blur-3xl rounded-full opacity-50" />
                 <div className="relative aspect-[3/4] rounded-[3rem] md:rounded-[4rem] overflow-hidden shadow-2xl border-2 md:border-4 border-white/10">
                   <Image
-                    src="/academy_hero_students.png"
-                    alt="Founder Portrait"
+                    src="/CEO Myne.jpg.jpeg"
+                    alt="Myne Wilfred, Founder & CEO"
                     fill
-                    className="object-cover grayscale hover:grayscale-0 transition-all duration-1000"
+                    className="object-cover object-top hover:scale-105 transition-all duration-1000"
                   />
                 </div>
                 <div className="absolute -bottom-6 md:-bottom-10 -right-6 md:-right-10 bg-white p-6 md:p-10 rounded-[2.5rem] md:rounded-[3rem] shadow-2xl hidden sm:block">
@@ -446,11 +493,11 @@ export default function Home() {
               <span className="italic text-[#C8A96A]">Higher Standard.</span>
             </h2>
             <div className="flex flex-col sm:flex-row justify-center gap-6 md:gap-8">
-               <Button size="lg" className="h-16 md:h-20 px-10 md:px-16 bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black text-[10px] uppercase tracking-[0.4em] rounded-full transition-all shadow-2xl" asChild>
+               <Button size="lg" className="h-16 md:h-20 px-10 md:px-16 bg-[#C8A96A] hover:bg-[#B69859] text-[#0B1F3A] font-black text-[10px] uppercase tracking-[0.4em] rounded-full transition-all shadow-2xl" asChild>
                  <Link href="/login?view=signup">Apply for Admission</Link>
                </Button>
                <Button size="lg" variant="outline" className="h-16 md:h-20 px-10 md:px-16 border-slate-200 text-[#0B1F3A] hover:bg-slate-50 rounded-full font-black text-[10px] uppercase tracking-[0.4em]" asChild>
-                  <Link href="/about">Speak to an Advisor</Link>
+                  <Link href="/contact">Speak to an Advisor</Link>
                </Button>
             </div>
           </ScrollAnimation>

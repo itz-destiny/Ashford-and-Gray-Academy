@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Check, ChevronRight, ChevronLeft, Plus, Video, Calendar, FileText, Trash2, GripVertical, Save, Layout, Layers, GraduationCap, DollarSign, Upload } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { FilePicker } from '@/components/FilePicker';
+import { apiFetch } from '@/lib/api-client';
 import { cn } from '@/lib/utils';
 
 const STEPS = [
@@ -112,9 +113,8 @@ export default function NewCoursePage() {
             const instructorAvatar = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(instructorName)}&background=random`;
 
             // 1. Create Course
-            const courseRes = await fetch('/api/courses', {
+            const courseRes = await apiFetch('/api/courses', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     ...courseData,
                     imageHint: courseData.imageHint || courseData.title,
@@ -137,9 +137,8 @@ export default function NewCoursePage() {
             for (let i = 0; i < modules.length; i++) {
                 const mod = modules[i];
                 setPublishStage(`Uploading Module ${i + 1}: ${mod.title}`);
-                const modRes = await fetch(`/api/courses/${course._id}/content`, {
+                const modRes = await apiFetch(`/api/courses/${course._id}/content`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         type: 'module',
                         data: { title: mod.title, description: mod.description },
@@ -148,9 +147,8 @@ export default function NewCoursePage() {
                 const createdMod = await modRes.json();
 
                 for (const lesson of mod.lessons) {
-                    await fetch(`/api/courses/${course._id}/content`, {
+                    await apiFetch(`/api/courses/${course._id}/content`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             type: 'lesson',
                             data: {
@@ -170,9 +168,8 @@ export default function NewCoursePage() {
             if (assignments.length > 0) {
                 setPublishStage(`Configuring ${assignments.length} assignments...`);
                 for (const ass of assignments) {
-                    await fetch('/api/assignments', {
+                    await apiFetch('/api/assignments', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             type: 'assignment',
                             data: {
@@ -186,9 +183,15 @@ export default function NewCoursePage() {
                 }
             }
 
-            setPublishStage('Course Live! Redirecting...');
-            toast({ title: "Success!", description: "Your course is now live." });
-            setTimeout(() => router.push('/instructor'), 1500);
+            setPublishStage('Course Saved! Redirecting...');
+            const wasPublished = course.status === 'published';
+            toast({
+                title: wasPublished ? "Course published!" : "Saved as draft",
+                description: wasPublished
+                    ? "Your course is now live for students."
+                    : "Submit it for review from the course manage page when you're ready to publish."
+            });
+            setTimeout(() => router.push(`/instructor/courses/${course._id}`), 1500);
         } catch (error: any) {
             toast({ variant: "destructive", title: "Publication Failed", description: error.message });
         } finally {
@@ -225,7 +228,7 @@ export default function NewCoursePage() {
     return (
         <div className="max-w-7xl mx-auto space-y-8 pb-20 relative">
             {/* Success Overlay */}
-            {publishStage === 'Course Live! Redirecting...' && (
+            {publishStage === 'Course Saved! Redirecting...' && (
                 <div className="fixed inset-0 z-[100] bg-white/90 backdrop-blur-md flex items-center justify-center animate-in fade-in zoom-in duration-500">
                     <div className="text-center space-y-6 max-w-md p-8">
                         <div className="w-24 h-24 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto shadow-xl shadow-green-100 animate-bounce">

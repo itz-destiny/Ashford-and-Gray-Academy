@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useUser } from '@/firebase';
+import { apiFetch } from '@/lib/api-client';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -37,7 +38,7 @@ export default function InstructorStudentsPage() {
                 const courseIds = instructorCourses.map((c: any) => c._id);
 
                 // 2. Fetch all enrollments
-                const eRes = await fetch('/api/enrollments');
+                const eRes = await apiFetch('/api/enrollments');
                 const allEnrollments = await eRes.json();
 
                 if (Array.isArray(allEnrollments)) {
@@ -45,7 +46,7 @@ export default function InstructorStudentsPage() {
                         .filter((e: any) => courseIds.includes(e.courseId?._id || e.courseId))
                         .map(async (e: any) => {
                             // Fetch user details for each enrollment
-                            const uRes = await fetch(`/api/users?uid=${e.userId}`);
+                            const uRes = await apiFetch(`/api/users?uid=${e.userId}`);
                             const uData = await uRes.json();
 
                             return {

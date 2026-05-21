@@ -10,53 +10,24 @@ import {
     DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useUser } from "@/firebase";
-
-interface Notification {
-    _id: string;
-    type: string;
-    title: string;
-    message: string;
-    actionUrl?: string;
-    read: boolean;
-    createdAt: string;
-}
+import { useUser, useUserNotifications } from "@/firebase";
+import { apiFetch } from "@/lib/api-client";
 
 export function NotificationBell() {
     const { user } = useUser();
-    const [notifications, setNotifications] = useState<Notification[]>([]);
-    const [unreadCount, setUnreadCount] = useState(0);
     const [open, setOpen] = useState(false);
 
-    const fetchNotifications = async () => {
-        if (!user?.uid) return;
-        try {
-            const res = await fetch(`/api/notifications?limit=5&userId=${user.uid}`);
-            if (!res.ok) return;
-            const data = await res.json();
-            setNotifications(data.notifications || []);
-            setUnreadCount(data.unreadCount || 0);
-        } catch (error) {
-            console.error('Error fetching notifications:', error);
-        }
-    };
-
-    useEffect(() => {
-        if (!user?.uid) return;
-        fetchNotifications();
-        // Poll for new notifications every 30 seconds
-        const interval = setInterval(fetchNotifications, 30000);
-        return () => clearInterval(interval);
-    }, [user?.uid]);
+    // Realtime subscription — replaces a 30s polling interval entirely.
+    const { notifications, unreadCount } = useUserNotifications(user?.uid, { limit: 5 });
 
     const markAsRead = async (id: string) => {
         if (!user?.uid) return;
         try {
-            await fetch(`/api/notifications/${id}?userId=${user.uid}`, { method: 'PATCH' });
-            fetchNotifications();
+            await apiFetch(`/api/notifications/${id}`, { method: 'PATCH' });
+            // No refetch needed — Firestore listener will fire automatically.
         } catch (error) {
             console.error('Error marking as read:', error);
         }
@@ -65,8 +36,7 @@ export function NotificationBell() {
     const markAllAsRead = async () => {
         if (!user?.uid) return;
         try {
-            await fetch(`/api/notifications/mark-all-read?userId=${user.uid}`, { method: 'PATCH' });
-            fetchNotifications();
+            await apiFetch('/api/notifications/mark-all-read', { method: 'PATCH' });
         } catch (error) {
             console.error('Error marking all as read:', error);
         }
@@ -84,8 +54,9 @@ export function NotificationBell() {
         }
     };
 
-    const formatTimeAgo = (date: string) => {
-        const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
+    const formatTimeAgo = (date: Date | null) => {
+        if (!date) return '';
+        const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
         if (seconds < 60) return 'Just now';
         if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
         if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
@@ -131,12 +102,12 @@ export function NotificationBell() {
                     ) : (
                         notifications.map((notification) => (
                             <DropdownMenuItem
-                                key={notification._id}
-                                className={`px-4 py-3 cursor-pointer ${!notification.read ? 'bg-blue-50' : ''}`}
+                                key={notification.id}
+                                className={`px-4 py-3 cursor-pointer ${!notification.isRead ? 'bg-blue-50' : ''}`}
                                 onClick={() => {
-                                    if (!notification.read) markAsRead(notification._id);
-                                    if (notification.actionUrl) {
-                                        window.location.href = notification.actionUrl;
+                                    if (!notification.isRead) markAsRead(notification.id);
+                                    if (notification.link) {
+                                        window.location.href = notification.link;
                                     }
                                     setOpen(false);
                                 }}
@@ -150,13 +121,15 @@ export function NotificationBell() {
                                             <p className="font-medium text-sm truncate">
                                                 {notification.title}
                                             </p>
-                                            {!notification.read && (
+                                            {!notification.isRead && (
                                                 <div className="h-2 w-2 bg-blue-600 rounded-full flex-shrink-0 mt-1" />
                                             )}
                                         </div>
-                                        <p className="text-xs text-slate-500 line-clamp-2 mt-1">
-                                            {notification.message}
-                                        </p>
+                                        {notification.message && (
+                                            <p className="text-xs text-slate-500 line-clamp-2 mt-1">
+                                                {notification.message}
+                                            </p>
+                                        )}
                                         <p className="text-xs text-slate-400 mt-1">
                                             {formatTimeAgo(notification.createdAt)}
                                         </p>

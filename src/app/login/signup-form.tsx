@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowRight, CheckCircle, Loader2, User, GraduationCap, Eye, EyeOff } from "lucide-react";
+import { ArrowRight, Loader2, Eye, EyeOff } from "lucide-react";
 import { AuthForm } from "./auth-form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { signUpWithEmail } from "@/firebase/auth";
@@ -18,7 +18,9 @@ type SignUpFormProps = {
 };
 
 export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
-  const role = "student";
+  // Public signup is for students only. Instructors and staff are issued
+  // accounts by an Academy administrator.
+  const role = "student" as const;
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -54,18 +56,6 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
       dateOfBirth: (form.elements.namedItem("dob") as HTMLInputElement)?.value,
       school: (form.elements.namedItem("school") as HTMLInputElement)?.value,
     };
-    const instructorData = {
-      expertise: (form.elements.namedItem("expertise") as HTMLInputElement)?.value,
-      organization: (form.elements.namedItem("organization") as HTMLInputElement)?.value,
-    };
-
-    const userData = {
-      name,
-      email,
-      role,
-      ...(role === 'student' ? studentData : {}),
-      ...(role === 'instructor' ? instructorData : {}),
-    };
 
     const { error, user } = await signUpWithEmail(email, password, { name });
 
@@ -82,37 +72,31 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
     if (user) {
       // Manually sync to MongoDB
       try {
+        const idToken = await user.getIdToken();
         await fetch('/api/users', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${idToken}`,
+          },
           body: JSON.stringify({
             uid: user.uid,
             email: user.email,
             displayName: name,
             role,
-            ...userData // spread student/instructor specific data
+            ...studentData,
           })
         });
 
         setIsLoading(false);
         toast({
-          title: (
-            <div className="flex items-center">
-              <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
-              <span>Account Created!</span>
-            </div>
-          ),
-          description: "Redirecting you to your dashboard...",
+          title: "Account created",
+          description: "Check your inbox for a 6-digit code to verify your email.",
         });
 
-        if (onSwitchToLogin) {
-          // If successful, the user is ALREADY logged in via Firebase.
-          // We should just redirect them to the correct page.
-          // Force a hard navigation or router push to ensure role is picked up.
-          const target = role === 'instructor' ? '/instructor' : '/dashboard';
-          console.log("SignUpForm: Redirecting to target:", target);
-          window.location.href = target;
-        }
+        // Hard navigate so the verify page picks up the freshly authenticated
+        // session and requests a code automatically.
+        window.location.href = '/login/verify?purpose=signup';
 
       } catch (err) {
         console.error("Error syncing user to DB:", err);

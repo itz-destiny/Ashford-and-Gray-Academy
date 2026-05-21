@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { RoleGuard } from "@/components/auth/RoleGuard";
 import "../globals.css";
 
 
@@ -26,6 +27,7 @@ export default function DashboardLayout({
   const pathname = usePathname();
 
   return (
+    <RoleGuard allowed={["student"]}>
     <div className="flex min-h-screen w-full bg-[#FCFCFE]">
       {/* Desktop Sidebar */}
       <Sidebar className="hidden md:flex" />
@@ -77,7 +79,7 @@ export default function DashboardLayout({
             <NotificationBell />
 
             <Button variant="ghost" size="icon" className="rounded-2xl hover:bg-slate-50 transition-colors" asChild>
-              <Link href="/settings">
+              <Link href="/account">
                 <Settings className="h-5 w-5 text-slate-600" />
               </Link>
             </Button>
@@ -94,6 +96,7 @@ export default function DashboardLayout({
         </main>
       </div>
     </div>
+    </RoleGuard>
   );
 }
 

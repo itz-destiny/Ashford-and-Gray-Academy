@@ -1,0 +1,14 @@
+{
+    "$schema": "https://openapi.vercel.sh/vercel.json",
+    "functions": {
+        "src/app/api/payments/initialize/route.ts":      { "maxDuration": 30 },
+        "src/app/api/payments/verify/route.ts":          { "maxDuration": 30 },
+        "src/app/api/payments/webhook/route.ts":         { "maxDuration": 30 },
+        "src/app/api/livekit/webhook/route.ts":          { "maxDuration": 30 },
+        "src/app/api/seed/route.ts":                     { "maxDuration": 60 },
+        "src/app/api/cron/class-reminders/route.ts":     { "maxDuration": 60 }
+    },
+    "crons": [
+        { "path": "/api/cron/class-reminders", "schedule": "*/15 * * * *" }
+    ]
+}

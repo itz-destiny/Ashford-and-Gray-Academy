@@ -1,137 +1,278 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
+import { z } from 'zod';
 import dbConnect from '@/lib/mongodb';
 import User from '@/models/User';
 import { rateLimit } from '@/lib/rate-limit';
+import {
+    AuthError,
+    authenticateFirebase,
+    requireRole,
+    withAuth,
+    type AuthContext,
+    type Role,
+} from '@/lib/auth-server';
 
 const limiter = rateLimit({
-    interval: 60 * 1000, // 60 seconds
-    uniqueTokenPerInterval: 500, // Max 500 users per interval
+    interval: 60 * 1000,
+    uniqueTokenPerInterval: 500,
 });
 
-export async function GET(request: Request) {
+const ELEVATED_ROLES: readonly Role[] = ['admin', 'instructor', 'registrar', 'course_registrar'];
+
+function isElevated(auth: AuthContext): boolean {
+    return ELEVATED_ROLES.includes(auth.role);
+}
+
+function handleAuthError(err: unknown): Response {
+    if (err instanceof AuthError) {
+        return NextResponse.json({ error: err.message }, { status: err.status });
+    }
+    console.error('users route: unexpected error', err);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+}
+
+async function loadProfile(uid: string): Promise<AuthContext | null> {
+    await dbConnect();
+    const profile = await User.findOne({ uid }).lean<{
+        uid: string;
+        email: string;
+        displayName: string;
+        role: Role;
+    } | null>();
+    if (!profile) return null;
+    return {
+        uid: profile.uid,
+        email: profile.email,
+        displayName: profile.displayName,
+        role: profile.role,
+    };
+}
+
+// =============================================================================
+// GET /api/users
+//   ?uid=<self>: only Firebase auth required (signup probe — Mongo profile may
+//                 not exist yet; returns 404 in that case).
+//   ?uid=<other>: requires Mongo profile with elevated role.
+//   ?role=<r> / list: requires Mongo profile with elevated role.
+// =============================================================================
+export async function GET(req: NextRequest): Promise<Response> {
     try {
-        await dbConnect();
-        const { searchParams } = new URL(request.url);
+        const { searchParams } = new URL(req.url);
         const uid = searchParams.get('uid');
-        const role = searchParams.get('role');
+        const roleParam = searchParams.get('role');
 
-        if (uid) {
+        if (uid && !roleParam) {
+            const identity = await authenticateFirebase(req);
+            if (uid !== identity.uid) {
+                const caller = await loadProfile(identity.uid);
+                if (!caller || !isElevated(caller)) {
+                    return NextResponse.json(
+                        { error: 'You can only read your own profile.' },
+                        { status: 403 }
+                    );
+                }
+            }
+            await dbConnect();
             const user = await User.findOne({ uid });
-
             if (!user) {
-                console.warn(`GET /api/users: User with UID ${uid} not found in DB`);
                 return NextResponse.json({ message: 'User not found' }, { status: 404 });
             }
-
-            console.log(`GET /api/users: Found user ${user.email} with role ${user.role}`);
             return NextResponse.json(user);
         }
 
-        // Filter by role if provided
-        let query: any = {};
-        if (role === 'staff') {
-            // Get all staff members (registrar, course_registrar, finance, admin, instructor)
-            query.role = { $in: ['registrar', 'course_registrar', 'finance', 'admin', 'instructor'] };
-        } else if (role) {
-            query.role = role;
-        }
-
-        const users = await User.find(query).sort({ createdAt: -1 });
-        return NextResponse.json(users);
-    } catch (error: any) {
-        console.error('CRITICAL: GET /api/users failed:', error);
-        return NextResponse.json({ error: 'Internal Server Error', details: error.message }, { status: 500 });
+        // Listing modes require elevated role with full profile loaded.
+        return withAuth(async (_req, { auth }) => {
+            if (!isElevated(auth)) {
+                return NextResponse.json(
+                    { error: 'Requires an elevated role to list users.' },
+                    { status: 403 }
+                );
+            }
+            await dbConnect();
+            const query: Record<string, unknown> = {};
+            if (roleParam === 'staff') {
+                query.role = {
+                    $in: ['registrar', 'course_registrar', 'finance', 'admin', 'instructor'],
+                };
+            } else if (roleParam) {
+                query.role = roleParam;
+            }
+            const users = await User.find(query).sort({ createdAt: -1 });
+            return NextResponse.json(users);
+        })(req, {});
+    } catch (err) {
+        return handleAuthError(err);
     }
 }
 
-export async function POST(request: Request) {
+// =============================================================================
+// POST /api/users — upsert self profile.
+//   Firebase auth only (signup boundary). body.uid must match the verified
+//   Firebase UID. Role changes on existing profiles require admin.
+// =============================================================================
+const upsertSchema = z.object({
+    uid: z.string().min(1),
+    email: z.string().email(),
+    displayName: z.string().min(1).max(120).optional(),
+    photoURL: z.string().url().optional().or(z.literal('')),
+    role: z
+        .enum(['student', 'instructor', 'admin', 'registrar', 'course_registrar', 'finance'])
+        .optional(),
+    bio: z.string().max(2000).optional(),
+    title: z.string().max(200).optional(),
+    school: z.string().max(200).optional(),
+    dateOfBirth: z.string().max(40).optional(),
+    expertise: z.string().max(500).optional(),
+    organization: z.string().max(200).optional(),
+});
+
+export async function POST(req: NextRequest): Promise<Response> {
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0] ?? '127.0.0.1';
     try {
-        // Rate limiting: 10 requests per minute per IP (simplified for now)
-        const forwarded = request.headers.get("x-forwarded-for");
-        const ip = forwarded ? forwarded.split(/, /)[0] : "127.0.0.1";
-        
-        try {
-            await limiter.check(null, 10, ip);
-        } catch {
-            return NextResponse.json({ error: 'Too many requests. Please try again in a minute.' }, { status: 429 });
-        }
+        await limiter.check(null, 10, ip);
+    } catch {
+        return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+    }
 
+    let identity;
+    try {
+        identity = await authenticateFirebase(req);
+    } catch (err) {
+        return handleAuthError(err);
+    }
+
+    const json = await req.json().catch(() => null);
+    const parsed = upsertSchema.safeParse(json);
+    if (!parsed.success) {
+        return NextResponse.json(
+            { error: 'Invalid request', details: parsed.error.flatten() },
+            { status: 400 }
+        );
+    }
+    const body = parsed.data;
+
+    // Two paths share this handler:
+    //   (a) self-upsert: body.uid matches the Firebase token; no role lookup
+    //       required (the user may be bootstrapping their own profile).
+    //   (b) admin upsert: body.uid is somebody else, in which case the caller
+    //       must be an admin (verified via Mongo lookup).
+    let callerIsAdmin = false;
+    if (body.uid !== identity.uid) {
+        const caller = await loadProfile(identity.uid);
+        if (caller?.role !== 'admin') {
+            return NextResponse.json(
+                { error: 'Only an admin may upsert another user.' },
+                { status: 403 }
+            );
+        }
+        callerIsAdmin = true;
+    }
+
+    try {
         await dbConnect();
-        const body = await request.json();
-        const { uid, email, displayName, photoURL, role, bio, title, school, dateOfBirth, expertise, organization } = body;
+        const existing = await User.findOne({ uid: body.uid });
 
-        if (!uid || !email) {
-            return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-        }
-
-        // upsert user
-        const updateData: any = {
-            uid,
-            email,
-            displayName: displayName || 'User',
-            photoURL,
-            bio,
-            title,
-            school,
-            dateOfBirth,
-            expertise,
-            organization
+        const updateData: Record<string, unknown> = {
+            uid: body.uid,
+            email: body.email,
+            displayName: body.displayName ?? existing?.displayName ?? 'User',
+            photoURL: body.photoURL || existing?.photoURL,
+            bio: body.bio ?? existing?.bio,
+            title: body.title ?? existing?.title,
+            school: body.school ?? existing?.school,
+            dateOfBirth: body.dateOfBirth ?? existing?.dateOfBirth,
+            expertise: body.expertise ?? existing?.expertise,
+            organization: body.organization ?? existing?.organization,
         };
 
-        // Important: Explicitly set role if it's passed, otherwise let MongoDB use default for NEW users
-        if (email === 'admin@ashfordgrayfusionacademy.com') {
-            updateData.role = 'admin';
-            console.log(`POST /api/users: Auto-promoting ${email} to admin`);
-        } else if (role) {
-            updateData.role = role;
-            console.log(`POST /api/users: Setting role to ${role} for user ${email}`);
+        // Admin-provisioned accounts skip the email-OTP step — the admin has
+        // already vetted them. Public self-signup keeps emailVerified=false
+        // (its default) so the user has to enter the 6-digit code.
+        if (callerIsAdmin && !existing) {
+            updateData.emailVerified = true;
+            updateData.emailVerifiedAt = new Date();
         }
 
-        // Security Guard: Prevent changing the role of an existing Super Admin
-        const existingUser = await User.findOne({ uid });
-        if (existingUser && existingUser.role === 'admin' && role && role !== 'admin') {
-            return NextResponse.json({ error: 'Super Admin roles cannot be downgraded for security reasons.' }, { status: 403 });
+        if (body.role) {
+            const requestedRole = body.role;
+            if (callerIsAdmin) {
+                // Admin may assign any role, but cannot downgrade an existing admin.
+                if (existing?.role === 'admin' && requestedRole !== 'admin') {
+                    return NextResponse.json(
+                        { error: 'Super Admin roles cannot be downgraded.' },
+                        { status: 403 }
+                    );
+                }
+                updateData.role = requestedRole;
+            } else if (!existing) {
+                // Public signup only permits the `student` role. Instructors,
+                // registrars, course_registrars, finance, and admins are
+                // created by an admin via the admin upsert path (handled in
+                // the callerIsAdmin branch above).
+                if (requestedRole !== 'student') {
+                    return NextResponse.json(
+                        { error: `Role "${requestedRole}" cannot be self-assigned. Contact an administrator.` },
+                        { status: 403 }
+                    );
+                }
+                updateData.role = requestedRole;
+            } else if (existing.role !== requestedRole) {
+                if (existing.role === 'admin' && requestedRole !== 'admin') {
+                    return NextResponse.json(
+                        { error: 'Super Admin roles cannot be downgraded.' },
+                        { status: 403 }
+                    );
+                }
+                // Self-upsert can't change its own role outside admin.
+                return NextResponse.json(
+                    { error: 'Only an admin can change a user role.' },
+                    { status: 403 }
+                );
+            }
+            // else: same as existing -> no-op
         }
 
         const user = await User.findOneAndUpdate(
-            { uid },
+            { uid: body.uid },
             { $set: updateData },
             { new: true, upsert: true, setDefaultsOnInsert: true }
         );
-
-        console.log(`POST /api/users: Upserted user ${user.email}, final role in DB: ${user.role}`);
         return NextResponse.json(user);
     } catch (error: any) {
-        console.error('CRITICAL: POST /api/users failed:', error);
-        return NextResponse.json({ error: 'Internal Server Error', details: error.message }, { status: 500 });
+        console.error('POST /api/users failed:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }
 
-export async function DELETE(request: Request) {
+// =============================================================================
+// DELETE /api/users?uid=X — admin only.
+// =============================================================================
+export const DELETE = withAuth(async (req: NextRequest, { auth }) => {
+    try {
+        requireRole(auth, ['admin']);
+    } catch (err) {
+        return handleAuthError(err);
+    }
+
     try {
         await dbConnect();
-        const { searchParams } = new URL(request.url);
+        const { searchParams } = new URL(req.url);
         const uid = searchParams.get('uid');
+        if (!uid) return NextResponse.json({ error: 'Missing uid' }, { status: 400 });
 
-        if (!uid) {
-            return NextResponse.json({ error: 'Missing UID' }, { status: 400 });
-        }
-
-        const userToDelete = await User.findOne({ uid });
-
-        if (!userToDelete) {
-            return NextResponse.json({ error: 'User not found' }, { status: 404 });
-        }
-
-        // Prevent deletion of Super Admins
-        if (userToDelete.role === 'admin') {
-            return NextResponse.json({ error: 'Super Admin accounts cannot be deleted for security reasons.' }, { status: 403 });
+        const target = await User.findOne({ uid });
+        if (!target) return NextResponse.json({ error: 'User not found' }, { status: 404 });
+        if (target.role === 'admin') {
+            return NextResponse.json(
+                { error: 'Super Admin accounts cannot be deleted.' },
+                { status: 403 }
+            );
         }
 
         await User.findOneAndDelete({ uid });
-
         return NextResponse.json({ message: 'User deleted successfully' });
     } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        console.error('DELETE /api/users failed:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
-}
+});

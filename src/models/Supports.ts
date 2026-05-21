@@ -20,7 +20,8 @@ const LessonSchema: Schema = new Schema({
     duration: { type: Number, default: 0 },
     order: { type: Number, required: true },
     isLive: { type: Boolean, default: false },
-    scheduledAt: { type: Date },
+    scheduledAt: { type: Date, index: true },
+    reminderSentAt: { type: Date },     // populated by the class-reminder cron
 }, { timestamps: true });
 
 export const Lesson = mongoose.models.Lesson || mongoose.model<ILesson>('Lesson', LessonSchema);

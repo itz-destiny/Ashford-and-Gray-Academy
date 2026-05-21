@@ -1,125 +1,72 @@
-
 "use client";
 
-import { Logo } from "@/components/logo";
 import { UserNav } from "@/components/user-nav";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
-import { useUser } from "@/firebase/auth/use-user";
-import {
-    Bell,
-    Book,
-    Calendar,
-    LayoutDashboard,
-    LogOut,
-    MessageSquare,
-    Plus,
-    Search,
-    Settings,
-    Users
-} from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { AdminSidebar } from "@/components/admin/AdminSidebar";
+import { RoleGuard } from "@/components/auth/RoleGuard";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Search, Menu } from "lucide-react";
 
 export default function AdminLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    const pathname = usePathname();
-    const { user } = useUser();
-
-    const navItems = [
-        { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-        { href: "/admin/users", label: "Users", icon: Users },
-        { href: "/admin/courses", label: "Courses", icon: Book },
-        { href: "/admin/events", label: "Events", icon: Calendar },
-        { href: "/admin/communications", label: "Communications", icon: MessageSquare },
-        { href: "/admin/reports", label: "Reports", icon: MessageSquare }, // Using MessageSquare as placeholder for Reports icon if BarChart is not desired or redundant
-        { href: "/admin/settings", label: "Settings", icon: Settings },
-    ];
-
     return (
-        <div className="grid min-h-screen w-full md:grid-cols-[240px_1fr] lg:grid-cols-[260px_1fr]">
-            <div className="hidden border-r bg-white md:block">
-                <div className="flex h-full max-h-screen flex-col gap-2">
-                    <div className="flex h-20 items-center px-6">
-                        <Link href="/" className="flex items-center gap-2">
-                            <Logo />
-                        </Link>
+        <RoleGuard allowed={["admin"]}>
+        <div className="flex min-h-screen w-full bg-[#FCFCFE]">
+            <AdminSidebar className="hidden md:flex" />
+
+            <div className="flex flex-col flex-1 md:pl-72">
+                <header className="sticky top-0 z-30 flex h-20 items-center gap-4 bg-white/80 backdrop-blur-md px-6 md:px-10 border-b border-slate-100">
+                    <Sheet>
+                        <SheetTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="shrink-0 md:hidden text-slate-600"
+                            >
+                                <Menu className="h-6 w-6" />
+                                <span className="sr-only">Toggle navigation menu</span>
+                            </Button>
+                        </SheetTrigger>
+                        <SheetContent side="left" className="p-0 border-none w-72">
+                            <AdminSidebar className="relative w-72" />
+                        </SheetContent>
+                    </Sheet>
+
+                    <div className="flex-1 min-w-0">
+                        <h1 className="text-xl font-serif text-[#0B1F3A] font-bold tracking-tight truncate">
+                            Management Suite
+                        </h1>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest hidden xs:block">
+                            Ashford &amp; Gray Academy Control
+                        </p>
                     </div>
-                    <div className="flex-1 px-4 py-2">
-                        <nav className="grid items-start gap-1 text-sm font-medium">
-                            {navItems.map((item) => (
-                                <Link
-                                    key={item.label}
-                                    href={item.href}
-                                    className={cn(
-                                        "flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all text-slate-500 hover:text-indigo-600 hover:bg-indigo-50",
-                                        pathname === item.href && "bg-indigo-50 text-indigo-600 font-semibold"
-                                    )}
-                                >
-                                    <item.icon className={cn("h-5 w-5", pathname === item.href ? "text-indigo-600" : "text-slate-400")} />
-                                    {item.label}
-                                </Link>
-                            ))}
-                        </nav>
-                    </div>
-                    <div className="mt-auto p-6 border-t">
-                        <div className="flex items-center gap-3 mb-4">
-                            <Avatar>
-                                <AvatarImage src={user?.photoURL || ""} />
-                                <AvatarFallback className="bg-orange-100 text-orange-600">
-                                    {user?.displayName ? user.displayName.split(' ').map(n => n[0]).join('') : 'AD'}
-                                </AvatarFallback>
-                            </Avatar>
-                            <div className="overflow-hidden">
-                                <p className="font-bold text-sm truncate">{user?.displayName || "Admin User"}</p>
-                                <p className="text-xs text-slate-500 truncate capitalize">{user?.role || "Administrator"}</p>
-                            </div>
-                        </div>
-                        <Button
-                            variant="outline"
-                            className="w-full justify-start gap-2 text-slate-600 hover:text-red-600 hover:hover:bg-red-50 hover:border-red-200"
-                            onClick={async () => {
-                                try {
-                                    const { auth } = await import('@/firebase/config');
-                                    const { signOut } = await import('firebase/auth');
-                                    await signOut(auth);
-                                    window.location.href = '/login';
-                                } catch (error) {
-                                    console.error('Logout error:', error);
-                                }
-                            }}
-                        >
-                            <LogOut className="h-4 w-4" />
-                            Logout
-                        </Button>
-                    </div>
-                </div>
-            </div>
-            <div className="flex flex-col bg-[#f8fafc]">
-                <header className="flex h-20 items-center gap-4 px-6 border-b bg-white">
-                    <h1 className="text-2xl font-bold text-slate-900 mr-auto">Overview</h1>
 
                     <div className="hidden md:flex relative w-80">
                         <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                         <Input
                             type="search"
-                            placeholder="Search users, courses..."
-                            className="w-full bg-slate-50 pl-10 border-slate-200 focus-visible:ring-indigo-500 rounded-lg"
+                            placeholder="Find students or staff..."
+                            className="w-full bg-slate-50 pl-10 border-none focus-visible:ring-2 focus-visible:ring-indigo-100 rounded-xl"
                         />
                     </div>
 
-                    <NotificationBell />
+                    <div className="flex items-center gap-4">
+                        <NotificationBell />
+                        <div className="h-8 w-px bg-slate-100 mx-1 hidden sm:block" />
+                        <UserNav />
+                    </div>
                 </header>
-                <main className="flex flex-1 flex-col gap-6 p-6 md:p-8">
+
+                <main className="flex-1 p-6 md:p-10 animate-in fade-in duration-700">
                     {children}
                 </main>
             </div>
         </div>
+        </RoleGuard>
     );
 }

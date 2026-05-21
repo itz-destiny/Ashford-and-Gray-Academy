@@ -1,0 +1,53 @@
+rules_version = '2';
+
+// Firestore security rules for the Ashford & Gray Academy realtime layer.
+//
+// Three collections back the chat + notification UX. They're all written
+// exclusively by the Admin SDK from our API routes. Clients are read-only.
+//
+//   messages/{messageId}        — one doc per chat message
+//   conversations/{conversationId} — per-conversation summary doc
+//   notifications/{notificationId} — one doc per user notification
+//
+// Reads are scoped so a user can only read documents they participate in.
+// The Admin SDK bypasses these rules entirely (uses service-account auth).
+//
+// Deploy with:  firebase deploy --only firestore:rules
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // -------- Messages --------
+    match /messages/{messageId} {
+      allow read: if request.auth != null &&
+        (
+          request.auth.uid == resource.data.senderId ||
+          request.auth.uid == resource.data.receiverId
+        );
+      // Writes only from server (Admin SDK bypasses rules).
+      allow write: if false;
+    }
+
+    // -------- Conversation summaries --------
+    match /conversations/{conversationId} {
+      allow read: if request.auth != null &&
+        request.auth.uid in resource.data.participants;
+      allow write: if false;
+    }
+
+    // -------- User notifications --------
+    match /notifications/{notificationId} {
+      allow read: if request.auth != null &&
+        request.auth.uid == resource.data.userId;
+      allow write: if false;
+    }
+
+    // Existing collections used by the older enrollments / registrations
+    // bridge stay unaffected. Add specific rules here only if needed.
+
+    // Default-deny everything else. Explicit is safer than implicit.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

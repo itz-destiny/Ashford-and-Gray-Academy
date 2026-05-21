@@ -1,11 +1,14 @@
+
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { apiFetch } from "@/lib/api-client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Book, GraduationCap, FileCheck, Users, TrendingUp, Clock, CheckCircle, AlertCircle } from "lucide-react";
+import { Book, GraduationCap, FileCheck, Users, TrendingUp, Clock, CheckCircle, AlertCircle, LayoutDashboard, Star } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 interface CourseStats {
     totalCourses: number;
@@ -37,7 +40,7 @@ export default function CourseRegistrarDashboardPage() {
                     const active = courses.filter(c => c.status === 'published');
 
                     // Fetch enrollments
-                    const enrollmentsRes = await fetch('/api/enrollments');
+                    const enrollmentsRes = await apiFetch('/api/enrollments');
                     const enrollments = await enrollmentsRes.json();
 
                     const totalEnrollments = Array.isArray(enrollments) ? enrollments.length : 0;
@@ -67,37 +70,37 @@ export default function CourseRegistrarDashboardPage() {
 
     const statCards = [
         {
-            label: "Active Courses",
+            label: "Live Classes",
             value: stats.activeCourses.toString(),
             icon: Book,
-            sub: `${stats.totalCourses} total courses`,
+            sub: `${stats.totalCourses} total classes`,
             bg: "bg-indigo-50",
             iconColor: "text-indigo-600",
             href: "/course-registrar/courses"
         },
         {
-            label: "Total Enrollments",
+            label: "Total Students",
             value: stats.totalEnrollments.toString(),
             icon: Users,
-            sub: "Across all courses",
+            sub: "Across all academy programs",
             bg: "bg-blue-50",
             iconColor: "text-blue-600",
             href: "/course-registrar/students"
         },
         {
-            label: "Completion Rate",
+            label: "Success Rate",
             value: `${stats.completionRate}%`,
             icon: GraduationCap,
-            sub: "Student success rate",
+            sub: "Student completion rate",
             bg: "bg-emerald-50",
             iconColor: "text-emerald-600",
             href: "/course-registrar/analytics"
         },
         {
-            label: "Pending Approvals",
+            label: "Awaiting Review",
             value: stats.pendingApprovals.toString(),
             icon: FileCheck,
-            sub: "Awaiting review",
+            sub: "Courses to approve",
             bg: "bg-orange-50",
             iconColor: "text-orange-600",
             href: "/course-registrar/approvals"
@@ -105,47 +108,47 @@ export default function CourseRegistrarDashboardPage() {
     ];
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-10 animate-in fade-in duration-700">
             {/* Header */}
-            <div className="flex justify-between items-center">
-                <div>
-                    <h2 className="text-2xl font-bold text-slate-900">Academic Quality Control</h2>
-                    <p className="text-sm text-slate-500 mt-1">Manage courses, curriculum, and student success</p>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div className="space-y-1">
+                    <h1 className="text-3xl font-black text-[#0B1F3A] tracking-tight">Study Plan Home</h1>
+                    <p className="text-slate-500 font-medium italic">Manage academy courses and track student performance.</p>
                 </div>
-                <div className="flex gap-2">
-                    <Button variant="outline" asChild>
+                <div className="flex gap-3">
+                    <Button variant="outline" asChild className="rounded-xl border-slate-100 font-bold text-xs uppercase tracking-tight">
                         <Link href="/course-registrar/courses">
                             <Book className="h-4 w-4 mr-2" />
-                            Manage Courses
+                            Class List
                         </Link>
                     </Button>
-                    <Button asChild>
+                    <Button asChild className="bg-[#0B1F3A] hover:bg-slate-800 text-white rounded-xl font-bold text-xs uppercase tracking-tight">
                         <Link href="/course-registrar/approvals">
                             <FileCheck className="h-4 w-4 mr-2" />
-                            Course Approvals
+                            Approve Courses
                         </Link>
                     </Button>
                 </div>
             </div>
 
             {/* Stats Grid */}
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
                 {statCards.map((stat, i) => (
                     <Link key={i} href={stat.href}>
-                        <Card className="border-none shadow-sm cursor-pointer hover:shadow-md transition-all hover:scale-[1.02]">
-                            <CardContent className="p-6">
-                                <div className="flex justify-between items-start mb-4">
+                        <Card className="border-none bg-white rounded-[2.5rem] group hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-500">
+                            <CardContent className="p-8">
+                                <div className="flex justify-between items-start mb-6">
                                     <div>
-                                        <p className="text-sm font-medium text-slate-500">{stat.label}</p>
-                                        <h2 className="text-3xl font-bold text-slate-900 mt-2">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{stat.label}</p>
+                                        <h2 className="text-3xl font-black text-[#0B1F3A] mt-2">
                                             {loading ? "..." : stat.value}
                                         </h2>
                                     </div>
-                                    <div className={`${stat.bg} p-2.5 rounded-lg`}>
-                                        <stat.icon className={`w-5 h-5 ${stat.iconColor}`} />
+                                    <div className={`${stat.bg} p-4 rounded-2xl transition-transform group-hover:scale-110`}>
+                                        <stat.icon className={`w-6 h-6 ${stat.iconColor}`} />
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
+                                <div className="text-[10px] font-bold text-slate-400 italic">
                                     {stat.sub}
                                 </div>
                             </CardContent>
@@ -154,47 +157,52 @@ export default function CourseRegistrarDashboardPage() {
                 ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                 {/* Recent Courses */}
-                <Card className="border-none shadow-sm lg:col-span-2">
-                    <CardHeader className="flex flex-row items-center justify-between">
-                        <CardTitle className="text-lg font-bold">Recent Courses</CardTitle>
-                        <Button variant="ghost" size="sm" asChild>
+                <Card className="border-none bg-white rounded-[3rem] shadow-sm lg:col-span-2 overflow-hidden">
+                    <CardHeader className="p-10 pb-4 flex flex-row items-center justify-between">
+                        <CardTitle className="text-2xl font-black text-[#0B1F3A] tracking-tight">Newest Courses</CardTitle>
+                        <Button variant="ghost" size="sm" asChild className="text-indigo-600 font-bold hover:bg-indigo-50 rounded-xl">
                             <Link href="/course-registrar/courses">View All</Link>
                         </Button>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-10 pt-0">
                         <div className="space-y-4">
                             {loading ? (
-                                <div className="flex items-center justify-center h-40 text-slate-400 text-sm">
-                                    Loading courses...
+                                <div className="flex items-center justify-center h-40 text-slate-400 text-sm italic font-bold">
+                                    Loading classes...
                                 </div>
                             ) : recentCourses.length === 0 ? (
-                                <div className="flex items-center justify-center h-40 text-slate-400 text-sm">
-                                    No courses found.
+                                <div className="flex items-center justify-center h-40 text-slate-400 text-sm italic font-bold">
+                                    No courses found yet.
                                 </div>
                             ) : (
                                 recentCourses.map((course, i) => (
-                                    <div key={i} className="flex items-start gap-4 p-3 hover:bg-slate-50 rounded-lg transition-colors">
+                                    <div key={i} className="flex items-start gap-4 p-4 hover:bg-slate-50 rounded-3xl transition-all group">
                                         <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-2">
-                                                <p className="text-sm font-medium text-slate-900 truncate">
+                                            <div className="flex items-center gap-3">
+                                                <p className="text-sm font-black text-[#0B1F3A] truncate">
                                                     {course.title}
                                                 </p>
                                                 <Badge
-                                                    variant={course.status === 'published' ? 'default' : 'secondary'}
-                                                    className="text-xs capitalize"
+                                                    className={cn(
+                                                        "text-[9px] font-black uppercase tracking-tighter px-2 py-0.5 rounded-full border-none",
+                                                        course.status === 'published' ? "bg-emerald-50 text-emerald-600" : "bg-slate-100 text-slate-400"
+                                                    )}
                                                 >
-                                                    {course.status}
+                                                    {course.status === 'published' ? 'Live' : 'Draft'}
                                                 </Badge>
                                             </div>
-                                            <p className="text-xs text-slate-500 mt-1">
-                                                {course.category} • {course.instructor.name || 'No instructor'}
+                                            <p className="text-xs text-slate-400 font-bold mt-1">
+                                                {course.category} • {course.instructor.name || 'Staff Member'}
                                             </p>
                                         </div>
                                         <div className="text-right">
-                                            <p className="text-sm font-bold text-slate-900">${course.price}</p>
-                                            <p className="text-xs text-slate-500">{course.rating || 0} ⭐</p>
+                                            <p className="text-sm font-black text-[#0B1F3A]">${course.price}</p>
+                                            <div className="flex items-center justify-end gap-1 text-[#C8A96A] mt-1">
+                                                <Star className="w-3 h-3 fill-current" />
+                                                <span className="text-[10px] font-black">{course.rating || 0}</span>
+                                            </div>
                                         </div>
                                     </div>
                                 ))
@@ -203,66 +211,67 @@ export default function CourseRegistrarDashboardPage() {
                     </CardContent>
                 </Card>
 
-                {/* Quick Actions */}
-                <Card className="border-none shadow-sm">
-                    <CardHeader>
-                        <CardTitle className="text-lg font-bold">Quick Actions</CardTitle>
+                {/* Quick Tools */}
+                <Card className="border-none bg-[#0B1F3A] text-white rounded-[3rem] shadow-2xl overflow-hidden relative">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl" />
+                    <CardHeader className="p-10 pb-4 relative z-10">
+                        <CardTitle className="text-2xl font-black tracking-tight">Management</CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-3">
-                        <Button variant="outline" className="w-full justify-start" asChild>
+                    <CardContent className="p-10 pt-0 space-y-4 relative z-10">
+                        <Button variant="ghost" className="w-full justify-start h-14 rounded-2xl hover:bg-white/10 text-white border border-white/10" asChild>
                             <Link href="/course-registrar/approvals">
-                                <FileCheck className="h-4 w-4 mr-2" />
-                                Review Approvals
+                                <FileCheck className="h-5 w-5 mr-3 text-emerald-400" />
+                                <span className="font-bold">Approve Courses</span>
                             </Link>
                         </Button>
-                        <Button variant="outline" className="w-full justify-start" asChild>
+                        <Button variant="ghost" className="w-full justify-start h-14 rounded-2xl hover:bg-white/10 text-white border border-white/10" asChild>
                             <Link href="/course-registrar/courses">
-                                <Book className="h-4 w-4 mr-2" />
-                                Manage Courses
+                                <Book className="h-5 w-5 mr-3 text-blue-400" />
+                                <span className="font-bold">Manage Program</span>
                             </Link>
                         </Button>
-                        <Button variant="outline" className="w-full justify-start" asChild>
+                        <Button variant="ghost" className="w-full justify-start h-14 rounded-2xl hover:bg-white/10 text-white border border-white/10" asChild>
                             <Link href="/course-registrar/students">
-                                <Users className="h-4 w-4 mr-2" />
-                                Student Oversight
+                                <Users className="h-5 w-5 mr-3 text-[#C8A96A]" />
+                                <span className="font-bold">Student List</span>
                             </Link>
                         </Button>
-                        <Button variant="outline" className="w-full justify-start" asChild>
+                        <Button variant="ghost" className="w-full justify-start h-14 rounded-2xl hover:bg-white/10 text-white border border-white/10" asChild>
                             <Link href="/course-registrar/analytics">
-                                <TrendingUp className="h-4 w-4 mr-2" />
-                                View Analytics
+                                <TrendingUp className="h-5 w-5 mr-3 text-purple-400" />
+                                <span className="font-bold">View Performance</span>
                             </Link>
                         </Button>
                     </CardContent>
                 </Card>
             </div>
 
-            {/* Academic Performance */}
-            <Card className="border-none shadow-sm">
-                <CardHeader>
-                    <CardTitle className="text-lg font-bold">Academic Performance</CardTitle>
+            {/* Academy Performance */}
+            <Card className="border-none bg-white rounded-[3rem] shadow-sm">
+                <CardHeader className="p-10 pb-4">
+                    <CardTitle className="text-2xl font-black text-[#0B1F3A] tracking-tight">Academy Stats</CardTitle>
                 </CardHeader>
-                <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="flex items-center gap-3 p-4 bg-emerald-50 rounded-lg">
-                            <CheckCircle className="h-8 w-8 text-emerald-600" />
+                <CardContent className="p-10 pt-0">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="flex items-center gap-4 p-6 bg-emerald-50 rounded-[2rem]">
+                            <CheckCircle className="h-10 w-10 text-emerald-600" />
                             <div>
-                                <p className="text-sm font-medium text-slate-600">Completion Rate</p>
-                                <p className="text-lg font-bold text-emerald-600">{stats.completionRate}%</p>
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Success Rate</p>
+                                <p className="text-xl font-black text-emerald-600">{stats.completionRate}%</p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg">
-                            <TrendingUp className="h-8 w-8 text-blue-600" />
+                        <div className="flex items-center gap-4 p-6 bg-blue-50 rounded-[2rem]">
+                            <TrendingUp className="h-10 w-10 text-blue-600" />
                             <div>
-                                <p className="text-sm font-medium text-slate-600">Active Enrollments</p>
-                                <p className="text-lg font-bold text-blue-600">{stats.totalEnrollments}</p>
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Active Students</p>
+                                <p className="text-xl font-black text-blue-600">{stats.totalEnrollments}</p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-3 p-4 bg-orange-50 rounded-lg">
-                            <AlertCircle className="h-8 w-8 text-orange-600" />
+                        <div className="flex items-center gap-4 p-6 bg-orange-50 rounded-[2rem]">
+                            <AlertCircle className="h-10 w-10 text-orange-600" />
                             <div>
-                                <p className="text-sm font-medium text-slate-600">Needs Attention</p>
-                                <p className="text-lg font-bold text-orange-600">{stats.pendingApprovals}</p>
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Review Items</p>
+                                <p className="text-xl font-black text-orange-600">{stats.pendingApprovals}</p>
                             </div>
                         </div>
                     </div>

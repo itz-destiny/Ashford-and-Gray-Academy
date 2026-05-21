@@ -33,7 +33,10 @@ export const useUser = () => {
           let userData: any = {};
           try {
             console.log("useUser: Fetching MongoDB profile for:", firebaseUser.uid);
-            let res = await fetch(`/api/users?uid=${firebaseUser.uid}`);
+            const idToken = await firebaseUser.getIdToken();
+            let res = await fetch(`/api/users?uid=${firebaseUser.uid}`, {
+              headers: { Authorization: `Bearer ${idToken}` },
+            });
             if (res.ok) {
               userData = await res.json();
               console.log("useUser: MongoDB profile found:", userData.role || "No role");
@@ -59,14 +62,12 @@ export const useUser = () => {
 
           // Redirections logic
           const isLoginPage = pathname === '/login';
-          const isCompleteProfilePage = pathname === '/login/complete-profile';
-          
+          const STAFF_2FA_ROLES = ['admin', 'registrar', 'course_registrar', 'finance'];
+
           if (isLoginPage) {
-            if (appUser.role) {
-                // If they have a role, they are fully registered
-                router.push(getDashboardByRole(appUser.role));
-            } else {
-                // If they have no role in DB, they need to complete their profile
+            if (!appUser.role) {
+                // Authenticated with Firebase but no Mongo profile (Google sign-in
+                // first-timer). Send them to complete their profile.
                 const params = new URLSearchParams({
                     uid: firebaseUser.uid,
                     email: firebaseUser.email || '',
@@ -74,6 +75,12 @@ export const useUser = () => {
                     photoURL: firebaseUser.photoURL || ''
                 });
                 router.push(`/login/complete-profile?${params.toString()}`);
+            } else if (!(appUser as any).emailVerified) {
+                router.push('/login/verify?purpose=signup');
+            } else if (STAFF_2FA_ROLES.includes(appUser.role)) {
+                router.push('/login/verify?purpose=login_2fa');
+            } else {
+                router.push(getDashboardByRole(appUser.role));
             }
           }
 

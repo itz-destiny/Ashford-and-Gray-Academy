@@ -1,12 +1,26 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Course from '@/models/Course';
 import Event from '@/models/Event';
 import { Module, Lesson, Assignment } from '@/models/Supports';
 import { coursesToSeed, eventsToSeed } from '@/lib/data';
-import mongoose from 'mongoose';
+import { AuthError, requireRole, withAuth } from '@/lib/auth-server';
+import { assertDevEndpointAllowed } from '@/lib/dev-only';
 
-export async function GET() {
+// Wipes and reseeds the database with sample courses, modules, lessons,
+// assignments and events. This is a developer convenience and is only allowed
+// outside production AND for admin callers.
+export const GET = withAuth(async (_req: NextRequest, { auth }) => {
+    try {
+        assertDevEndpointAllowed();
+        requireRole(auth, ['admin']);
+    } catch (err) {
+        if (err instanceof AuthError) {
+            return NextResponse.json({ error: err.message }, { status: err.status });
+        }
+        throw err;
+    }
+
     try {
         await dbConnect();
 
@@ -16,87 +30,93 @@ export async function GET() {
         await Lesson.deleteMany({});
         await Assignment.deleteMany({});
 
-        // Seed Courses
         const createdCourses = await Course.insertMany(coursesToSeed);
-        
-        // Seed Events
         await Event.insertMany(eventsToSeed);
 
-        // Seed Modules and Lessons for the first two courses
         for (let i = 0; i < Math.min(2, createdCourses.length); i++) {
             const course = createdCourses[i];
-            
-            // Create 3 Modules per course
             const modulesData = [
-                { courseId: course._id, title: 'Introduction & Foundations', order: 1, description: 'Master the core concepts and history.' },
-                { courseId: course._id, title: 'Practical Implementation', order: 2, description: 'Hands-on techniques and standards.' },
-                { courseId: course._id, title: 'Advanced Strategy & Leadership', order: 3, description: 'Elevating your professional standing.' }
+                {
+                    courseId: course._id,
+                    title: 'Introduction & Foundations',
+                    order: 1,
+                    description: 'Master the core concepts and history.',
+                },
+                {
+                    courseId: course._id,
+                    title: 'Practical Implementation',
+                    order: 2,
+                    description: 'Hands-on techniques and standards.',
+                },
+                {
+                    courseId: course._id,
+                    title: 'Advanced Strategy & Leadership',
+                    order: 3,
+                    description: 'Elevating your professional standing.',
+                },
             ];
-            
             const createdModules = await Module.insertMany(modulesData);
 
-            // Create Lessons for each module
             for (const mod of createdModules) {
-                const lessonsData = [
+                await Lesson.insertMany([
                     {
                         moduleId: mod._id,
                         title: `${mod.title} - Overview`,
-                        content: 'In this lesson, we will cover the fundamental pillars of this module. This includes theoretical frameworks and industry standards.',
-                        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ', // Placeholder
+                        content:
+                            'In this lesson, we will cover the fundamental pillars of this module.',
+                        videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
                         duration: 15,
                         order: 1,
-                        isLive: false
+                        isLive: false,
                     },
                     {
                         moduleId: mod._id,
                         title: `${mod.title} - Deep Dive`,
-                        content: 'This lesson explores the practical applications and nuances of the subject matter. Follow along with the provided resources.',
+                        content:
+                            'This lesson explores the practical applications and nuances of the subject matter.',
                         videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
                         duration: 30,
                         order: 2,
-                        isLive: false
+                        isLive: false,
                     },
                     {
                         moduleId: mod._id,
                         title: `${mod.title} - Interactive Q&A (Live)`,
-                        content: 'Join the instructor for a live session to discuss questions and real-world scenarios.',
+                        content:
+                            'Join the instructor for a live session to discuss questions and real-world scenarios.',
                         duration: 45,
                         order: 3,
                         isLive: true,
-                        scheduledAt: new Date(Date.now() + 86400000) // Tomorrow
-                    }
-                ];
-                await Lesson.insertMany(lessonsData);
+                        scheduledAt: new Date(Date.now() + 86400000),
+                    },
+                ]);
             }
 
-            // Create some assignments for the course
             await Assignment.insertMany([
                 {
                     courseId: course._id,
                     title: 'Institutional Standards Essay',
                     description: 'Discuss the role of professional standards in luxury hospitality.',
-                    dueDate: new Date(Date.now() + 86400000 * 3), // 3 days from now
-                    points: 100
+                    dueDate: new Date(Date.now() + 86400000 * 3),
+                    points: 100,
                 },
                 {
                     courseId: course._id,
                     title: 'Practical Housekeeping Simulation',
-                    description: 'Submit a video of your bed-making technique according to Ashford standards.',
-                    dueDate: new Date(Date.now() + 86400000 * 7), // 7 days from now
-                    points: 150
-                }
+                    description:
+                        'Submit a video of your bed-making technique according to Ashford standards.',
+                    dueDate: new Date(Date.now() + 86400000 * 7),
+                    points: 150,
+                },
             ]);
         }
 
-        return NextResponse.json({ 
+        return NextResponse.json({
             message: 'Database seeded successfully with Courses, Modules, and Lessons.',
-            coursesCount: createdCourses.length
+            coursesCount: createdCourses.length,
         });
     } catch (error: any) {
         console.error('SEED ERROR:', error);
-        return NextResponse.json({ 
-            error: error.message,
-            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
-        }, { status: 500 });
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
-}
+});

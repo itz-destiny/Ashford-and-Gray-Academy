@@ -1,14 +1,17 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { useUser } from '@/firebase';
+import { useUser, useDirectMessages } from '@/firebase';
+import { apiFetch } from '@/lib/api-client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { MessageSquare, Send, Search, Filter } from 'lucide-react';
+import { MessageSquare, Send, Search, Filter, MoreHorizontal, Smile } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 export default function InstructorCommunicationsPage() {
     const { user } = useUser();
@@ -23,14 +26,11 @@ export default function InstructorCommunicationsPage() {
     useEffect(() => {
         if (!user) return;
         const fetchContacts = async () => {
-            // In a real app, query unique senderIds for messages where receiverId = user.displayName
-            // For now, we'll fetch all messages and filter unique senders
-            const res = await fetch(`/api/messages?userId=${user.uid}`);
+            const res = await apiFetch('/api/messages');
             const allMessages = await res.json();
 
             const uniqueSenderIds = Array.from(new Set(allMessages.map((m: any) => m.senderId === user.uid ? m.receiverId : m.senderId)));
 
-            // Mocking contact names/details for now
             const contactList = uniqueSenderIds.map((id: any) => ({
                 id,
                 name: id.includes('@') ? id : `Student ${id.slice(-4)}`,
@@ -42,39 +42,36 @@ export default function InstructorCommunicationsPage() {
         fetchContacts();
     }, [user]);
 
+    // Realtime: subscribe to direct messages between instructor and contact.
+    const rtMessages = useDirectMessages(user?.uid ?? null, selectedContact?.id ?? null);
     useEffect(() => {
-        if (!user || !selectedContact) return;
-
-        const fetchMessages = async () => {
-            const res = await fetch(`/api/messages?userId=${user.uid}&contactId=${selectedContact.id}`);
-            const data = await res.json();
-            setMessages(data);
-        };
-
-        fetchMessages();
-        const interval = setInterval(fetchMessages, 5000);
-        return () => clearInterval(interval);
-    }, [user, selectedContact]);
+        setMessages(
+            rtMessages.map((m) => ({
+                _id: m.id,
+                senderId: m.senderId,
+                receiverId: m.receiverId,
+                content: m.content,
+                createdAt: m.createdAt,
+            }))
+        );
+    }, [rtMessages]);
 
     const handleSendMessage = async () => {
         if (!newMessage.trim() || !user || !selectedContact) return;
 
         const msg = {
-            senderId: user.uid,
             receiverId: selectedContact.id,
             content: newMessage,
         };
 
         try {
-            const res = await fetch('/api/messages', {
+            const res = await apiFetch('/api/messages', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(msg),
             });
             if (res.ok) {
-                const savedMsg = await res.json();
-                setMessages([...messages, savedMsg]);
                 setNewMessage('');
+                // Firestore listener delivers the sent message to both sides.
             }
         } catch (error) {
             toast({ variant: "destructive", title: "Error", description: "Failed to send message." });
@@ -82,74 +79,91 @@ export default function InstructorCommunicationsPage() {
     };
 
     return (
-        <div className="flex h-[calc(100vh-12rem)] bg-white border rounded-xl overflow-hidden">
+        <div className="flex h-[calc(100vh-14rem)] bg-white rounded-[3rem] overflow-hidden shadow-2xl shadow-blue-900/5 border border-slate-100 animate-in fade-in slide-in-from-bottom-4 duration-700">
             {/* Contact List */}
-            <aside className="w-80 border-r flex flex-col">
-                <div className="p-4 border-b space-y-4">
-                    <h2 className="font-bold text-lg">Messages</h2>
-                    <div className="relative">
-                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
+            <aside className="w-96 border-r border-slate-100 flex flex-col bg-slate-50/20">
+                <div className="p-8 space-y-6">
+                    <h2 className="text-2xl font-black text-[#0B1F3A] tracking-tight">Student Messages</h2>
+                    <div className="relative group">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-[#0B1F3A] transition-colors" />
                         <Input
                             placeholder="Search students..."
-                            className="pl-9 bg-slate-50"
+                            className="pl-12 h-12 bg-white border-slate-100 rounded-2xl focus-visible:ring-[#0B1F3A] transition-all"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
                     </div>
                 </div>
                 <ScrollArea className="flex-1">
-                    {contacts.map((contact) => (
-                        <button
-                            key={contact.id}
-                            onClick={() => setSelectedContact(contact)}
-                            className={`w-full text-left p-4 flex gap-3 hover:bg-slate-50 transition-colors border-b ${selectedContact?.id === contact.id ? 'bg-indigo-50' : ''
-                                }`}
-                        >
-                            <Avatar>
-                                <AvatarFallback className="bg-indigo-100 text-indigo-700">{contact.name[0]}</AvatarFallback>
-                            </Avatar>
-                            <div className="flex-1 min-w-0">
-                                <div className="flex justify-between items-center mb-1">
-                                    <p className="font-bold text-sm truncate">{contact.name}</p>
-                                    <span className="text-[10px] text-slate-400">{contact.time}</span>
+                    <div className="px-4 pb-8 space-y-2">
+                        {contacts.map((contact) => (
+                            <button
+                                key={contact.id}
+                                onClick={() => setSelectedContact(contact)}
+                                className={cn(
+                                    "w-full text-left p-4 flex gap-4 rounded-3xl transition-all group",
+                                    selectedContact?.id === contact.id ? 'bg-white shadow-xl shadow-blue-900/5 ring-1 ring-[#0B1F3A]/5' : 'hover:bg-white/50'
+                                )}
+                            >
+                                <Avatar className="h-12 w-12 border-2 border-white shadow-sm">
+                                    <AvatarFallback className="bg-indigo-50 text-indigo-700 font-black text-xs">{contact.name[0]}</AvatarFallback>
+                                </Avatar>
+                                <div className="flex-1 min-w-0 py-1">
+                                    <div className="flex justify-between items-center mb-1">
+                                        <p className="font-black text-[#0B1F3A] text-sm truncate">{contact.name}</p>
+                                        <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest">{contact.time}</span>
+                                    </div>
+                                    <p className="text-xs text-slate-400 font-medium truncate leading-relaxed">{contact.lastMessage}</p>
                                 </div>
-                                <p className="text-xs text-slate-500 truncate">{contact.lastMessage}</p>
+                            </button>
+                        ))}
+                        {contacts.length === 0 && (
+                            <div className="p-12 text-center text-slate-300 font-bold italic text-sm">
+                                No messages yet.
                             </div>
-                        </button>
-                    ))}
-                    {contacts.length === 0 && (
-                        <div className="p-8 text-center text-slate-400 text-sm">
-                            No conversations yet.
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </ScrollArea>
             </aside>
 
             {/* Chat Area */}
-            <main className="flex-1 flex flex-col bg-slate-50/30">
+            <main className="flex-1 flex flex-col bg-white">
                 {selectedContact ? (
                     <>
-                        <div className="p-4 bg-white border-b flex justify-between items-center">
-                            <div className="flex items-center gap-3">
-                                <Avatar>
-                                    <AvatarFallback className="bg-indigo-100 text-indigo-700">{selectedContact.name[0]}</AvatarFallback>
+                        <div className="p-6 bg-white border-b border-slate-50 flex justify-between items-center">
+                            <div className="flex items-center gap-4">
+                                <Avatar className="h-10 w-10">
+                                    <AvatarFallback className="bg-indigo-50 text-indigo-700 font-black text-xs">{selectedContact.name[0]}</AvatarFallback>
                                 </Avatar>
                                 <div>
-                                    <h3 className="font-bold text-sm">{selectedContact.name}</h3>
-                                    <p className="text-[10px] text-emerald-500 font-bold">Online</p>
+                                    <h3 className="font-black text-[#0B1F3A] text-base">{selectedContact.name}</h3>
+                                    <div className="flex items-center gap-1.5">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                        <p className="text-[9px] text-emerald-500 font-black uppercase tracking-widest">Active Member</p>
+                                    </div>
                                 </div>
                             </div>
-                            <Button variant="ghost" size="icon"><Filter className="w-4 h-4" /></Button>
+                            <div className="flex items-center gap-2">
+                                <Button variant="ghost" size="icon" className="rounded-xl text-slate-400 hover:text-[#0B1F3A] hover:bg-slate-50"><Filter className="w-5 h-5" /></Button>
+                                <Button variant="ghost" size="icon" className="rounded-xl text-slate-400 hover:text-[#0B1F3A] hover:bg-slate-50"><MoreHorizontal className="w-5 h-5" /></Button>
+                            </div>
                         </div>
 
-                        <ScrollArea className="flex-1 p-4">
-                            <div className="space-y-4">
+                        <ScrollArea className="flex-1 p-8 bg-[#FCFCFE]">
+                            <div className="space-y-6 max-w-4xl mx-auto">
                                 {messages.map((msg, i) => (
-                                    <div key={i} className={`flex ${msg.senderId === user?.uid ? 'justify-end' : 'justify-start'}`}>
-                                        <div className={`max-w-[70%] p-3 rounded-2xl text-sm shadow-none ${msg.senderId === user?.uid ? 'bg-indigo-600 text-white' : 'bg-white text-slate-900 border'
-                                            }`}>
-                                            {msg.content}
-                                            <p className={`text-[9px] mt-1 text-right ${msg.senderId === user?.uid ? 'text-indigo-200' : 'text-slate-400'}`}>
+                                    <div key={i} className={cn("flex", msg.senderId === user?.uid ? 'justify-end' : 'justify-start')}>
+                                        <div className={cn(
+                                            "max-w-[70%] p-5 rounded-[2rem] text-sm shadow-sm transition-all",
+                                            msg.senderId === user?.uid 
+                                                ? 'bg-[#0B1F3A] text-white rounded-tr-lg' 
+                                                : 'bg-white text-slate-900 border border-slate-100 rounded-tl-lg'
+                                        )}>
+                                            <p className="leading-relaxed font-medium">{msg.content}</p>
+                                            <p className={cn(
+                                                "text-[9px] font-black uppercase tracking-tighter mt-2 text-right",
+                                                msg.senderId === user?.uid ? 'text-white/40' : 'text-slate-300'
+                                            )}>
                                                 {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </p>
                                         </div>
@@ -158,25 +172,38 @@ export default function InstructorCommunicationsPage() {
                             </div>
                         </ScrollArea>
 
-                        <div className="p-4 bg-white border-t flex gap-2">
-                            <Input
-                                placeholder="Type your message..."
-                                value={newMessage}
-                                onChange={(e) => setNewMessage(e.target.value)}
-                                onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                            />
-                            <Button size="icon" onClick={handleSendMessage} className="bg-indigo-600 hover:bg-indigo-700">
-                                <Send className="w-4 h-4" />
-                            </Button>
+                        <div className="p-8 bg-white border-t border-slate-50">
+                            <div className="max-w-4xl mx-auto flex gap-4 items-center bg-slate-50/50 p-2 pl-6 rounded-[2.5rem] border border-slate-100 focus-within:border-[#0B1F3A]/20 transition-all">
+                                <Smile className="w-6 h-6 text-slate-300 hover:text-[#C8A96A] cursor-pointer transition-colors" />
+                                <input
+                                    placeholder="Type your reply..."
+                                    className="flex-1 bg-transparent border-none focus:ring-0 text-sm font-medium text-[#0B1F3A] placeholder:text-slate-300"
+                                    value={newMessage}
+                                    onChange={(e) => setNewMessage(e.target.value)}
+                                    onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                                />
+                                <Button 
+                                    onClick={handleSendMessage} 
+                                    className="bg-[#0B1F3A] hover:bg-slate-800 text-white h-12 w-12 rounded-full shadow-lg shadow-blue-900/10 transition-transform active:scale-95"
+                                    size="icon"
+                                >
+                                    <Send className="w-5 h-5 ml-0.5" />
+                                </Button>
+                            </div>
                         </div>
                     </>
                 ) : (
-                    <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-                        <div className="w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center mb-4">
-                            <MessageSquare className="w-8 h-8 text-indigo-600" />
+                    <div className="flex-1 flex flex-col items-center justify-center p-12 text-center space-y-8">
+                        <div className="relative">
+                            <div className="absolute inset-0 bg-indigo-100 rounded-full blur-3xl opacity-50" />
+                            <div className="relative w-24 h-24 bg-white rounded-[2rem] shadow-xl flex items-center justify-center border border-slate-50">
+                                <MessageSquare className="w-10 h-10 text-indigo-600" />
+                            </div>
                         </div>
-                        <h3 className="text-xl font-bold text-slate-900">Your Student Messages</h3>
-                        <p className="text-slate-500 mt-2 max-w-xs">Select a student from the list to view your conversation or start a new chat.</p>
+                        <div className="space-y-3">
+                            <h3 className="text-2xl font-black text-[#0B1F3A] tracking-tight">Your Student Messages</h3>
+                            <p className="text-slate-400 font-medium max-w-xs mx-auto leading-relaxed">Select a conversation from the sidebar to start guiding your students.</p>
+                        </div>
                     </div>
                 )}
             </main>

@@ -1,39 +1,43 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
+import { z } from 'zod';
 import dbConnect from '@/lib/mongodb';
 import SystemHealth from '@/models/SystemHealth';
+import { AuthError, requireRole, withAuth } from '@/lib/auth-server';
 
-export async function GET(req: NextRequest) {
+export const GET = withAuth(async (req: NextRequest, { auth }) => {
+    try {
+        requireRole(auth, ['admin']);
+    } catch (err) {
+        if (err instanceof AuthError) {
+            return NextResponse.json({ error: err.message }, { status: err.status });
+        }
+        throw err;
+    }
+
     try {
         await dbConnect();
-
         const { searchParams } = new URL(req.url);
         const metric = searchParams.get('metric');
         const status = searchParams.get('status');
-        const hours = parseInt(searchParams.get('hours') || '24');
+        const hours = parseInt(searchParams.get('hours') || '24', 10);
 
-        // Build query
-        const query: any = {
-            timestamp: { $gte: new Date(Date.now() - hours * 60 * 60 * 1000) }
+        const query: Record<string, unknown> = {
+            timestamp: { $gte: new Date(Date.now() - hours * 60 * 60 * 1000) },
         };
         if (metric) query.metric = metric;
         if (status) query.status = status;
 
-        // Get latest health metrics
-        const healthMetrics = await SystemHealth.find(query)
-            .sort({ timestamp: -1 })
-            .limit(100)
-            .lean();
-
-        // Get critical alerts
-        const criticalAlerts = await SystemHealth.countDocuments({
-            status: 'critical',
-            timestamp: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) }
-        });
-
-        const warningAlerts = await SystemHealth.countDocuments({
-            status: 'warning',
-            timestamp: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) }
-        });
+        const healthMetrics = await SystemHealth.find(query).sort({ timestamp: -1 }).limit(100).lean();
+        const [criticalAlerts, warningAlerts] = await Promise.all([
+            SystemHealth.countDocuments({
+                status: 'critical',
+                timestamp: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+            }),
+            SystemHealth.countDocuments({
+                status: 'warning',
+                timestamp: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) },
+            }),
+        ]);
 
         return NextResponse.json({
             success: true,
@@ -41,42 +45,57 @@ export async function GET(req: NextRequest) {
             summary: {
                 criticalAlerts,
                 warningAlerts,
-                overallStatus: criticalAlerts > 0 ? 'critical' : warningAlerts > 0 ? 'warning' : 'healthy'
-            }
+                overallStatus:
+                    criticalAlerts > 0 ? 'critical' : warningAlerts > 0 ? 'warning' : 'healthy',
+            },
         });
-
     } catch (error: any) {
         console.error('Error fetching system health:', error);
+        return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
+    }
+});
+
+const postSchema = z.object({
+    metric: z.string().min(1).max(120),
+    value: z.number(),
+    unit: z.string().max(40).optional(),
+    threshold: z
+        .object({
+            warning: z.number().optional(),
+            critical: z.number().optional(),
+        })
+        .optional(),
+});
+
+// POST is admin-only for now. In production a metrics emitter would normally
+// use a shared-secret header instead — add when introducing observability.
+export const POST = withAuth(async (req: NextRequest, { auth }) => {
+    try {
+        requireRole(auth, ['admin']);
+    } catch (err) {
+        if (err instanceof AuthError) {
+            return NextResponse.json({ error: err.message }, { status: err.status });
+        }
+        throw err;
+    }
+
+    const json = await req.json().catch(() => null);
+    const parsed = postSchema.safeParse(json);
+    if (!parsed.success) {
         return NextResponse.json(
-            { success: false, error: error.message },
-            { status: 500 }
+            { error: 'Invalid request', details: parsed.error.flatten() },
+            { status: 400 }
         );
     }
-}
 
-// POST - Record health metric
-export async function POST(req: NextRequest) {
     try {
         await dbConnect();
+        const { metric, value, unit, threshold } = parsed.data;
 
-        const body = await req.json();
-        const { metric, value, unit, threshold } = body;
-
-        if (!metric || value === undefined) {
-            return NextResponse.json(
-                { success: false, error: 'Missing required fields' },
-                { status: 400 }
-            );
-        }
-
-        // Determine status based on thresholds
         let status: 'healthy' | 'warning' | 'critical' = 'healthy';
         if (threshold) {
-            if (threshold.critical && value >= threshold.critical) {
-                status = 'critical';
-            } else if (threshold.warning && value >= threshold.warning) {
-                status = 'warning';
-            }
+            if (threshold.critical !== undefined && value >= threshold.critical) status = 'critical';
+            else if (threshold.warning !== undefined && value >= threshold.warning) status = 'warning';
         }
 
         const healthMetric = await SystemHealth.create({
@@ -85,19 +104,11 @@ export async function POST(req: NextRequest) {
             unit,
             status,
             threshold,
-            timestamp: new Date()
+            timestamp: new Date(),
         });
-
-        return NextResponse.json({
-            success: true,
-            metric: healthMetric
-        }, { status: 201 });
-
+        return NextResponse.json({ success: true, metric: healthMetric }, { status: 201 });
     } catch (error: any) {
         console.error('Error recording health metric:', error);
-        return NextResponse.json(
-            { success: false, error: error.message },
-            { status: 500 }
-        );
+        return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
     }
-}
+});

@@ -1,122 +1,155 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Building2, Goal, Users, Heart, Lightbulb, ShieldCheck } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Goal, Eye, Heart, Lightbulb, ShieldCheck, Sparkles, Users } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { ScrollAnimation } from "@/components/ui/scroll-animation";
 
+export const metadata = {
+    title: "About — Ashford & Gray Fusion Academy",
+    description: "An institution defined by distinction. Discover the philosophy, mission, vision, and values shaping the next generation of luxury hospitality and business leaders.",
+};
+
 export default function AboutPage() {
-  const coreValues = [
-    { name: 'Excellence', icon: ShieldCheck, desc: 'Unwavering commitment to the highest global standards.' },
-    { name: 'Innovation', icon: Lightbulb, desc: 'Pioneering new ways to learn and lead in business.' },
-    { name: 'Integrity', icon: Heart, desc: 'Fostering a community built on trust and authority.' },
-    { name: 'Community', icon: Users, desc: 'Building a global network of distinct professionals.' },
-  ];
+    const coreValues = [
+        { name: "Excellence", icon: Sparkles, desc: "Unwavering commitment to the highest global standards." },
+        { name: "Discipline", icon: ShieldCheck, desc: "Structure, intentionality, and consistent delivery." },
+        { name: "Integrity", icon: Heart, desc: "A community built on trust, character, and authority." },
+        { name: "Innovation", icon: Lightbulb, desc: "Pioneering new ways to learn and lead in business." },
+        { name: "Professionalism", icon: Users, desc: "Precision, discretion, and refinement in every detail." },
+    ];
 
-  return (
-    <div className="bg-white">
-      {/* Top Banner */}
-      <header className="py-32 bg-white text-center border-b border-slate-50">
-        <div className="container px-6 lg:px-12">
-          <ScrollAnimation animation="fade-in-up">
-            <div className="inline-block px-4 py-1 bg-emerald-50 text-emerald-700 font-bold text-[10px] uppercase tracking-[0.4em] rounded-full mb-8">
-              Since 1994
-            </div>
-            <h1 className="text-5xl lg:text-7xl font-serif text-[#0B1F3A] tracking-tight leading-tight">
-              An Institution of <br />
-              <span className="italic">Distinction.</span>
-            </h1>
-          </ScrollAnimation>
-        </div>
-      </header>
-
-      {/* Who We Are */}
-      <section className="py-32 container px-6 lg:px-12">
-        <div className="grid lg:grid-cols-2 gap-24 items-center">
-          <ScrollAnimation animation="fade-in">
-            <div className="relative rounded-[3rem] overflow-hidden shadow-2xl">
-              <Image
-                src="/imagefx-1.png"
-                alt="Ashford & Gray modern campus"
-                width={800}
-                height={800}
-                className="object-cover grayscale hover:grayscale-0 transition-all duration-1000"
-              />
-            </div>
-          </ScrollAnimation>
-          
-          <ScrollAnimation animation="fade-in-up">
-            <div className="space-y-8">
-              <h2 className="text-4xl font-serif text-[#0B1F3A]">Who We Are</h2>
-              <div className="w-16 h-1 bg-[#C8A96A]" />
-              <p className="text-xl text-slate-500 leading-relaxed font-medium">
-                Ashford & Gray Fusion Academy is more than an institution; it is a global ecosystem where professional mastery meets academic authority. We specialize in hospitality management, business innovation, and executive leadership.
-              </p>
-              <p className="text-lg text-slate-400 leading-relaxed">
-                Our blended approach to education combines the rigor of traditional scholarship with the agility of modern industry practices.
-              </p>
-            </div>
-          </ScrollAnimation>
-        </div>
-      </section>
-
-      {/* Vision & Mission */}
-      <section className="py-32 bg-slate-50 border-y border-slate-100">
-        <div className="container px-6 lg:px-12">
-          <div className="grid lg:grid-cols-2 gap-12">
-            <ScrollAnimation animation="fade-in-up" className="bg-[#0B1F3A] p-16 rounded-[3rem] text-white">
-              <h3 className="text-3xl font-serif mb-6 text-[#C8A96A]">Our Vision</h3>
-              <p className="text-xl leading-relaxed font-medium text-slate-300">
-                To be the world’s most recognized authority in professional transformation, where every student graduates with the distinction to lead global markets.
-              </p>
-            </ScrollAnimation>
-            
-            <ScrollAnimation animation="fade-in-up" delay={100} className="bg-white p-16 rounded-[3rem] border border-slate-200">
-              <h3 className="text-3xl font-serif mb-6 text-[#0B1F3A]">Our Mission</h3>
-              <p className="text-xl leading-relaxed font-medium text-slate-500">
-                To empower an elite community of learners by providing practical, industry-led curricula that commands authority and fosters international excellence.
-              </p>
-            </ScrollAnimation>
-          </div>
-        </div>
-      </section>
-
-      {/* Philosophy */}
-      <section className="py-32 bg-white">
-        <div className="container px-6 lg:px-12 text-center max-w-4xl mx-auto">
-          <ScrollAnimation animation="fade-in-up">
-            <h2 className="text-4xl lg:text-5xl font-serif text-[#0B1F3A] mb-12">The Philosophy</h2>
-            <p className="text-2xl text-slate-600 leading-relaxed font-medium italic">
-              "We believe that luxury is not an expense, but a standard of excellence. We teach our students to architect perception, command space, and lead with refined confidence."
-            </p>
-            <div className="mt-12 flex justify-center">
-              <div className="w-px h-24 bg-[#C8A96A]" />
-            </div>
-          </ScrollAnimation>
-        </div>
-      </section>
-
-      {/* Core Values */}
-      <section className="py-32 bg-slate-50 border-t border-slate-100">
-        <div className="container px-6 lg:px-12">
-          <div className="text-center mb-20">
-            <h2 className="text-4xl font-serif text-[#0B1F3A]">Core Values</h2>
-          </div>
-          
-          <div className="grid md:grid-cols-4 gap-12">
-            {coreValues.map((value, idx) => (
-              <ScrollAnimation key={value.name} animation="fade-in-up" delay={idx * 50}>
-                <div className="text-center group">
-                  <div className="w-16 h-16 mx-auto bg-white rounded-full flex items-center justify-center text-[#1F7A5A] shadow-sm group-hover:bg-[#1F7A5A] group-hover:text-white transition-all mb-6">
-                    <value.icon className="w-8 h-8" />
-                  </div>
-                  <h4 className="text-xl font-serif text-[#0B1F3A] mb-3">{value.name}</h4>
-                  <p className="text-slate-500 font-medium">{value.desc}</p>
+    return (
+        <div className="bg-white">
+            {/* Top Banner */}
+            <header className="py-24 md:py-32 bg-white text-center border-b border-slate-50">
+                <div className="container px-6 lg:px-12">
+                    <ScrollAnimation animation="fade-in-up">
+                        <div className="inline-flex items-center gap-3 mb-8">
+                            <div className="w-8 md:w-12 h-[1px] bg-[#C8A96A]" />
+                            <span className="text-[#C8A96A] font-black text-[10px] uppercase tracking-[0.4em]">About the Academy</span>
+                            <div className="w-8 md:w-12 h-[1px] bg-[#C8A96A]" />
+                        </div>
+                        <h1 className="text-5xl md:text-7xl font-serif text-[#0B1F3A] tracking-tight leading-tight max-w-4xl mx-auto">
+                            About Ashford &amp; Gray <br />
+                            <span className="italic text-[#C8A96A]">Fusion Academy.</span>
+                        </h1>
+                    </ScrollAnimation>
                 </div>
-              </ScrollAnimation>
-            ))}
-          </div>
+            </header>
+
+            {/* Body Copy */}
+            <section className="py-24 md:py-32 container px-6 lg:px-12">
+                <div className="grid lg:grid-cols-2 gap-16 md:gap-24 items-start">
+                    <ScrollAnimation animation="fade-in">
+                        <div className="relative rounded-[3rem] overflow-hidden shadow-2xl aspect-[4/5]">
+                            <Image
+                                src="/student-library-writing.jpg"
+                                alt="An Ashford & Gray scholar at study"
+                                fill
+                                className="object-cover"
+                            />
+                        </div>
+                    </ScrollAnimation>
+                    <ScrollAnimation animation="fade-in-up" delay={150}>
+                        <div className="space-y-6 text-base md:text-lg text-slate-600 leading-relaxed font-medium">
+                            <p>
+                                Ashford and Gray Fusion Academy is more than an institution; it is a global ecosystem where professional mastery meets academic authority. As a specialised academy dedicated to hospitality management, business innovation, and executive leadership, we are committed to developing high-level professionals equipped to thrive in a rapidly evolving global landscape.
+                            </p>
+                            <p>
+                                Founded on the principle that excellence is never accidental, the Academy was built on a culture of structure, intentionality, discipline, and consistent delivery. We believe true leadership and service distinction are cultivated through a deliberate blend of knowledge, character, innovation, and practical execution.
+                            </p>
+                            <p>
+                                Our educational philosophy combines the rigour of traditional scholarship with the agility of modern industry practices, creating a dynamic learning environment that is both intellectually grounded and professionally relevant. Through carefully designed programmes, executive-focused training, and industry-aligned learning models, we prepare individuals not only to succeed in their careers, but to lead with confidence, precision, and global relevance.
+                            </p>
+                            <p>
+                                At Ashford and Gray Fusion Academy, we are shaping a new generation of professionals who understand that luxury, leadership, business, and service excellence are interconnected pillars of sustainable impact. Our commitment extends beyond certification; we are building a legacy-driven institution where competence meets class, innovation meets integrity, and education becomes a catalyst for transformation.
+                            </p>
+                        </div>
+                    </ScrollAnimation>
+                </div>
+            </section>
+
+            {/* Mission & Vision */}
+            <section className="py-24 md:py-32 bg-slate-50">
+                <div className="container px-6 lg:px-12 grid lg:grid-cols-2 gap-8 md:gap-12">
+                    <ScrollAnimation animation="fade-in-up">
+                        <Card className="border-none bg-white rounded-[3rem] shadow-sm h-full">
+                            <CardContent className="p-10 md:p-14 space-y-6">
+                                <div className="w-16 h-16 bg-[#C8A96A]/10 rounded-2xl flex items-center justify-center text-[#C8A96A]">
+                                    <Goal className="w-7 h-7" />
+                                </div>
+                                <p className="text-[10px] font-black text-[#C8A96A] uppercase tracking-[0.4em]">Mission</p>
+                                <h3 className="text-3xl md:text-4xl font-serif text-[#0B1F3A] leading-tight">Excellence as standard.</h3>
+                                <p className="text-base md:text-lg text-slate-600 leading-relaxed font-medium">
+                                    To develop a disciplined and elite community of globally relevant professionals by delivering practical, industry-led education that combines executive-level insight, professional authority, and international standards of excellence — empowering graduates to lead with competence, innovation, and distinction across diverse industries.
+                                </p>
+                            </CardContent>
+                        </Card>
+                    </ScrollAnimation>
+                    <ScrollAnimation animation="fade-in-up" delay={150}>
+                        <Card className="border-none bg-[#0B1F3A] text-white rounded-[3rem] shadow-2xl h-full overflow-hidden relative">
+                            <div className="absolute -top-20 -right-20 w-64 h-64 bg-[#C8A96A]/10 rounded-full blur-3xl" />
+                            <CardContent className="p-10 md:p-14 space-y-6 relative">
+                                <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center text-[#C8A96A]">
+                                    <Eye className="w-7 h-7" />
+                                </div>
+                                <p className="text-[10px] font-black text-[#C8A96A] uppercase tracking-[0.4em]">Vision</p>
+                                <h3 className="text-3xl md:text-4xl font-serif leading-tight">A global institution of consequence.</h3>
+                                <p className="text-base md:text-lg text-slate-300 leading-relaxed font-medium">
+                                    To become the world's leading and most recognised institution for hospitality, business innovation, and professional transformation — developing distinguished graduates equipped with the knowledge, leadership capacity, and global competence to excel, innovate, and lead across international markets.
+                                </p>
+                            </CardContent>
+                        </Card>
+                    </ScrollAnimation>
+                </div>
+            </section>
+
+            {/* Core Values */}
+            <section className="py-24 md:py-32 bg-white">
+                <div className="container px-6 lg:px-12">
+                    <div className="text-center max-w-3xl mx-auto mb-16 md:mb-20">
+                        <div className="inline-flex items-center gap-3 mb-6">
+                            <div className="w-8 md:w-12 h-[1px] bg-[#1F7A5A]" />
+                            <span className="text-[#1F7A5A] font-black text-[10px] uppercase tracking-[0.4em]">Core Values</span>
+                            <div className="w-8 md:w-12 h-[1px] bg-[#1F7A5A]" />
+                        </div>
+                        <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif text-[#0B1F3A]">The principles we live by</h2>
+                    </div>
+                    <div className="grid grid-cols-2 lg:grid-cols-5 gap-6 md:gap-8">
+                        {coreValues.map((v, idx) => (
+                            <ScrollAnimation key={v.name} animation="fade-in-up" delay={idx * 80}>
+                                <div className="bg-slate-50 rounded-[2rem] p-8 h-full text-center hover:bg-[#0B1F3A] hover:text-white group transition-colors duration-500">
+                                    <div className="w-14 h-14 mx-auto bg-white rounded-2xl flex items-center justify-center text-[#0B1F3A] group-hover:bg-[#C8A96A] group-hover:text-white transition-colors mb-6 shadow-sm">
+                                        <v.icon className="w-6 h-6" />
+                                    </div>
+                                    <p className="font-serif text-lg md:text-xl text-[#0B1F3A] group-hover:text-white mb-3">{v.name}</p>
+                                    <p className="text-xs md:text-sm text-slate-500 group-hover:text-slate-300 font-medium leading-relaxed">{v.desc}</p>
+                                </div>
+                            </ScrollAnimation>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* CTA */}
+            <section className="py-24 md:py-32 bg-slate-50">
+                <div className="container px-6 lg:px-12 text-center">
+                    <ScrollAnimation animation="fade-in-up">
+                        <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif text-[#0B1F3A] tracking-tight mb-10">
+                            Begin Your <span className="italic text-[#C8A96A]">Transformation.</span>
+                        </h2>
+                        <div className="flex flex-col sm:flex-row justify-center gap-4">
+                            <Button asChild className="h-16 md:h-20 px-10 md:px-16 bg-[#C8A96A] hover:bg-[#B69859] text-[#0B1F3A] font-black text-[10px] uppercase tracking-[0.4em] rounded-full shadow-2xl">
+                                <Link href="/login?view=signup">Apply for Admission</Link>
+                            </Button>
+                            <Button asChild variant="outline" className="h-16 md:h-20 px-10 md:px-16 border-slate-200 text-[#0B1F3A] hover:bg-slate-100 rounded-full font-black text-[10px] uppercase tracking-[0.4em]">
+                                <Link href="/contact">Speak to an Advisor</Link>
+                            </Button>
+                        </div>
+                    </ScrollAnimation>
+                </div>
+            </section>
         </div>
-      </section>
-    </div>
-  );
+    );
 }

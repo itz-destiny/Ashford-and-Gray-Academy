@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useUser } from '@/firebase';
+import { apiFetch } from '@/lib/api-client';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -20,7 +21,7 @@ export default function StudentGradesPage() {
         if (!user) return;
         const fetchData = async () => {
             try {
-                const enRes = await fetch(`/api/enrollments?userId=${user.uid}`);
+                const enRes = await apiFetch('/api/enrollments');
                 const enrollments = await enRes.json();
 
                 if (Array.isArray(enrollments)) {

@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useUser } from '@/firebase';
+import { useUser, useDirectMessages } from '@/firebase';
+import { apiFetch } from '@/lib/api-client';
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -10,12 +12,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
-import { ChevronRight, PlayCircle, CheckCircle2, MessageSquare, FileText, Lock, Menu, X, Send, Calendar } from 'lucide-react';
+import { ChevronRight, PlayCircle, CheckCircle2, MessageSquare, FileText, Lock, Menu, X, Send, Calendar, Video } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
+import { RecordingsList } from '@/components/meeting/RecordingsList';
 
 export default function CourseViewerPage() {
     const { id: courseId } = useParams();
+    const router = useRouter();
     const { user } = useUser();
     const { toast } = useToast();
     const [course, setCourse] = useState<any>(null);
@@ -58,40 +62,42 @@ export default function CourseViewerPage() {
         fetchData();
     }, [courseId]);
 
+    // Realtime DMs with the course instructor — replaces 5s polling.
+    const instructorUid = course?.instructorUid as string | undefined;
+    const rtCourseMessages = useDirectMessages(user?.uid ?? null, instructorUid ?? null);
     useEffect(() => {
-        if (!user || !course) return;
-
-        const fetchMessages = async () => {
-            const res = await fetch(`/api/messages?userId=${user.uid}&contactId=${course.instructor.name}&courseId=${courseId}`);
-            const data = await res.json();
-            setMessages(data);
-        };
-
-        fetchMessages();
-        const interval = setInterval(fetchMessages, 5000); // Poll for messages
-        return () => clearInterval(interval);
-    }, [user, course, courseId]);
+        if (!instructorUid) {
+            setMessages([]);
+            return;
+        }
+        setMessages(
+            rtCourseMessages.map((m) => ({
+                _id: m.id,
+                senderId: m.senderId,
+                receiverId: m.receiverId,
+                content: m.content,
+                createdAt: m.createdAt,
+            }))
+        );
+    }, [rtCourseMessages, instructorUid]);
 
     const handleSendMessage = async () => {
         if (!newMessage.trim() || !user || !course) return;
 
         const msg = {
-            senderId: user.uid,
-            receiverId: course.instructor.name, // In a real app, use instructor UID
+            receiverId: course.instructorUid || course.instructor?.name,
             courseId,
             content: newMessage,
         };
 
         try {
-            const res = await fetch('/api/messages', {
+            const res = await apiFetch('/api/messages', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(msg),
             });
             if (res.ok) {
-                const savedMsg = await res.json();
-                setMessages([...messages, savedMsg]);
                 setNewMessage('');
+                // Firestore listener delivers the sent message in real time.
             }
         } catch (error) {
             toast({ variant: "destructive", title: "Chat Error", description: "Failed to send message." });
@@ -188,7 +194,7 @@ export default function CourseViewerPage() {
                                                     <div className="flex gap-4 mt-8">
                                                         <Button 
                                                             className="h-16 px-10 rounded-full bg-[#1F7A5A] hover:bg-[#1F7A5A]/90 text-white font-black text-[10px] uppercase tracking-widest transition-all shadow-xl"
-                                                            onClick={() => router.push(`/meeting/${courseId}`)}
+                                                            onClick={() => router.push(`/live-classes/course-${courseId}`)}
                                                         >
                                                             Join Live Session
                                                         </Button>
@@ -223,16 +229,20 @@ export default function CourseViewerPage() {
                                 </div>
 
                                 <Tabs defaultValue="overview" className="w-full">
-                                    <TabsList className="grid w-full grid-cols-4 lg:w-fit">
+                                    <TabsList className="grid w-full grid-cols-5 lg:w-fit">
                                         <TabsTrigger value="overview">Overview</TabsTrigger>
+                                        <TabsTrigger value="recordings"><Video className="w-3 h-3 mr-1" />Recordings</TabsTrigger>
                                         <TabsTrigger value="resources">Resources</TabsTrigger>
                                         <TabsTrigger value="assignments">Assignments</TabsTrigger>
-                                        <TabsTrigger value="chat">Chat with Instructor</TabsTrigger>
+                                        <TabsTrigger value="chat">Chat</TabsTrigger>
                                     </TabsList>
                                     <TabsContent value="overview" className="pt-6">
                                         <div className="prose max-w-none">
                                             <p>{currentLesson.content || 'No description available for this lesson.'}</p>
                                         </div>
+                                    </TabsContent>
+                                    <TabsContent value="recordings" className="pt-6">
+                                        <RecordingsList courseId={String(courseId)} />
                                     </TabsContent>
                                     <TabsContent value="resources" className="pt-6">
                                         <Card>

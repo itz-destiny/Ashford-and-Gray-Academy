@@ -5,86 +5,102 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useUser } from "@/firebase";
-import { Paperclip, Search, Send, Smile, MoreVertical, Phone, Video } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useUser, useUserConversations, useConversationMessages } from "@/firebase";
+import { apiFetch } from "@/lib/api-client";
+import { useToast } from "@/hooks/use-toast";
+import { Paperclip, Search, Send, Smile, Video, Loader2 } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
+import dynamic from "next/dynamic";
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+
+const EmojiPicker = dynamic(() => import("emoji-picker-react"), { ssr: false });
 
 export default function MessagesPage() {
   const { user } = useUser();
   const router = useRouter();
+  const { toast } = useToast();
   const [conversations, setConversations] = useState<any[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<any>(null);
   const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState("");
+  const [conversationSearch, setConversationSearch] = useState("");
+  const [uploading, setUploading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Realtime conversation list from Firestore — replaces the 5s polling.
+  const { conversations: rtConversations } = useUserConversations(user?.uid);
+  const userCacheRef = useRef<Map<string, { name: string; avatar: string }>>(new Map());
 
   useEffect(() => {
     if (!user) return;
+    let cancelled = false;
 
-    const fetchConversations = async () => {
-      try {
-        const res = await fetch(`/api/conversations?userId=${user.uid}`);
-        const data = await res.json();
-
-        if (Array.isArray(data)) {
-          // Enrich with user details
-          const enriched = await Promise.all(data.map(async (conv: any) => {
-            const otherUserId = conv.participants.find((p: string) => p !== user.uid) || user.uid; // Default to self if alone
-            const uRes = await fetch(`/api/users?uid=${otherUserId}`);
-            const uData = await uRes.json();
-
-            return {
-              ...conv,
-              otherUser: {
-                id: otherUserId,
+    (async () => {
+      const enriched = await Promise.all(
+        rtConversations.map(async (conv) => {
+          const otherUserId = conv.participants.find((p: string) => p !== user.uid) || user.uid;
+          let info = userCacheRef.current.get(otherUserId);
+          if (!info) {
+            try {
+              const uRes = await apiFetch(`/api/users?uid=${otherUserId}`);
+              const uData = await uRes.json();
+              info = {
                 name: uData.displayName || 'Anonymous',
                 avatar: uData.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${otherUserId}`,
-                online: true // Mock
-              }
-            };
-          }));
-          setConversations(enriched);
-
-          if (enriched.length > 0 && !selectedConversation) {
-            setSelectedConversation(enriched[0]);
+              };
+              userCacheRef.current.set(otherUserId, info);
+            } catch {
+              info = {
+                name: 'Anonymous',
+                avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${otherUserId}`,
+              };
+            }
           }
-        }
-      } catch (error) {
-        console.error(error);
+          return {
+            _id: conv.id,
+            participants: conv.participants,
+            lastMessage: conv.lastMessage,
+            lastMessageAt: conv.lastMessageAt,
+            otherUser: {
+              id: otherUserId,
+              name: info.name,
+              avatar: info.avatar,
+              online: false,
+            },
+          };
+        })
+      );
+      if (cancelled) return;
+      setConversations(enriched);
+      if (enriched.length > 0 && !selectedConversation) {
+        setSelectedConversation(enriched[0]);
       }
-    };
+    })();
 
-    fetchConversations();
-    const interval = setInterval(fetchConversations, 5000);
-    return () => clearInterval(interval);
-  }, [user]);
+    return () => {
+      cancelled = true;
+    };
+  }, [user, rtConversations, selectedConversation]);
+
+  // Realtime messages for the active conversation — replaces 3s polling.
+  const { messages: rtMessages } = useConversationMessages(
+    selectedConversation?._id ?? null
+  );
 
   useEffect(() => {
-    if (!user || !selectedConversation) return;
-
-    const fetchMessages = async () => {
-      try {
-        // Fetch by conversationId if available, OR fallback to participants
-        const query = selectedConversation._id
-          ? `conversationId=${selectedConversation._id}`
-          : `userId=${user.uid}&contactId=${selectedConversation.otherUser.id}`;
-
-        const res = await fetch(`/api/messages?${query}`);
-        const data = await res.json();
-        if (Array.isArray(data)) {
-          setMessages(data);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchMessages();
-    const interval = setInterval(fetchMessages, 3000);
-    return () => clearInterval(interval);
-  }, [user, selectedConversation]);
+    setMessages(
+      rtMessages.map((m) => ({
+        _id: m.id,
+        senderId: m.senderId,
+        receiverId: m.receiverId,
+        content: m.content,
+        createdAt: m.createdAt,
+      }))
+    );
+  }, [rtMessages]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -96,11 +112,9 @@ export default function MessagesPage() {
     if (!newMessage.trim() || !user || !selectedConversation) return;
 
     try {
-      const res = await fetch('/api/messages', {
+      const res = await apiFetch('/api/messages', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          senderId: user.uid,
           receiverId: selectedConversation.otherUser.id,
           conversationId: selectedConversation._id,
           content: newMessage
@@ -109,8 +123,8 @@ export default function MessagesPage() {
 
       if (res.ok) {
         setNewMessage("");
-        const sent = await res.json();
-        setMessages([...messages, sent]);
+        // No optimistic append — Firestore listener will deliver the new
+        // message to all participants (including the sender) within ~100ms.
       }
     } catch (error) {
       console.error(error);
@@ -126,20 +140,15 @@ export default function MessagesPage() {
 
     // 1. Send message
     try {
-      const res = await fetch('/api/messages', {
+      const res = await apiFetch('/api/messages', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          senderId: user.uid,
           receiverId: selectedConversation.otherUser.id,
           conversationId: selectedConversation._id,
           content: messageContent
         })
       });
-      if (res.ok) {
-        const sent = await res.json();
-        setMessages([...messages, sent]);
-      }
+      // Firestore listener fans the new message out to both participants.
     } catch (error) {
       console.error(error);
     }
@@ -149,7 +158,76 @@ export default function MessagesPage() {
   };
 
 
+  const handleFilePicked = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user || !selectedConversation) return;
+
+    const ct = (file.type || '').toLowerCase();
+    const category: 'image' | 'video' | 'document' | null =
+      ct.startsWith('image/') ? 'image'
+      : ct.startsWith('video/') ? 'video'
+      : ct === 'application/pdf' ? 'document'
+      : null;
+
+    if (!category) {
+      toast({ variant: "destructive", title: "Unsupported file", description: "Send an image, video, or PDF." });
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
+    const limits = { image: 10, video: 500, document: 25 } as const;
+    if (file.size > limits[category] * 1024 * 1024) {
+      toast({ variant: "destructive", title: "File too large", description: `${category} attachments must be ${limits[category]} MB or smaller.` });
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const signRes = await apiFetch('/api/storage/signed-url', {
+        method: 'POST',
+        body: JSON.stringify({
+          filename: file.name,
+          contentType: file.type,
+          category,
+        }),
+      });
+      if (!signRes.ok) {
+        const err = await signRes.json().catch(() => ({}));
+        throw new Error(err.error || 'Could not get an upload URL.');
+      }
+      const { uploadUrl, publicUrl } = await signRes.json();
+
+      const putRes = await fetch(uploadUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': file.type },
+        body: file,
+      });
+      if (!putRes.ok) throw new Error('Upload failed.');
+
+      await apiFetch('/api/messages', {
+        method: 'POST',
+        body: JSON.stringify({
+          receiverId: selectedConversation.otherUser.id,
+          conversationId: selectedConversation._id,
+          content: `Attachment: ${file.name} — ${publicUrl}`,
+        }),
+      });
+      // Firestore listener will surface the attachment message to both sides.
+    } catch (err: any) {
+      toast({ variant: "destructive", title: "Upload failed", description: err?.message || 'Try again.' });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
   const getInitials = (name: string) => name ? name.split(' ').map(n => n[0]).join('').slice(0, 2) : '??';
+
+  const filteredConversations = conversations.filter(c => {
+    if (!conversationSearch) return true;
+    return c.otherUser?.name?.toLowerCase().includes(conversationSearch.toLowerCase());
+  });
 
   return (
     <Card className="h-[calc(100vh-12rem)] w-full grid md:grid-cols-3 lg:grid-cols-4 border-none shadow-none rounded-3xl overflow-hidden bg-white/50 backdrop-blur-3xl animate-in zoom-in-95 duration-500">
@@ -161,13 +239,15 @@ export default function MessagesPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
             <Input
               placeholder="Search dialogue..."
+              value={conversationSearch}
+              onChange={(e) => setConversationSearch(e.target.value)}
               className="pl-10 bg-slate-100/50 border-none focus-visible:ring-2 focus-visible:ring-indigo-500/20 placeholder:text-slate-400 font-medium"
             />
           </div>
         </div>
         <ScrollArea className="flex-1">
           <div className="p-2 space-y-1">
-            {conversations.map(conv => (
+            {filteredConversations.map(conv => (
               <div
                 key={conv._id}
                 className={`p-4 flex gap-4 cursor-pointer rounded-2xl transition-all duration-300 transform active:scale-95 ${selectedConversation?._id === conv._id
@@ -227,9 +307,6 @@ export default function MessagesPage() {
                 </div>
               </div>
               <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon" className="text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-all">
-                  <Phone className="h-5 w-5" />
-                </Button>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -238,9 +315,6 @@ export default function MessagesPage() {
                   title="Start Video Meeting"
                 >
                   <Video className="h-5 w-5" />
-                </Button>
-                <Button variant="ghost" size="icon" className="text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-all">
-                  <MoreVertical className="h-5 w-5" />
                 </Button>
               </div>
             </div>
@@ -290,8 +364,33 @@ export default function MessagesPage() {
             <div className="p-6 border-t border-slate-100 bg-white/80 backdrop-blur-md">
               <div className="max-w-4xl mx-auto relative flex items-center gap-3">
                 <div className="flex gap-1 shrink-0">
-                  <Button variant="ghost" size="icon" className="text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full"><Smile className="h-5 w-5" /></Button>
-                  <Button variant="ghost" size="icon" className="text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full"><Paperclip className="h-5 w-5" /></Button>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="ghost" size="icon" className="text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full" title="Insert emoji">
+                        <Smile className="h-5 w-5" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent side="top" align="start" className="p-0 border-none shadow-2xl w-auto">
+                      <EmojiPicker onEmojiClick={(e: any) => setNewMessage((m) => m + (e?.emoji ?? ''))} />
+                    </PopoverContent>
+                  </Popover>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*,video/*,application/pdf"
+                    className="hidden"
+                    onChange={handleFilePicked}
+                  />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full"
+                    title="Attach file"
+                  >
+                    {uploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Paperclip className="h-5 w-5" />}
+                  </Button>
                 </div>
                 <div className="relative flex-1">
                   <Input
