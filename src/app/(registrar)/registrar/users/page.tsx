@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { apiFetch } from "@/lib/api-client";
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -89,7 +90,7 @@ export default function RegistrarUsersPage() {
     const fetchStaff = async () => {
         setLoading(true);
         try {
-            const res = await fetch('/api/users?role=staff');
+            const res = await apiFetch('/api/users?role=staff');
             if (res.ok) {
                 const data = await res.json();
                 setStaff(data);
@@ -109,9 +110,8 @@ export default function RegistrarUsersPage() {
             // Generative UID for mock/demo purposes if Firebase isn't handling it immediately
             const mockUid = newStaff.uid || `staff-${Math.random().toString(36).substr(2, 9)}`;
 
-            const res = await fetch('/api/users', {
+            const res = await apiFetch('/api/users', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     ...newStaff,
                     uid: mockUid
@@ -135,7 +135,7 @@ export default function RegistrarUsersPage() {
         if (!confirm("Are you sure you want to remove this staff member?")) return;
 
         try {
-            const res = await fetch(`/api/users?uid=${uid}`, { method: 'DELETE' });
+            const res = await apiFetch(`/api/users?uid=${uid}`, { method: 'DELETE' });
             if (res.ok) {
                 toast({ title: "Staff Removed" });
                 fetchStaff();

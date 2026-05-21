@@ -9,6 +9,7 @@ import { CalendarCheck, FileText, Video, Clock, MapPin, ChevronRight, Bell } fro
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useUser } from "@/firebase";
+import { apiFetch } from "@/lib/api-client";
 
 export default function SchedulePage() {
   const { user } = useUser();
@@ -20,7 +21,7 @@ export default function SchedulePage() {
     if (!user) return;
     const fetchSchedule = async () => {
       try {
-        const res = await fetch(`/api/registrations?userId=${user.uid}`);
+        const res = await apiFetch('/api/registrations');
         const data = await res.json();
         if (Array.isArray(data)) {
           setRegistrations(data);

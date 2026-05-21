@@ -85,7 +85,7 @@ export function LoginForm({ onSwitchToSignUp }: LoginFormProps) {
         <div className="space-y-3">
           <div className="flex items-center justify-between ml-4 mr-4">
             <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#0B1F3A]">Password</Label>
-            <Link href="#" className="text-[10px] font-black text-[#1F7A5A] uppercase tracking-widest hover:text-[#0B1F3A] transition-colors">
+            <Link href="/login/reset" className="text-[10px] font-black text-[#1F7A5A] uppercase tracking-widest hover:text-[#0B1F3A] transition-colors">
               Recovery
             </Link>
           </div>

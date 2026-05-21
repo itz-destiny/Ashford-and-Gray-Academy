@@ -1,122 +1,87 @@
 "use client";
 
-import { Logo } from "@/components/logo";
 import { UserNav } from "@/components/user-nav";
-import { useUser } from "@/firebase/auth/use-user";
 import {
-    ClipboardList,
-    LayoutDashboard,
-    Settings,
-    Users,
-    Bell,
     Search,
-    MessageSquare,
-    LogOut
+    Menu,
+    Bell,
+    Shield,
 } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { RegistrarSidebar } from "@/components/registrar/RegistrarSidebar";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { RoleGuard } from "@/components/auth/RoleGuard";
 
 export default function RegistrarLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    const pathname = usePathname();
-    const { user } = useUser();
-
-    const navItems = [
-        { href: "/registrar", label: "Dashboard", icon: LayoutDashboard },
-        { href: "/registrar/users", label: "Institutional Staff", icon: Users },
-        { href: "/registrar/communications", label: "Communications", icon: MessageSquare },
-        { href: "/registrar/reports", label: "Reports", icon: ClipboardList },
-        { href: "/registrar/settings", label: "Settings", icon: Settings },
-    ];
-
     return (
-        <div className="grid min-h-screen w-full md:grid-cols-[240px_1fr] lg:grid-cols-[260px_1fr]">
-            <div className="hidden border-r bg-white md:block">
-                <div className="flex h-full max-h-screen flex-col gap-2">
-                    <div className="flex h-20 items-center px-6">
-                        <Link href="/" className="flex items-center gap-2">
-                            <Logo />
-                        </Link>
-                    </div>
-                    <div className="flex-1 px-4 py-2">
-                        <nav className="grid items-start gap-1 text-sm font-medium">
-                            {navItems.map((item) => (
-                                <Link
-                                    key={item.label}
-                                    href={item.href}
-                                    className={cn(
-                                        "flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all text-slate-500 hover:text-indigo-600 hover:bg-indigo-50",
-                                        pathname === item.href && "bg-indigo-50 text-indigo-600 font-semibold"
-                                    )}
+        <RoleGuard allowed={["registrar"]}>
+            <div className="flex min-h-screen w-full bg-[#FCFCFE]">
+                <RegistrarSidebar className="hidden md:flex" />
+
+                <div className="flex flex-col flex-1 md:pl-72">
+                    <header className="sticky top-0 z-30 flex h-20 items-center gap-4 bg-white/80 backdrop-blur-xl px-6 md:px-10 border-b border-slate-50">
+                        <Sheet>
+                            <SheetTrigger asChild>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="shrink-0 md:hidden text-[#0B1F3A] hover:bg-slate-50 rounded-xl"
                                 >
-                                    <item.icon className={cn("h-5 w-5", pathname === item.href ? "text-indigo-600" : "text-slate-400")} />
-                                    {item.label}
-                                </Link>
-                            ))}
-                        </nav>
-                    </div>
-                    <div className="mt-auto p-6 border-t">
-                        <div className="flex items-center gap-3 mb-4">
-                            <Avatar>
-                                <AvatarImage src={user?.photoURL || ""} />
-                                <AvatarFallback className="bg-orange-100 text-orange-600">
-                                    {user?.displayName ? user.displayName.split(' ').map(n => n[0]).join('') : 'RG'}
-                                </AvatarFallback>
-                            </Avatar>
-                            <div className="overflow-hidden">
-                                <p className="font-bold text-sm truncate">{user?.displayName || "Registrar"}</p>
-                                <p className="text-xs text-slate-500 truncate capitalize">Acting Registrar</p>
+                                    <Menu className="h-6 w-6" />
+                                    <span className="sr-only">Toggle navigation menu</span>
+                                </Button>
+                            </SheetTrigger>
+                            <SheetContent side="left" className="p-0 border-none w-72">
+                                <RegistrarSidebar className="relative w-72" />
+                            </SheetContent>
+                        </Sheet>
+
+                        <div className="flex items-center gap-4 mr-auto">
+                            <div className="hidden md:flex items-center gap-3 px-4 py-2 bg-slate-50 rounded-2xl border border-slate-100">
+                                <Shield className="w-4 h-4 text-[#C8A96A]" />
+                                <span className="text-[10px] font-black uppercase tracking-widest text-[#0B1F3A]">
+                                    Enrollment Office
+                                </span>
+                            </div>
+                            <div className="flex flex-col md:hidden">
+                                <h1 className="text-lg font-black text-[#0B1F3A] leading-tight">
+                                    Records
+                                </h1>
                             </div>
                         </div>
-                        <Button
-                            variant="outline"
-                            className="w-full justify-start gap-2 text-slate-600 hover:text-red-600 hover:bg-red-50 hover:border-red-200"
-                            onClick={async () => {
-                                try {
-                                    const { initializeFirebase } = await import('@/firebase');
-                                    const { signOut } = await import('firebase/auth');
-                                    const { auth } = initializeFirebase();
-                                    await signOut(auth);
-                                    window.location.href = '/login';
-                                } catch (error) {
-                                    console.error('Logout error:', error);
-                                }
-                            }}
-                        >
-                            <LogOut className="h-4 w-4" />
-                            Logout
-                        </Button>
-                    </div>
+
+                        <div className="hidden lg:flex relative w-80 group">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-[#0B1F3A] transition-colors" />
+                            <Input
+                                type="search"
+                                placeholder="Find student records..."
+                                className="w-full bg-slate-50/50 pl-11 h-11 border-slate-100 focus-visible:ring-[#0B1F3A]/10 rounded-2xl transition-all"
+                            />
+                        </div>
+
+                        <div className="flex items-center gap-4 ml-auto">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="text-slate-400 hover:text-[#0B1F3A] hover:bg-slate-50 rounded-xl"
+                            >
+                                <Bell className="h-5 w-5" />
+                            </Button>
+                            <div className="h-8 w-px bg-slate-100 mx-1 hidden sm:block" />
+                            <UserNav />
+                        </div>
+                    </header>
+
+                    <main className="flex-1 p-6 md:p-10 lg:p-12 animate-in fade-in duration-700">
+                        <div className="max-w-[1600px] mx-auto">{children}</div>
+                    </main>
                 </div>
             </div>
-            <div className="flex flex-col bg-[#f8fafc]">
-                <header className="flex h-20 items-center gap-4 px-6 border-b bg-white">
-                    <h1 className="text-2xl font-bold text-slate-900 mr-auto">Overview</h1>
-
-                    <div className="hidden md:flex relative w-80">
-                        <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-                        <Input
-                            type="search"
-                            placeholder="Search logs, admins..."
-                            className="w-full bg-slate-50 pl-10 border-slate-200 focus-visible:ring-indigo-500 rounded-lg"
-                        />
-                    </div>
-
-                    <Button variant="ghost" size="icon" className="text-slate-500">
-                        <Bell className="h-5 w-5" />
-                    </Button>
-                </header>
-                <main className="flex flex-1 flex-col gap-6 p-6 md:p-8">
-                    {children}
-                </main>
-            </div>
-        </div>
+        </RoleGuard>
     );
 }

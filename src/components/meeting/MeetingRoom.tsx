@@ -1,367 +1,262 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from 'react';
-import { useDb } from '@/firebase';
-import { 
-  collection, 
-  doc, 
-  setDoc, 
-  onSnapshot, 
-  addDoc, 
-  getDoc, 
-  updateDoc,
-} from 'firebase/firestore';
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import {
+    LiveKitRoom,
+    RoomAudioRenderer,
+    VideoConference,
+} from '@livekit/components-react';
+import '@livekit/components-styles';
+import { Loader2, AlertCircle, Shield, Circle, Square } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { 
-    Mic, 
-    MicOff, 
-    Video, 
-    VideoOff, 
-    PhoneOff, 
-    Settings, 
-    Copy, 
-    Users, 
-    MessageSquare,
-    Shield,
-    Info
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useAuth, useUser } from '@/firebase';
+import { useToast } from '@/hooks/use-toast';
 
-const servers = {
-  iceServers: [
-    {
-      urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'],
-    },
-  ],
-  iceCandidatePoolSize: 10,
+type Props = { roomId: string };
+
+type TokenResponse = {
+    token: string;
+    wsUrl: string;
+    identity: string;
+    role: 'instructor' | 'student' | 'admin';
 };
 
-export default function MeetingRoom({ roomId }: { roomId: string }) {
-  const db = useDb();
-  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
-  const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
-  const [isMuted, setIsMuted] = useState(false);
-  const [isVideoOff, setIsVideoOff] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected'>('connecting');
-  
-  const pc = useRef<RTCPeerConnection | null>(null);
-  const localVideoRef = useRef<HTMLVideoElement>(null);
-  const remoteVideoRef = useRef<HTMLVideoElement>(null);
+type TokenState =
+    | { status: 'idle' }
+    | { status: 'loading' }
+    | { status: 'ready'; data: TokenResponse }
+    | { status: 'error'; message: string };
 
-  useEffect(() => {
-    const startWebRTC = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        setLocalStream(stream);
-        if (localVideoRef.current) localVideoRef.current.srcObject = stream;
+async function fetchAccessToken(idToken: string, room: string): Promise<TokenResponse> {
+    const res = await fetch('/api/livekit/token', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({ room }),
+    });
+    if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || `Failed to join class (HTTP ${res.status})`);
+    }
+    return res.json();
+}
 
-        const peerConnection = new RTCPeerConnection(servers);
-        pc.current = peerConnection;
+export default function MeetingRoom({ roomId }: Props) {
+    const auth = useAuth();
+    const { user, loading } = useUser();
+    const router = useRouter();
+    const { toast } = useToast();
+    const [state, setState] = useState<TokenState>({ status: 'idle' });
+    const [recordingState, setRecordingState] = useState<'idle' | 'starting' | 'active' | 'stopping'>('idle');
+    const [recordingId, setRecordingId] = useState<string | null>(null);
+    const canRecord = state.status === 'ready' &&
+        (state.data.role === 'instructor' || state.data.role === 'admin') &&
+        roomId.startsWith('course-');
 
-        stream.getTracks().forEach((track) => {
-          peerConnection.addTrack(track, stream);
-        });
-
-        peerConnection.ontrack = (event) => {
-          console.log("Track received:", event.streams[0]);
-          setRemoteStream(event.streams[0]);
-          if (remoteVideoRef.current) {
-            remoteVideoRef.current.srcObject = event.streams[0];
-          }
-          setConnectionStatus('connected');
-        };
-
-        peerConnection.onconnectionstatechange = () => {
-            console.log("Connection state:", peerConnection.connectionState);
-            if (peerConnection.connectionState === 'connected') setConnectionStatus('connected');
-            if (peerConnection.connectionState === 'disconnected') setConnectionStatus('disconnected');
-        };
-
-        // Signaling logic using Firestore
-        const roomRef = doc(db, 'meetings', roomId);
-        const roomSnapshot = await getDoc(roomRef);
-
-        const offerCandidates = collection(roomRef, 'offerCandidates');
-        const answerCandidates = collection(roomRef, 'answerCandidates');
-
-        if (!roomSnapshot.exists() || !roomSnapshot.data()?.offer) {
-          // I am the Caller
-          console.log("Creating room...");
-          
-          peerConnection.onicecandidate = (event) => {
-            if (event.candidate) {
-              addDoc(offerCandidates, event.candidate.toJSON());
-            }
-          };
-
-          const offerDescription = await peerConnection.createOffer();
-          await peerConnection.setLocalDescription(offerDescription);
-
-          await setDoc(roomRef, {
-            offer: {
-              sdp: offerDescription.sdp,
-              type: offerDescription.type,
-            },
-            createdAt: new Date().toISOString(),
-          });
-
-          onSnapshot(roomRef, (snapshot) => {
-            const data = snapshot.data();
-            if (!peerConnection.currentRemoteDescription && data?.answer) {
-              const answerDescription = new RTCSessionDescription(data.answer);
-              peerConnection.setRemoteDescription(answerDescription);
-            }
-          });
-
-          onSnapshot(answerCandidates, (snapshot) => {
-            snapshot.docChanges().forEach((change) => {
-              if (change.type === 'added') {
-                const data = change.doc.data();
-                peerConnection.addIceCandidate(new RTCIceCandidate(data));
-              }
-            });
-          });
-        } else {
-          // I am the Callee
-          console.log("Joining room...");
-          
-          peerConnection.onicecandidate = (event) => {
-            if (event.candidate) {
-              addDoc(answerCandidates, event.candidate.toJSON());
-            }
-          };
-
-          const roomData = roomSnapshot.data();
-          const offerDescription = roomData.offer;
-          await peerConnection.setRemoteDescription(new RTCSessionDescription(offerDescription));
-
-          const answerDescription = await peerConnection.createAnswer();
-          await peerConnection.setLocalDescription(answerDescription);
-
-          await updateDoc(roomRef, {
-            answer: {
-              type: answerDescription.type,
-              sdp: answerDescription.sdp,
-            },
-          });
-
-          onSnapshot(offerCandidates, (snapshot) => {
-            snapshot.docChanges().forEach((change) => {
-              if (change.type === 'added') {
-                const data = change.doc.data();
-                peerConnection.addIceCandidate(new RTCIceCandidate(data));
-              }
-            });
-          });
+    useEffect(() => {
+        if (loading) return;
+        if (!user || !auth?.currentUser) {
+            setState({ status: 'error', message: 'Sign in required to join the class.' });
+            return;
         }
-      } catch (error) {
-        console.error("Error starting WebRTC:", error);
-      }
+
+        let cancelled = false;
+        setState({ status: 'loading' });
+
+        (async () => {
+            try {
+                const idToken = await auth.currentUser!.getIdToken();
+                const data = await fetchAccessToken(idToken, roomId);
+                if (!cancelled) setState({ status: 'ready', data });
+            } catch (err) {
+                if (!cancelled) {
+                    const message = err instanceof Error ? err.message : 'Unknown error.';
+                    setState({ status: 'error', message });
+                }
+            }
+        })();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [auth, user, loading, roomId]);
+
+    if (state.status === 'loading' || state.status === 'idle' || loading) {
+        return (
+            <Centered>
+                <Loader2 className="w-10 h-10 animate-spin text-[#C8A96A]" />
+                <p className="text-slate-300 mt-6 text-[10px] font-black uppercase tracking-[0.3em]">
+                    Securing the Hall
+                </p>
+            </Centered>
+        );
+    }
+
+    const startRecording = async () => {
+        if (!auth?.currentUser) return;
+        setRecordingState('starting');
+        try {
+            const idToken = await auth.currentUser.getIdToken();
+            const res = await fetch('/api/livekit/recording/start', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${idToken}` },
+                body: JSON.stringify({ room: roomId }),
+            });
+            const body = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(body.error || `HTTP ${res.status}`);
+            setRecordingId(body.recordingId || body.egressId);
+            setRecordingState('active');
+            toast({ title: 'Recording started', description: 'This session is now being recorded.' });
+        } catch (err: any) {
+            setRecordingState('idle');
+            toast({ variant: 'destructive', title: 'Could not start recording', description: err?.message || 'Try again.' });
+        }
     };
 
-    startWebRTC();
-
-    return () => {
-      localStream?.getTracks().forEach(track => track.stop());
-      pc.current?.close();
+    const stopRecording = async () => {
+        if (!auth?.currentUser) return;
+        setRecordingState('stopping');
+        try {
+            const idToken = await auth.currentUser.getIdToken();
+            const res = await fetch('/api/livekit/recording/stop', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${idToken}` },
+                body: JSON.stringify({ room: roomId }),
+            });
+            const body = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(body.error || `HTTP ${res.status}`);
+            setRecordingState('idle');
+            setRecordingId(null);
+            toast({ title: 'Recording saved', description: 'Processing will finish shortly; the file will appear on the course page.' });
+        } catch (err: any) {
+            setRecordingState('active');
+            toast({ variant: 'destructive', title: 'Could not stop recording', description: err?.message || 'Try again.' });
+        }
     };
-  }, [roomId, db]);
 
-  const toggleMute = () => {
-    if (localStream) {
-      localStream.getAudioTracks().forEach(track => track.enabled = !track.enabled);
-      setIsMuted(!isMuted);
+    if (state.status === 'error') {
+        const needsSignIn = state.message.toLowerCase().includes('sign in');
+        return (
+            <Centered>
+                <Notice
+                    title={needsSignIn ? 'Sign in required' : 'Unable to join class'}
+                    message={state.message}
+                    onAction={() => router.push(needsSignIn ? '/login' : '/')}
+                    actionLabel={needsSignIn ? 'Sign in' : 'Go home'}
+                />
+            </Centered>
+        );
     }
-  };
 
-  const toggleVideo = () => {
-    if (localStream) {
-      localStream.getVideoTracks().forEach(track => track.enabled = !track.enabled);
-      setIsVideoOff(!isVideoOff);
-    }
-  };
-
-  const copyRoomId = () => {
-    navigator.clipboard.writeText(window.location.href);
-    alert("Room link copied to clipboard!");
-  };
-
-  return (
-    <div className="flex flex-col h-screen bg-black text-white overflow-hidden font-sans">
-      {/* Header */}
-      <header className="flex items-center justify-between px-6 py-4 bg-slate-900/50 backdrop-blur-xl border-b border-white/5">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-            <Shield className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h1 className="text-lg font-bold tracking-tight">Ashford & Gray Academy</h1>
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Secure Live Session</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <div className="hidden md:flex items-center gap-2 bg-slate-800/50 px-4 py-2 rounded-full border border-white/5">
-            <Users className="w-4 h-4 text-slate-400" />
-            <span className="text-sm font-medium text-slate-200">2 Participants</span>
-          </div>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="rounded-full bg-white/5 border-white/10 hover:bg-white/10 text-white"
-            onClick={copyRoomId}
-          >
-            <Copy className="w-4 h-4 mr-2" />
-            Invite
-          </Button>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="flex-1 relative p-4 md:p-6 lg:p-8 bg-gradient-to-b from-slate-950 to-black overflow-hidden flex flex-col">
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-7xl mx-auto w-full relative z-10">
-          
-          {/* Remote Participant (Main View) */}
-          <div className="relative group aspect-video lg:aspect-auto h-full min-h-[300px] bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-white/5 transition-all duration-500 hover:border-indigo-500/30">
-            {remoteStream ? (
-              <video
-                ref={remoteVideoRef}
-                autoPlay
-                playsInline
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/80 backdrop-blur-3xl">
-                <div className="relative">
-                  <div className="w-24 h-24 rounded-full bg-indigo-500/10 flex items-center justify-center animate-pulse">
-                    <Users className="w-10 h-10 text-indigo-500" />
-                  </div>
-                  <div className="absolute -inset-4 border-2 border-dashed border-indigo-500/20 rounded-full animate-[spin_10s_linear_infinite]" />
-                </div>
-                <h3 className="mt-6 text-xl font-semibold text-white">Waiting for others...</h3>
-                <p className="text-slate-400 text-sm mt-2">Share the link to start the lecture</p>
-              </div>
-            )}
-            
-            <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/10 flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-emerald-500" />
-              <span className="text-sm font-semibold tracking-wide">Remote Student</span>
-            </div>
-
-            <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Button size="icon" variant="secondary" className="rounded-xl bg-black/60 backdrop-blur-md border border-white/10">
-                    <Info className="w-4 h-4" />
-                </Button>
-            </div>
-          </div>
-
-          {/* Local Participant (Self View) */}
-          <div className="relative group aspect-video lg:aspect-auto h-full min-h-[300px] bg-slate-900 rounded-3xl overflow-hidden shadow-2xl border border-white/5 transition-all duration-500 hover:border-emerald-500/30">
-            <video
-              ref={localVideoRef}
-              autoPlay
-              playsInline
-              muted
-              className={cn(
-                "w-full h-full object-cover",
-                isVideoOff && "hidden"
-              )}
-            />
-            
-            {isVideoOff && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900">
-                    <div className="w-24 h-24 rounded-full bg-slate-800 flex items-center justify-center">
-                        <VideoOff className="w-10 h-10 text-slate-500" />
+    return (
+        <div className="h-screen w-full bg-[#0B1F3A] flex flex-col font-sans">
+            <header className="flex items-center justify-between px-6 py-4 bg-black/40 backdrop-blur-xl border-b border-white/5">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-[#C8A96A]/10 flex items-center justify-center">
+                        <Shield className="w-5 h-5 text-[#C8A96A]" />
                     </div>
-                    <span className="mt-4 text-slate-400 font-medium">Your camera is off</span>
-                </div>
-            )}
-
-            <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/10 flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-indigo-500" />
-              <span className="text-sm font-semibold tracking-wide">You (Instructor)</span>
-              {isMuted && <MicOff className="w-3 h-3 text-rose-500" />}
-            </div>
-
-            <div className="absolute bottom-4 right-4">
-                <div className="flex items-center gap-2 bg-black/60 backdrop-blur-md p-1 rounded-xl border border-white/10">
-                    <div className="px-3 py-1 flex items-center gap-2">
-                        <div className="flex gap-[2px]">
-                            {[1,2,3].map(i => (
-                                <div key={i} className="w-1 h-3 bg-emerald-500 rounded-full animate-bounce" style={{animationDelay: `${i * 0.1}s`}} />
-                            ))}
+                    <div>
+                        <h1 className="text-sm font-serif text-white tracking-tight">
+                            Ashford &amp; Gray Academy
+                        </h1>
+                        <div className="flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">
+                                Live Class · {state.data.role}
+                            </span>
                         </div>
-                        <span className="text-[10px] font-bold text-slate-300 uppercase">Live Audio</span>
                     </div>
                 </div>
+                <div className="flex items-center gap-3">
+                    {canRecord && (
+                        recordingState === 'idle' ? (
+                            <Button
+                                onClick={startRecording}
+                                className="bg-rose-600 hover:bg-rose-700 text-white font-black text-[10px] uppercase tracking-[0.2em] rounded-full h-10 px-5 gap-2"
+                            >
+                                <Circle className="w-3 h-3 fill-current" /> Record
+                            </Button>
+                        ) : recordingState === 'starting' ? (
+                            <Button disabled className="bg-rose-600/60 text-white font-black text-[10px] uppercase tracking-[0.2em] rounded-full h-10 px-5 gap-2">
+                                <Loader2 className="w-3 h-3 animate-spin" /> Starting…
+                            </Button>
+                        ) : recordingState === 'active' ? (
+                            <Button
+                                onClick={stopRecording}
+                                className="bg-rose-600 hover:bg-rose-700 text-white font-black text-[10px] uppercase tracking-[0.2em] rounded-full h-10 px-5 gap-2"
+                            >
+                                <span className="relative flex h-3 w-3">
+                                    <span className="absolute inline-flex h-full w-full rounded-full bg-white opacity-75 animate-ping" />
+                                    <span className="relative inline-flex rounded-full h-3 w-3 bg-white" />
+                                </span>
+                                Stop
+                            </Button>
+                        ) : (
+                            <Button disabled className="bg-rose-600/60 text-white font-black text-[10px] uppercase tracking-[0.2em] rounded-full h-10 px-5 gap-2">
+                                <Loader2 className="w-3 h-3 animate-spin" /> Saving…
+                            </Button>
+                        )
+                    )}
+                    <span className="hidden sm:block text-[10px] font-black uppercase tracking-[0.3em] text-[#C8A96A]">
+                        Room · {roomId}
+                    </span>
+                </div>
+            </header>
+
+            <div className="flex-1 min-h-0 lk-academy">
+                <LiveKitRoom
+                    token={state.data.token}
+                    serverUrl={state.data.wsUrl}
+                    connect
+                    video
+                    audio
+                    onDisconnected={() => router.push('/')}
+                    data-lk-theme="default"
+                    style={{ height: '100%' }}
+                >
+                    <VideoConference />
+                    <RoomAudioRenderer />
+                </LiveKitRoom>
             </div>
-          </div>
         </div>
+    );
+}
 
-        {/* Floating Decorative Elements */}
-        <div className="absolute top-1/4 -left-20 w-64 h-64 bg-indigo-600/10 rounded-full blur-[100px] pointer-events-none" />
-        <div className="absolute bottom-1/4 -right-20 w-64 h-64 bg-emerald-600/10 rounded-full blur-[100px] pointer-events-none" />
-      </main>
-
-      {/* Footer Controls */}
-      <footer className="px-6 py-8 flex items-center justify-center bg-gradient-to-t from-slate-950 to-transparent">
-        <div className="flex items-center gap-6 bg-slate-900/80 backdrop-blur-2xl px-8 py-4 rounded-[32px] border border-white/10 shadow-2xl">
-          <Button
-            variant={isMuted ? "destructive" : "secondary"}
-            size="icon"
-            className={cn(
-                "rounded-2xl w-14 h-14 transition-all duration-300 transform active:scale-95",
-                !isMuted && "bg-slate-800 hover:bg-slate-700 text-white"
-            )}
-            onClick={toggleMute}
-          >
-            {isMuted ? <MicOff className="w-6 h-6" /> : <Mic className="w-6 h-6" />}
-          </Button>
-
-          <Button
-            variant={isVideoOff ? "destructive" : "secondary"}
-            size="icon"
-            className={cn(
-                "rounded-2xl w-14 h-14 transition-all duration-300 transform active:scale-95",
-                !isVideoOff && "bg-slate-800 hover:bg-slate-700 text-white"
-            )}
-            onClick={toggleVideo}
-          >
-            {isVideoOff ? <VideoOff className="w-6 h-6" /> : <Video className="w-6 h-6" />}
-          </Button>
-
-          <div className="w-[1px] h-10 bg-white/10 mx-2" />
-
-          <Button
-            variant="secondary"
-            size="icon"
-            className="rounded-2xl w-14 h-14 bg-slate-800 hover:bg-slate-700 text-white transition-all duration-300 transform active:scale-95"
-          >
-            <MessageSquare className="w-6 h-6" />
-          </Button>
-
-          <Button
-            variant="secondary"
-            size="icon"
-            className="rounded-2xl w-14 h-14 bg-slate-800 hover:bg-slate-700 text-white transition-all duration-300 transform active:scale-95"
-          >
-            <Settings className="w-6 h-6" />
-          </Button>
-
-          <Button
-            variant="destructive"
-            size="icon"
-            className="rounded-2xl w-16 h-16 shadow-lg shadow-rose-500/20 transition-all duration-300 transform hover:scale-110 active:scale-90"
-            onClick={() => window.location.href = '/'}
-          >
-            <PhoneOff className="w-8 h-8 fill-current" />
-          </Button>
+function Centered({ children }: { children: React.ReactNode }) {
+    return (
+        <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#0B1F3A] text-white">
+            {children}
         </div>
-      </footer>
-    </div>
-  );
+    );
+}
+
+function Notice({
+    title,
+    message,
+    onAction,
+    actionLabel,
+}: {
+    title: string;
+    message: string;
+    onAction: () => void;
+    actionLabel: string;
+}) {
+    return (
+        <div className="max-w-md text-center space-y-6 px-8">
+            <div className="w-16 h-16 mx-auto rounded-full bg-rose-500/10 flex items-center justify-center">
+                <AlertCircle className="w-8 h-8 text-rose-500" />
+            </div>
+            <h2 className="text-2xl font-serif">{title}</h2>
+            <p className="text-slate-400">{message}</p>
+            <Button
+                onClick={onAction}
+                className="bg-[#C8A96A] hover:bg-[#B69759] text-[#0B1F3A] font-black text-[10px] uppercase tracking-[0.3em] rounded-full h-12 px-10"
+            >
+                {actionLabel}
+            </Button>
+        </div>
+    );
 }

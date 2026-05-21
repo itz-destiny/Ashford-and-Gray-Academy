@@ -17,19 +17,26 @@ export function NewsletterForm() {
 
     setLoading(true);
     try {
-      // Simulate API call for newsletter subscription
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, source: 'landing' }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || `HTTP ${res.status}`);
+      }
       toast({
-        title: "Subscribed successfully!",
-        description: "You have been added to our newsletter. Check your email for confirmation.",
+        title: "Subscribed",
+        description: "You'll start hearing from us shortly.",
       });
       setEmail("");
-    } catch (error) {
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Something went wrong.";
       toast({
         variant: "destructive",
         title: "Subscription failed",
-        description: "There was an error trying to subscribe. Please try again.",
+        description: message,
       });
     } finally {
       setLoading(false);

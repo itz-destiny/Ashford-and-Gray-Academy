@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useUser } from "@/firebase";
+import { apiFetch } from "@/lib/api-client";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -31,9 +32,9 @@ export default function DashboardPage() {
     const fetchData = async () => {
       try {
         const [enrollmentsRes, eventsRes, assignmentsRes] = await Promise.all([
-          fetch(`/api/enrollments?userId=${user.uid}`),
-          fetch(`/api/events`),
-          fetch(`/api/assignments?userId=${user.uid}`)
+          apiFetch('/api/enrollments'),
+          fetch('/api/events'),
+          apiFetch(`/api/assignments?userId=${user.uid}`)
         ]);
 
         const enrollmentsData = await enrollmentsRes.json();
@@ -47,8 +48,8 @@ export default function DashboardPage() {
         console.error("Error fetching dashboard data:", error);
         toast({
           variant: "destructive",
-          title: "Institutional Sync Error",
-          description: "Could not synchronize your academic records."
+          title: "Connection Error",
+          description: "Could not update your course records."
         });
       } finally {
         setLoading(false);
@@ -104,12 +105,22 @@ export default function DashboardPage() {
       priority: isAfter(new Date(), new Date(a.dueDate)) ? "high" : "low"
     }));
 
-  // Fallback for demonstration if no real deadlines exist yet
-  const displayDeadlines = deadlines.length > 0 ? deadlines : [
-    { title: "Initial Institutional Orientation", category: "FOUNDATION", timeLeft: "Pending", priority: "low" }
-  ];
-
+  const displayDeadlines = deadlines;
   const liveEvent = events.find(ev => ev.isLive);
+
+  // Heatmap reflects real signal: number of assignments due that day in the
+  // last 12 weeks, clamped to a 0-4 intensity scale.
+  const heatmapData = (() => {
+    const buckets: Record<string, number> = {};
+    for (const a of assignments) {
+      if (!a.dueDate) continue;
+      const d = new Date(a.dueDate);
+      if (Number.isNaN(d.getTime())) continue;
+      const key = format(d, 'yyyy-MM-dd');
+      buckets[key] = (buckets[key] || 0) + 1;
+    }
+    return Object.values(buckets).slice(0, 84).map(n => Math.min(4, n));
+  })();
 
   return (
     <div className="mx-auto px-6 md:px-12 py-12 space-y-16 pb-32 max-w-[1800px] bg-[#FCFCFE]">
@@ -127,11 +138,11 @@ export default function DashboardPage() {
                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Student Portal</span>
               </div>
               <h1 className="text-4xl md:text-6xl font-serif text-[#0B1F3A] tracking-tight leading-tight">
-                Distinction, <br />
+                Welcome, <br />
                 <span className="italic text-[#C8A96A]">{user?.displayName?.split(' ')[0]}.</span>
               </h1>
               <p className="text-slate-500 font-medium text-lg max-w-lg leading-relaxed">
-                You are currently tracking {enrollments.length} professional programs. Continue your path toward institutional mastery.
+                You are currently taking {enrollments.length} courses. Keep up the great work.
               </p>
             </div>
 
@@ -141,7 +152,7 @@ export default function DashboardPage() {
                      <BookOpen className="w-6 h-6" />
                   </div>
                   <div>
-                     <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Active Paths</p>
+                     <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">My Courses</p>
                      <p className="text-lg font-black text-[#0B1F3A]">{enrollments.length}</p>
                   </div>
                </div>
@@ -150,7 +161,7 @@ export default function DashboardPage() {
                      <Award className="w-6 h-6" />
                   </div>
                   <div>
-                     <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Certifications</p>
+                     <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Badges</p>
                      <p className="text-lg font-black text-[#0B1F3A]">0</p>
                   </div>
                </div>
@@ -163,7 +174,7 @@ export default function DashboardPage() {
         </Card>
 
         <div className="h-full">
-          <ActivityHeatmap data={enrollments.map(() => Math.floor(Math.random() * 4) + 1)} />
+          <ActivityHeatmap data={heatmapData} />
         </div>
       </div>
 
@@ -174,11 +185,11 @@ export default function DashboardPage() {
         <div className="lg:col-span-2 space-y-12">
           <div className="flex justify-between items-end border-b border-slate-100 pb-8">
             <div>
-               <h2 className="text-3xl font-serif text-[#0B1F3A] tracking-tight">Your Academic Path</h2>
-               <p className="text-slate-400 font-medium mt-2">Professional programs and certifications currently in progress.</p>
+               <h2 className="text-3xl font-serif text-[#0B1F3A] tracking-tight">My Study Plan</h2>
+               <p className="text-slate-400 font-medium mt-2">Courses you are currently taking.</p>
             </div>
             <Link href="/courses" className="text-[#1F7A5A] font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-2 hover:translate-x-2 transition-transform">
-              Institutional Catalog <ChevronRight size={14} />
+              Explore All Courses <ChevronRight size={14} />
             </Link>
           </div>
 
@@ -198,10 +209,10 @@ export default function DashboardPage() {
                 <div className="w-20 h-20 bg-white rounded-[2rem] shadow-sm flex items-center justify-center text-slate-200 mx-auto mb-8">
                    <Target className="w-10 h-10" />
                 </div>
-                <h3 className="text-2xl font-serif text-[#0B1F3A] mb-4">No Active Programs</h3>
-                <p className="text-slate-500 font-medium max-w-sm mx-auto mb-10 leading-relaxed">Your learning path is currently clear. Explore our curated selection of professional programs.</p>
+                <h3 className="text-2xl font-serif text-[#0B1F3A] mb-4">No Courses Yet</h3>
+                <p className="text-slate-500 font-medium max-w-sm mx-auto mb-10 leading-relaxed">You haven't joined any classes yet. Check out our course list to get started.</p>
                 <Link href="/courses">
-                  <button className="bg-[#0B1F3A] text-white font-black px-12 py-5 rounded-2xl shadow-xl hover:scale-105 transition-all text-[10px] uppercase tracking-widest">Enroll in a Program</button>
+                  <button className="bg-[#0B1F3A] text-white font-black px-12 py-5 rounded-2xl shadow-xl hover:scale-105 transition-all text-[10px] uppercase tracking-widest">Find a Course</button>
                 </Link>
               </div>
             )}
@@ -215,7 +226,7 @@ export default function DashboardPage() {
           <div className="space-y-6">
             <h2 className="text-xl font-serif text-[#0B1F3A] flex items-center gap-3">
                <div className="w-1.5 h-6 bg-[#C8A96A] rounded-full" />
-               Institutional Agenda
+               My Schedule
             </h2>
             <ScheduleWidget
               items={todayEvents}
@@ -248,31 +259,37 @@ export default function DashboardPage() {
                   </div>
                 </div>
               )) : (
-                <p className="text-slate-400 font-medium italic text-center py-8">No upcoming events scheduled.</p>
+                <p className="text-slate-400 font-medium italic text-center py-8">No events soon.</p>
               )}
             </div>
           </Card>
 
           {/* Upcoming Deadlines */}
           <Card className="p-10 rounded-[40px] border-none shadow-sm bg-white space-y-10">
-            <CardTitle className="text-xl font-serif text-[#0B1F3A]">Academic Deadlines</CardTitle>
+            <CardTitle className="text-xl font-serif text-[#0B1F3A]">My Deadlines</CardTitle>
             <div className="space-y-6">
-              {displayDeadlines.map((dl, i) => (
-                <div key={i} className="bg-slate-50 p-6 rounded-[2rem] space-y-4 border border-slate-50 hover:border-[#C8A96A]/20 transition-all cursor-pointer group shadow-sm">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{dl.category}</span>
-                    <Badge className={cn(
-                      "text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm",
-                      dl.priority === 'high' ? "bg-red-50 text-red-600" : "bg-[#1F7A5A]/10 text-[#1F7A5A]"
-                    )}>
-                      {dl.timeLeft}
-                    </Badge>
+              {displayDeadlines.length === 0 ? (
+                <p className="text-slate-400 font-medium italic text-center py-8">
+                  No upcoming deadlines.
+                </p>
+              ) : (
+                displayDeadlines.map((dl, i) => (
+                  <div key={i} className="bg-slate-50 p-6 rounded-[2rem] space-y-4 border border-slate-50 hover:border-[#C8A96A]/20 transition-all cursor-pointer group shadow-sm">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{dl.category}</span>
+                      <Badge className={cn(
+                        "text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm",
+                        dl.priority === 'high' ? "bg-red-50 text-red-600" : "bg-[#1F7A5A]/10 text-[#1F7A5A]"
+                      )}>
+                        {dl.timeLeft}
+                      </Badge>
+                    </div>
+                    <h4 className="text-base font-serif text-[#0B1F3A] group-hover:text-[#1F7A5A] transition-colors leading-tight">
+                      {dl.title}
+                    </h4>
                   </div>
-                  <h4 className="text-base font-serif text-[#0B1F3A] group-hover:text-[#1F7A5A] transition-colors leading-tight">
-                    {dl.title}
-                  </h4>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </Card>
         </div>

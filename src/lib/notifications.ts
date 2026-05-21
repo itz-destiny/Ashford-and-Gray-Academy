@@ -1,6 +1,7 @@
 import { Notification } from '@/models/Notification';
 import { sendEmail, emailTemplates } from './email';
 import dbConnect from './mongodb';
+import { publishNotification, markNotificationReadInFirestore, markAllNotificationsReadForUser } from './realtime-events';
 
 interface CreateNotificationParams {
     userId: string;
@@ -34,6 +35,19 @@ export async function createNotification(params: CreateNotificationParams) {
             actionUrl: params.actionUrl,
             metadata: params.metadata,
             emailSent: false
+        });
+
+        // Mirror to Firestore so the user's NotificationBell updates in
+        // real time without polling. Fire-and-forget.
+        void publishNotification({
+            notificationId: String(notification._id),
+            userId: params.userId,
+            type: params.type,
+            title: params.title,
+            message: params.message,
+            link: params.actionUrl,
+            createdAt: notification.createdAt instanceof Date ? notification.createdAt : new Date(),
+            isRead: false,
         });
 
         // Send email if requested and email data provided
@@ -101,6 +115,10 @@ export async function markAsRead(notificationId: string, userId: string) {
             { new: true }
         );
 
+        if (notification) {
+            void markNotificationReadInFirestore(String(notification._id));
+        }
+
         return { success: true, notification };
     } catch (error) {
         console.error('Error marking notification as read:', error);
@@ -116,6 +134,8 @@ export async function markAllAsRead(userId: string) {
             { userId, read: false },
             { read: true, readAt: new Date() }
         );
+
+        void markAllNotificationsReadForUser(userId);
 
         return { success: true };
     } catch (error) {

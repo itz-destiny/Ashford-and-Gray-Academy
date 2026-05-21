@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { apiFetch } from "@/lib/api-client";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -79,7 +80,7 @@ export default function UsersPage() {
 
     const fetchUsers = async () => {
         try {
-            const res = await fetch('/api/users');
+            const res = await apiFetch('/api/users');
             const data = await res.json();
             if (Array.isArray(data)) {
                 setUsers(data);
@@ -100,7 +101,7 @@ export default function UsersPage() {
         if (!confirm("Are you sure you want to delete this user?")) return;
 
         try {
-            const res = await fetch(`/api/users?uid=${uid}`, { method: 'DELETE' });
+            const res = await apiFetch(`/api/users?uid=${uid}`, { method: 'DELETE' });
             if (res.ok) {
                 toast({ title: "User Deleted", description: "The user has been removed from the system." });
                 fetchUsers();
@@ -114,9 +115,8 @@ export default function UsersPage() {
 
     const handleRoleUpdate = async (uid: string, email: string, newRole: string) => {
         try {
-            const res = await fetch('/api/users', {
+            const res = await apiFetch('/api/users', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ uid, email, role: newRole })
             });
             if (res.ok) {
@@ -160,9 +160,8 @@ export default function UsersPage() {
             });
 
             // 4. Create User Request to our API (MongoDB)
-            const res = await fetch('/api/users', {
+            const res = await apiFetch('/api/users', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     uid: user.uid,
                     email: user.email,

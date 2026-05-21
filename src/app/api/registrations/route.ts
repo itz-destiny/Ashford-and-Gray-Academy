@@ -1,66 +1,75 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
+import { z } from 'zod';
 import dbConnect from '@/lib/mongodb';
 import Registration from '@/models/Registration';
-import Event from '@/models/Event';
-import { rateLimit } from '@/lib/rate-limit';
+import { withAuth, type AuthContext } from '@/lib/auth-server';
 
-const limiter = rateLimit({
-    interval: 60 * 1000,
-    uniqueTokenPerInterval: 500,
-});
+const ELEVATED_ROLES = ['admin', 'instructor', 'registrar', 'course_registrar'] as const;
 
-export async function GET(request: Request) {
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
+function isElevated(auth: AuthContext): boolean {
+    return (ELEVATED_ROLES as readonly string[]).includes(auth.role);
+}
 
-    if (!userId) {
-        return NextResponse.json({ error: 'userId is required' }, { status: 400 });
+export const GET = withAuth(async (req: NextRequest, { auth }) => {
+    const { searchParams } = new URL(req.url);
+    const requestedUserId = searchParams.get('userId');
+
+    const targetUserId = requestedUserId ?? auth.uid;
+    if (targetUserId !== auth.uid && !isElevated(auth)) {
+        return NextResponse.json(
+            { error: 'You can only read your own registrations.' },
+            { status: 403 }
+        );
     }
 
     try {
         await dbConnect();
-        const registrations = await Registration.find({ userId }).populate('eventId').exec();
+        const registrations = await Registration.find({ userId: targetUserId })
+            .populate('eventId')
+            .exec();
 
-        const formattedRegistrations = registrations.map(reg => ({
+        const formatted = registrations.map(reg => ({
             id: reg._id,
             userId: reg.userId,
-            eventId: reg.eventId._id,
+            eventId: reg.eventId?._id,
             registeredAt: reg.registeredAt,
             event: reg.eventId,
         }));
-
-        return NextResponse.json(formattedRegistrations);
+        return NextResponse.json(formatted);
     } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        console.error('GET /api/registrations failed:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
-}
+});
 
-export async function POST(request: Request) {
+const postSchema = z.object({
+    eventId: z.string().min(1),
+});
+
+export const POST = withAuth(async (req: NextRequest, { auth }) => {
+    const json = await req.json().catch(() => null);
+    const parsed = postSchema.safeParse(json);
+    if (!parsed.success) {
+        return NextResponse.json(
+            { error: 'Invalid request', details: parsed.error.flatten() },
+            { status: 400 }
+        );
+    }
+
     try {
-        const forwarded = request.headers.get("x-forwarded-for");
-        const ip = forwarded ? forwarded.split(/, /)[0] : "127.0.0.1";
-        
-        try {
-            await limiter.check(null, 5, ip); // 5 registrations per minute
-        } catch {
-            return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
-        }
-
-        const { userId, eventId } = await request.json();
         await dbConnect();
+        const userId = auth.uid;
+        const { eventId } = parsed.data;
 
         const existing = await Registration.findOne({ userId, eventId });
         if (existing) {
-            return NextResponse.json({ message: 'Already registered' });
+            return NextResponse.json({ message: 'Already registered', registration: existing });
         }
 
-        const registration = await Registration.create({
-            userId,
-            eventId,
-        });
-
-        return NextResponse.json(registration);
+        const registration = await Registration.create({ userId, eventId });
+        return NextResponse.json(registration, { status: 201 });
     } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        console.error('POST /api/registrations failed:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
-}
+});

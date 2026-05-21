@@ -1,31 +1,27 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import AuditLog from '@/models/AuditLog';
+import { AuthError, requireRole, withAuth } from '@/lib/auth-server';
 
-export async function GET(req: NextRequest) {
+export const GET = withAuth(async (req: NextRequest, { auth }) => {
+    try {
+        requireRole(auth, ['admin', 'registrar']);
+    } catch (err) {
+        if (err instanceof AuthError) {
+            return NextResponse.json({ error: err.message }, { status: err.status });
+        }
+        throw err;
+    }
+
     try {
         await dbConnect();
-
         const { searchParams } = new URL(req.url);
-        const limit = parseInt(searchParams.get('limit') || '50');
+        const limit = Math.min(parseInt(searchParams.get('limit') || '50', 10) || 50, 500);
 
-        // Fetch recent activity across all roles
-        const activities = await AuditLog.find()
-            .sort({ timestamp: -1 })
-            .limit(limit)
-            .lean();
-
-        return NextResponse.json({
-            success: true,
-            activities,
-            count: activities.length
-        });
-
+        const activities = await AuditLog.find().sort({ timestamp: -1 }).limit(limit).lean();
+        return NextResponse.json({ success: true, activities, count: activities.length });
     } catch (error: any) {
         console.error('Error fetching activity feed:', error);
-        return NextResponse.json(
-            { success: false, error: error.message },
-            { status: 500 }
-        );
+        return NextResponse.json({ success: false, error: 'Internal Server Error' }, { status: 500 });
     }
-}
+});

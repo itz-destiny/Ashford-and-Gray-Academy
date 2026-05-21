@@ -1,98 +1,173 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
+import { z } from 'zod';
 import dbConnect from '@/lib/mongodb';
 import { Message, Conversation } from '@/models/Supports';
-import { rateLimit } from '@/lib/rate-limit';
+import { withAuth, type AuthContext } from '@/lib/auth-server';
+import { publishMessage } from '@/lib/realtime-events';
 
-const limiter = rateLimit({
-    interval: 60 * 1000, // 60 seconds
-    uniqueTokenPerInterval: 500,
-});
+const ELEVATED_ROLES = ['admin'] as const;
 
-function getIP(request: Request) {
-    const forwarded = request.headers.get("x-forwarded-for");
-    return forwarded ? forwarded.split(/, /)[0] : "127.0.0.1";
+function isElevated(auth: AuthContext): boolean {
+    return (ELEVATED_ROLES as readonly string[]).includes(auth.role);
 }
 
-export async function GET(request: Request) {
+async function userIsConversationParticipant(uid: string, conversationId: string): Promise<boolean> {
+    const convo = await Conversation.findById(conversationId)
+        .select('participants')
+        .lean<{ participants: string[] } | null>();
+    if (!convo) return false;
+    return convo.participants.includes(uid);
+}
+
+export const GET = withAuth(async (req: NextRequest, { auth }) => {
+    const { searchParams } = new URL(req.url);
+    const contactId = searchParams.get('contactId');
+    const courseId = searchParams.get('courseId');
+    const conversationId = searchParams.get('conversationId');
+
     try {
-        try {
-            await limiter.check(null, 30, getIP(request)); // 30 per min
-        } catch {
-            return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
-        }
         await dbConnect();
-        const { searchParams } = new URL(request.url);
-        const userId = searchParams.get('userId');
-        const contactId = searchParams.get('contactId');
-        const courseId = searchParams.get('courseId');
-        const conversationId = searchParams.get('conversationId');
 
         if (conversationId) {
+            const allowed = isElevated(auth) || await userIsConversationParticipant(auth.uid, conversationId);
+            if (!allowed) {
+                return NextResponse.json(
+                    { error: 'You are not a participant in this conversation.' },
+                    { status: 403 }
+                );
+            }
             const messages = await Message.find({ conversationId }).sort({ createdAt: 1 });
             return NextResponse.json(messages);
         }
 
-        if (!userId) {
-            return NextResponse.json({ error: 'userId is required' }, { status: 400 });
-        }
-
-        const query: any = {
-            $or: [
-                { senderId: userId, receiverId: contactId },
-                { senderId: contactId, receiverId: userId }
-            ]
-        };
-
-        if (courseId) {
-            query.courseId = courseId;
-        }
+        // Inbox view (no contactId): every message involving the user.
+        // With contactId: only direct messages between auth.uid and contactId.
+        const query: Record<string, unknown> = contactId
+            ? {
+                  $or: [
+                      { senderId: auth.uid, receiverId: contactId },
+                      { senderId: contactId, receiverId: auth.uid },
+                  ],
+              }
+            : { $or: [{ senderId: auth.uid }, { receiverId: auth.uid }] };
+        if (courseId) query.courseId = courseId;
 
         const messages = await Message.find(query).sort({ createdAt: 1 });
         return NextResponse.json(messages);
     } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        console.error('GET /api/messages failed:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
-}
+});
 
-export async function POST(request: Request) {
+const postSchema = z.object({
+    receiverId: z.string().min(1),
+    content: z.string().min(1).max(5000),
+    conversationId: z.string().optional(),
+    courseId: z.string().optional(),
+});
+
+export const POST = withAuth(async (req: NextRequest, { auth }) => {
+    const json = await req.json().catch(() => null);
+    const parsed = postSchema.safeParse(json);
+    if (!parsed.success) {
+        return NextResponse.json(
+            { error: 'Invalid request', details: parsed.error.flatten() },
+            { status: 400 }
+        );
+    }
+
     try {
-        try {
-            await limiter.check(null, 15, getIP(request)); // 15 per min
-        } catch {
-            return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
-        }
         await dbConnect();
-        const body = await request.json();
+        const { receiverId, content, conversationId, courseId } = parsed.data;
 
-        // If conversationId is provided, use it. If not, try to find or create one (optional optimization)
-        // For now, assume client might pass existing conversationId or we just save the message.
+        if (conversationId) {
+            const allowed = await userIsConversationParticipant(auth.uid, conversationId);
+            if (!allowed) {
+                return NextResponse.json(
+                    { error: 'You are not a participant in this conversation.' },
+                    { status: 403 }
+                );
+            }
+        }
 
-        const message = await Message.create(body);
+        // senderId is always the authenticated user. Client-supplied senderId
+        // is ignored to prevent impersonation.
+        const message = await Message.create({
+            senderId: auth.uid,
+            receiverId,
+            content,
+            conversationId,
+            courseId,
+        });
 
-        // Update conversation if linked
-        if (body.conversationId) {
-            await Conversation.findByIdAndUpdate(body.conversationId, {
-                lastMessage: body.content,
-                lastMessageAt: new Date()
+        if (conversationId) {
+            await Conversation.findByIdAndUpdate(conversationId, {
+                lastMessage: content,
+                lastMessageAt: new Date(),
             });
         }
 
-        return NextResponse.json(message);
-    } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-}
+        // Push to Firestore so any subscribed clients see the message
+        // immediately, without polling. Fire-and-forget.
+        void publishMessage({
+            messageId: String(message._id),
+            conversationId,
+            senderId: auth.uid,
+            senderName: auth.displayName,
+            receiverId,
+            content,
+            courseId,
+            createdAt: message.createdAt instanceof Date ? message.createdAt : new Date(),
+        });
 
-export async function PUT(request: Request) {
+        return NextResponse.json(message, { status: 201 });
+    } catch (error: any) {
+        console.error('POST /api/messages failed:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
+});
+
+const putSchema = z.object({
+    isRead: z.boolean(),
+});
+
+export const PUT = withAuth(async (req: NextRequest, { auth }) => {
+    const { searchParams } = new URL(req.url);
+    const messageId = searchParams.get('id');
+    if (!messageId) {
+        return NextResponse.json({ error: 'id is required' }, { status: 400 });
+    }
+
+    const json = await req.json().catch(() => null);
+    const parsed = putSchema.safeParse(json);
+    if (!parsed.success) {
+        return NextResponse.json(
+            { error: 'Invalid request', details: parsed.error.flatten() },
+            { status: 400 }
+        );
+    }
+
     try {
         await dbConnect();
-        const { searchParams } = new URL(request.url);
-        const messageId = searchParams.get('id');
-        const { isRead } = await request.json();
+        const message = await Message.findById(messageId);
+        if (!message) {
+            return NextResponse.json({ error: 'Message not found' }, { status: 404 });
+        }
 
-        const updated = await Message.findByIdAndUpdate(messageId, { isRead }, { new: true });
-        return NextResponse.json(updated);
+        // Only the receiver may mark a message as read.
+        if (message.receiverId !== auth.uid && !isElevated(auth)) {
+            return NextResponse.json(
+                { error: 'You can only update messages addressed to you.' },
+                { status: 403 }
+            );
+        }
+
+        message.isRead = parsed.data.isRead;
+        await message.save();
+        return NextResponse.json(message);
     } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        console.error('PUT /api/messages failed:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
-}
+});

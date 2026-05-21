@@ -38,6 +38,8 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import { apiFetch } from "@/lib/api-client";
 import {
     Dialog,
     DialogContent,
@@ -86,7 +88,7 @@ export default function RegistrarAuditPage() {
             if (roleFilter !== 'all') params.append('role', roleFilter);
             if (actionFilter !== 'all') params.append('action', actionFilter);
 
-            const res = await fetch(`/api/audit/logs?${params.toString()}`);
+            const res = await apiFetch(`/api/audit/logs?${params.toString()}`);
             if (res.ok) {
                 const data = await res.json();
                 setLogs(data.logs);

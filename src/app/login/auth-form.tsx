@@ -36,7 +36,10 @@ export function AuthForm({ title, description, children, footerText, footerLinkT
 
         if (user) {
             try {
-                const response = await fetch(`/api/users?uid=${user.uid}`);
+                const idToken = await user.getIdToken();
+                const response = await fetch(`/api/users?uid=${user.uid}`, {
+                    headers: { Authorization: `Bearer ${idToken}` },
+                });
                 
                 if (response.ok) {
                     const dbUser = await response.json();

@@ -12,6 +12,9 @@ export interface IUser extends Document {
     dateOfBirth?: string;
     expertise?: string;
     organization?: string;
+    emailVerified?: boolean;
+    emailVerifiedAt?: Date;
+    welcomeEmailSentAt?: Date;
 }
 
 const UserSchema: Schema = new Schema({
@@ -26,6 +29,9 @@ const UserSchema: Schema = new Schema({
     dateOfBirth: { type: String },
     expertise: { type: String },
     organization: { type: String },
+    emailVerified: { type: Boolean, default: false, index: true },
+    emailVerifiedAt: { type: Date },
+    welcomeEmailSentAt: { type: Date },
 }, { timestamps: true });
 
 export default mongoose.models.User || mongoose.model<IUser>('User', UserSchema);

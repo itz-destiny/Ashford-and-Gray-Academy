@@ -1,9 +1,10 @@
-import { WebRTCRoom } from '@/components/video/WebRTCRoom';
+import MeetingRoom from '@/components/meeting/MeetingRoom';
 
-export default function LiveClassRoomPage({ params }: { params: { roomId: string } }) {
-  return (
-    <div className="h-[85vh] w-full">
-      <WebRTCRoom roomId={params.roomId} />
-    </div>
-  );
+export default async function LiveClassRoomPage({
+    params,
+}: {
+    params: Promise<{ roomId: string }>;
+}) {
+    const { roomId } = await params;
+    return <MeetingRoom roomId={roomId} />;
 }

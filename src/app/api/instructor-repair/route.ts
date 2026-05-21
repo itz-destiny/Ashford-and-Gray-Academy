@@ -1,32 +1,45 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import User from '@/models/User';
+import { AuthError, requireRole, withAuth } from '@/lib/auth-server';
+import { assertDevEndpointAllowed } from '@/lib/dev-only';
 
-export async function GET() {
+// Reclassifies users that have instructor-shaped fields (expertise /
+// organization) but were saved as students. Dev-only, admin-only.
+export const GET = withAuth(async (_req: NextRequest, { auth }) => {
+    try {
+        assertDevEndpointAllowed();
+        requireRole(auth, ['admin']);
+    } catch (err) {
+        if (err instanceof AuthError) {
+            return NextResponse.json({ error: err.message }, { status: err.status });
+        }
+        throw err;
+    }
+
     try {
         await dbConnect();
-
-        // Find users who have 'instructor' fields (like expertise or organization) but the role is 'student'
         const mislabeledInstructors = await User.find({
             role: 'student',
             $or: [
-                { expertise: { $exists: true, $ne: "" } },
-                { organization: { $exists: true, $ne: "" } }
-            ]
+                { expertise: { $exists: true, $ne: '' } },
+                { organization: { $exists: true, $ne: '' } },
+            ],
         });
 
-        const results = [];
+        const updatedEmails: string[] = [];
         for (const user of mislabeledInstructors) {
             user.role = 'instructor';
             await user.save();
-            results.push(user.email);
+            updatedEmails.push(user.email);
         }
 
         return NextResponse.json({
             message: `Successfully updated ${mislabeledInstructors.length} instructors`,
-            updatedEmails: results
+            updatedEmails,
         });
     } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        console.error('instructor-repair failed:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
-}
+});

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useUser } from '@/firebase';
+import { apiFetch } from '@/lib/api-client';
 import type { Enrollment } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,7 +26,7 @@ export default function MyCoursesPage() {
 
     const fetchEnrollments = async () => {
       try {
-        const res = await fetch(`/api/enrollments?userId=${user.uid}`);
+        const res = await apiFetch('/api/enrollments');
         const data = await res.json();
         setEnrollments(Array.isArray(data) ? data : []);
       } catch (error) {

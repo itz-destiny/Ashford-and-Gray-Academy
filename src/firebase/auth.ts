@@ -11,12 +11,16 @@ import {
 } from "firebase/auth";
 import { initializeFirebase } from ".";
 
-const { app, auth } = initializeFirebase();
+const { auth } = initializeFirebase();
 
 const googleProvider = new GoogleAuthProvider();
 
 // Sign up with Email and Password
-export const signUpWithEmail = async (email, password, additionalData) => {
+export const signUpWithEmail = async (
+  email: string,
+  password: string,
+  additionalData: { name: string; [key: string]: unknown }
+) => {
   try {
     const { user } = await createUserWithEmailAndPassword(auth, email, password);
 
@@ -26,18 +30,18 @@ export const signUpWithEmail = async (email, password, additionalData) => {
     // Note: additionalData (role, etc.) must be saved to DB by the caller
 
     return { user };
-  } catch (error) {
-    return { error: error.message };
+  } catch (error: any) {
+    return { error: error?.message ?? "Sign-up failed." };
   }
 };
 
 // Sign in with Email and Password
-export const signInWithEmail = async (email, password) => {
+export const signInWithEmail = async (email: string, password: string) => {
   try {
     const { user } = await signInWithEmailAndPassword(auth, email, password);
     return { user };
-  } catch (error) {
-    return { error: error.message };
+  } catch (error: any) {
+    return { error: error?.message ?? "Sign-in failed." };
   }
 };
 
@@ -59,7 +63,7 @@ export const signInWithGoogle = async () => {
 export const signOut = async () => {
   try {
     await firebaseSignOut(auth);
-  } catch (error) {
-    console.error("Error signing out", error);
+  } catch (error: any) {
+    console.error("Error signing out", error?.message ?? error);
   }
 };

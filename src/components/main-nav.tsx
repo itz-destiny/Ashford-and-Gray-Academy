@@ -19,7 +19,9 @@ export function MainNav() {
     { href: "/courses", label: "Programs" },
     { href: "/certification", label: "Certification" },
     { href: "/events", label: "Events" },
-    { href: "/about", label: "About Us" },
+    { href: "/faculty", label: "Faculty" },
+    { href: "/about", label: "About" },
+    { href: "/contact", label: "Contact" },
   ];
 
   return (

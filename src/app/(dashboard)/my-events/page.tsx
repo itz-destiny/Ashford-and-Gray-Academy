@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useUser } from "@/firebase";
+import { apiFetch } from "@/lib/api-client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -25,8 +26,8 @@ export default function StudentEventsPage() {
         const fetchData = async () => {
             try {
                 const [regRes, evRes] = await Promise.all([
-                    fetch(`/api/registrations?userId=${user.uid}`),
-                    fetch(`/api/events`)
+                    apiFetch('/api/registrations'),
+                    fetch('/api/events')
                 ]);
                 const regData = await regRes.json();
                 const evData = await evRes.json();

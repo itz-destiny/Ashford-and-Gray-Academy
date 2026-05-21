@@ -1,5 +1,6 @@
 "use client";
 
+import { apiFetch } from "@/lib/api-client";
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -40,7 +41,7 @@ export default function InstructorsPage() {
     const fetchInstructors = async () => {
         setLoading(true);
         try {
-            const res = await fetch('/api/users?role=instructor');
+            const res = await apiFetch('/api/users?role=instructor');
             const data = await res.json();
             setInstructors(data || []);
         } catch (error) {

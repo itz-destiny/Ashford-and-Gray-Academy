@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useUser } from "@/firebase";
-import { BookOpen, MoreVertical, Plus, Search, Users, Star, Clock, Filter, Layers } from "lucide-react";
+import { apiFetch } from "@/lib/api-client";
+import { BookOpen, MoreVertical, Plus, Search, Users, Star, Clock, Filter, Layers, Video } from "lucide-react";
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -20,15 +21,14 @@ export default function InstructorCoursesPage() {
         if (!user) return;
         const fetchCourses = async () => {
             try {
-                // Strictly filter by instructor name. 
-                // Note: The API should ideally handle this server-side, 
-                // but we're reinforcing it here as requested.
-                const url = `/api/courses?instructorName=${encodeURIComponent(user.displayName || '')}`;
-                const res = await fetch(url);
+                // Authenticated GET returns all statuses for elevated callers, so
+                // instructor drafts come through. Filter to ones owned by this user.
+                const res = await apiFetch('/api/courses');
                 const data = await res.json();
                 if (Array.isArray(data)) {
-                    // Safety frontend filter just in case API returns more
-                    const mine = data.filter(c => c.instructor?.name === user.displayName);
+                    const mine = data.filter((c: any) =>
+                        c.instructorUid === user.uid || c.instructor?.name === user.displayName
+                    );
                     setCourses(mine);
                 }
             } catch (error) {
@@ -138,23 +138,30 @@ export default function InstructorCoursesPage() {
                                         <Users className="w-4 h-4 text-indigo-600" />
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Cohort</p>
-                                        <p className="font-bold text-slate-700">124 Students</p>
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Enrolled</p>
+                                        <p className="font-bold text-slate-700">{course.enrollmentCount ?? 0} Students</p>
                                     </div>
                                 </div>
                                 <div className="text-right">
                                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Revenue</p>
-                                    <p className="font-bold text-emerald-600">${(course.price * 124).toLocaleString()}</p>
+                                    <p className="font-bold text-emerald-600">${((course.price || 0) * (course.enrollmentCount ?? 0)).toLocaleString()}</p>
                                 </div>
                             </div>
+                            {course.status && course.status !== 'published' && (
+                                <Badge className="mt-3 bg-amber-50 text-amber-700 border-none font-bold text-[10px] uppercase tracking-widest px-2.5 py-0.5">
+                                    {course.status}
+                                </Badge>
+                            )}
                         </CardContent>
                         <div className="p-6 pt-0 border-t border-slate-50 mt-auto">
                             <div className="flex gap-2 pt-6">
                                 <Button asChild className="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold h-11 rounded-xl shadow-none transition-all active:scale-95">
-                                    <Link href={`/instructor/courses/${course._id}`}>Manage Content</Link>
+                                    <Link href={`/instructor/courses/${course._id}`}>Manage</Link>
                                 </Button>
-                                <Button variant="outline" size="icon" className="h-11 w-11 rounded-xl border-slate-100 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all">
-                                    <MoreVertical className="h-5 w-5" />
+                                <Button asChild variant="outline" className="h-11 px-4 rounded-xl border-slate-100 text-[#1F7A5A] hover:bg-emerald-50 transition-all gap-2 font-bold">
+                                    <Link href={`/live-classes/course-${course._id}`}>
+                                        <Video className="h-4 w-4" /> Live
+                                    </Link>
                                 </Button>
                             </div>
                         </div>

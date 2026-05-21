@@ -74,16 +74,20 @@ export function UserNav() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <UserIcon className="mr-2 h-4 w-4" />
-            <span>Profile</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <CreditCard className="mr-2 h-4 w-4" />
-            <span>Billing</span>
+          <DropdownMenuItem asChild>
+            <Link href="/account">
+              <UserIcon className="mr-2 h-4 w-4" />
+              <span>Profile</span>
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href="/settings">
+            <Link href="/account?tab=billing">
+              <CreditCard className="mr-2 h-4 w-4" />
+              <span>Billing</span>
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/account">
               <Settings className="mr-2 h-4 w-4" />
               <span>Settings</span>
             </Link>

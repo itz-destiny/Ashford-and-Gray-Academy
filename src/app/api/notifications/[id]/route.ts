@@ -1,57 +1,42 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import dbConnect from '@/lib/mongodb';
+import { Notification } from '@/models/Notification';
 import { markAsRead } from '@/lib/notifications';
+import { withAuth } from '@/lib/auth-server';
 
-export async function PATCH(
-    req: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
-) {
+type RouteParams = { params: Promise<{ id: string }> };
+
+export const PATCH = withAuth<RouteParams>(async (_req: NextRequest, { auth, params }) => {
+    const { id } = await params;
     try {
-        await dbConnect();
-
-        const { searchParams } = new URL(req.url);
-        const userId = searchParams.get('userId');
-
-        if (!userId) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        const result = await markAsRead(id, auth.uid);
+        if (!result.success || !result.notification) {
+            return NextResponse.json(
+                { error: 'Notification not found or not yours.' },
+                { status: 404 }
+            );
         }
-
-        const { id } = await params;
-        const result = await markAsRead(id, userId);
-
-        if (!result.success) {
-            return NextResponse.json({ error: 'Failed to mark as read' }, { status: 500 });
-        }
-
         return NextResponse.json({ success: true, notification: result.notification });
     } catch (error) {
         console.error('Error marking notification as read:', error);
         return NextResponse.json({ error: 'Failed to mark as read' }, { status: 500 });
     }
-}
+});
 
-export async function DELETE(
-    req: NextRequest,
-    { params }: { params: Promise<{ id: string }> }
-) {
+export const DELETE = withAuth<RouteParams>(async (_req: NextRequest, { auth, params }) => {
+    const { id } = await params;
     try {
         await dbConnect();
-
-        const { searchParams } = new URL(req.url);
-        const userId = searchParams.get('userId');
-
-        if (!userId) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        const deleted = await Notification.findOneAndDelete({ _id: id, userId: auth.uid });
+        if (!deleted) {
+            return NextResponse.json(
+                { error: 'Notification not found or not yours.' },
+                { status: 404 }
+            );
         }
-
-        const { id } = await params;
-        const { Notification } = await import('@/models/Notification');
-
-        await Notification.findOneAndDelete({ _id: id, userId });
-
         return NextResponse.json({ success: true });
     } catch (error) {
         console.error('Error deleting notification:', error);
         return NextResponse.json({ error: 'Failed to delete notification' }, { status: 500 });
     }
-}
+});

@@ -60,6 +60,7 @@ import React, { useState, useMemo } from "react";
 import type { Course } from "@/lib/types";
 import { useRouter, usePathname } from "next/navigation";
 import { useUser } from "@/firebase";
+import { apiFetch } from "@/lib/api-client";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
@@ -146,29 +147,45 @@ export default function CoursesPage() {
   const handleEnrollClick = async (course: Course) => {
     if (!user) {
       router.push(`/login?redirectUrl=${pathname}?dialog=${course.id}`);
-    } else {
+      return;
+    }
+    // Free courses skip Paystack and enroll directly.
+    if (!course.price || course.price <= 0) {
       try {
-        const res = await fetch('/api/enrollments', {
+        const res = await apiFetch('/api/enrollments', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: user.uid, courseId: course.id }),
+          body: JSON.stringify({ courseId: course.id }),
         });
-
-        if (res.ok) {
-          toast({
-            title: "Enrollment Authorized",
-            description: `You have successfully joined "${course.title}".`,
-          });
-        } else {
-          throw new Error('Failed to enroll');
-        }
-      } catch (error) {
+        if (!res.ok) throw new Error('Failed to enroll');
+        toast({
+          title: "Enrollment Authorized",
+          description: `You have successfully joined "${course.title}".`,
+        });
+      } catch {
         toast({
           variant: "destructive",
           title: "Registry Error",
           description: "We encountered an issue processing your enrollment.",
         });
       }
+      return;
+    }
+    // Paid courses go through Paystack.
+    try {
+      const res = await apiFetch('/api/payments/initialize', {
+        method: 'POST',
+        body: JSON.stringify({ courseId: course.id }),
+      });
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.error || `HTTP ${res.status}`);
+      window.location.href = body.authorizationUrl;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Could not start checkout.";
+      toast({
+        variant: "destructive",
+        title: "Payment Error",
+        description: message,
+      });
     }
   };
 
@@ -514,8 +531,8 @@ export default function CoursesPage() {
                             <Button className="w-full h-16 bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black text-[10px] uppercase tracking-[0.2em] rounded-2xl shadow-xl transition-all" onClick={() => handleEnrollClick(course)}>
                               Authorize Enrollment
                             </Button>
-                            <Button variant="outline" className="w-full h-16 border-slate-100 text-[#0B1F3A] font-black text-[10px] uppercase tracking-[0.2em] rounded-2xl hover:bg-slate-50" onClick={() => handleEnrollClick(course)}>
-                              Institutional Grant
+                            <Button asChild variant="outline" className="w-full h-16 border-slate-100 text-[#0B1F3A] font-black text-[10px] uppercase tracking-[0.2em] rounded-2xl hover:bg-slate-50">
+                              <Link href={`/courses/${course.id}`}>View Full Programme</Link>
                             </Button>
                           </div>
 
@@ -571,6 +588,9 @@ export default function CoursesPage() {
                                 <span className="text-[9px] font-black text-white/40 uppercase tracking-widest">Total Program Investment</span>
                              </div>
                              <Button className="w-full h-16 bg-[#C8A96A] text-white font-black text-[10px] uppercase tracking-widest rounded-2xl shadow-xl" onClick={() => handleEnrollClick(course)}>Authorize Enrollment</Button>
+                             <Button asChild variant="outline" className="w-full h-12 border-white/20 text-white hover:bg-white/10 rounded-2xl font-black text-[10px] uppercase tracking-widest">
+                               <Link href={`/courses/${course.id}`}>View Full Programme</Link>
+                             </Button>
                           </div>
                         </div>
 

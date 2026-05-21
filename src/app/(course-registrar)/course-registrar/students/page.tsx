@@ -1,5 +1,6 @@
 "use client";
 
+import { apiFetch } from "@/lib/api-client";
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -62,7 +63,7 @@ export default function CourseRegistrarStudentsPage() {
         setLoading(true);
         try {
             // Fetch students and their enrollment stats
-            const res = await fetch('/api/users?role=student');
+            const res = await apiFetch('/api/users?role=student');
             const data = await res.json();
 
             if (res.ok) {
