@@ -13,7 +13,7 @@ const bodySchema = z.object({
     message: z.string().min(10).max(5000),
 });
 
-const INBOX = process.env.CONTACT_INBOX_EMAIL || 'ashfordandgrayinstitute@gmail.com';
+const INBOX = process.env.CONTACT_INBOX_EMAIL || 'info@ashfordandgrayacademy.com';
 
 function escapeHtml(s: string): string {
     return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');

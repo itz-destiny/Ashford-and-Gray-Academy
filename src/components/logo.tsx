@@ -1,51 +1,33 @@
-import Image from 'next/image';
 import Link from 'next/link';
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 type LogoProps = {
   className?: string;
-  showText?: boolean;
   variant?: 'default' | 'white' | 'icon-only' | 'blue';
 };
 
 /**
- * Ashford & Gray Logo Component
- * 
- * Logo Usage Guide:
- * - Full Logo (default): Use in light backgrounds (sidebars, headers)
- * - White Logo: Use on dark/colored backgrounds
- * - Icon Only: Use in compact spaces (mobile nav, favicon, small buttons)
- * - Blue: Use for primary brand emphasis
+ * Ashford & Gray Official Logo Component
  */
-export function Logo({ className, showText = true, variant = 'default' }: LogoProps) {
-  // Logo selection based on variant
-  const getLogoSrc = () => {
-    if (!showText || variant === 'icon-only') {
-      return '/icon.png';
-    }
-
-    // Full logo versions
-    switch (variant) {
-      case 'white':
-        return '/A & G2.png';
-      case 'blue':
-        return '/A&G blue.png';
-      default:
-        return '/A & G1.png';
-    }
-  };
+export function Logo({ className, variant = 'default' }: LogoProps) {
+  const isDarkBg = variant === 'white';
+  const logoSrc = isDarkBg ? '/A&G Logo white.png' : '/A&G Logo.png';
 
   return (
     <div className={cn('flex items-center shrink-0', className)}>
-      <Link href="/">
-        <Image
-          src={getLogoSrc()}
-          alt="Ashford & Gray Fusion Academy"
-          width={showText ? 180 : 40}
-          height={showText ? 45 : 40}
-          className="object-contain"
-          priority
-        />
+      <Link href="/" className="flex items-center group relative block">
+        {/* Render official brand logo image */}
+        <div className="relative h-12 w-48 md:h-14 md:w-56 transition-transform duration-300 hover:scale-102">
+          <Image
+            src={logoSrc}
+            alt="Ashford & Gray Fusion Academy"
+            fill
+            sizes="(max-width: 768px) 192px, 224px"
+            className="object-contain object-left"
+            priority
+          />
+        </div>
       </Link>
     </div>
   );

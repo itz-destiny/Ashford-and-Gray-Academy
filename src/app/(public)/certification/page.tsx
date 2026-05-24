@@ -37,9 +37,10 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
 import { ScrollAnimation } from "@/components/ui/scroll-animation";
+import { STATIC_COURSES } from "@/lib/courses-data";
 
 export default function CertificationPage() {
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [courses, setCourses] = useState<Course[]>(STATIC_COURSES.filter(c => c.category === 'Certification' || c.category === 'Diploma'));
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -48,16 +49,23 @@ export default function CertificationPage() {
       try {
         const res = await fetch('/api/courses');
         const data = await res.json();
-        if (Array.isArray(data)) {
-          const filtered = data.filter((c: Course) => 
-            c.category === 'Certification' || c.category === 'Diploma'
-          );
-          setCourses(filtered);
-        } else {
-          setCourses([]);
-        }
+        const apiCourses = Array.isArray(data) ? data : [];
+        
+        // Merge so STATIC_COURSES are prioritized
+        const merged = [...STATIC_COURSES];
+        apiCourses.forEach(ac => {
+          if (!merged.some(mc => mc.id === ac.id || mc.title.toLowerCase() === ac.title.toLowerCase())) {
+            merged.push(ac);
+          }
+        });
+        
+        const filtered = merged.filter((c: Course) => 
+          c.category === 'Certification' || c.category === 'Diploma'
+        );
+        setCourses(filtered);
       } catch (error) {
         console.error("Failed to fetch certifications:", error);
+        setCourses(STATIC_COURSES.filter(c => c.category === 'Certification' || c.category === 'Diploma'));
       } finally {
         setLoading(false);
       }

@@ -12,11 +12,11 @@ import { ArrowRight, CheckCircle2, Loader2, Mail, MapPin, Phone } from "lucide-r
 import { FaLinkedinIn, FaXTwitter, FaFacebookF, FaInstagram, FaYoutube, FaThreads } from "react-icons/fa6";
 
 const SOCIALS = [
-    { label: "LinkedIn", href: "https://www.linkedin.com/in/ashford-gray-85b5a040a", icon: FaLinkedinIn },
+    { label: "LinkedIn", href: "https://www.linkedin.com/in/ashford-gray-85b5a040a?utm_source=share_via&utm_content=profile&utm_medium=member_android", icon: FaLinkedinIn },
     { label: "X (Twitter)", href: "https://x.com/AshfordFusion", icon: FaXTwitter },
     { label: "Threads", href: "https://www.threads.com/@ashfordgrayacademy", icon: FaThreads },
-    { label: "Facebook", href: "https://www.facebook.com/share/1H8yi7mBSJ/", icon: FaFacebookF },
-    { label: "Instagram", href: "https://www.instagram.com/ashfordgrayacademy?igsh=bGQyMmpiNWU1bXBk", icon: FaInstagram },
+    { label: "Facebook", href: "https://www.facebok.com/share/1H8yi7mBSJ/", icon: FaFacebookF },
+    { label: "Instagram", href: "https://www.instagram.com/asfordgrayacademy?igsh=bGQyMmpiNWU1bXBk", icon: FaInstagram },
     { label: "YouTube", href: "https://youtube.com/@ashfordgray?si=NdmrAITGsPN-abXO", icon: FaYoutube },
 ];
 
@@ -91,7 +91,7 @@ export default function ContactPage() {
                                         </div>
                                         <div>
                                             <p className="text-[10px] font-black text-[#C8A96A] uppercase tracking-widest mb-1">Email</p>
-                                            <a href="mailto:ashfordandgrayinstitute@gmail.com" className="text-white hover:underline font-medium">ashfordandgrayinstitute@gmail.com</a>
+                                            <a href="mailto:info@ashfordgrayacademy.com" className="text-white hover:underline font-medium">info@ashfordgrayacademy.com</a>
                                         </div>
                                     </div>
 

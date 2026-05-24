@@ -1,7 +1,7 @@
 
 import { MainNav } from "@/components/main-nav";
 import { Logo } from "@/components/logo";
-import { Database, Linkedin } from "lucide-react";
+import { Linkedin } from "lucide-react";
 import { FaXTwitter, FaInstagram, FaFacebookF, FaThreads, FaYoutube } from "react-icons/fa6";
 import Link from "next/link";
 import React from "react";
@@ -81,7 +81,6 @@ export default function PublicLayout({
               <Link href="/terms" className="hover:text-white">Terms</Link>
               <Link href="/contact" className="hover:text-white">Contact</Link>
               <Link href="/unsubscribe" className="hover:text-white">Unsubscribe</Link>
-              <Link href="/seed" className="flex items-center hover:text-white"><Database className="mr-2 h-3 w-3" />System</Link>
             </div>
           </div>
         </div>

@@ -11,13 +11,14 @@ import dbConnect from '@/lib/mongodb';
 import User from '@/models/User';
 import mongoose from 'mongoose';
 
-const ADMIN_EMAIL = 'jonathandestiny693+admin@gmail.com';
-const INSTRUCTOR_EMAIL = 'jonathandestiny693+instructor@gmail.com';
-const PASSWORD = 'Academy2026Test!';
+const ADMIN_EMAIL = 'ashfordandgrayinstitute@gmail.com';
+const ADMIN_PASSWORD = 'j%e^WtshERwoJ9itwk';
+const INSTRUCTOR_EMAIL = 'jonathandestiny693@gmail.com';
+const INSTRUCTOR_PASSWORD = 'M_yw5SbpvahCS0uv6v';
 
 const ACCOUNTS = [
-    { email: ADMIN_EMAIL, displayName: 'Academy Admin', role: 'admin' as const },
-    { email: INSTRUCTOR_EMAIL, displayName: 'Test Instructor', role: 'instructor' as const },
+    { email: ADMIN_EMAIL, password: ADMIN_PASSWORD, displayName: 'Academy Administrator', role: 'admin' as const },
+    { email: INSTRUCTOR_EMAIL, password: INSTRUCTOR_PASSWORD, displayName: 'Destiny Jonathan', role: 'instructor' as const },
 ];
 
 async function main() {
@@ -30,7 +31,7 @@ async function main() {
         try {
             user = await auth.getUserByEmail(a.email);
             await auth.updateUser(user.uid, {
-                password: PASSWORD,
+                password: a.password,
                 displayName: a.displayName,
                 emailVerified: true,
             });
@@ -39,7 +40,7 @@ async function main() {
             if (err?.code !== 'auth/user-not-found') throw err;
             user = await auth.createUser({
                 email: a.email,
-                password: PASSWORD,
+                password: a.password,
                 displayName: a.displayName,
                 emailVerified: true,
             });
@@ -65,15 +66,16 @@ async function main() {
         results.push({
             role: a.role,
             email: a.email,
-            password: PASSWORD,
+            password: a.password,
             portal: a.role === 'admin' ? '/admin' : '/instructor',
             uid: user.uid,
         });
     }
 
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:9002';
     console.log('\n=== Login credentials ===');
     for (const r of results) {
-        console.log(`${r.role.padEnd(10)}  ${r.email}   pwd=${r.password}   -> http://localhost:9002${r.portal}`);
+        console.log(`${r.role.padEnd(10)}  ${r.email}   pwd=${r.password}   -> ${appUrl}${r.portal}`);
     }
 
     await mongoose.disconnect();

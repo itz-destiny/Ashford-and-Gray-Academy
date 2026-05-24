@@ -92,7 +92,7 @@ export default function FacultyPage() {
                 </div>
             </section>
 
-            {/* Faculty grid placeholder */}
+            {/* Faculty composition (abstract / coming-soon) */}
             <section className="py-24 md:py-32 bg-slate-50">
                 <div className="container px-6 lg:px-12">
                     <div className="text-center max-w-3xl mx-auto mb-16">

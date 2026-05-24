@@ -30,7 +30,9 @@
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
       "Bash(git push *)",
-      "Bash(node *)"
+      "Bash(node *)",
+      "Bash(git ls-remote *)",
+      "Bash(git commit -m 'fix\\(vercel\\): use daily cron schedule to fit Hobby plan limits *)"
     ]
   }
 }

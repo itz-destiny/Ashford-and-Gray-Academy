@@ -20,12 +20,18 @@ export type Course = {
   duration: number; // in weeks
   level: 'Beginner' | 'Intermediate' | 'Advanced' | 'All Levels';
   price: number;
+  currency?: string;
   originalPrice?: number;
   imageUrl: string;
   imageHint: string;
   description: string;
   curriculum?: string[];
   progress?: number;
+  status?: 'draft' | 'pending' | 'published' | 'archived';
+  whoFor?: string[];
+  learningOutcomes?: { module: string; topics: string[] }[];
+  certificationDetails?: string[];
+  careerOpportunities?: string[];
 };
 
 export type AppEvent = {
