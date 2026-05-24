@@ -4,6 +4,7 @@ import dbConnect from '@/lib/mongodb';
 import Course from '@/models/Course';
 import Enrollment from '@/models/Enrollment';
 import { rateLimit } from '@/lib/rate-limit';
+import { STATIC_COURSES } from '@/lib/courses-data';
 import {
     tryAuthenticate,
     withAuth,
@@ -32,19 +33,35 @@ function isElevated(auth: AuthContext | null): boolean {
 // =============================================================================
 export async function GET(req: NextRequest): Promise<Response> {
     try {
-        await dbConnect();
-        const auth = await tryAuthenticate(req);
-        const { searchParams } = new URL(req.url);
-        const instructorName = searchParams.get('instructorName');
+        let courses: any[] = [];
+        let enrollments: any[] = [];
+        let dbOk = false;
 
-        const query: Record<string, unknown> = {};
-        if (instructorName) query['instructor.name'] = instructorName;
-        if (!isElevated(auth)) query.status = 'published';
+        try {
+            await dbConnect();
+            dbOk = true;
+        } catch (dbErr) {
+            console.warn('CRITICAL: Database connection failed. Falling back to static courses list:', dbErr);
+        }
 
-        const [courses, enrollments] = await Promise.all([
-            Course.find(query),
-            Enrollment.find({}),
-        ]);
+        if (dbOk) {
+            const auth = await tryAuthenticate(req);
+            const { searchParams } = new URL(req.url);
+            const instructorName = searchParams.get('instructorName');
+
+            const query: Record<string, unknown> = {};
+            if (instructorName) query['instructor.name'] = instructorName;
+            if (!isElevated(auth)) query.status = 'published';
+
+            const [dbCourses, dbEnrollments] = await Promise.all([
+                Course.find(query),
+                Enrollment.find({}),
+            ]);
+            courses = dbCourses;
+            enrollments = dbEnrollments;
+        } else {
+            courses = STATIC_COURSES;
+        }
 
         const enrollmentCounts: Record<string, number> = {};
         for (const en of enrollments) {
@@ -53,11 +70,15 @@ export async function GET(req: NextRequest): Promise<Response> {
             enrollmentCounts[cid] = (enrollmentCounts[cid] || 0) + 1;
         }
 
-        const result = courses.map(course => ({
-            ...course.toObject(),
-            id: course._id.toString(),
-            enrollmentCount: enrollmentCounts[course._id.toString()] || 0,
-        }));
+        const result = courses.map(course => {
+            const courseObj = typeof course.toObject === 'function' ? course.toObject() : course;
+            const cid = (courseObj.id || courseObj._id || '').toString();
+            return {
+                ...courseObj,
+                id: cid,
+                enrollmentCount: enrollmentCounts[cid] || 0,
+            };
+        });
         return NextResponse.json(result);
     } catch (error: any) {
         console.error('GET /api/courses failed:', error);

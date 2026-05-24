@@ -5,21 +5,31 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
-    ArrowRight, BookOpen, Clock, Award, Briefcase, GraduationCap, Target, Users, Star, CheckCircle2,
+    ArrowRight, BookOpen, Clock, Award, Briefcase, GraduationCap, Target, Users, Star, CheckCircle2, ShieldCheck, PlayCircle, Trophy, FileText, ChevronRight
 } from "lucide-react";
 import { ScrollAnimation } from "@/components/ui/scroll-animation";
 import dbConnect from "@/lib/mongodb";
 import Course from "@/models/Course";
+import { STATIC_COURSES } from "@/lib/courses-data";
 
 type RouteProps = { params: Promise<{ id: string }> };
 
 async function loadCourse(id: string) {
+    const staticCourse = STATIC_COURSES.find(c => c.id === id);
+    if (staticCourse) {
+        return JSON.parse(JSON.stringify(staticCourse));
+    }
     if (!/^[a-fA-F0-9]{24}$/.test(id)) return null;
-    await dbConnect();
-    const course = await Course.findById(id).lean();
-    if (!course) return null;
-    if ((course as any).status && (course as any).status !== 'published') return null;
-    return JSON.parse(JSON.stringify(course));
+    try {
+        await dbConnect();
+        const course = await Course.findById(id).lean();
+        if (!course) return null;
+        if ((course as any).status && (course as any).status !== 'published') return null;
+        return JSON.parse(JSON.stringify(course));
+    } catch (e) {
+        console.warn("Database error in course detail page. Gracefully using static content fallback if available.");
+        return null;
+    }
 }
 
 export async function generateMetadata({ params }: RouteProps) {
@@ -44,245 +54,454 @@ export default async function CourseDetailPage({ params }: RouteProps) {
     const curriculum = Array.isArray(course.curriculum) ? course.curriculum : [];
 
     return (
-        <div className="bg-white">
-            {/* Hero */}
-            <header className="relative bg-[#0B1F3A] text-white py-24 md:py-32 overflow-hidden">
-                <div className="absolute inset-0 opacity-10 pointer-events-none">
-                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#C8A96A]/20 blur-[120px] rounded-full translate-x-1/3 -translate-y-1/3" />
-                </div>
-                <div className="container px-6 lg:px-12 relative z-10">
-                    <Link href="/courses" className="text-[10px] font-black uppercase tracking-[0.3em] text-[#C8A96A] inline-flex items-center gap-2 mb-8 hover:gap-3 transition-all">
-                        ← Back to Programmes
+        <div className="bg-[#FAF9F6] min-h-screen text-[#0B1F3A]">
+            {/* HBS-Style Top Breadcrumb Header */}
+            <div className="bg-[#0B1F3A] border-b border-white/5 py-4">
+                <div className="container px-6 lg:px-12 mx-auto flex justify-between items-center text-[10px] font-black uppercase tracking-[0.2em] text-[#C8A96A]">
+                    <Link href="/courses" className="hover:text-white flex items-center gap-1.5 transition-colors">
+                        ← Academic Programs
                     </Link>
-                    <div className="grid lg:grid-cols-[1fr_400px] gap-12 md:gap-16 items-center">
-                        <div className="space-y-8">
-                            <div className="flex flex-wrap gap-2">
-                                <Badge className="bg-[#C8A96A]/20 text-[#C8A96A] border-none font-bold text-[10px] uppercase tracking-widest px-3 py-1">{course.category}</Badge>
-                                <Badge className="bg-white/10 text-white border-none font-bold text-[10px] uppercase tracking-widest px-3 py-1">{course.level}</Badge>
-                            </div>
-                            <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif tracking-tight leading-tight">
-                                {course.title}
-                            </h1>
-                            <p className="text-lg md:text-xl text-slate-300 leading-relaxed font-medium max-w-2xl">
-                                {course.description}
-                            </p>
-                            <div className="flex flex-wrap items-center gap-6 text-sm text-slate-400">
-                                <span className="flex items-center gap-2"><Clock className="w-4 h-4 text-[#C8A96A]" /> {course.duration} weeks</span>
-                                <span className="flex items-center gap-2"><GraduationCap className="w-4 h-4 text-[#C8A96A]" /> {course.level}</span>
-                                {course.instructor?.name && (
-                                    <span className="flex items-center gap-2"><Users className="w-4 h-4 text-[#C8A96A]" /> {course.instructor.name}</span>
-                                )}
-                            </div>
-                            <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                                <Button asChild className="h-16 px-10 bg-[#C8A96A] hover:bg-[#B69859] text-[#0B1F3A] font-black text-[10px] uppercase tracking-[0.3em] rounded-full shadow-2xl">
-                                    <Link href={`/login?view=signup&redirectUrl=${encodeURIComponent('/courses?dialog=' + id)}`}>Apply Now <ArrowRight className="ml-3 w-4 h-4" /></Link>
+                    <span className="text-white/40 hidden sm:inline">Global Leader in Elite Hospitality &amp; Business Curricula</span>
+                </div>
+            </div>
+
+            {/* HBS Flagship Hero Header */}
+            <header className="relative bg-[#0B1F3A] text-white py-20 md:py-28 overflow-hidden">
+                <div className="absolute inset-0 opacity-[0.03] pointer-events-none select-none">
+                    <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#C8A96A] rounded-full blur-[120px] translate-x-1/4 -translate-y-1/4" />
+                </div>
+                
+                <div className="container px-6 lg:px-12 mx-auto relative z-10">
+                    <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+                        <div className="lg:col-span-8 space-y-8">
+                            <ScrollAnimation animation="fade-in-up">
+                                <div className="flex flex-wrap items-center gap-3">
+                                    <Badge className="bg-[#C8A96A] text-[#0B1F3A] border-none font-bold text-[9px] uppercase tracking-widest px-4 py-1.5 rounded-none">
+                                        {course.category}
+                                    </Badge>
+                                    <span className="text-white/20">•</span>
+                                    <span className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em]">Next Cohort Enrolling</span>
+                                </div>
+                            </ScrollAnimation>
+
+                            <ScrollAnimation animation="fade-in-up" delay={100}>
+                                <h1 className="text-4xl md:text-6xl font-serif tracking-tight leading-[1.05] text-white max-w-4xl">
+                                    {course.title}
+                                </h1>
+                            </ScrollAnimation>
+
+                            <ScrollAnimation animation="fade-in-up" delay={200}>
+                                <p className="text-lg md:text-xl text-slate-300 leading-relaxed font-medium max-w-3xl">
+                                    {course.description}
+                                </p>
+                            </ScrollAnimation>
+
+                            {/* HBS Core Highlights Stats Row */}
+                            <ScrollAnimation animation="fade-in-up" delay={300}>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-8 border-t border-white/10 text-left">
+                                    <div>
+                                        <p className="text-[10px] font-black text-[#C8A96A] uppercase tracking-[0.2em] mb-1">Duration</p>
+                                        <p className="text-lg font-bold text-white">{course.duration} Weeks</p>
+                                        <p className="text-[9px] text-white/40 mt-0.5">Intense Executive Pace</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-black text-[#C8A96A] uppercase tracking-[0.2em] mb-1">Format</p>
+                                        <p className="text-lg font-bold text-white">Hybrid / Cohort</p>
+                                        <p className="text-[9px] text-white/40 mt-0.5">Global Learning Network</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-black text-[#C8A96A] uppercase tracking-[0.2em] mb-1">Credentials</p>
+                                        <p className="text-lg font-bold text-white">{course.category}</p>
+                                        <p className="text-[9px] text-white/40 mt-0.5">Gold Standard Certificate</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-black text-[#C8A96A] uppercase tracking-[0.2em] mb-1">Next Intake</p>
+                                        <p className="text-lg font-bold text-emerald-400">Admissions Open</p>
+                                        <p className="text-[9px] text-white/40 mt-0.5">Rolling Selection</p>
+                                    </div>
+                                </div>
+                            </ScrollAnimation>
+
+                            <ScrollAnimation animation="fade-in-up" delay={400} className="pt-6 flex flex-col sm:flex-row gap-4">
+                                <Button asChild className="h-16 px-10 bg-[#C8A96A] hover:bg-[#B69859] text-[#0B1F3A] font-black text-[10px] uppercase tracking-[0.3em] rounded-none border-none shadow-none">
+                                    <Link href={`/login?view=signup&redirectUrl=${encodeURIComponent('/courses?dialog=' + id)}`}>Apply Now <ArrowRight className="ml-3 w-4.5 h-4.5" /></Link>
                                 </Button>
-                                <Button asChild variant="outline" className="h-16 px-10 border-white/20 text-white hover:bg-white/10 rounded-full font-black text-[10px] uppercase tracking-[0.3em]">
+                                <Button asChild variant="outline" className="h-16 px-10 border-white/20 text-white hover:bg-white/10 rounded-none font-black text-[10px] uppercase tracking-[0.3em]">
                                     <Link href="/contact">Speak to an Advisor</Link>
                                 </Button>
-                            </div>
+                            </ScrollAnimation>
                         </div>
-                        <div className="relative hidden lg:block">
-                            <div className="relative aspect-[4/5] rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white/10">
-                                <Image src={course.imageUrl} alt={course.title} fill className="object-cover" />
-                            </div>
+                        
+                        <div className="lg:col-span-4 hidden lg:block">
+                            <ScrollAnimation animation="fade-in" delay={300}>
+                                <div className="relative aspect-[3/4] w-full max-w-sm mx-auto border-[10px] border-[#061222] shadow-2xl overflow-hidden group">
+                                    <Image src={course.imageUrl} alt={course.title} fill className="object-cover transition-transform duration-1000 group-hover:scale-105" />
+                                    <div className="absolute inset-0 bg-[#C8A96A]/10 mix-blend-multiply" />
+                                </div>
+                            </ScrollAnimation>
                         </div>
                     </div>
                 </div>
             </header>
 
-            {/* Body sections */}
-            <div className="container px-6 lg:px-12 py-24 md:py-32 grid lg:grid-cols-[1fr_360px] gap-16">
-                <div className="space-y-20">
-                    <Section label="Overview" icon={Target}>
-                        <p className="text-base md:text-lg text-slate-600 leading-relaxed font-medium whitespace-pre-line">
+            {/* HBS Style Sticky Sub-Navigation Tab Bar */}
+            <div className="bg-white border-b border-slate-200 sticky top-20 z-40 shadow-sm hidden md:block">
+                <div className="container px-6 lg:px-12 mx-auto flex gap-12 text-[10px] font-bold uppercase tracking-[0.15em] text-[#0B1F3A]">
+                    <a href="#overview" className="py-6 border-b-2 border-[#C8A96A] text-[#C8A96A] hover:text-[#C8A96A] transition-colors">Overview</a>
+                    <a href="#experience" className="py-6 border-b-2 border-transparent hover:border-[#1F7A5A] hover:text-[#1F7A5A] transition-colors">Academic Experience</a>
+                    <a href="#curriculum" className="py-6 border-b-2 border-transparent hover:border-[#1F7A5A] hover:text-[#1F7A5A] transition-colors">Curriculum Modules</a>
+                    <a href="#admissions" className="py-6 border-b-2 border-transparent hover:border-[#1F7A5A] hover:text-[#1F7A5A] transition-colors">Tuition &amp; Aid</a>
+                    <a href="#faculty" className="py-6 border-b-2 border-transparent hover:border-[#1F7A5A] hover:text-[#1F7A5A] transition-colors">Faculty Lead</a>
+                </div>
+            </div>
+
+            {/* Main Content Area */}
+            <div className="container px-6 lg:px-12 mx-auto py-20 md:py-28 space-y-24">
+                
+                {/* 1. Overview Section */}
+                <section id="overview" className="scroll-mt-36">
+                    <div className="max-w-4xl space-y-8">
+                        <div className="inline-flex items-center gap-3">
+                            <span className="text-[#C8A96A] font-black text-xs uppercase tracking-[0.3em]">Program Overview</span>
+                            <span className="w-1.5 h-1.5 bg-[#C8A96A] rounded-full"></span>
+                        </div>
+                        <h2 className="text-3xl md:text-5xl font-headline font-bold text-[#0B1F3A] tracking-tighter leading-none">
+                            General Management Curriculum Focused on Real-World Practice.
+                        </h2>
+                        <p className="text-base md:text-lg text-[#0B1F3A]/75 leading-relaxed font-medium whitespace-pre-line border-l-4 border-[#C8A96A] pl-8">
                             {course.description}
                         </p>
-                    </Section>
+                    </div>
+                </section>
 
-                    {hasWhoFor && (
-                        <Section label="Who This Is For" icon={Users}>
-                            <ul className="space-y-3">
-                                {course.whoFor.map((item: string, i: number) => (
-                                    <li key={i} className="flex items-start gap-3">
-                                        <CheckCircle2 className="w-5 h-5 text-[#1F7A5A] shrink-0 mt-0.5" />
-                                        <span className="text-base text-slate-600 font-medium">{item}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </Section>
-                    )}
+                {/* 2. Core Experience Grid (HBS Style Rectangular Cards) */}
+                <section id="experience" className="scroll-mt-36 space-y-16">
+                    <div className="max-w-3xl mb-12 space-y-4">
+                        <div className="inline-flex items-center gap-3">
+                            <span className="text-[#C8A96A] font-black text-xs uppercase tracking-[0.3em]">Academic Advantage</span>
+                            <span className="w-10 h-[1px] bg-[#C8A96A]/30"></span>
+                        </div>
+                        <h2 className="text-3xl md:text-5xl font-headline font-bold text-[#0B1F3A] tracking-tighter">
+                            Two Years. A World of Difference.
+                        </h2>
+                        <p className="text-[#0B1F3A]/60 text-sm font-semibold max-w-xl">
+                            Combining deep-domain frameworks with proactive, case-based learning to shape professionals into authoritative authorities.
+                        </p>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        {/* Box 1: The Case Methodology */}
+                        <ScrollAnimation animation="fade-in-up">
+                            <div className="bg-white border border-slate-200 border-t-4 border-t-[#C8A96A] p-8 h-full space-y-6 shadow-sm hover:shadow-md transition-shadow">
+                                <div className="w-10 h-10 rounded-full bg-[#1F7A5A]/5 flex items-center justify-center text-[#1F7A5A]">
+                                    <Target className="w-5 h-5" />
+                                </div>
+                                <h3 className="font-serif text-lg font-bold text-[#0B1F3A]">The Practice Method</h3>
+                                <p className="text-xs text-[#0B1F3A]/70 leading-relaxed font-medium">
+                                    At Ashford &amp; Gray, you don't merely read about management; you step into the role of a decision-maker, analyzing complex corporate and hospitality challenges in real time.
+                                </p>
+                                <ul className="space-y-2 border-t border-slate-100 pt-4 text-[11px] font-bold text-[#0B1F3A]/60">
+                                    <li className="flex items-center gap-2"><ChevronRight className="w-3.5 h-3.5 text-[#C8A96A]" /> High-pressure operations</li>
+                                    <li className="flex items-center gap-2"><ChevronRight className="w-3.5 h-3.5 text-[#C8A96A]" /> Case discussions</li>
+                                </ul>
+                            </div>
+                        </ScrollAnimation>
+
+                        {/* Box 2: Class & Cohort Profile */}
+                        <ScrollAnimation animation="fade-in-up" delay={100}>
+                            <div className="bg-white border border-slate-200 border-t-4 border-t-[#C8A96A] p-8 h-full space-y-6 shadow-sm hover:shadow-md transition-shadow">
+                                <div className="w-10 h-10 rounded-full bg-[#1F7A5A]/5 flex items-center justify-center text-[#1F7A5A]">
+                                    <Users className="w-5 h-5" />
+                                </div>
+                                <h3 className="font-serif text-lg font-bold text-[#0B1F3A]">Cohort Profile</h3>
+                                <p className="text-xs text-[#0B1F3A]/70 leading-relaxed font-medium">
+                                    Learn alongside high-caliber, disciplined professionals selected from diverse premium industries. Together, you form a collaborative learning network that endures.
+                                </p>
+                                <ul className="space-y-2 border-t border-slate-100 pt-4 text-[11px] font-bold text-[#0B1F3A]/60">
+                                    <li className="flex items-center gap-2"><ChevronRight className="w-3.5 h-3.5 text-[#C8A96A]" /> Max 25 select peers</li>
+                                    <li className="flex items-center gap-2"><ChevronRight className="w-3.5 h-3.5 text-[#C8A96A]" /> Senior executive network</li>
+                                </ul>
+                            </div>
+                        </ScrollAnimation>
+
+                        {/* Box 3: Career Placements */}
+                        <ScrollAnimation animation="fade-in-up" delay={200}>
+                            <div className="bg-white border border-slate-200 border-t-4 border-t-[#C8A96A] p-8 h-full space-y-6 shadow-sm hover:shadow-md transition-shadow">
+                                <div className="w-10 h-10 rounded-full bg-[#1F7A5A]/5 flex items-center justify-center text-[#1F7A5A]">
+                                    <Briefcase className="w-5 h-5" />
+                                </div>
+                                <h3 className="font-serif text-lg font-bold text-[#0B1F3A]">Career Impact</h3>
+                                <p className="text-xs text-[#0B1F3A]/70 leading-relaxed font-medium">
+                                    Our graduates enter the market with a refined executive presence and practical authority, immediately qualifying for placements with elite brands and hospitality estates.
+                                </p>
+                                <ul className="space-y-2 border-t border-slate-100 pt-4 text-[11px] font-bold text-[#0B1F3A]/60">
+                                    <li className="flex items-center gap-2"><ChevronRight className="w-3.5 h-3.5 text-[#C8A96A]" /> Global alumni registry</li>
+                                    <li className="flex items-center gap-2"><ChevronRight className="w-3.5 h-3.5 text-[#C8A96A]" /> Corporate placement desks</li>
+                                </ul>
+                            </div>
+                        </ScrollAnimation>
+
+                        {/* Box 4: Global Distinction */}
+                        <ScrollAnimation animation="fade-in-up" delay={300}>
+                            <div className="bg-white border border-slate-200 border-t-4 border-t-[#C8A96A] p-8 h-full space-y-6 shadow-sm hover:shadow-md transition-shadow">
+                                <div className="w-10 h-10 rounded-full bg-[#1F7A5A]/5 flex items-center justify-center text-[#1F7A5A]">
+                                    <Award className="w-5 h-5" />
+                                </div>
+                                <h3 className="font-serif text-lg font-bold text-[#0B1F3A]">Ivy Accreditation</h3>
+                                <p className="text-xs text-[#0B1F3A]/70 leading-relaxed font-medium">
+                                    Receiving an Ashford &amp; Gray diploma is a mark of absolute distinction. Each certificate is backed by robust, verified academic rigor and executive authority.
+                                </p>
+                                <ul className="space-y-2 border-t border-slate-100 pt-4 text-[11px] font-bold text-[#0B1F3A]/60">
+                                    <li className="flex items-center gap-2"><ChevronRight className="w-3.5 h-3.5 text-[#C8A96A]" /> Lifetime credentials</li>
+                                    <li className="flex items-center gap-2"><ChevronRight className="w-3.5 h-3.5 text-[#C8A96A]" /> Verified Registry Badge</li>
+                                </ul>
+                            </div>
+                        </ScrollAnimation>
+                    </div>
+                </section>
+
+                {/* 3. Who This is For */}
+                {hasWhoFor && (
+                    <section className="py-12 border-t border-slate-200">
+                        <div className="grid lg:grid-cols-12 gap-12">
+                            <div className="lg:col-span-4 space-y-4">
+                                <div className="inline-flex items-center gap-3">
+                                    <span className="text-[#C8A96A] font-black text-xs uppercase tracking-[0.3em]">Candidate Profile</span>
+                                </div>
+                                <h3 className="text-2xl font-serif text-[#0B1F3A] leading-tight">Who We Are Looking For.</h3>
+                                <p className="text-xs text-[#0B1F3A]/60 leading-relaxed font-semibold">
+                                    Selection is based on professional drive, willingness to adapt to premium service disciplines, and analytical leadership potential.
+                                </p>
+                            </div>
+                            <div className="lg:col-span-8 bg-white border border-slate-100 p-8 rounded-none shadow-sm">
+                                <ul className="grid sm:grid-cols-2 gap-4">
+                                    {course.whoFor.map((item: string, i: number) => (
+                                        <li key={i} className="flex items-start gap-3">
+                                            <CheckCircle2 className="w-5 h-5 text-[#1F7A5A] shrink-0 mt-0.5" />
+                                            <span className="text-sm text-[#0B1F3A]/80 font-bold leading-tight">{item}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+                )}
+
+                {/* 4. Curriculum Modules Section */}
+                <section id="curriculum" className="scroll-mt-36 pt-16 border-t border-slate-200">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
+                        <div className="space-y-4">
+                            <div className="inline-flex items-center gap-3">
+                                <span className="text-[#C8A96A] font-black text-xs uppercase tracking-[0.3em]">Academic Syllabus</span>
+                            </div>
+                            <h2 className="text-3xl md:text-5xl font-headline font-bold text-[#0B1F3A] tracking-tighter">
+                                Dynamic Learning Syllabus
+                            </h2>
+                            <p className="text-[#0B1F3A]/60 text-xs font-black uppercase tracking-widest">
+                                {curriculum.length || course.learningOutcomes?.length || 0} Modules • {course.duration * 4} Lecture Hours
+                            </p>
+                        </div>
+                        <Button variant="outline" className="text-[10px] font-black uppercase tracking-widest text-[#0B1F3A] border-slate-200 px-6 h-12 rounded-none hover:bg-slate-50">
+                            Download Syllabus PDF
+                        </Button>
+                    </div>
 
                     {hasOutcomes ? (
-                        <Section label="What You Will Learn" icon={BookOpen}>
-                            <div className="space-y-8">
-                                {course.learningOutcomes.map((m: any, i: number) => (
-                                    <div key={i} className="bg-slate-50 rounded-[2rem] p-8">
-                                        <div className="flex items-center gap-3 mb-5">
-                                            <span className="w-9 h-9 rounded-full bg-[#0B1F3A] text-[#C8A96A] font-black text-xs flex items-center justify-center">
-                                                {String(i + 1).padStart(2, '0')}
+                        <div className="grid gap-6">
+                            {course.learningOutcomes.map((m: any, i: number) => (
+                                <ScrollAnimation key={i} animation="fade-in-up" delay={i * 50}>
+                                    <div className="bg-white border border-slate-200 border-l-4 border-l-[#C8A96A] p-8 hover:shadow-md transition-shadow">
+                                        <div className="flex items-center gap-4 mb-6">
+                                            <span className="w-8 h-8 rounded-none bg-[#0B1F3A] text-[#C8A96A] font-black text-xs flex items-center justify-center shrink-0">
+                                                0{i + 1}
                                             </span>
-                                            <h4 className="font-serif text-xl text-[#0B1F3A]">{m.module}</h4>
+                                            <h4 className="font-serif text-lg md:text-xl text-[#0B1F3A] font-bold">{m.module}</h4>
                                         </div>
-                                        <ul className="grid sm:grid-cols-2 gap-2 pl-12">
+                                        <ul className="grid sm:grid-cols-2 gap-x-12 gap-y-3 pl-12">
                                             {(m.topics || []).map((topic: string, j: number) => (
-                                                <li key={j} className="flex items-start gap-2 text-sm text-slate-600 font-medium">
-                                                    <span className="text-[#C8A96A] mt-1">•</span>
+                                                <li key={j} className="flex items-start gap-2.5 text-xs text-[#0B1F3A]/75 font-semibold">
+                                                    <span className="text-[#C8A96A] mt-0.5 font-bold">•</span>
                                                     <span>{topic}</span>
                                                 </li>
                                             ))}
                                         </ul>
                                     </div>
-                                ))}
-                            </div>
-                        </Section>
+                                </ScrollAnimation>
+                            ))}
+                        </div>
                     ) : curriculum.length > 0 && (
-                        <Section label="What You Will Learn" icon={BookOpen}>
-                            <ul className="grid sm:grid-cols-2 gap-3">
+                        <div className="bg-white border border-slate-200 p-8">
+                            <ul className="grid sm:grid-cols-2 gap-4">
                                 {curriculum.map((topic: string, i: number) => (
-                                    <li key={i} className="flex items-start gap-2 text-base text-slate-600 font-medium">
-                                        <CheckCircle2 className="w-4 h-4 text-[#1F7A5A] shrink-0 mt-1" />
+                                    <li key={i} className="flex items-start gap-3 text-sm text-[#0B1F3A]/80 font-bold">
+                                        <CheckCircle2 className="w-4.5 h-4.5 text-[#1F7A5A] shrink-0 mt-0.5" />
                                         <span>{topic}</span>
                                     </li>
                                 ))}
                             </ul>
-                        </Section>
+                        </div>
                     )}
+                </section>
 
-                    <Section label="Duration" icon={Clock}>
-                        <p className="text-base md:text-lg text-slate-600 font-medium leading-relaxed">
-                            This programme runs for <strong className="text-[#0B1F3A]">{course.duration} weeks</strong> at the standard {course.level.toLowerCase()} pace. Advanced executive tracks may extend duration depending on cohort.
-                        </p>
-                    </Section>
-
-                    {hasCertification && (
-                        <Section label="Certification" icon={Award}>
-                            <ul className="space-y-3">
-                                {course.certificationDetails.map((item: string, i: number) => (
-                                    <li key={i} className="flex items-start gap-3">
-                                        <Award className="w-5 h-5 text-[#C8A96A] shrink-0 mt-0.5" />
-                                        <span className="text-base text-slate-600 font-medium">{item}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </Section>
-                    )}
-
-                    {hasCareer && (
-                        <Section label="Career Opportunities" icon={Briefcase}>
-                            <div className="grid sm:grid-cols-2 gap-3">
-                                {course.careerOpportunities.map((item: string, i: number) => (
-                                    <div key={i} className="bg-slate-50 rounded-2xl p-4 flex items-start gap-3">
-                                        <Briefcase className="w-4 h-4 text-[#1F7A5A] shrink-0 mt-1" />
-                                        <span className="text-sm text-slate-600 font-medium">{item}</span>
-                                    </div>
-                                ))}
+                {/* 5. Admissions & Financial Investment Section */}
+                <section id="admissions" className="scroll-mt-36 pt-16 border-t border-slate-200">
+                    <div className="grid lg:grid-cols-12 gap-12">
+                        <div className="lg:col-span-5 space-y-6">
+                            <div className="inline-flex items-center gap-3">
+                                <span className="text-[#C8A96A] font-black text-xs uppercase tracking-[0.3em]">Registry &amp; Funding</span>
                             </div>
-                        </Section>
-                    )}
-
-                    {/* Final CTA inline */}
-                    <ScrollAnimation animation="fade-in-up">
-                        <div className="bg-[#0B1F3A] text-white rounded-[3rem] p-10 md:p-14 text-center">
-                            <h3 className="text-3xl md:text-4xl font-serif mb-4">
-                                Ready to begin? <span className="italic text-[#C8A96A]">Apply today.</span>
-                            </h3>
-                            <p className="text-slate-300 font-medium mb-8 max-w-md mx-auto">
-                                Take your place among the next cohort of distinguished professionals.
+                            <h2 className="text-3xl md:text-5xl font-headline font-bold text-[#0B1F3A] tracking-tighter">
+                                Tuition &amp; <br />Financial Support
+                            </h2>
+                            <p className="text-sm text-[#0B1F3A]/70 leading-relaxed font-semibold">
+                                We are committed to executive access and affordability. Our Registry operates need-based installment structures and accepts verified corporate sponsor packages.
                             </p>
-                            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                                <Button asChild className="h-14 px-10 bg-[#C8A96A] hover:bg-[#B69859] text-[#0B1F3A] font-black text-[10px] uppercase tracking-[0.3em] rounded-full shadow-2xl">
-                                    <Link href={`/login?view=signup&redirectUrl=${encodeURIComponent('/courses?dialog=' + id)}`}>Apply Now</Link>
-                                </Button>
-                                <Button asChild variant="outline" className="h-14 px-10 border-white/20 text-white hover:bg-white/10 rounded-full font-black text-[10px] uppercase tracking-[0.3em]">
-                                    <Link href="/contact">Contact Admissions</Link>
-                                </Button>
+                        </div>
+                        <div className="lg:col-span-7 space-y-6">
+                            <Card className="border-none bg-white rounded-none shadow-sm border border-slate-200">
+                                <CardContent className="p-8 md:p-12 space-y-8">
+                                    <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 pb-6 border-b border-slate-100">
+                                        <div>
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Tuition Investment</p>
+                                            <p className="text-4xl font-serif font-black text-[#0B1F3A]">₦{course.price.toLocaleString()}</p>
+                                        </div>
+                                        <div>
+                                            <Badge className="bg-[#1F7A5A]/10 text-[#1F7A5A] border-none font-bold text-[9px] uppercase tracking-widest px-4 py-1.5 rounded-none">
+                                                All-Inclusive Registry Fee
+                                            </Badge>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <div className="flex justify-between items-center text-xs font-semibold">
+                                            <span className="text-slate-400">Duration</span>
+                                            <span className="text-[#0B1F3A] font-bold">{course.duration} weeks</span>
+                                        </div>
+                                        <div className="flex justify-between items-center text-xs font-semibold">
+                                            <span className="text-slate-400">Level Accreditation</span>
+                                            <span className="text-[#0B1F3A] font-bold">{course.level} Distinction</span>
+                                        </div>
+                                        <div className="flex justify-between items-center text-xs font-semibold">
+                                            <span className="text-slate-400">Delivery Format</span>
+                                            <span className="text-[#0B1F3A] font-bold">100% Online with Live Seminars</span>
+                                        </div>
+                                        <div className="flex justify-between items-center text-xs font-semibold">
+                                            <span className="text-slate-400">Study Materials &amp; Cases</span>
+                                            <span className="text-emerald-600 font-bold">Included</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="pt-4">
+                                        <Button asChild className="w-full h-16 bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black text-[10px] uppercase tracking-[0.2em] rounded-none shadow-none border-none">
+                                            <Link href={`/login?view=signup&redirectUrl=${encodeURIComponent('/courses?dialog=' + id)}`}>Begin Online Application</Link>
+                                        </Button>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </div>
+                </section>
+
+                {/* 6. Certification Deliverables (HBS Showcase Block) */}
+                {hasCertification && (
+                    <section className="py-16 border-t border-slate-200">
+                        <div className="bg-[#0B1F3A] text-white p-12 md:p-20 relative overflow-hidden">
+                            <div className="absolute inset-0 opacity-[0.02] pointer-events-none">
+                                <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#C8A96A] rounded-full blur-3xl" />
+                            </div>
+                            <div className="relative z-10 grid lg:grid-cols-12 gap-12 items-center">
+                                <div className="lg:col-span-5 space-y-6">
+                                    <div className="inline-flex items-center gap-3">
+                                        <span className="text-[#C8A96A] font-black text-xs uppercase tracking-[0.3em]">Accreditation Badge</span>
+                                    </div>
+                                    <h3 className="text-3xl font-serif text-white tracking-tight leading-tight">
+                                        Gold-Standard Institutional Credentials.
+                                    </h3>
+                                    <p className="text-slate-400 text-xs leading-relaxed font-semibold">
+                                        Upon successful completion of the coursework, practical cases, and the registry audit, you will receive official, internationally recognized certification.
+                                    </p>
+                                </div>
+                                <div className="lg:col-span-7 border-l border-white/10 pl-0 lg:pl-12 space-y-6">
+                                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#C8A96A] mb-4">Official Deliverables:</h4>
+                                    <div className="grid sm:grid-cols-2 gap-4">
+                                        {course.certificationDetails.map((item: string, i: number) => (
+                                            <div key={i} className="flex items-start gap-3">
+                                                <Award className="w-5 h-5 text-[#C8A96A] shrink-0 mt-0.5" />
+                                                <span className="text-xs text-slate-300 font-bold leading-snug">{item}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                )}
+
+                {/* 7. Faculty Leader Section */}
+                {course.instructor?.name && (
+                    <section id="faculty" className="scroll-mt-36 pt-16 border-t border-slate-200">
+                        <div className="max-w-3xl mb-16 space-y-4">
+                            <div className="inline-flex items-center gap-3">
+                                <span className="text-[#C8A96A] font-black text-xs uppercase tracking-[0.3em]">Board of Regents</span>
+                            </div>
+                            <h2 className="text-3xl md:text-5xl font-headline font-bold text-[#0B1F3A] tracking-tighter">
+                                World-Class Researchers &amp; Practitioners
+                            </h2>
+                        </div>
+
+                        <div className="bg-white border border-slate-200 p-8 md:p-16 flex flex-col md:flex-row gap-12 items-center md:items-start text-center md:text-left">
+                            <div className="shrink-0 relative w-48 h-48 border-[6px] border-[#0B1F3A] shadow-lg overflow-hidden">
+                                <Image src={course.instructor.avatarUrl || '/CEO Myne.jpg.jpeg'} alt={course.instructor.name} fill className="object-cover" />
+                            </div>
+                            <div className="space-y-6">
+                                <div>
+                                    <h4 className="text-2xl md:text-3xl font-serif font-bold text-[#0B1F3A]">{course.instructor.name}</h4>
+                                    <p className="text-[#C8A96A] font-black text-[10px] uppercase tracking-[0.3em] mt-1">Senior Program Faculty Director</p>
+                                    {course.instructor.verified && (
+                                        <Badge className="bg-[#1F7A5A]/10 text-[#1F7A5A] border-none text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-none mt-3">
+                                            ✓ Verified Registry Leader
+                                        </Badge>
+                                    )}
+                                </div>
+                                <p className="text-slate-500 text-sm font-semibold leading-relaxed italic max-w-2xl">
+                                    "Our programs combine academic theory with absolute practitioner-centered learning. We guide each candidate with the same operational discipline and executive excellence that commands respect worldwide."
+                                </p>
+                            </div>
+                        </div>
+                    </section>
+                )}
+
+                {/* 8. Final CTA Showcase (HBS closing application) */}
+                <section className="pt-20 border-t border-slate-200">
+                    <ScrollAnimation animation="fade-in-up">
+                        <div className="bg-[#0B1F3A] text-white rounded-none p-12 md:p-24 text-center relative overflow-hidden">
+                            <div className="absolute inset-0 opacity-[0.03] pointer-events-none select-none">
+                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-white rounded-full blur-[120px]" />
+                            </div>
+                            <div className="relative z-10 space-y-8 max-w-3xl mx-auto">
+                                <div className="inline-flex items-center gap-3">
+                                    <span className="text-[#C8A96A] font-black text-xs uppercase tracking-[0.3em]">Admissions Open</span>
+                                </div>
+                                <h3 className="text-4xl md:text-6xl font-serif text-white tracking-tight leading-none">
+                                    Blaze a New Trail.<br />
+                                    <span className="italic text-[#C8A96A] font-serif font-normal">Command Respect.</span>
+                                </h3>
+                                <p className="text-slate-400 font-medium leading-relaxed max-w-xl mx-auto text-sm">
+                                    Submit your credentials online to our Registry today and take your seat in the next distinguished cohort.
+                                </p>
+                                <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                                    <Button asChild className="h-16 px-12 bg-[#C8A96A] hover:bg-[#B69859] text-[#0B1F3A] font-black text-[10px] uppercase tracking-[0.3em] rounded-none shadow-none border-none">
+                                        <Link href={`/login?view=signup&redirectUrl=${encodeURIComponent('/courses?dialog=' + id)}`}>Apply Now</Link>
+                                    </Button>
+                                    <Button asChild variant="outline" className="h-16 px-12 border-white/20 text-white hover:bg-white/10 rounded-none font-black text-[10px] uppercase tracking-[0.3em]">
+                                        <Link href="/contact">Registry Support</Link>
+                                    </Button>
+                                </div>
                             </div>
                         </div>
                     </ScrollAnimation>
-                </div>
-
-                {/* Sidebar */}
-                <aside className="lg:sticky lg:top-32 lg:self-start space-y-6">
-                    <Card className="border-none bg-white rounded-[2.5rem] shadow-sm border border-slate-100">
-                        <CardContent className="p-8 space-y-6">
-                            <div>
-                                <p className="text-[10px] font-black text-[#C8A96A] uppercase tracking-[0.3em] mb-2">Tuition</p>
-                                <p className="text-4xl font-black text-[#0B1F3A]">{formatPrice(course.price, course.currency)}</p>
-                            </div>
-                            <div className="space-y-3 border-t border-slate-100 pt-6">
-                                <Row label="Duration" value={`${course.duration} weeks`} />
-                                <Row label="Level" value={course.level} />
-                                <Row label="Format" value="100% online" />
-                                <Row label="Category" value={course.category} />
-                            </div>
-                            <Button asChild className="w-full h-14 rounded-2xl bg-[#C8A96A] hover:bg-[#B69859] text-[#0B1F3A] font-black text-[10px] uppercase tracking-[0.3em] shadow-xl">
-                                <Link href={`/login?view=signup&redirectUrl=${encodeURIComponent('/courses?dialog=' + id)}`}>Apply for Admission</Link>
-                            </Button>
-                        </CardContent>
-                    </Card>
-
-                    {course.instructor?.name && (
-                        <Card className="border-none bg-slate-50 rounded-[2.5rem] shadow-sm">
-                            <CardContent className="p-8 space-y-4">
-                                <p className="text-[10px] font-black text-[#C8A96A] uppercase tracking-[0.3em]">Programme Lead</p>
-                                <div className="flex items-center gap-4">
-                                    {course.instructor.avatarUrl && (
-                                        <div className="w-14 h-14 rounded-2xl overflow-hidden bg-white shrink-0">
-                                            <Image src={course.instructor.avatarUrl} alt={course.instructor.name} width={56} height={56} className="object-cover" />
-                                        </div>
-                                    )}
-                                    <div>
-                                        <p className="font-serif text-lg text-[#0B1F3A] leading-tight">{course.instructor.name}</p>
-                                        {course.instructor.verified && (
-                                            <span className="inline-flex items-center gap-1 text-[10px] font-black text-[#1F7A5A] uppercase tracking-widest mt-1">
-                                                <CheckCircle2 className="w-3 h-3" /> Verified faculty
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    )}
-                </aside>
+                </section>
             </div>
         </div>
     );
-}
-
-function Section({ label, icon: Icon, children }: { label: string; icon: any; children: React.ReactNode }) {
-    return (
-        <ScrollAnimation animation="fade-in-up">
-            <section className="space-y-6">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-[#0B1F3A]/5 text-[#0B1F3A] flex items-center justify-center">
-                        <Icon className="w-5 h-5" />
-                    </div>
-                    <h2 className="text-2xl md:text-3xl font-serif text-[#0B1F3A]">{label}</h2>
-                </div>
-                {children}
-            </section>
-        </ScrollAnimation>
-    );
-}
-
-function Row({ label, value }: { label: string; value: string }) {
-    return (
-        <div className="flex items-center justify-between">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{label}</span>
-            <span className="text-sm font-bold text-[#0B1F3A] text-right">{value}</span>
-        </div>
-    );
-}
-
-function formatPrice(amount: number, currency: string): string {
-    try {
-        return new Intl.NumberFormat('en-NG', {
-            style: 'currency',
-            currency: currency || 'NGN',
-            maximumFractionDigits: 0,
-        }).format(amount);
-    } catch {
-        return `${currency || ''} ${amount.toLocaleString()}`;
-    }
 }

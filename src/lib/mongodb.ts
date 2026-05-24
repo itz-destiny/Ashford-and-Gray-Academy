@@ -25,10 +25,12 @@ async function dbConnect() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
+      serverSelectionTimeoutMS: 1500,
+      connectTimeoutMS: 1500,
     };
 
     console.log('Connecting to MongoDB...');
-    const connectWithRetry = async (retries = 3): Promise<typeof mongoose> => {
+    const connectWithRetry = async (retries = 1): Promise<typeof mongoose> => {
       try {
         const mongooseInstance = await mongoose.connect(MONGODB_URI, opts);
         console.log('MongoDB connected successfully');
@@ -36,7 +38,7 @@ async function dbConnect() {
       } catch (err) {
         if (retries > 0) {
           console.warn(`MongoDB connection failed. Retrying... (${retries} left)`);
-          await new Promise(res => setTimeout(res, 2000));
+          await new Promise(res => setTimeout(res, 1000));
           return connectWithRetry(retries - 1);
         }
         throw err;

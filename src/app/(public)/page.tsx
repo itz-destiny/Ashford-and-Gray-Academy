@@ -1,14 +1,12 @@
-
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   ArrowRight,
   BookOpen,
   Star,
   Users,
-  PlayCircle,
   Palette,
   Briefcase,
   Code,
@@ -17,12 +15,13 @@ import {
   Camera,
   Music,
   Cpu,
-  Quote,
   GraduationCap,
   Handshake,
   Wrench,
-  Radio,
-  ShieldCheck
+  ShieldCheck,
+  ChevronRight,
+  TrendingUp,
+  FileText
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -30,27 +29,27 @@ import React, { useMemo } from "react";
 import type { Course } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
-import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from "@/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay";
 import { ScrollAnimation } from "@/components/ui/scroll-animation";
+import { STATIC_COURSES } from "@/lib/courses-data";
 
 export default function Home() {
-  const [trendingCourses, setTrendingCourses] = React.useState<Course[]>([]);
-  const [allCourses, setAllCourses] = React.useState<Course[]>([]);
-  const [coursesLoading, setCoursesLoading] = React.useState(true);
-  const [carouselApi, setCarouselApi] = React.useState<CarouselApi>()
-  const [current, setCurrent] = React.useState(0)
+  const [trendingCourses, setTrendingCourses] = React.useState<Course[]>(STATIC_COURSES.slice(0, 3));
+  const [coursesLoading, setCoursesLoading] = React.useState(false);
 
   React.useEffect(() => {
     const fetchCourses = async () => {
       try {
         const res = await fetch('/api/courses');
         const data = await res.json();
-        if (Array.isArray(data)) {
-          setAllCourses(data);
-          setTrendingCourses(data.slice(0, 4));
+        if (Array.isArray(data) && data.length > 0) {
+          // Merge dynamic database courses while keeping static courses first
+          const merged = [...STATIC_COURSES];
+          data.forEach(dc => {
+            if (!merged.some(mc => mc.id === dc.id || mc.title.toLowerCase() === dc.title.toLowerCase())) {
+              merged.push(dc);
+            }
+          });
+          setTrendingCourses(merged.slice(0, 3));
         }
       } catch (error) {
         console.error('Error fetching courses:', error);
@@ -62,90 +61,83 @@ export default function Home() {
     fetchCourses();
   }, []);
 
-  const categories = useMemo(() => {
-    if (!allCourses) return [];
-    const categoryMap = new Map<string, React.ElementType>();
-    const iconMap: { [key: string]: React.ElementType } = {
-      'Hospitality': Handshake,
-      'Facilities Management': Wrench,
-      'Business': Briefcase,
-      'Art & Design': Palette,
-      'Finance': BarChart,
-      'Graphic': Code,
-      'Programming': Code,
-      'Marketing': Megaphone,
-      'Technology': Cpu,
-      'Photography': Camera,
-      'Music': Music,
-    };
-
-    allCourses.forEach(course => {
-      if (!categoryMap.has(course.category)) {
-        categoryMap.set(course.category, iconMap[course.category] || BookOpen);
-      }
-    });
-
-    return Array.from(categoryMap.entries()).map(([name, Icon]) => ({ name, icon: Icon }));
-  }, [allCourses]);
-
-  React.useEffect(() => {
-    if (!carouselApi) {
-      return
-    }
-
-    setCurrent(carouselApi.selectedScrollSnap() + 1)
-
-    carouselApi.on("select", () => {
-      setCurrent(carouselApi.selectedScrollSnap() + 1)
-    })
-  }, [carouselApi])
-
   return (
-    <>
-      {/* Hero Section: The Distinction */}
-      <section className="relative min-h-screen bg-[#0B1F3A] text-white flex items-center overflow-hidden py-24 md:py-0">
-        {/* Subtle Luxury Pattern */}
-        <div className="absolute inset-0 z-0 opacity-10 pointer-events-none">
-          <div className="absolute top-0 right-0 w-[500px] md:w-[800px] h-[500px] md:h-[800px] bg-emerald-500/10 blur-[120px] md:blur-[150px] rounded-full translate-x-1/3 -translate-y-1/3" />
-          <div className="absolute bottom-0 left-0 w-[400px] md:w-[600px] h-[400px] md:h-[600px] bg-slate-500/10 blur-[100px] md:blur-[120px] rounded-full -translate-x-1/3 translate-y-1/3" />
+    <div className="bg-white min-h-screen text-[#0B1F3A] font-body selection:bg-[#C8A96A] selection:text-[#0B1F3A]">
+      {/* 1. HBS-Style HERO SECTION: Editorial Ivory Layout with Gold Top Border */}
+      <section className="relative bg-[#F6F4F2] border-t-4 border-[#C8A96A] py-16 md:py-32 overflow-hidden">
+        {/* Subtle decorative background watermark using brand crest initials */}
+        <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none select-none flex items-center justify-center">
+          <span className="text-[30vw] font-serif font-black tracking-tighter text-[#0B1F3A]">AG</span>
         </div>
 
         <div className="container mx-auto px-6 lg:px-12 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-16 md:gap-20 items-center">
-            <div className="max-w-3xl">
+          <div className="grid lg:grid-cols-12 gap-12 items-center">
+            {/* Left Content Column */}
+            <div className="lg:col-span-7 space-y-8">
               <ScrollAnimation animation="fade-in-up" delay={100}>
-                <div className="flex items-center gap-3 mb-8">
-                  <div className="w-8 md:w-12 h-[2px] bg-[#C8A96A]" />
-                  <span className="text-[#C8A96A] font-black text-[10px] md:text-xs uppercase tracking-[0.4em]">Ashford & Gray Academy</span>
+                <div className="inline-flex items-center gap-3">
+                  <span className="text-[#C8A96A] font-black text-xs uppercase tracking-[0.3em] font-body">Ashford & Gray Academy</span>
+                  <span className="w-1.5 h-1.5 bg-[#C8A96A] rounded-full"></span>
+                  <span className="text-[#0B1F3A]/60 text-xs font-semibold uppercase tracking-[0.2em]">Est. 2024</span>
                 </div>
-                <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif tracking-tight leading-[1.1] md:leading-[0.9] mb-10">
-                  Mastering <span className="italic text-[#C8A96A]">Luxury</span>.<br />
-                  Elevating Business.
+              </ScrollAnimation>
+
+              <ScrollAnimation animation="fade-in-up" delay={200}>
+                <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-headline font-bold tracking-tighter leading-[0.95] text-[#0B1F3A]">
+                  Mastering Luxury. <br />
+                  <span className="italic font-serif font-normal text-[#C8A96A] tracking-normal">Elevating Business.</span>
                 </h1>
-                <p className="text-lg md:text-xl lg:text-2xl text-slate-400 font-medium leading-relaxed max-w-xl mb-12">
-                  Where Excellence is Refined, and Leaders are Distinct.<br />A global institution shaping elite professionals in hospitality, business, and innovation.
+              </ScrollAnimation>
+
+              <ScrollAnimation animation="fade-in-up" delay={250}>
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-serif font-semibold text-[#0B1F3A]/90 tracking-tight leading-snug">
+                  Where Excellence is Refined, and Leaders are Distinct.
+                </h2>
+              </ScrollAnimation>
+
+              <ScrollAnimation animation="fade-in-up" delay={300}>
+                <p className="text-lg sm:text-xl text-[#0B1F3A]/75 font-body font-normal leading-relaxed max-w-2xl">
+                  A global institution shaping elite professionals in hospitality, business, and innovation.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-6">
-                  <Button size="lg" className="h-16 md:h-20 px-10 md:px-12 text-base md:text-lg font-black bg-[#C8A96A] text-[#0B1F3A] hover:bg-[#B69859] transition-all rounded-full shadow-2xl" asChild>
+              </ScrollAnimation>
+
+              <ScrollAnimation animation="fade-in-up" delay={400} className="pt-4">
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Button 
+                    size="lg" 
+                    className="h-14 px-8 rounded-none bg-[#C8A96A] hover:bg-[#B69759] text-[#0B1F3A] font-extrabold text-xs uppercase tracking-widest transition-all shadow-none border-none animate-fade-in"
+                    asChild
+                  >
                     <Link href="/login?view=signup">Apply for Admission</Link>
                   </Button>
-                  <Button size="lg" className="h-16 md:h-20 px-10 md:px-12 text-base md:text-lg font-black bg-white text-[#0B1F3A] hover:bg-slate-100 transition-all rounded-full shadow-2xl" asChild>
+                  <Button 
+                    size="lg" 
+                    variant="outline" 
+                    className="h-14 px-8 rounded-none border-[#0B1F3A] text-[#0B1F3A] hover:bg-[#0B1F3A] hover:text-white font-extrabold text-xs uppercase tracking-widest transition-all bg-transparent"
+                    asChild
+                  >
                     <Link href="/courses">Explore Programs</Link>
                   </Button>
                 </div>
               </ScrollAnimation>
             </div>
 
-            <div className="relative hidden lg:block">
+            {/* Right Hero Image Column (Grid & Editorial frame) */}
+            <div className="lg:col-span-5 relative hidden lg:block">
               <ScrollAnimation animation="scale-up" delay={300}>
-                <div className="relative aspect-square max-w-lg mx-auto">
-                  <div className="absolute inset-0 bg-gradient-to-tr from-[#1F7A5A]/20 to-transparent rounded-full blur-3xl opacity-50" />
+                <div className="relative aspect-[4/5] w-full max-w-md mx-auto border-8 border-white shadow-xl overflow-hidden group">
                   <Image
-                    src="/A & G2.png"
-                    alt="Ashford & Gray Crest"
+                    src="/cohort-global-vision.jpg"
+                    alt="Ashford & Gray Global Seminar Cohort"
                     fill
-                    className="object-contain opacity-20 scale-125"
+                    className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                    priority
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-60" />
+                  <div className="absolute bottom-6 left-6 right-6 text-white space-y-2">
+                    <p className="text-[9px] font-black uppercase tracking-[0.3em] text-[#C8A96A] bg-white inline-block px-2.5 py-1">Featured Cohort</p>
+                    <h3 className="font-serif text-lg font-bold leading-tight">Shaping the next generation of global strategic leaders.</h3>
+                  </div>
                 </div>
               </ScrollAnimation>
             </div>
@@ -153,322 +145,340 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Credibility Strip */}
-      <section className="bg-white border-y border-slate-100 py-12 md:py-16">
+      {/* 2. THE HBS "RESEARCH & IDEAS" EDITORIAL PORTAL */}
+      <section className="py-20 md:py-28 bg-white border-y border-slate-200">
         <div className="container mx-auto px-6 lg:px-12">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 items-center opacity-80">
-            <div className="flex flex-col items-center text-center gap-3 md:gap-4">
-              <div className="w-10 md:w-12 h-10 md:h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-[#1F7A5A]">
-                <GraduationCap className="w-5 md:w-6 h-5 md:h-6" />
+          {/* Header Row */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 border-b border-slate-200 pb-6">
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-2 text-[#1F7A5A] text-xs font-black uppercase tracking-[0.2em]">
+                <TrendingUp className="w-4 h-4" />
+                <span>Research & Insights</span>
               </div>
-              <span className="font-black text-[9px] md:text-[10px] uppercase tracking-[0.2em] md:tracking-[0.3em] text-[#0B1F3A]">100% Online Delivery</span>
+              <h2 className="text-4xl md:text-5xl font-headline font-bold tracking-tighter text-[#0B1F3A] leading-none">Global Business Insights</h2>
             </div>
-            <div className="flex flex-col items-center text-center gap-3 md:gap-4">
-              <div className="w-10 md:w-12 h-10 md:h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-[#C8A96A]">
-                <Star className="w-5 md:w-6 h-5 md:h-6" />
-              </div>
-              <span className="font-black text-[9px] md:text-[10px] uppercase tracking-[0.2em] md:tracking-[0.3em] text-[#0B1F3A]">Institutional Excellence</span>
-            </div>
-            <div className="flex flex-col items-center text-center gap-3 md:gap-4">
-              <div className="w-10 md:w-12 h-10 md:h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-[#1F7A5A]">
-                <Users className="w-5 md:w-6 h-5 md:h-6" />
-              </div>
-              <span className="font-black text-[9px] md:text-[10px] uppercase tracking-[0.2em] md:tracking-[0.3em] text-[#0B1F3A]">Global Alumnae</span>
-            </div>
-            <div className="flex flex-col items-center text-center gap-3 md:gap-4">
-              <div className="w-10 md:w-12 h-10 md:h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-[#0B1F3A]">
-                <Handshake className="w-5 md:w-6 h-5 md:h-6" />
-              </div>
-              <span className="font-black text-[9px] md:text-[10px] uppercase tracking-[0.2em] md:tracking-[0.3em] text-[#0B1F3A]">Industry Recognition</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Section 3: About Snapshot */}
-      <section className="py-24 md:py-40 bg-white overflow-hidden">
-        <div className="container mx-auto px-6 lg:px-12">
-          <div className="grid lg:grid-cols-2 gap-20 md:gap-32 items-center">
-            <ScrollAnimation animation="fade-in-up">
-              <div className="space-y-8 md:space-y-10">
-                <div className="inline-flex items-center gap-3">
-                  <div className="w-8 h-[1px] bg-[#1F7A5A]" />
-                  <span className="text-[#1F7A5A] font-black text-[10px] uppercase tracking-[0.4em]">The Institution</span>
-                </div>
-                <h2 className="text-4xl md:text-5xl lg:text-7xl font-serif text-[#0B1F3A] leading-[1.1] md:leading-[1.1]">
-                  Where Heritage Meets <br />
-                  <span className="italic text-[#C8A96A]">Modern Mastery.</span>
-                </h2>
-                <p className="text-lg md:text-xl text-slate-500 leading-relaxed max-w-lg font-medium">
-                  Ashford & Gray Academy is built on the philosophy that professional excellence is not just taught, but refined through practical application and global academic standards.
-                </p>
-                <div className="pt-6 md:pt-8">
-                  <Button size="lg" className="h-16 px-10 rounded-full bg-[#0B1F3A] text-white font-black text-[10px] uppercase tracking-widest hover:bg-[#1F7A5A] transition-all shadow-xl" asChild>
-                    <Link href="/about">Discover Our Legacy</Link>
-                  </Button>
-                </div>
-              </div>
-            </ScrollAnimation>
-            
-            <ScrollAnimation animation="fade-in" delay={200} className="relative">
-              <div className="relative aspect-[4/5] rounded-[3rem] md:rounded-[4rem] overflow-hidden shadow-2xl border-4 md:border-8 border-white">
-                <Image
-                  src="/cohort-global-vision.jpg"
-                  alt="A new generation of distinguished professionals"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div className="absolute -bottom-6 md:-bottom-12 -left-6 md:-left-12 w-48 md:w-64 h-48 md:h-64 bg-[#C8A96A]/5 backdrop-blur-3xl rounded-full -z-10" />
-            </ScrollAnimation>
-          </div>
-        </div>
-      </section>
-
-      {/* Section 4: Why Ashford & Gray (4 Pillars) */}
-      <section className="py-24 md:py-40 bg-slate-50 relative overflow-hidden">
-        <div className="container mx-auto px-6 lg:px-12">
-          <div className="text-center max-w-4xl mx-auto mb-16 md:mb-24">
-            <div className="inline-flex items-center gap-3 mb-6">
-              <div className="w-8 md:w-12 h-[1px] bg-[#C8A96A]" />
-              <span className="text-[#C8A96A] font-black text-[10px] uppercase tracking-[0.4em]">Our Difference</span>
-              <div className="w-8 md:w-12 h-[1px] bg-[#C8A96A]" />
-            </div>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif text-[#0B1F3A] tracking-tight mb-6 md:mb-8">Why Ashford &amp; Gray</h2>
-            <p className="text-lg md:text-xl text-slate-500 font-medium">Four pillars that distinguish our institution and define our graduates.</p>
+            <Link 
+              href="/newsletter" 
+              className="text-[#1F7A5A] hover:text-[#0B1F3A] text-xs font-bold uppercase tracking-widest flex items-center gap-1.5 transition-colors mt-4 md:mt-0"
+            >
+              <span>View All Research</span>
+              <ChevronRight className="w-4 h-4" />
+            </Link>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 md:gap-12">
+          {/* Three-Column Editorial Grid */}
+          <div className="grid md:grid-cols-3 gap-8 md:gap-12">
             {[
               {
-                title: "Executive-Level Learning",
-                desc: "We train professionals to think, act, and lead at the highest level — preparing graduates who command attention and deliver impact.",
-                icon: GraduationCap,
-                color: "#0B1F3A"
+                category: "THE LUXURY MARKET",
+                title: "Decoding the Post-Digital Consumer: How Heritage Brands Retain Exclusive Value",
+                excerpt: "As e-commerce democratizes luxury, heritage institutions must reinvent physical exclusivity. This study examines spatial and digital boundaries designed for elite retention.",
+                author: "Prof. Catherine Gray",
+                date: "May 2026",
+                readTime: "7 Min Read"
               },
               {
-                title: "Industry-Driven Curriculum",
-                desc: "Every program is built from real-world application, not theory alone. Our courses reflect the demands of luxury hospitality, business, and global service.",
-                icon: Wrench,
-                color: "#1F7A5A"
+                category: "EXECUTIVE PRESENCE",
+                title: "The Discipline of Discretion: Principles of Elite Leadership in Modern Hospitality Operations",
+                excerpt: "Why executional intelligence and absolute discretion are the highest valued commodities in VIP concierge and international protocol management sectors.",
+                author: "Myne Wilfred, CEO",
+                date: "April 2026",
+                readTime: "9 Min Read"
               },
               {
-                title: "Luxury Service Philosophy",
-                desc: "We instill precision, discretion, and excellence — the foundation of elite service across hospitality, executive support, and protocol environments.",
-                icon: Star,
-                color: "#C8A96A"
-              },
-              {
-                title: "Global Relevance",
-                desc: "Our structure aligns with international standards while honouring African excellence — equipping graduates to compete and lead anywhere in the world.",
-                icon: Handshake,
-                color: "#0B1F3A"
+                category: "GLOBAL STRATEGY",
+                title: "Navigating Multi-Market Expansion in High-Growth Hospitality Sectors",
+                excerpt: "An in-depth framework for scaling luxury hotel brands across African and European boundaries, leveraging localized heritage and institutional systems.",
+                author: "Academic Board",
+                date: "March 2026",
+                readTime: "11 Min Read"
               }
-            ].map((pillar, idx) => (
-              <ScrollAnimation key={pillar.title} animation="fade-in-up" delay={idx * 100}>
-                <div className="bg-white p-10 md:p-14 rounded-[2.5rem] md:rounded-[3rem] shadow-sm hover:shadow-2xl transition-all duration-700 border border-slate-100 group h-full">
-                  <div
-                    className="w-16 md:w-20 h-16 md:h-20 rounded-2xl md:rounded-3xl flex items-center justify-center transition-all mb-8 shadow-lg"
-                    style={{ backgroundColor: `${pillar.color}10`, color: pillar.color }}
-                  >
-                    <pillar.icon className="w-8 md:w-10 h-8 md:h-10" />
+            ].map((insight, idx) => (
+              <ScrollAnimation key={insight.title} animation="fade-in-up" delay={idx * 100}>
+                <article className="space-y-4 group cursor-pointer">
+                  <div className="text-[#1F7A5A] font-black text-[10px] uppercase tracking-[0.2em]">{insight.category}</div>
+                  <h3 className="font-serif text-xl font-bold text-[#0B1F3A] leading-snug group-hover:text-[#1F7A5A] transition-colors duration-300">
+                    <Link href="/newsletter">{insight.title}</Link>
+                  </h3>
+                  <p className="text-sm text-[#0B1F3A]/75 leading-relaxed font-medium line-clamp-3">{insight.excerpt}</p>
+                  <div className="pt-2 flex items-center justify-between text-[11px] font-semibold text-[#0B1F3A]/60 uppercase tracking-wider">
+                    <span>{insight.author}</span>
+                    <div className="flex items-center gap-1.5">
+                      <span>{insight.date}</span>
+                      <span>•</span>
+                      <span>{insight.readTime}</span>
+                    </div>
                   </div>
-                  <h4 className="text-2xl md:text-3xl font-serif text-[#0B1F3A] mb-4 md:mb-6">{pillar.title}</h4>
-                  <p className="text-base md:text-lg text-slate-500 leading-relaxed font-medium">{pillar.desc}</p>
-                </div>
+                </article>
               </ScrollAnimation>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Section 5: Programs Preview */}
-      <section className="py-24 md:py-40 bg-white">
+      {/* 3. SIGNATURE ACADEMIC PROGRAMS: The HBS Block Layout */}
+      <section className="py-20 md:py-28 bg-[#F6F4F2]">
         <div className="container mx-auto px-6 lg:px-12">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 md:mb-24 gap-8">
-            <div className="max-w-2xl">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-[1px] bg-[#C8A96A]" />
-                <p className="text-[#C8A96A] font-black text-[10px] uppercase tracking-[0.4em]">Signature Curricula</p>
-              </div>
-              <h2 className="text-4xl md:text-5xl lg:text-7xl font-serif text-[#0B1F3A] leading-tight">Master Your <br /><span className="italic">Calling.</span></h2>
+          {/* Section title */}
+          <div className="max-w-3xl mb-16 space-y-4">
+            <div className="inline-flex items-center gap-2">
+              <span className="text-[#C8A96A] font-black text-xs uppercase tracking-[0.3em]">Signature Curricula</span>
+              <span className="w-1.5 h-1.5 bg-[#C8A96A] rounded-full"></span>
             </div>
-            <Button variant="ghost" className="h-16 px-8 font-black text-[10px] uppercase tracking-widest text-[#0B1F3A] hover:bg-slate-50 rounded-full border border-slate-100 hidden md:flex" asChild>
-              <Link href="/courses">View All Programs <ArrowRight className="ml-3 w-4 h-4" /></Link>
-            </Button>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-headline font-bold tracking-tighter text-[#0B1F3A] leading-none">
+              Elite Academic Programs
+            </h2>
+            <p className="text-[#0B1F3A]/75 text-base sm:text-lg font-medium max-w-xl">
+              Immerse yourself in rigorous, field-tested curricula engineered by industry authorities to deliver rapid career distinction.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
+          {/* Program cards grid - HBS rectangular style with gold top border */}
+          <div className="grid md:grid-cols-3 gap-8 md:gap-12">
             {coursesLoading ? (
-              Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-[28rem] md:h-[32rem] rounded-[3rem] md:rounded-[4rem]" />)
-            ) : trendingCourses.slice(0, 3).map((item, idx) => (
-              <ScrollAnimation key={item.id} animation="fade-in-up" delay={idx * 100}>
-                <Link href={`/courses`} className="group block h-full">
-                  <div className="bg-white rounded-[3rem] md:rounded-[4rem] overflow-hidden border border-slate-100 h-full flex flex-col hover:shadow-2xl transition-all duration-700">
-                    <div className="relative h-64 md:h-80 overflow-hidden">
-                      <Image 
-                        src={item.imageUrl} 
-                        alt={item.title} 
-                        fill 
-                        className="object-cover group-hover:scale-110 transition-all duration-1000" 
-                      />
-                      <div className="absolute top-6 md:top-8 left-6 md:left-8">
-                         <div className="bg-[#0B1F3A]/90 backdrop-blur-xl text-white px-4 md:px-5 py-2 rounded-full font-black text-[8px] md:text-[9px] uppercase tracking-[0.2em]">
-                           Signature Program
-                         </div>
+              Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="h-96 bg-white border-t-4 border-[#0B1F3A] animate-pulse" />
+              ))
+            ) : trendingCourses.length > 0 ? (
+              trendingCourses.map((course, idx) => (
+                <ScrollAnimation key={course.id} animation="fade-in-up" delay={idx * 100}>
+                  <Link href="/courses" className="group block h-full">
+                    <div className="bg-white border-t-4 border-[#0B1F3A] rounded-none shadow-sm hover:shadow-xl transition-all duration-500 h-full flex flex-col">
+                      {/* Image frame */}
+                      <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-100">
+                        <Image
+                          src={course.imageUrl}
+                          alt={course.title}
+                          fill
+                          className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                        />
+                        <div className="absolute top-4 left-4 bg-[#0B1F3A] text-white text-[9px] font-black uppercase tracking-widest px-3 py-1.5">
+                          {course.category}
+                        </div>
                       </div>
-                      <div className="absolute bottom-6 md:bottom-8 right-6 md:right-8">
-                        <Badge className="bg-white text-[#0B1F3A] border-none font-black px-3 md:px-4 py-1.5 md:py-2 uppercase text-[8px] md:text-[9px] tracking-widest rounded-full shadow-lg">
-                          {item.category}
-                        </Badge>
-                      </div>
-                    </div>
-                    <div className="p-8 md:p-12 flex-1 flex flex-col">
-                      <h3 className="text-2xl md:text-3xl font-serif text-[#0B1F3A] mb-6 leading-tight group-hover:text-[#1F7A5A] transition-colors">{item.title}</h3>
-                      <div className="mt-auto pt-6 md:pt-8 border-t border-slate-50 flex items-center justify-between">
-                        <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-[#C8A96A]">{item.duration || "12 Weeks"} Duration</span>
-                        <div className="w-10 md:w-12 h-10 md:h-12 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-[#0B1F3A] group-hover:text-white transition-all">
-                           <ArrowRight className="w-4 md:w-5 h-4 md:h-5 group-hover:translate-x-1 transition-transform" />
+
+                      {/* Card Content */}
+                      <div className="p-8 flex-1 flex flex-col justify-between">
+                        <div className="space-y-4">
+                          <h3 className="font-serif text-2xl font-bold text-[#0B1F3A] group-hover:text-[#1F7A5A] transition-colors duration-300 leading-tight">
+                            {course.title}
+                          </h3>
+                          <p className="text-xs text-[#0B1F3A]/70 leading-relaxed font-medium line-clamp-3">
+                            {course.description || "Master executive skills, protocol management, and strategic frameworks under the direct instruction of industry veterans."}
+                          </p>
+                        </div>
+
+                        <div className="pt-6 mt-6 border-t border-slate-100 flex items-center justify-between text-[10px] font-black uppercase tracking-wider text-[#0B1F3A]">
+                          <span className="text-[#C8A96A] font-extrabold">{course.duration || "12 Weeks"} Duration</span>
+                          <span className="flex items-center gap-1.5 hover:text-[#1F7A5A] transition-colors">
+                            <span>Explore Details</span>
+                            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                          </span>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
-              </ScrollAnimation>
-            ))}
+                  </Link>
+                </ScrollAnimation>
+              ))
+            ) : (
+              // Fallback cards if database API is empty
+              [
+                { title: "Executive Luxury Hospitality Management", cat: "Hospitality" },
+                { title: "Advanced Corporate Facilities & Strategy", cat: "Strategy" },
+                { title: "Global Protocol, Concierge & Estate Leadership", cat: "Operations" }
+              ].map((c, idx) => (
+                <ScrollAnimation key={c.title} animation="fade-in-up" delay={idx * 100}>
+                  <Link href="/courses" className="group block h-full">
+                    <div className="bg-white border-t-4 border-[#0B1F3A] rounded-none shadow-sm hover:shadow-xl transition-all duration-500 h-full flex flex-col">
+                      <div className="p-8 flex-1 flex flex-col justify-between min-h-[300px]">
+                        <div className="space-y-4">
+                          <Badge className="bg-[#0B1F3A] text-white text-[8px] font-black uppercase tracking-widest rounded-none border-none py-1 px-2.5">{c.cat}</Badge>
+                          <h3 className="font-serif text-2xl font-bold text-[#0B1F3A] group-hover:text-[#1F7A5A] transition-colors duration-300 leading-tight">
+                            {c.title}
+                          </h3>
+                          <p className="text-xs text-[#0B1F3A]/70 leading-relaxed font-medium">
+                            An elite, immersive program designed for high-potential professionals. Master strategic frameworks, service aesthetics, and luxury operational systems.
+                          </p>
+                        </div>
+                        <div className="pt-6 mt-6 border-t border-slate-100 flex items-center justify-between text-[10px] font-black uppercase tracking-wider text-[#C8A96A]">
+                          <span>12 Weeks • Executive</span>
+                          <span className="flex items-center gap-1.5 text-[#0B1F3A] group-hover:text-[#1F7A5A] transition-colors font-extrabold">
+                            <span>Explore Details</span>
+                            <ArrowRight className="w-3.5 h-3.5" />
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                </ScrollAnimation>
+              ))
+            )}
           </div>
-          <div className="mt-12 md:hidden">
-            <Button className="w-full h-16 bg-[#0B1F3A] text-white font-black text-[10px] uppercase tracking-widest rounded-2xl" asChild>
-               <Link href="/courses">View All Programs</Link>
+
+          {/* Section footer CTA */}
+          <div className="mt-12 text-center">
+            <Button 
+              size="lg" 
+              className="h-12 px-8 rounded-none bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-extrabold text-xs uppercase tracking-widest transition-all border-none"
+              asChild
+            >
+              <Link href="/courses">View All Academic Programs</Link>
             </Button>
           </div>
         </div>
       </section>
 
-      {/* Section: Career Outcomes */}
-      <section className="py-24 md:py-40 bg-slate-50">
+      {/* 4. INSTITUTIONAL PILLARS (THE HBS STANDARD) */}
+      <section className="py-20 md:py-28 bg-white border-b border-slate-200">
         <div className="container mx-auto px-6 lg:px-12">
-          <div className="text-center max-w-3xl mx-auto mb-16 md:mb-24">
-            <div className="inline-flex items-center gap-3 mb-6">
-              <div className="w-8 md:w-12 h-[1px] bg-[#1F7A5A]" />
-              <span className="text-[#1F7A5A] font-black text-[10px] uppercase tracking-[0.4em]">Career Pathways</span>
-              <div className="w-8 md:w-12 h-[1px] bg-[#1F7A5A]" />
+          <div className="max-w-3xl mx-auto text-center space-y-4 mb-16">
+            <div className="inline-flex items-center gap-2">
+              <span className="text-[#C8A96A] font-black text-xs uppercase tracking-[0.3em]">The Academy Standard</span>
+              <span className="w-1.5 h-1.5 bg-[#C8A96A] rounded-full"></span>
             </div>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif text-[#0B1F3A] tracking-tight mb-6">Where This Takes You</h2>
-            <p className="text-lg md:text-xl text-slate-500 font-medium">Graduates of Ashford &amp; Gray Fusion Academy are positioned for distinguished roles across global industries.</p>
+            <h2 className="text-4xl md:text-5xl font-headline font-bold tracking-tighter text-[#0B1F3A] leading-none">
+              Why Ashford &amp; Gray
+            </h2>
+            <p className="text-[#0B1F3A]/70 text-sm sm:text-base font-medium max-w-xl mx-auto">
+              Our educational framework sets an elite standard in high-end business administration, executive service, and global protocol.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-8">
+          <div className="grid md:grid-cols-4 gap-8">
             {[
-              { title: "Hospitality Leadership", desc: "Executive roles in luxury hotels, resorts, and global brands.", icon: Star },
-              { title: "Business Consulting & Strategy", desc: "Advisors shaping enterprise growth and innovation.", icon: BarChart },
-              { title: "Event & Experience Management", desc: "Architects of high-profile events and brand experiences.", icon: Megaphone },
-              { title: "Estate & Protocol Management", desc: "Stewards of private residences and diplomatic engagements.", icon: ShieldCheck },
-              { title: "Entrepreneurship & Enterprise", desc: "Founders building distinguished service-led ventures.", icon: Briefcase },
-            ].map((o, idx) => (
-              <ScrollAnimation key={o.title} animation="fade-in-up" delay={idx * 60}>
-                <div className="bg-white h-full rounded-[2rem] p-8 border border-slate-100 hover:shadow-2xl transition-all duration-700 group">
-                  <div className="w-14 h-14 rounded-2xl bg-[#0B1F3A]/5 text-[#0B1F3A] flex items-center justify-center mb-6 group-hover:bg-[#C8A96A] group-hover:text-white transition-colors">
-                    <o.icon className="w-6 h-6" />
+              {
+                title: "Executive-Level Learning",
+                desc: "We train professionals to think, act, and lead at the highest level.",
+                icon: GraduationCap
+              },
+              {
+                title: "Industry-Driven Curriculum",
+                desc: "Every program is built from real-world application, not theory alone.",
+                icon: Wrench
+              },
+              {
+                title: "Luxury Service Philosophy",
+                desc: "We instill precision, discretion, and excellence — the foundation of elite service.",
+                icon: Star
+              },
+              {
+                title: "Global Relevance",
+                desc: "Our structure aligns with international standards while maintaining African excellence.",
+                icon: Handshake
+              }
+            ].map((pillar, idx) => (
+              <ScrollAnimation key={pillar.title} animation="fade-in-up" delay={idx * 80}>
+                <div className="p-8 bg-[#F6F4F2] border-t-2 border-[#0B1F3A]/10 h-full space-y-6 hover:border-[#C8A96A] transition-all duration-300">
+                  <div className="text-[#C8A96A]">
+                    <pillar.icon className="w-8 h-8" />
                   </div>
-                  <h4 className="text-lg md:text-xl font-serif text-[#0B1F3A] mb-3 leading-tight">{o.title}</h4>
-                  <p className="text-sm text-slate-500 font-medium leading-relaxed">{o.desc}</p>
+                  <div className="space-y-2">
+                    <h3 className="font-serif text-lg font-bold text-[#0B1F3A]">{pillar.title}</h3>
+                    <p className="text-xs text-[#0B1F3A]/70 leading-relaxed font-medium">{pillar.desc}</p>
+                  </div>
                 </div>
               </ScrollAnimation>
             ))}
           </div>
+
+          {/* Distinguished Career Outcomes Sub-section */}
+          <div className="mt-20 pt-16 border-t border-slate-100">
+            <h3 className="text-2xl font-serif font-bold text-[#0B1F3A] mb-12 text-center">Distinguished Career Outcomes</h3>
+            <div className="grid sm:grid-cols-2 md:grid-cols-5 gap-6 max-w-5xl mx-auto">
+              {[
+                { role: "Hospitality Leadership Roles", desc: "Command elite hotels, resorts, and operations globally." },
+                { role: "Business Consulting & Strategy", desc: "Formulate institutional pathways and advisory solutions." },
+                { role: "Event & Experience Management", desc: "Orchestrate high-profile corporate & VIP events." },
+                { role: "Estate & Protocol Management", desc: "Direct luxury private residences and diplomatic affairs." },
+                { role: "Entrepreneurship & Enterprise Development", desc: "Build high-growth modern luxury brands and services." }
+              ].map((outcome, idx) => (
+                <ScrollAnimation key={outcome.role} animation="fade-in-up" delay={idx * 50}>
+                  <div className="bg-[#F6F4F2] p-8 text-center space-y-4 h-full border-t-2 border-[#C8A96A]/20 hover:border-[#C8A96A] transition-all flex flex-col justify-between">
+                    <div className="w-10 h-10 rounded-full bg-[#1F7A5A]/5 flex items-center justify-center mx-auto text-[#1F7A5A]">
+                      <ShieldCheck className="w-5 h-5" />
+                    </div>
+                    <h4 className="font-serif text-sm font-bold text-[#0B1F3A] leading-tight flex-grow flex items-center justify-center">{outcome.role}</h4>
+                    <p className="text-[10px] text-[#0B1F3A]/60 leading-snug">{outcome.desc}</p>
+                  </div>
+                </ScrollAnimation>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Section 6: Founder Section */}
-      <section className="py-24 md:py-40 bg-[#0B1F3A] relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10 pointer-events-none">
-          <div className="absolute top-0 right-0 w-[500px] md:w-[800px] h-[500px] md:h-[800px] bg-[#C8A96A]/20 blur-[100px] md:blur-[150px] rounded-full translate-x-1/3 -translate-y-1/3" />
+      {/* 5. DEAN'S VISION STYLE SECTION: The Founder & CEO's Message in Signature Navy */}
+      <section id="founder-address" className="py-20 md:py-32 bg-[#0B1F3A] text-white relative overflow-hidden">
+        {/* Subtle background gold graphic */}
+        <div className="absolute inset-0 opacity-[0.02] pointer-events-none select-none">
+          <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#C8A96A] rounded-full blur-[100px]" />
         </div>
 
         <div className="container mx-auto px-6 lg:px-12 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-20 md:gap-32 items-center">
-            <ScrollAnimation animation="fade-in" className="order-2 lg:order-1 relative">
-              <div className="relative max-w-sm md:max-w-md mx-auto lg:ml-0">
-                <div className="absolute -inset-6 bg-[#C8A96A]/20 blur-3xl rounded-full opacity-50" />
-                <div className="relative aspect-[3/4] rounded-[3rem] md:rounded-[4rem] overflow-hidden shadow-2xl border-2 md:border-4 border-white/10">
+          <div className="grid lg:grid-cols-12 gap-16 items-center">
+            {/* Framed portrait on the left */}
+            <div className="lg:col-span-5">
+              <ScrollAnimation animation="fade-in" delay={150}>
+                <div className="relative aspect-[3/4] w-full max-w-sm mx-auto border-[10px] border-[#061222] shadow-2xl overflow-hidden group">
                   <Image
                     src="/CEO Myne.jpg.jpeg"
                     alt="Myne Wilfred, Founder & CEO"
                     fill
-                    className="object-cover object-top hover:scale-105 transition-all duration-1000"
+                    className="object-cover object-top transition-transform duration-1000 group-hover:scale-105"
                   />
+                  <div className="absolute inset-0 bg-[#C8A96A]/10 mix-blend-multiply" />
                 </div>
-                <div className="absolute -bottom-6 md:-bottom-10 -right-6 md:-right-10 bg-white p-6 md:p-10 rounded-[2.5rem] md:rounded-[3rem] shadow-2xl hidden sm:block">
-                   <div className="flex gap-1 text-[#C8A96A] mb-3 md:mb-4">
-                     {Array.from({length: 5}).map((_, i) => <Star key={i} className="w-3 md:w-4 h-3 md:h-4 fill-current" />)}
-                   </div>
-                   <p className="text-[#0B1F3A] font-serif text-base md:text-lg leading-tight italic">"The Golden Standard"</p>
-                </div>
-              </div>
-            </ScrollAnimation>
-            
-            <div className="order-1 lg:order-2 text-white">
+              </ScrollAnimation>
+            </div>
+
+            {/* CEO Text on the right */}
+            <div className="lg:col-span-7 space-y-8">
               <ScrollAnimation animation="fade-in-up">
-                <div className="space-y-8 md:space-y-10">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-[2px] bg-[#C8A96A]" />
-                    <span className="text-[#C8A96A] font-black text-[10px] uppercase tracking-[0.4em]">Founder's Vision</span>
-                  </div>
-                  <h2 className="text-4xl md:text-5xl lg:text-7xl font-serif tracking-tight leading-[1.1] md:leading-tight">
-                    Message from the <br />
-                    <span className="italic text-[#C8A96A]">Founder & CEO.</span>
-                  </h2>
-                  <div className="text-base md:text-lg text-slate-300 leading-relaxed font-medium space-y-6 max-h-[400px] overflow-y-auto pr-4 custom-scrollbar">
-                    <p>
-                      Welcome to Ashford & Gray Fusion Academy—an institution defined not by convention, but by distinction.
-                    </p>
-                    <p>
-                      Ashford & Gray Fusion Academy was established with a singular vision: to create a learning environment where excellence is not aspirational, but foundational… where individuals are not merely trained, but transformed into authorities within their fields.
-                    </p>
-                    <p>
-                      In a world where many seek recognition, we focus on something far more enduring—relevance, precision, and influence.
-                    </p>
-                    <p>
-                      At the core of our Academy lies a deliberate fusion of luxury hospitality expertise and advanced business innovation. This is not accidental. It is a strategic response to a global demand for professionals who possess not only technical knowledge, but also refinement, discretion, leadership presence, and executional intelligence.
-                    </p>
-                    <p>
-                      Our approach is intentionally different.<br/>
-                      We do not overwhelm with theory—we immerse in application.<br/>
-                      We do not produce participants—we develop professionals of consequence.
-                    </p>
-                    <p>
-                      Every program within this Academy has been meticulously designed to meet international standards while remaining deeply practical, ensuring that our graduates are not only competent, but distinguished, confident, and globally competitive.
-                    </p>
-                    <p>
-                      As Founder and Chief Executive Officer, my philosophy is anchored in a simple but powerful belief:<br/>
-                      <span className="italic text-[#C8A96A]">True luxury is not excess—it is precision, discipline, and excellence expressed effortlessly.</span>
-                    </p>
-                    <p>
-                      This belief shapes everything we do.<br/>
-                      We are building more than an academy—we are building a standard.<br/>
-                      A standard that speaks through the quality of our people.<br/>
-                      A standard that is recognized before introduction.<br/>
-                      A standard that endures.
-                    </p>
-                    <p>
-                      For those who desire more than certificates—for those who seek mastery, influence, and legacy—this is where your journey begins.
-                    </p>
-                    <p>
-                      I invite you to step into an environment where your potential is refined with intention, and your ambition is elevated with purpose.
-                    </p>
-                    <p>
-                      Welcome to a higher order of learning.<br/>
-                      Welcome to refined excellence.<br/>
-                      Welcome to Ashford & Gray Fusion Academy.
-                    </p>
-                  </div>
-                  <div className="pt-6 md:pt-10 flex items-center gap-6">
-                    <div className="w-12 md:w-20 h-[1px] bg-white/20" />
-                    <div>
-                      <h4 className="text-2xl md:text-3xl font-serif">Myne Wilfred</h4>
-                      <p className="text-[#C8A96A] font-black text-[10px] uppercase tracking-[0.3em] mt-2">Founder & Chief Executive Officer</p>
-                    </div>
+                <div className="inline-flex items-center gap-3">
+                  <span className="text-[#C8A96A] font-black text-xs uppercase tracking-[0.3em]">Executive Vision</span>
+                  <span className="w-10 h-[1px] bg-white/20"></span>
+                </div>
+              </ScrollAnimation>
+
+              <ScrollAnimation animation="fade-in-up" delay={100}>
+                <h2 className="text-4xl md:text-6xl font-headline font-bold tracking-tighter leading-[0.95] text-white">
+                  Message from the <br />
+                  <span className="italic font-serif font-normal text-[#C8A96A] tracking-normal">Founder &amp; CEO.</span>
+                </h2>
+              </ScrollAnimation>
+
+              <ScrollAnimation animation="fade-in-up" delay={200}>
+                <div className="text-sm sm:text-base text-slate-300 leading-relaxed font-medium space-y-6 border-t border-b border-white/5 py-6">
+                  <p className="font-serif text-lg italic text-[#FAF9F6]">
+                    "True luxury is not defined by excess; it is defined by discipline, precision, and excellence."
+                  </p>
+                  <p>
+                    Welcome to Ashford & Gray Fusion Academy—an institution defined not by convention, but by distinction.
+                  </p>
+                  <p>
+                    Ashford & Gray Fusion Academy was established with a singular vision: to create a learning environment where excellence is not aspirational, but foundational… where individuals are not merely trained, but transformed into authorities within their fields.
+                  </p>
+                  <p>
+                    In a world that often settles for average, we are deliberate about setting an elite standard. Our Academy was founded to meet a significant global demand: the need for professionals who possess not only top-tier technical skills, but also the refined etiquette, executive presence, and strategic intelligence required to command respect in the highest circles.
+                  </p>
+                  <p>
+                    Whether you are pursuing our housekeeping, hospitality, event management, or business programs, you are engaging with a curriculum designed to challenge, inspire, and elevate you. We do not teach theories; we teach mastery. We do not prepare you for jobs; we prepare you for legacy.
+                  </p>
+                  <p>
+                    Our promise to you is absolute: if you bring the willingness to learn and the discipline to adapt, we will equip you to stand out, command authority, and make an indelible mark in your industry.
+                  </p>
+                  <p>
+                    Step into a higher level of professional authority. Your legacy begins here.
+                  </p>
+                </div>
+              </ScrollAnimation>
+
+              <ScrollAnimation animation="fade-in-up" delay={300} className="pt-4">
+                <div className="flex items-center gap-4">
+                  <span className="h-[2px] w-12 bg-[#C8A96A]"></span>
+                  <div>
+                    <h4 className="font-serif text-xl font-bold tracking-tight text-white">Myne Wilfred</h4>
+                    <p className="text-[#C8A96A] text-[9px] font-black uppercase tracking-[0.3em] mt-1">Founder & Chief Executive Officer</p>
                   </div>
                 </div>
               </ScrollAnimation>
@@ -477,32 +487,51 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Final CTA Section */}
-      <section className="py-24 md:py-40 bg-white relative overflow-hidden">
-        <div className="container mx-auto px-6 lg:px-12 text-center relative z-10">
+      {/* 6. CLOSING CTA SECTION */}
+      <section className="py-20 md:py-28 bg-[#FAF9F6] text-center border-t border-slate-200">
+        <div className="container mx-auto px-6 lg:px-12 max-w-4xl space-y-8">
           <ScrollAnimation animation="fade-in-up">
-            <div className="inline-block mb-6 md:mb-8">
-               <div className="flex items-center gap-3">
-                 <div className="w-8 md:w-12 h-[1px] bg-[#1F7A5A]" />
-                 <span className="text-[#1F7A5A] font-black text-[10px] uppercase tracking-[0.4em]">Admissions Open</span>
-                 <div className="w-8 md:w-12 h-[1px] bg-[#1F7A5A]" />
-               </div>
+            <div className="inline-block">
+              <div className="flex items-center gap-3">
+                <span className="text-[#C8A96A] font-black text-xs uppercase tracking-[0.3em]">Admissions Open</span>
+                <span className="w-1.5 h-1.5 bg-[#C8A96A] rounded-full"></span>
+              </div>
             </div>
-            <h2 className="text-5xl md:text-6xl lg:text-8xl font-serif text-[#0B1F3A] mb-10 md:mb-12 tracking-tight leading-[1.1]">
-              Step into a <br />
-              <span className="italic text-[#C8A96A]">Higher Standard.</span>
+          </ScrollAnimation>
+
+          <ScrollAnimation animation="fade-in-up" delay={100}>
+            <h2 className="text-4xl md:text-6xl font-headline font-bold tracking-tighter text-[#0B1F3A] leading-none">
+              Step into a <span className="italic text-[#C8A96A]">Higher Standard.</span>
             </h2>
-            <div className="flex flex-col sm:flex-row justify-center gap-6 md:gap-8">
-               <Button size="lg" className="h-16 md:h-20 px-10 md:px-16 bg-[#C8A96A] hover:bg-[#B69859] text-[#0B1F3A] font-black text-[10px] uppercase tracking-[0.4em] rounded-full transition-all shadow-2xl" asChild>
-                 <Link href="/login?view=signup">Apply for Admission</Link>
-               </Button>
-               <Button size="lg" variant="outline" className="h-16 md:h-20 px-10 md:px-16 border-slate-200 text-[#0B1F3A] hover:bg-slate-50 rounded-full font-black text-[10px] uppercase tracking-[0.4em]" asChild>
-                  <Link href="/contact">Speak to an Advisor</Link>
-               </Button>
+          </ScrollAnimation>
+
+          <ScrollAnimation animation="fade-in-up" delay={200}>
+            <p className="text-base sm:text-lg text-[#0B1F3A]/70 font-medium max-w-xl mx-auto">
+              Join the next cohort of distinguished global leaders. Applications are reviewed on a rolling basis.
+            </p>
+          </ScrollAnimation>
+
+          <ScrollAnimation animation="fade-in-up" delay={300} className="pt-4">
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <Button 
+                size="lg" 
+                className="h-14 px-10 rounded-none bg-[#C8A96A] hover:bg-[#B69759] text-[#0B1F3A] font-extrabold text-xs uppercase tracking-widest transition-all shadow-none border-none"
+                asChild
+              >
+                <Link href="/login?view=signup">Apply for Admission</Link>
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline"
+                className="h-14 px-10 rounded-none border-[#0B1F3A] text-[#0B1F3A] hover:bg-[#0B1F3A] hover:text-white font-extrabold text-xs uppercase tracking-widest transition-all bg-transparent"
+                asChild
+              >
+                <Link href="/contact">Speak to an Advisor</Link>
+              </Button>
             </div>
           </ScrollAnimation>
         </div>
       </section>
-    </>
+    </div>
   );
 }

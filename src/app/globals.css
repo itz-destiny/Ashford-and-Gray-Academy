@@ -5,7 +5,7 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 215 68% 14%; /* #0B1F3A */
+    --foreground: 215 68% 14%; /* #0B1F3A - Deep Navy */
 
     --card: 0 0% 100%;
     --card-foreground: 215 68% 14%;
@@ -13,14 +13,14 @@
     --popover: 0 0% 100%;
     --popover-foreground: 215 68% 14%;
 
-    --primary: 215 68% 14%; /* #0B1F3A - Deep Navy */
-    --primary-foreground: 210 40% 98%;
+    --primary: 215 68% 14%; /* #0B1F3A - Deep Navy Blue */
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 159 59% 30%; /* #1F7A5A - Emerald Green */
-    --secondary-foreground: 210 40% 98%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 24 11% 96%; /* #F6F4F2 - Cool Beige/Off-white */
+    --muted-foreground: 0 0% 43%; /* #6E6E6E - Slate Grey */
 
     --accent: 40 48% 60%; /* #C8A96A - Soft Gold */
     --accent-foreground: 215 68% 14%;
@@ -28,16 +28,16 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 214.3 31.8% 91.4%;
+    --border: 214.3 31.8% 91.4%; /* Light grey border */
     --input: 214.3 31.8% 91.4%;
     --ring: 215 68% 14%;
-    --radius: 1rem;
+    --radius: 0.125rem; /* Ultra sharp HBS-style grid aesthetic */
 
     --chart-1: 215 68% 14%;
     --chart-2: 159 59% 30%;
     --chart-3: 40 48% 60%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    --chart-4: 215 68% 24%;
+    --chart-5: 0 0% 80%;
   }
 
   .dark {
