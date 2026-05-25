@@ -38,24 +38,38 @@ export function CurriculumCatalog({ title, subtitle, badge, courseIds }: Curricu
   const [searchQuery, setSearchQuery] = useState("");
 
   React.useEffect(() => {
+    let active = true;
     const fetchCourses = async () => {
       try {
         const res = await fetch('/api/courses');
+        if (!res.ok) {
+          console.warn(`Fetch returned status: ${res.status}`);
+          return;
+        }
         const data = await res.json();
-        const apiCourses = Array.isArray(data) ? data : [];
-        
-        const merged = [...STATIC_COURSES];
-        apiCourses.forEach(ac => {
-          if (!merged.some(mc => mc.id === ac.id || mc.title.toLowerCase() === ac.title.toLowerCase())) {
-            merged.push(ac);
-          }
-        });
-        setCourses(merged);
+        if (active) {
+          const apiCourses = Array.isArray(data) ? data : [];
+          const merged = [...STATIC_COURSES];
+          apiCourses.forEach(ac => {
+            if (!merged.some(mc => mc.id === ac.id || mc.title.toLowerCase() === ac.title.toLowerCase())) {
+              merged.push(ac);
+            }
+          });
+          setCourses(merged);
+        }
       } catch (error) {
-        console.error('Error fetching courses:', error);
+        console.warn('Silent fallback on dynamic courses catalog fetch:', error);
       }
     };
-    fetchCourses();
+
+    const timer = setTimeout(() => {
+      fetchCourses();
+    }, 500);
+
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
   }, []);
 
   const filteredCourses = useMemo(() => {
@@ -299,7 +313,7 @@ export function CurriculumCatalog({ title, subtitle, badge, courseIds }: Curricu
                         <Button asChild className="h-14 px-8 bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black text-[9px] uppercase tracking-[0.25em] rounded-none border-none shadow-none flex-1 sm:flex-none">
                           <Link href={targetLink}>Explore Curriculum &amp; Syllabus</Link>
                         </Button>
-                        <Button asChild variant="outline" className="h-14 px-8 border-[#0B1F3A]/20 text-[#0B1F3A] hover:bg-[#0B1F3A]/5 rounded-none font-black text-[9px] uppercase tracking-[0.25em] flex-1 sm:flex-none">
+                        <Button asChild className="h-14 px-8 border border-[#0B1F3A]/20 bg-transparent text-[#0B1F3A] hover:bg-[#0B1F3A]/5 rounded-none font-black text-[9px] uppercase tracking-[0.25em] flex-1 sm:flex-none shadow-none">
                           <Link href={`/login?view=signup&redirectUrl=${encodeURIComponent('/courses?dialog=' + course.id)}`}>Submit Candidacy</Link>
                         </Button>
                       </div>
