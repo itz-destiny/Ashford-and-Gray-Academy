@@ -61,11 +61,11 @@ export default function DashboardPage() {
 
   if (userLoading || (loading && !enrollments.length)) {
     return (
-      <div className="p-12 space-y-12 animate-pulse bg-[#FCFCFE] min-h-screen">
-        <div className="h-48 bg-slate-100 rounded-[40px]" />
+      <div className="p-12 space-y-12 animate-pulse bg-[#FAF9F6] min-h-screen">
+        <div className="h-48 bg-slate-200/50 rounded-none border border-[#0B1F3A]/5" />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          <div className="lg:col-span-2 h-[600px] bg-slate-100 rounded-[40px]" />
-          <div className="h-[600px] bg-slate-100 rounded-[40px]" />
+          <div className="lg:col-span-2 h-[600px] bg-slate-200/50 rounded-none border border-[#0B1F3A]/5" />
+          <div className="h-[600px] bg-slate-200/50 rounded-none border border-[#0B1F3A]/5" />
         </div>
       </div>
     );
@@ -108,8 +108,7 @@ export default function DashboardPage() {
   const displayDeadlines = deadlines;
   const liveEvent = events.find(ev => ev.isLive);
 
-  // Heatmap reflects real signal: number of assignments due that day in the
-  // last 12 weeks, clamped to a 0-4 intensity scale.
+  // Heatmap reflects real signal
   const heatmapData = (() => {
     const buckets: Record<string, number> = {};
     for (const a of assignments) {
@@ -123,32 +122,32 @@ export default function DashboardPage() {
   })();
 
   return (
-    <div className="mx-auto px-6 md:px-12 py-12 space-y-16 pb-32 max-w-[1800px] bg-[#FCFCFE]">
+    <div className="mx-auto px-6 md:px-12 py-12 space-y-16 pb-32 max-w-[1800px] bg-[#FAF9F6]">
 
       {/* Top Section: Welcome & Progress */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-        <Card className="lg:col-span-2 p-12 rounded-[50px] border-none bg-white shadow-sm flex flex-col md:flex-row justify-between items-center gap-12 group overflow-hidden relative">
-          <div className="absolute -top-32 -left-32 w-80 h-80 bg-emerald-50 rounded-full blur-[100px] opacity-40 group-hover:scale-125 transition-transform duration-1000" />
-          <div className="absolute -bottom-32 -right-32 w-80 h-80 bg-indigo-50 rounded-full blur-[100px] opacity-40 group-hover:scale-125 transition-transform duration-1000" />
+        <Card className="lg:col-span-2 p-12 rounded-none border border-[#0B1F3A]/10 bg-white shadow-md flex flex-col md:flex-row justify-between items-center gap-12 group overflow-hidden relative border-t-4 border-t-[#0B1F3A]">
+          <div className="absolute -top-32 -left-32 w-80 h-80 bg-[#C8A96A]/5 rounded-full blur-[100px] opacity-40 group-hover:scale-125 transition-transform duration-1000" />
+          <div className="absolute -bottom-32 -right-32 w-80 h-80 bg-[#0B1F3A]/5 rounded-full blur-[100px] opacity-40 group-hover:scale-125 transition-transform duration-1000" />
 
           <div className="relative z-10 space-y-8 text-center md:text-left">
             <div className="space-y-4">
               <div className="flex items-center justify-center md:justify-start gap-3">
-                 <div className="w-1.5 h-8 bg-[#1F7A5A] rounded-full" />
-                 <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Student Portal</span>
+                 <div className="w-2 h-8 bg-[#C8A96A]" />
+                 <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#0B1F3A]/60">Student Portal</span>
               </div>
               <h1 className="text-4xl md:text-6xl font-serif text-[#0B1F3A] tracking-tight leading-tight">
                 Welcome, <br />
                 <span className="italic text-[#C8A96A]">{user?.displayName?.split(' ')[0]}.</span>
               </h1>
-              <p className="text-slate-500 font-medium text-lg max-w-lg leading-relaxed">
+              <p className="text-slate-500 font-medium text-lg max-w-lg leading-relaxed font-serif">
                 You are currently taking {enrollments.length} courses. Keep up the great work.
               </p>
             </div>
 
             <div className="flex flex-wrap justify-center md:justify-start gap-6">
-               <div className="flex items-center gap-4 p-2 pr-6 bg-slate-50 rounded-2xl border border-slate-100">
-                  <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-[#1F7A5A]">
+               <div className="flex items-center gap-4 p-3 pr-8 bg-[#F6F4F2] rounded-none border border-[#0B1F3A]/5 shadow-sm">
+                  <div className="w-12 h-12 bg-white rounded-none border border-[#0B1F3A]/5 shadow-sm flex items-center justify-center text-[#0B1F3A]">
                      <BookOpen className="w-6 h-6" />
                   </div>
                   <div>
@@ -156,8 +155,8 @@ export default function DashboardPage() {
                      <p className="text-lg font-black text-[#0B1F3A]">{enrollments.length}</p>
                   </div>
                </div>
-               <div className="flex items-center gap-4 p-2 pr-6 bg-slate-50 rounded-2xl border border-slate-100">
-                  <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-[#C8A96A]">
+               <div className="flex items-center gap-4 p-3 pr-8 bg-[#F6F4F2] rounded-none border border-[#0B1F3A]/5 shadow-sm">
+                  <div className="w-12 h-12 bg-white rounded-none border border-[#0B1F3A]/5 shadow-sm flex items-center justify-center text-[#C8A96A]">
                      <Award className="w-6 h-6" />
                   </div>
                   <div>
@@ -183,12 +182,12 @@ export default function DashboardPage() {
 
         {/* Left Column: Learning Path */}
         <div className="lg:col-span-2 space-y-12">
-          <div className="flex justify-between items-end border-b border-slate-100 pb-8">
+          <div className="flex justify-between items-end border-b border-[#0B1F3A]/10 pb-8">
             <div>
                <h2 className="text-3xl font-serif text-[#0B1F3A] tracking-tight">My Study Plan</h2>
                <p className="text-slate-400 font-medium mt-2">Courses you are currently taking.</p>
             </div>
-            <Link href="/courses" className="text-[#1F7A5A] font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-2 hover:translate-x-2 transition-transform">
+            <Link href="/courses" className="text-[#C8A96A] font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-2 hover:text-[#0B1F3A] transition-colors">
               Explore All Courses <ChevronRight size={14} />
             </Link>
           </div>
@@ -205,14 +204,14 @@ export default function DashboardPage() {
                 />
               ))
             ) : (
-              <div className="p-20 text-center bg-slate-50 rounded-[50px] border-2 border-dashed border-slate-200">
-                <div className="w-20 h-20 bg-white rounded-[2rem] shadow-sm flex items-center justify-center text-slate-200 mx-auto mb-8">
+              <div className="p-20 text-center bg-white border border-[#0B1F3A]/10 rounded-none border-t-4 border-t-[#C8A96A] shadow-md">
+                <div className="w-20 h-20 bg-[#F6F4F2] border border-[#0B1F3A]/10 rounded-none shadow-sm flex items-center justify-center text-slate-300 mx-auto mb-8">
                    <Target className="w-10 h-10" />
                 </div>
                 <h3 className="text-2xl font-serif text-[#0B1F3A] mb-4">No Courses Yet</h3>
-                <p className="text-slate-500 font-medium max-w-sm mx-auto mb-10 leading-relaxed">You haven't joined any classes yet. Check out our course list to get started.</p>
+                <p className="text-slate-500 font-medium max-w-sm mx-auto mb-10 leading-relaxed font-serif">You haven't joined any classes yet. Check out our course list to get started.</p>
                 <Link href="/courses">
-                  <button className="bg-[#0B1F3A] text-white font-black px-12 py-5 rounded-2xl shadow-xl hover:scale-105 transition-all text-[10px] uppercase tracking-widest">Find a Course</button>
+                  <button className="bg-[#0B1F3A] text-white hover:bg-[#C8A96A] font-black px-12 py-5 rounded-none shadow-lg transition-all text-[10px] uppercase tracking-widest">Find a Course</button>
                 </Link>
               </div>
             )}
@@ -225,7 +224,7 @@ export default function DashboardPage() {
           {/* Today's Schedule */}
           <div className="space-y-6">
             <h2 className="text-xl font-serif text-[#0B1F3A] flex items-center gap-3">
-               <div className="w-1.5 h-6 bg-[#C8A96A] rounded-full" />
+               <div className="w-2 h-6 bg-[#C8A96A]" />
                My Schedule
             </h2>
             <ScheduleWidget
@@ -236,24 +235,24 @@ export default function DashboardPage() {
           </div>
 
           {/* Event Timeline */}
-          <Card className="p-10 rounded-[40px] border-none shadow-sm bg-white space-y-10">
+          <Card className="p-10 rounded-none border border-[#0B1F3A]/10 shadow-md bg-white space-y-10 border-t-4 border-t-[#C8A96A]">
             <div className="flex justify-between items-center">
               <CardTitle className="text-xl font-serif text-[#0B1F3A]">Upcoming Events</CardTitle>
-              <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-[#1F7A5A]">
+              <div className="w-12 h-12 bg-[#F6F4F2] border border-[#0B1F3A]/5 rounded-none flex items-center justify-center text-[#C8A96A]">
                  <CalendarIcon className="w-6 h-6" />
               </div>
             </div>
             <div className="space-y-8">
               {upcomingEvents.length > 0 ? upcomingEvents.map((ev, i) => (
                 <div key={i} className="flex gap-6 group cursor-pointer">
-                  <div className="flex flex-col items-center justify-center bg-slate-50 group-hover:bg-[#1F7A5A] group-hover:text-white rounded-2xl p-4 min-w-[70px] transition-all duration-500 shadow-sm">
+                  <div className="flex flex-col items-center justify-center bg-[#F6F4F2] border border-[#0B1F3A]/5 group-hover:bg-[#0B1F3A] group-hover:text-white rounded-none p-4 min-w-[70px] transition-all duration-300 shadow-sm">
                     <span className="text-[9px] font-black opacity-50 uppercase tracking-widest mb-1">{ev.date && !isNaN(new Date(ev.date).getTime()) ? format(new Date(ev.date), "MMM") : "---"}</span>
                     <span className="text-2xl font-black">{ev.date && !isNaN(new Date(ev.date).getTime()) ? format(new Date(ev.date), "dd") : "--"}</span>
                   </div>
                   <div className="space-y-2 py-1">
-                    <h4 className="font-serif text-[#0B1F3A] text-lg group-hover:text-[#1F7A5A] transition-colors leading-tight">{ev.title}</h4>
+                    <h4 className="font-serif text-[#0B1F3A] text-lg group-hover:text-[#C8A96A] transition-colors leading-tight">{ev.title}</h4>
                     <div className="flex items-center gap-2 text-slate-400">
-                       <Clock className="w-3 h-3" />
+                       <Clock className="w-3 h-3 text-[#C8A96A]" />
                        <p className="text-[10px] font-black uppercase tracking-widest">{ev.date && !isNaN(new Date(ev.date).getTime()) ? format(new Date(ev.date), "hh:mm a") : "--:--"} • {ev.location}</p>
                     </div>
                   </div>
@@ -265,7 +264,7 @@ export default function DashboardPage() {
           </Card>
 
           {/* Upcoming Deadlines */}
-          <Card className="p-10 rounded-[40px] border-none shadow-sm bg-white space-y-10">
+          <Card className="p-10 rounded-none border border-[#0B1F3A]/10 shadow-md bg-white space-y-10 border-t-4 border-t-[#C8A96A]">
             <CardTitle className="text-xl font-serif text-[#0B1F3A]">My Deadlines</CardTitle>
             <div className="space-y-6">
               {displayDeadlines.length === 0 ? (
@@ -274,17 +273,17 @@ export default function DashboardPage() {
                 </p>
               ) : (
                 displayDeadlines.map((dl, i) => (
-                  <div key={i} className="bg-slate-50 p-6 rounded-[2rem] space-y-4 border border-slate-50 hover:border-[#C8A96A]/20 transition-all cursor-pointer group shadow-sm">
+                  <div key={i} className="bg-[#F6F4F2]/50 p-6 rounded-none space-y-4 border border-[#0B1F3A]/5 hover:border-[#C8A96A] transition-all cursor-pointer group shadow-sm">
                     <div className="flex justify-between items-center">
                       <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{dl.category}</span>
                       <Badge className={cn(
-                        "text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-sm",
-                        dl.priority === 'high' ? "bg-red-50 text-red-600" : "bg-[#1F7A5A]/10 text-[#1F7A5A]"
+                        "text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-none shadow-sm",
+                        dl.priority === 'high' ? "bg-red-50 text-red-600 border border-red-200" : "bg-[#C8A96A]/10 text-[#0B1F3A] border border-[#C8A96A]/20"
                       )}>
                         {dl.timeLeft}
                       </Badge>
                     </div>
-                    <h4 className="text-base font-serif text-[#0B1F3A] group-hover:text-[#1F7A5A] transition-colors leading-tight">
+                    <h4 className="text-base font-serif text-[#0B1F3A] group-hover:text-[#C8A96A] transition-colors leading-tight">
                       {dl.title}
                     </h4>
                   </div>
@@ -297,5 +296,6 @@ export default function DashboardPage() {
       </div>
     </div>
   );
+}
 }
 

@@ -115,21 +115,21 @@ export default function RegistrarDashboardPage() {
     };
 
     return (
-        <div className="space-y-10 animate-in fade-in duration-700">
+        <div className="space-y-10 animate-in fade-in duration-700 bg-[#FAF9F6] min-h-screen p-6 md:p-12">
             {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                <div className="space-y-1">
-                    <h1 className="text-3xl font-black text-[#0B1F3A] tracking-tight">Enrollment Overview</h1>
-                    <p className="text-slate-500 font-medium italic">Manage academy members and staff records.</p>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-[#0B1F3A]/10 pb-8">
+                <div className="space-y-2">
+                    <h1 className="text-4xl font-serif text-[#0B1F3A] tracking-tight leading-tight">Enrollment Overview</h1>
+                    <p className="text-slate-500 font-medium italic font-serif">Manage academy members and staff records.</p>
                 </div>
                 <div className="flex gap-3">
-                    <Button variant="outline" asChild className="rounded-xl border-slate-100 font-bold text-xs uppercase tracking-tight">
+                    <Button variant="outline" asChild className="rounded-none border-[#0B1F3A]/10 bg-white hover:bg-slate-50 font-black text-[10px] uppercase tracking-wider">
                         <Link href="/registrar/users">
-                            <Users className="h-4 w-4 mr-2" />
+                            <Users className="h-4 w-4 mr-2 text-[#C8A96A]" />
                             Staff List
                         </Link>
                     </Button>
-                    <Button asChild className="bg-[#0B1F3A] hover:bg-slate-800 text-white rounded-xl font-bold text-xs uppercase tracking-tight">
+                    <Button asChild className="bg-[#0B1F3A] hover:bg-[#C8A96A] text-white rounded-none font-black text-[10px] uppercase tracking-wider">
                         <Link href="/registrar/audit">
                             <History className="h-4 w-4 mr-2" />
                             System History
@@ -142,20 +142,20 @@ export default function RegistrarDashboardPage() {
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                 {statCards.map((stat, i) => (
                     <Link key={i} href={stat.href}>
-                        <Card className="border-none bg-white rounded-[2.5rem] group hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-500 overflow-hidden relative">
+                        <Card className="border border-[#0B1F3A]/10 bg-white rounded-none group hover:shadow-xl transition-all duration-300 overflow-hidden relative border-t-4 border-t-[#0B1F3A]">
                             <CardContent className="p-8">
                                 <div className="flex justify-between items-start mb-6">
                                     <div>
                                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{stat.label}</p>
-                                        <h2 className="text-4xl font-black text-[#0B1F3A] mt-2">
+                                        <h2 className="text-4xl font-black text-[#0B1F3A] mt-2 font-serif">
                                             {loading ? "..." : stat.value}
                                         </h2>
                                     </div>
-                                    <div className={`${stat.bg} p-4 rounded-2xl transition-transform group-hover:scale-110`}>
-                                        <stat.icon className={`w-6 h-6 ${stat.iconColor}`} />
+                                    <div className={`bg-[#F6F4F2] border border-[#0B1F3A]/5 p-4 rounded-none transition-transform group-hover:scale-110`}>
+                                        <stat.icon className={`w-6 h-6 text-[#C8A96A]`} />
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 italic">
+                                <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 italic font-serif">
                                     {stat.sub}
                                 </div>
                             </CardContent>
@@ -166,10 +166,10 @@ export default function RegistrarDashboardPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                 {/* Recent Updates */}
-                <Card className="border-none bg-white rounded-[3rem] shadow-sm lg:col-span-2 overflow-hidden">
+                <Card className="border border-[#0B1F3A]/10 bg-white rounded-none shadow-md lg:col-span-2 overflow-hidden border-t-4 border-t-[#C8A96A]">
                     <CardHeader className="p-10 pb-4 flex flex-row items-center justify-between">
-                        <CardTitle className="text-2xl font-black text-[#0B1F3A] tracking-tight">Recent Updates</CardTitle>
-                        <Button variant="ghost" size="sm" asChild className="text-indigo-600 font-bold hover:bg-indigo-50 rounded-xl">
+                        <CardTitle className="text-2xl font-serif text-[#0B1F3A] tracking-tight">Recent Updates</CardTitle>
+                        <Button variant="ghost" size="sm" asChild className="text-[#C8A96A] hover:text-[#0B1F3A] font-black uppercase text-[10px] tracking-wider rounded-none">
                             <Link href="/registrar/audit">View All</Link>
                         </Button>
                     </CardHeader>
@@ -185,20 +185,20 @@ export default function RegistrarDashboardPage() {
                                 </div>
                             ) : (
                                 recentActivities.map((activity, i) => (
-                                    <div key={i} className="flex items-start gap-4 p-4 hover:bg-slate-50 rounded-3xl transition-all group">
-                                        <div className="mt-1 p-2 bg-slate-50 rounded-xl group-hover:bg-white transition-colors">
+                                    <div key={i} className="flex items-start gap-4 p-4 hover:bg-[#F6F4F2]/50 rounded-none border border-transparent hover:border-[#0B1F3A]/5 transition-all group">
+                                        <div className="mt-1 p-2 bg-[#F6F4F2] border border-[#0B1F3A]/5 rounded-none group-hover:bg-white transition-colors">
                                             {getActivityIcon(activity.action)}
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-3">
-                                                <p className="text-sm font-black text-[#0B1F3A] capitalize">
+                                                <p className="text-sm font-bold text-[#0B1F3A] capitalize">
                                                     {activity.action.replace('_', ' ')}
                                                 </p>
-                                                <Badge className="bg-slate-100 text-slate-500 hover:bg-slate-100 border-none text-[9px] font-black uppercase tracking-tighter">
+                                                <Badge className="bg-[#C8A96A]/10 text-[#0B1F3A] hover:bg-[#C8A96A]/20 border border-[#C8A96A]/20 text-[9px] font-black uppercase tracking-widest rounded-none">
                                                     {activity.resource}
                                                 </Badge>
                                             </div>
-                                            <p className="text-xs text-slate-400 font-bold mt-1">
+                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1 font-serif">
                                                 by {activity.role} • {formatTimeAgo(activity.timestamp)}
                                             </p>
                                         </div>
@@ -210,34 +210,34 @@ export default function RegistrarDashboardPage() {
                 </Card>
 
                 {/* Management Actions */}
-                <Card className="border-none bg-[#0B1F3A] text-white rounded-[3rem] shadow-2xl overflow-hidden relative">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl" />
+                <Card className="border border-[#0B1F3A]/10 bg-[#0B1F3A] text-white rounded-none shadow-2xl overflow-hidden relative border-t-4 border-t-[#C8A96A]">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-[#C8A96A]/10 rounded-full blur-3xl" />
                     <CardHeader className="p-10 pb-4 relative z-10">
-                        <CardTitle className="text-2xl font-black tracking-tight">Quick Tools</CardTitle>
+                        <CardTitle className="text-2xl font-serif tracking-tight text-white">Quick Tools</CardTitle>
                     </CardHeader>
                     <CardContent className="p-10 pt-0 space-y-4 relative z-10">
-                        <Button variant="ghost" className="w-full justify-start h-14 rounded-2xl hover:bg-white/10 text-white border border-white/10" asChild>
+                        <Button variant="ghost" className="w-full justify-start h-14 rounded-none hover:bg-white/10 text-white border border-white/10" asChild>
                             <Link href="/registrar/staff/new">
                                 <UserPlus className="h-5 w-5 mr-3 text-emerald-400" />
-                                <span className="font-bold">Add New Staff</span>
+                                <span className="font-black text-xs uppercase tracking-wider">Add New Staff</span>
                             </Link>
                         </Button>
-                        <Button variant="ghost" className="w-full justify-start h-14 rounded-2xl hover:bg-white/10 text-white border border-white/10" asChild>
+                        <Button variant="ghost" className="w-full justify-start h-14 rounded-none hover:bg-white/10 text-white border border-white/10" asChild>
                             <Link href="/registrar/users">
                                 <Users className="h-5 w-5 mr-3 text-blue-400" />
-                                <span className="font-bold">Manage Users</span>
+                                <span className="font-black text-xs uppercase tracking-wider">Manage Users</span>
                             </Link>
                         </Button>
-                        <Button variant="ghost" className="w-full justify-start h-14 rounded-2xl hover:bg-white/10 text-white border border-white/10" asChild>
+                        <Button variant="ghost" className="w-full justify-start h-14 rounded-none hover:bg-white/10 text-white border border-white/10" asChild>
                             <Link href="/registrar/settings">
                                 <ShieldCheck className="h-5 w-5 mr-3 text-[#C8A96A]" />
-                                <span className="font-bold">Platform Settings</span>
+                                <span className="font-black text-xs uppercase tracking-wider">Platform Settings</span>
                             </Link>
                         </Button>
-                        <Button variant="ghost" className="w-full justify-start h-14 rounded-2xl hover:bg-white/10 text-white border border-white/10" asChild>
+                        <Button variant="ghost" className="w-full justify-start h-14 rounded-none hover:bg-white/10 text-white border border-white/10" asChild>
                             <Link href="/registrar/reports">
                                 <TrendingUp className="h-5 w-5 mr-3 text-purple-400" />
-                                <span className="font-bold">Get Reports</span>
+                                <span className="font-black text-xs uppercase tracking-wider">Get Reports</span>
                             </Link>
                         </Button>
                     </CardContent>
@@ -245,27 +245,27 @@ export default function RegistrarDashboardPage() {
             </div>
 
             {/* Platform Status Overview */}
-            <Card className="border-none bg-white rounded-[3rem] shadow-sm">
+            <Card className="border border-[#0B1F3A]/10 bg-white rounded-none shadow-md border-t-4 border-t-[#0B1F3A]">
                 <CardHeader className="p-10 pb-4">
-                    <CardTitle className="text-2xl font-black text-[#0B1F3A] tracking-tight">Platform Status</CardTitle>
+                    <CardTitle className="text-2xl font-serif text-[#0B1F3A] tracking-tight">Platform Status</CardTitle>
                 </CardHeader>
                 <CardContent className="p-10 pt-0">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="flex items-center gap-4 p-6 bg-emerald-50 rounded-[2rem]">
-                            <CheckCircle className="h-10 w-10 text-emerald-600" />
+                        <div className="flex items-center gap-4 p-6 bg-[#F6F4F2] border border-[#0B1F3A]/5 rounded-none shadow-sm">
+                            <CheckCircle className="h-10 w-10 text-emerald-600 animate-pulse" />
                             <div>
                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Status</p>
-                                <p className="text-xl font-black text-emerald-600">Online</p>
+                                <p className="text-xl font-black text-emerald-600 uppercase tracking-wide">Online</p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-4 p-6 bg-blue-50 rounded-[2rem]">
+                        <div className="flex items-center gap-4 p-6 bg-[#F6F4F2] border border-[#0B1F3A]/5 rounded-none shadow-sm">
                             <Activity className="h-10 w-10 text-blue-600" />
                             <div>
                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Live Users</p>
                                 <p className="text-xl font-black text-blue-600">{stats.activeUsers}</p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-4 p-6 bg-purple-50 rounded-[2rem]">
+                        <div className="flex items-center gap-4 p-6 bg-[#F6F4F2] border border-[#0B1F3A]/5 rounded-none shadow-sm">
                             <Clock className="h-10 w-10 text-purple-600" />
                             <div>
                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Academy Uptime</p>
@@ -277,4 +277,5 @@ export default function RegistrarDashboardPage() {
             </Card>
         </div>
     );
+}
 }

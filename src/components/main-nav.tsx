@@ -167,7 +167,7 @@ export function MainNav() {
                           </Button>
                        ) : (
                           <div className="grid grid-cols-2 gap-4">
-                             <Button variant="outline" className="h-12 border-white/10 text-white hover:bg-white/5 font-extrabold text-[10px] uppercase tracking-widest rounded-none" asChild onClick={() => setIsOpen(false)}>
+                             <Button className="h-12 border border-white/20 bg-transparent text-white hover:bg-white/5 font-extrabold text-[10px] uppercase tracking-widest rounded-none shadow-none" asChild onClick={() => setIsOpen(false)}>
                                 <Link href="/login">Log In</Link>
                              </Button>
                              <Button className="h-12 bg-white text-[#0B1F3A] hover:bg-slate-100 font-extrabold text-[10px] uppercase tracking-widest rounded-none" asChild onClick={() => setIsOpen(false)}>
