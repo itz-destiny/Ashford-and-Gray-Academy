@@ -17,6 +17,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { GlobalLoaderProvider } from "@/components/global-loader-provider";
+
 export default function RootLayout({
   children,
 }: {
@@ -46,7 +48,9 @@ export default function RootLayout({
       </head>
       <body className="font-body">
         <FirebaseClientProvider>
-          {children}
+          <GlobalLoaderProvider>
+            {children}
+          </GlobalLoaderProvider>
         </FirebaseClientProvider>
         <Toaster />
       </body>

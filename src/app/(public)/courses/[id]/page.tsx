@@ -126,7 +126,7 @@ export default async function CourseDetailPage({ params }: RouteProps) {
                                 <Button asChild className="h-16 px-10 bg-[#C8A96A] hover:bg-[#B69859] text-[#0B1F3A] font-black text-[10px] uppercase tracking-[0.3em] rounded-none border-none shadow-none">
                                     <Link href={`/login?view=signup&redirectUrl=${encodeURIComponent('/courses?dialog=' + id)}`}>Apply Now <ArrowRight className="ml-3 w-4.5 h-4.5" /></Link>
                                 </Button>
-                                <Button asChild variant="outline" className="h-16 px-10 border-white/20 text-white hover:bg-white/10 rounded-none font-black text-[10px] uppercase tracking-[0.3em]">
+                                <Button asChild className="h-16 px-10 border border-white/20 bg-transparent text-white hover:bg-white/10 rounded-none font-black text-[10px] uppercase tracking-[0.3em] shadow-none">
                                     <Link href="/contact">Speak to an Advisor</Link>
                                 </Button>
                             </ScrollAnimation>

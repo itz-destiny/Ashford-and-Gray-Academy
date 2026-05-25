@@ -11,8 +11,12 @@ type LogoProps = {
  * Ashford & Gray Official Logo Component
  */
 export function Logo({ className, variant = 'default' }: LogoProps) {
-  const isDarkBg = variant === 'white';
-  const logoSrc = isDarkBg ? '/A&G Logo white.png' : '/A&G Logo.png';
+  let logoSrc = '/A & G1.png';
+  if (variant === 'white') {
+    logoSrc = '/A & G2.png';
+  } else if (variant === 'blue') {
+    logoSrc = '/A & G3.png';
+  }
 
   return (
     <div className={cn('flex items-center shrink-0', className)}>

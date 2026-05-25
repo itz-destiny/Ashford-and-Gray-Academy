@@ -37,11 +37,16 @@ export default function Home() {
   const [coursesLoading, setCoursesLoading] = React.useState(false);
 
   React.useEffect(() => {
+    let active = true;
     const fetchCourses = async () => {
       try {
         const res = await fetch('/api/courses');
+        if (!res.ok) {
+          console.warn(`Fetch returned status: ${res.status}`);
+          return;
+        }
         const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) {
+        if (active && Array.isArray(data) && data.length > 0) {
           // Merge dynamic database courses while keeping static courses first
           const merged = [...STATIC_COURSES];
           data.forEach(dc => {
@@ -52,13 +57,21 @@ export default function Home() {
           setTrendingCourses(merged.slice(0, 3));
         }
       } catch (error) {
-        console.error('Error fetching courses:', error);
+        console.warn('Silent fallback on dynamic courses fetch:', error);
       } finally {
-        setCoursesLoading(false);
+        if (active) setCoursesLoading(false);
       }
     };
 
-    fetchCourses();
+    // Delay slightly to shield against hot-reloads and HMR compiler timeouts
+    const timer = setTimeout(() => {
+      fetchCourses();
+    }, 500);
+
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
   }, []);
 
   return (
