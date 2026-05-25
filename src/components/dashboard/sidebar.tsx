@@ -33,17 +33,17 @@ export function Sidebar({ className }: { className?: string }) {
 
     return (
         <aside className={cn(
-            "fixed left-0 top-0 h-screen w-72 bg-white border-r border-slate-100 flex flex-col z-50",
+            "fixed left-0 top-0 h-screen w-72 bg-[#0B1F3A] border-r border-white/5 flex flex-col z-50",
             className
         )}>
             {/* Sidebar Header */}
             <div className="p-8 pb-12">
-                <Logo />
+                <Logo variant="white" />
             </div>
 
             {/* Navigation Links */}
-            <nav className="flex-1 px-8 space-y-2 overflow-y-auto custom-scrollbar">
-                <p className="px-4 text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] mb-6">Learning</p>
+            <nav className="flex-1 px-6 space-y-1.5 overflow-y-auto custom-scrollbar">
+                <p className="px-4 text-[9px] font-black text-white/30 uppercase tracking-[0.2em] mb-4">Learning</p>
 
                 {sidebarItems.map((item) => {
                     const isActive = pathname === item.href;
@@ -52,17 +52,17 @@ export function Sidebar({ className }: { className?: string }) {
                             key={item.href}
                             href={item.href}
                             className={cn(
-                                "group flex items-center gap-4 px-5 py-4 rounded-[1.8rem] transition-all duration-500",
+                                "group flex items-center gap-4 px-5 py-3.5 transition-all duration-300 relative rounded-none",
                                 isActive
-                                    ? "bg-[#0B1F3A] text-white shadow-2xl shadow-blue-900/10"
-                                    : "text-slate-400 hover:bg-slate-50 hover:text-[#0B1F3A]"
+                                    ? "bg-white/5 text-[#C8A96A] border-l-4 border-[#C8A96A]"
+                                    : "text-white/60 hover:bg-white/[0.02] hover:text-white"
                             )}
                         >
                             <item.icon className={cn(
-                                "w-5 h-5 transition-all duration-500",
-                                isActive ? "text-[#C8A96A] scale-110" : "text-slate-300 group-hover:text-[#0B1F3A] group-hover:scale-110"
+                                "w-4 h-4 transition-all duration-300",
+                                isActive ? "text-[#C8A96A] scale-110" : "text-white/40 group-hover:text-white group-hover:scale-110"
                             )} />
-                            <span className="text-sm font-bold tracking-tight">{item.label}</span>
+                            <span className="text-xs font-black uppercase tracking-wider">{item.label}</span>
                             {isActive && (
                                 <div className="ml-auto">
                                     <div className="w-1.5 h-1.5 bg-[#C8A96A] rounded-full animate-pulse shadow-[0_0_8px_rgba(200,169,106,0.8)]" />
@@ -72,35 +72,37 @@ export function Sidebar({ className }: { className?: string }) {
                     );
                 })}
 
-                <div className="pt-10">
-                    <p className="px-4 text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] mb-6">Support</p>
+                <div className="pt-8">
+                    <p className="px-4 text-[9px] font-black text-white/30 uppercase tracking-[0.2em] mb-4">Support</p>
                     <Link
                         href="/help"
                         className={cn(
-                            "group flex items-center gap-4 px-5 py-4 rounded-[1.8rem] transition-all duration-500",
-                            pathname === "/help" ? "bg-[#0B1F3A] text-white" : "text-slate-400 hover:bg-slate-50 hover:text-[#0B1F3A]"
+                            "group flex items-center gap-4 px-5 py-3.5 transition-all duration-300 rounded-none",
+                            pathname === "/help"
+                                ? "bg-white/5 text-[#C8A96A] border-l-4 border-[#C8A96A]"
+                                : "text-white/60 hover:bg-white/[0.02] hover:text-white"
                         )}
                     >
-                        <div className="w-5 h-5 flex items-center justify-center">
-                            <div className={cn("w-2 h-2 rounded-full transition-all duration-500", pathname === "/help" ? "bg-[#C8A96A]" : "bg-slate-300 group-hover:bg-[#1F7A5A]")} />
+                        <div className="w-4 h-4 flex items-center justify-center">
+                            <div className={cn("w-1.5 h-1.5 rounded-full transition-all duration-300", pathname === "/help" ? "bg-[#C8A96A]" : "bg-white/30 group-hover:bg-white")} />
                         </div>
-                        <span className="text-sm font-bold tracking-tight">Get Help</span>
-                        <ChevronRight size={14} className={cn("ml-auto transition-all duration-500", pathname === "/help" ? "opacity-100" : "opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0")} />
+                        <span className="text-xs font-black uppercase tracking-wider">Get Help</span>
+                        <ChevronRight size={12} className={cn("ml-auto transition-all duration-300", pathname === "/help" ? "opacity-100" : "opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0")} />
                     </Link>
                 </div>
             </nav>
 
             {/* Sidebar Footer / User Banner */}
-            <div className="p-8 mt-auto">
-                <div className="bg-gradient-to-br from-[#0B1F3A] to-[#1F7A5A] rounded-[2.5rem] p-8 relative overflow-hidden group shadow-2xl">
-                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-all duration-700 group-hover:rotate-12">
-                        <Sparkles className="w-16 h-16 text-white" />
+            <div className="p-6 mt-auto">
+                <div className="bg-gradient-to-br from-white/[0.04] to-white/[0.01] border border-white/10 rounded-none p-6 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-3 opacity-[0.03] group-hover:opacity-[0.08] transition-all duration-500 group-hover:rotate-12">
+                        <Sparkles className="w-12 h-12 text-white" />
                     </div>
-                    <p className="text-[#C8A96A] text-[9px] font-black uppercase tracking-[0.2em] mb-3">Academy Success</p>
-                    <p className="text-white text-sm font-bold leading-snug mb-5">Elevate your studies with our community.</p>
+                    <p className="text-[#C8A96A] text-[9px] font-black uppercase tracking-[0.2em] mb-2">Academy Success</p>
+                    <p className="text-white/80 text-[10px] font-medium leading-relaxed mb-4">Elevate your studies with our global collegiate registry.</p>
                     <Link
-                        href="/messages"
-                        className="block w-full py-4 bg-white text-[#0B1F3A] rounded-2xl text-[9px] font-black uppercase tracking-widest hover:bg-[#C8A96A] hover:text-white transition-all shadow-lg active:scale-95 text-center"
+                        href="/communications"
+                        className="block w-full py-3 bg-[#C8A96A] text-[#0B1F3A] hover:bg-[#B69759] text-[9px] font-black uppercase tracking-widest transition-all text-center text-xs"
                     >
                         Join Discussion
                     </Link>
