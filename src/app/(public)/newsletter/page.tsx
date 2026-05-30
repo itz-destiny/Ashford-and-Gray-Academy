@@ -6,9 +6,10 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { ScrollAnimation } from "@/components/ui/scroll-animation";
 import { Badge } from "@/components/ui/badge";
-import { 
+import {
     Loader2, Mail, CheckCircle2, ChevronRight, BookOpen, Star, Sparkles, Building, Landmark
 } from "lucide-react";
+import { ARTICLES } from "@/lib/insights-data";
 
 interface InsightArticle {
     category: string;
@@ -18,6 +19,7 @@ interface InsightArticle {
     date: string;
     readTime: string;
     fullText: string;
+    slug: string;
 }
 
 export default function NewsletterPage() {
@@ -59,53 +61,21 @@ export default function NewsletterPage() {
         }
     };
 
-    const publications: InsightArticle[] = [
-        {
-            category: "THE LUXURY MARKET",
-            title: "Decoding the Post-Digital Consumer: How Heritage Brands Retain Exclusive Value",
-            excerpt: "As e-commerce democratizes luxury, heritage institutions must reinvent physical exclusivity. This study examines spatial and digital boundaries designed for elite retention.",
-            author: "Prof. Catherine Gray",
-            date: "May 2026",
-            readTime: "7 Min Read",
-            fullText: "Heritage brands must transcend transactional boundaries to protect high-end prestige value. Moving forward, luxury services should transition toward tailored digital-physical environments."
-        },
-        {
-            category: "EXECUTIVE PRESENCE",
-            title: "The Discipline of Discretion: Principles of Elite Leadership in Modern Hospitality Operations",
-            excerpt: "Why executional intelligence and absolute discretion are the highest valued commodities in VIP concierge and international protocol management sectors.",
-            author: "Myne Wilfred, CEO",
-            date: "April 2026",
-            readTime: "9 Min Read",
-            fullText: "Discretion is not merely silent conduct; it is the strategic management of confidentiality and protocol to guarantee the emotional security and prestige comfort of VIP clients."
-        },
-        {
-            category: "GLOBAL STRATEGY",
-            title: "Navigating Multi-Market Expansion in High-Growth Hospitality Sectors",
-            excerpt: "An in-depth framework for scaling luxury hotel brands across African and European boundaries, leveraging localized heritage and institutional systems.",
-            author: "Academic Board",
-            date: "March 2026",
-            readTime: "11 Min Read",
-            fullText: "Scaling premium systems into multi-market corridors requires robust localization of aesthetics and deep regulatory whitelists. Establishing centralized operations guarantees uniform service delivery."
-        },
-        {
-            category: "ACADEMIC EXCELLENCE",
-            title: "The Pedagogy of Excellence: Curriculum Design for High-Pressure Domestic Administration",
-            excerpt: "A critical review of the educational models that shape entry-level practitioners into high-efficiency residency supervisors and estate managers.",
-            author: "Prof. Catherine Gray",
-            date: "February 2026",
-            readTime: "8 Min Read",
-            fullText: "Modern estate leadership requires a delicate blend of soft-service orchestration and robust technical facility systems. Our curricula bridge this division seamlessly."
-        },
-        {
-            category: "FINANCIAL STRATEGY",
-            title: "Prestige Economics: Investment Returns on Ultra-Luxury Asset Management Systems",
-            excerpt: "How C-Suite leaders coordinate high-value investments in estate restoration, luxury vehicle fleets, and elite hospitality holdings for long-term equity.",
-            author: "Academic Board",
-            date: "January 2026",
-            readTime: "10 Min Read",
-            fullText: "Maintaining high-value assets demands structured preservation routines and strict capital depreciation plans. Elite managers safeguard institutional legacy through meticulous balance control."
-        }
-    ];
+    // Sourced from the canonical insights database — keeps the newsletter
+    // teaser in sync with the live /insights articles by Myne Wilfred.
+    const publications: InsightArticle[] = ARTICLES.map((a) => {
+        const firstParagraph = a.body.find((b) => b.type === 'p');
+        return {
+            slug: a.slug,
+            category: a.category.toUpperCase(),
+            title: a.title,
+            excerpt: a.excerpt,
+            author: a.author,
+            date: a.date,
+            readTime: a.readTime,
+            fullText: firstParagraph?.type === 'p' ? firstParagraph.text : a.excerpt,
+        };
+    });
 
     return (
         <div className="bg-[#FAF9F6] min-h-screen text-[#0B1F3A]">

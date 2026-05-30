@@ -64,7 +64,7 @@ export default function ContactPage() {
                     </div>
                     <h1 className="text-5xl md:text-7xl font-serif text-[#0B1F3A] tracking-tight leading-tight">
                         Speak with the <br />
-                        <span className="italic text-[#C8A96A]">Academy.</span>
+                        <span className="text-[#C8A96A]">Academy.</span>
                     </h1>
                     <p className="text-lg md:text-xl text-slate-500 font-medium max-w-2xl mx-auto mt-8 leading-relaxed">
                         Whether you are exploring admissions, partnership, faculty engagement, or executive enquiries — our office is open.

@@ -2,15 +2,14 @@ import { CurriculumCatalog } from "@/components/curriculum-catalog";
 
 export default function ExecutiveEducationPage() {
   const executiveCourseIds = [
-    "664f3a8b2d1c9e8a7f0e0004", // Executive Assistant Management (Certificate)
-    "664f3a8b2d1c9e8a7f0e0005"  // Hospitality & Global Relationship Management (Certificate)
+    "664f3a8b2d1c9e8a7f0e0010", // The Silent Standard
   ];
 
   return (
     <CurriculumCatalog
-      title="Executive Education"
-      subtitle="High-level administrative leadership training, bespoke corporate alignment, and strategic calendar authority for C-Suite assistants and luxury hotel directors."
-      badge="Professional Training"
+      title="Executive Master Class"
+      subtitle="Our signature executive-level programme designed to cultivate disciplined leaders, operational strategists, and institutional authorities."
+      badge="Executive Master Class"
       courseIds={executiveCourseIds}
     />
   );
@@ -18,7 +17,7 @@ export default function ExecutiveEducationPage() {
 
 export async function generateMetadata() {
   return {
-    title: "Executive Education — Ashford & Gray Fusion Academy",
-    description: "High-level administrative leadership training, bespoke corporate alignment, and strategic calendar authority for C-Suite assistants and luxury hotel directors.",
+    title: "Executive Master Class — Ashford & Gray Academy",
+    description: "Our signature executive-level programme designed to cultivate disciplined leaders, operational strategists, and institutional authorities.",
   };
 }

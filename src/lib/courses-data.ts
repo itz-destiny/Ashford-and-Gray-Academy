@@ -5,9 +5,10 @@ export const STATIC_COURSES: Course[] = [
     id: "664f3a8b2d1c9e8a7f0e0001",
     title: "Housekeeping & Domestic Management (Certificate)",
     category: "Certification",
+    brochurePath: "housekeeping-and-domestic-management.pdf",
     instructor: {
-      name: "Prof. Catherine Gray",
-      avatarUrl: "/CEO Myne.jpg.jpeg",
+      name: "Dr Akeem Fashola",
+      avatarUrl: "/A & G2.png",
       verified: true
     },
     rating: 4.8,
@@ -15,7 +16,7 @@ export const STATIC_COURSES: Course[] = [
     duration: 12, // 3 months
     level: "Intermediate",
     price: 350000,
-    imageUrl: "/african_luxury_domestic.png",
+    imageUrl: "/housekeeping_certificate.png",
     imageHint: "Housekeeping operations and domestic management systems.",
     description: "Equip yourself with practical, executive-level skills in housekeeping operations, domestic management, wardrobe coordination, and luxury service standards.",
     whoFor: [
@@ -99,9 +100,10 @@ export const STATIC_COURSES: Course[] = [
     id: "664f3a8b2d1c9e8a7f0e0002",
     title: "Hospitality Management (Certificate)",
     category: "Certification",
+    brochurePath: "hospitality-management.pdf",
     instructor: {
-      name: "Myne Wilfred, CEO",
-      avatarUrl: "/CEO Myne.jpg.jpeg",
+      name: "Dr Salim Maimoona",
+      avatarUrl: "/A & G2.png",
       verified: true
     },
     rating: 4.9,
@@ -109,7 +111,7 @@ export const STATIC_COURSES: Course[] = [
     duration: 12, // 3 months
     level: "Intermediate",
     price: 450000,
-    imageUrl: "/african_hospitality_management.png",
+    imageUrl: "/hospitality_management_certificate.png",
     imageHint: "Hospitality and luxury concierge services.",
     description: "Premium professional training designed to develop highly skilled hospitality professionals equipped to operate within luxury, corporate, executive, and international service environments.",
     whoFor: [
@@ -196,9 +198,10 @@ export const STATIC_COURSES: Course[] = [
     id: "664f3a8b2d1c9e8a7f0e0003",
     title: "Events & Protocol Management (Certificate)",
     category: "Certification",
+    brochurePath: "events-and-protocol-management.pdf",
     instructor: {
-      name: "Academic Board",
-      avatarUrl: "/CEO Myne.jpg.jpeg",
+      name: "Mr D. T. I. Banigo Esq",
+      avatarUrl: "/A & G2.png",
       verified: true
     },
     rating: 4.7,
@@ -206,7 +209,7 @@ export const STATIC_COURSES: Course[] = [
     duration: 12, // 3 months
     level: "Intermediate",
     price: 400000,
-    imageUrl: "/african_events_protocol.png",
+    imageUrl: "/course1.jpeg",
     imageHint: "Professional events and official protocol systems.",
     description: "Equip learners with the strategic, operational, and executive-level skills required to successfully manage events, ceremonies, corporate functions, VIP engagements, and protocol operations.",
     whoFor: [
@@ -293,9 +296,10 @@ export const STATIC_COURSES: Course[] = [
     id: "664f3a8b2d1c9e8a7f0e0004",
     title: "Executive Assistant Management (Certificate)",
     category: "Certification",
+    brochurePath: "executive-assistant-management.pdf",
     instructor: {
-      name: "Prof. Catherine Gray",
-      avatarUrl: "/CEO Myne.jpg.jpeg",
+      name: "Myne Wilfred",
+      avatarUrl: "/CEO.jpeg",
       verified: true
     },
     rating: 4.8,
@@ -303,7 +307,7 @@ export const STATIC_COURSES: Course[] = [
     duration: 12, // 3 months
     level: "Intermediate",
     price: 420000,
-    imageUrl: "/african_executive_assistant.png",
+    imageUrl: "/course2.jpeg",
     imageHint: "Executive assistance, time management, and corporate operations.",
     description: "High-level professional training designed to prepare participants for strategic support roles within executive, corporate, diplomatic, hospitality, and luxury service environments.",
     whoFor: [
@@ -390,9 +394,10 @@ export const STATIC_COURSES: Course[] = [
     id: "664f3a8b2d1c9e8a7f0e0005",
     title: "Hospitality & Global Relationship Management (Certificate)",
     category: "Certification",
+    brochurePath: "hospitality-and-global-relationship.pdf",
     instructor: {
-      name: "Myne Wilfred, CEO",
-      avatarUrl: "/CEO Myne.jpg.jpeg",
+      name: "Karibi T. George, Esq.",
+      avatarUrl: "/Mr Karibi.jpeg",
       verified: true
     },
     rating: 4.9,
@@ -400,7 +405,7 @@ export const STATIC_COURSES: Course[] = [
     duration: 12, // 3 months
     level: "Intermediate",
     price: 480000,
-    imageUrl: "/african_global_relationships.png",
+    imageUrl: "/course3.jpeg",
     imageHint: "International relations, global business, and diplomatic protocol.",
     description: "Professionally designed training focused on developing globally minded professionals equipped with the skills required to navigate international business environments, diplomatic engagements, negotiation, and cross-cultural relationships.",
     whoFor: [
@@ -488,9 +493,10 @@ export const STATIC_COURSES: Course[] = [
     id: "664f3a8b2d1c9e8a7f0e0006",
     title: "Diploma in Hospitality Management",
     category: "Diploma",
+    brochurePath: "diploma-hospitality-management.pdf",
     instructor: {
-      name: "Myne Wilfred, CEO",
-      avatarUrl: "/CEO Myne.jpg.jpeg",
+      name: "Dr Salim Maimoona",
+      avatarUrl: "/A & G2.png",
       verified: true
     },
     rating: 4.9,
@@ -498,7 +504,7 @@ export const STATIC_COURSES: Course[] = [
     duration: 24, // 6 months
     level: "Advanced",
     price: 750000,
-    imageUrl: "/african_diploma_hospitality.png",
+    imageUrl: "/course4.jpeg",
     imageHint: "Advanced hospitality systems and luxury operational administration.",
     description: "An advanced professional program designed to develop highly competent hospitality professionals equipped with practical expertise, leadership capacity, and global service standards.",
     whoFor: [
@@ -602,9 +608,10 @@ export const STATIC_COURSES: Course[] = [
     id: "664f3a8b2d1c9e8a7f0e0007",
     title: "Diploma in Professional Development & Global Relations",
     category: "Diploma",
+    brochurePath: "diploma-professional-development-and-global-relations.pdf",
     instructor: {
-      name: "Prof. Catherine Gray",
-      avatarUrl: "/CEO Myne.jpg.jpeg",
+      name: "Dr. Sarah Ogah",
+      avatarUrl: "/A & G2.png",
       verified: true
     },
     rating: 4.8,
@@ -612,7 +619,7 @@ export const STATIC_COURSES: Course[] = [
     duration: 24, // 6 months
     level: "Advanced",
     price: 800000,
-    imageUrl: "/african_professional_diplomacy.png",
+    imageUrl: "/course5.jpeg",
     imageHint: "Leadership development, global relations, and career development.",
     description: "A comprehensive professional program designed to develop confident leaders, strategic communicators, globally minded professionals, and effective negotiators equipped to thrive in modern corporate, diplomatic, and international settings.",
     whoFor: [
@@ -713,9 +720,10 @@ export const STATIC_COURSES: Course[] = [
     id: "664f3a8b2d1c9e8a7f0e0008",
     title: "Diploma in Business Innovation & Entrepreneurship",
     category: "Diploma",
+    brochurePath: "diploma-business-innovation-and-entrepreneurship.pdf",
     instructor: {
-      name: "Myne Wilfred, CEO",
-      avatarUrl: "/CEO Myne.jpg.jpeg",
+      name: "Dr Emmanuel Woko",
+      avatarUrl: "/A & G2.png",
       verified: true
     },
     rating: 4.9,
@@ -723,7 +731,7 @@ export const STATIC_COURSES: Course[] = [
     duration: 24, // 6 months
     level: "Advanced",
     price: 850000,
-    imageUrl: "/african_business_innovation.png",
+    imageUrl: "/course6.jpeg",
     imageHint: "Business administration, corporate branding, and economics.",
     description: "A modern, industry-driven professional program designed to develop innovative entrepreneurs, strategic business leaders, and globally competitive professionals capable of building sustainable businesses.",
     whoFor: [
@@ -824,9 +832,10 @@ export const STATIC_COURSES: Course[] = [
     id: "664f3a8b2d1c9e8a7f0e0009",
     title: "Diploma in Event & Protocol Management",
     category: "Diploma",
+    brochurePath: "diploma-event-and-protocol-management.pdf",
     instructor: {
-      name: "Academic Board",
-      avatarUrl: "/CEO Myne.jpg.jpeg",
+      name: "Mr D. T. I. Banigo Esq",
+      avatarUrl: "/A & G2.png",
       verified: true
     },
     rating: 4.8,
@@ -834,7 +843,7 @@ export const STATIC_COURSES: Course[] = [
     duration: 24, // 6 months
     level: "Advanced",
     price: 780000,
-    imageUrl: "/african_diploma_events.png",
+    imageUrl: "/course7.jpeg",
     imageHint: "Advanced VIP hospitality, events, and diplomatic protocol operations.",
     description: "Comprehensive professional program designed to develop highly skilled event professionals, protocol officers, executive coordinators, and VIP service specialists capable of managing high-level events.",
     whoFor: [
@@ -934,10 +943,11 @@ export const STATIC_COURSES: Course[] = [
   {
     id: "664f3a8b2d1c9e8a7f0e0010",
     title: "The Silent Standard Certification Program",
-    category: "Executive MBA",
+    category: "Executive Master Class",
+    brochurePath: "the-silent-standard.pdf",
     instructor: {
-      name: "Myne Wilfred, CEO",
-      avatarUrl: "/CEO Myne.jpg.jpeg",
+      name: "Myne Wilfred",
+      avatarUrl: "/CEO.jpeg",
       verified: true
     },
     rating: 5.0,
@@ -945,7 +955,7 @@ export const STATIC_COURSES: Course[] = [
     duration: 12, // 3 months
     level: "Advanced",
     price: 1200000,
-    imageUrl: "/african_silent_standard_mba.png",
+    imageUrl: "/graduate-diploma.jpg",
     imageHint: "The signature silent standard certification for elite operational authorities.",
     description: "Our ultra-premium executive-level professional development program designed to cultivate disciplined leaders, operational strategists, and institutional authorities.",
     whoFor: [

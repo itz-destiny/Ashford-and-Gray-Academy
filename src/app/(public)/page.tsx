@@ -21,7 +21,8 @@ import {
   ShieldCheck,
   ChevronRight,
   TrendingUp,
-  FileText
+  FileText,
+  Globe
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -31,6 +32,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { ScrollAnimation } from "@/components/ui/scroll-animation";
 import { STATIC_COURSES } from "@/lib/courses-data";
+import { ARTICLES } from "@/lib/insights-data";
 
 export default function Home() {
   const [trendingCourses, setTrendingCourses] = React.useState<Course[]>(STATIC_COURSES.slice(0, 3));
@@ -170,8 +172,8 @@ export default function Home() {
               </div>
               <h2 className="text-4xl md:text-5xl font-headline font-bold tracking-tighter text-[#0B1F3A] leading-none">Global Business Insights</h2>
             </div>
-            <Link 
-              href="/newsletter" 
+            <Link
+              href="/insights"
               className="text-[#1F7A5A] hover:text-[#0B1F3A] text-xs font-bold uppercase tracking-widest flex items-center gap-1.5 transition-colors mt-4 md:mt-0"
             >
               <span>View All Research</span>
@@ -179,41 +181,16 @@ export default function Home() {
             </Link>
           </div>
 
-          {/* Three-Column Editorial Grid */}
-          <div className="grid md:grid-cols-3 gap-8 md:gap-12">
-            {[
-              {
-                category: "THE LUXURY MARKET",
-                title: "Decoding the Post-Digital Consumer: How Heritage Brands Retain Exclusive Value",
-                excerpt: "As e-commerce democratizes luxury, heritage institutions must reinvent physical exclusivity. This study examines spatial and digital boundaries designed for elite retention.",
-                author: "Prof. Catherine Gray",
-                date: "May 2026",
-                readTime: "7 Min Read"
-              },
-              {
-                category: "EXECUTIVE PRESENCE",
-                title: "The Discipline of Discretion: Principles of Elite Leadership in Modern Hospitality Operations",
-                excerpt: "Why executional intelligence and absolute discretion are the highest valued commodities in VIP concierge and international protocol management sectors.",
-                author: "Myne Wilfred, CEO",
-                date: "April 2026",
-                readTime: "9 Min Read"
-              },
-              {
-                category: "GLOBAL STRATEGY",
-                title: "Navigating Multi-Market Expansion in High-Growth Hospitality Sectors",
-                excerpt: "An in-depth framework for scaling luxury hotel brands across African and European boundaries, leveraging localized heritage and institutional systems.",
-                author: "Academic Board",
-                date: "March 2026",
-                readTime: "11 Min Read"
-              }
-            ].map((insight, idx) => (
-              <ScrollAnimation key={insight.title} animation="fade-in-up" delay={idx * 100}>
-                <article className="space-y-4 group cursor-pointer">
-                  <div className="text-[#1F7A5A] font-black text-[10px] uppercase tracking-[0.2em]">{insight.category}</div>
-                  <h3 className="font-serif text-xl font-bold text-[#0B1F3A] leading-snug group-hover:text-[#1F7A5A] transition-colors duration-300">
-                    <Link href="/newsletter">{insight.title}</Link>
+          {/* Editorial Grid — articles by Myne Wilfred */}
+          <div className="grid md:grid-cols-2 gap-10 md:gap-14">
+            {ARTICLES.map((insight, idx) => (
+              <ScrollAnimation key={insight.slug} animation="fade-in-up" delay={idx * 100}>
+                <Link href={`/insights/${insight.slug}`} className="block group space-y-4">
+                  <div className="text-[#1F7A5A] font-black text-[10px] uppercase tracking-[0.25em]">{insight.category}</div>
+                  <h3 className="font-serif text-2xl font-bold text-[#0B1F3A] leading-snug group-hover:text-[#1F7A5A] transition-colors duration-300">
+                    {insight.title}
                   </h3>
-                  <p className="text-sm text-[#0B1F3A]/75 leading-relaxed font-medium line-clamp-3">{insight.excerpt}</p>
+                  <p className="text-sm md:text-base text-[#0B1F3A]/75 leading-relaxed font-medium line-clamp-3">{insight.excerpt}</p>
                   <div className="pt-2 flex items-center justify-between text-[11px] font-semibold text-[#0B1F3A]/60 uppercase tracking-wider">
                     <span>{insight.author}</span>
                     <div className="flex items-center gap-1.5">
@@ -222,7 +199,7 @@ export default function Home() {
                       <span>{insight.readTime}</span>
                     </div>
                   </div>
-                </article>
+                </Link>
               </ScrollAnimation>
             ))}
           </div>
@@ -360,24 +337,24 @@ export default function Home() {
           <div className="grid md:grid-cols-4 gap-8">
             {[
               {
-                title: "Executive-Level Learning",
-                desc: "We train professionals to think, act, and lead at the highest level.",
-                icon: GraduationCap
-              },
-              {
-                title: "Industry-Driven Curriculum",
-                desc: "Every program is built from real-world application, not theory alone.",
-                icon: Wrench
-              },
-              {
-                title: "Luxury Service Philosophy",
-                desc: "We instill precision, discretion, and excellence — the foundation of elite service.",
+                title: "Luxury Service Standard",
+                desc: "Training rooted in excellence, discretion, discipline, and refined professional conduct.",
                 icon: Star
               },
               {
-                title: "Global Relevance",
-                desc: "Our structure aligns with international standards while maintaining African excellence.",
-                icon: Handshake
+                title: "Business Innovation Focus",
+                desc: "Programmes designed to help learners think strategically and build sustainable enterprises.",
+                icon: Briefcase
+              },
+              {
+                title: "Executive Learning Experience",
+                desc: "Structured for professionals, entrepreneurs, managers, and emerging leaders.",
+                icon: GraduationCap
+              },
+              {
+                title: "100% Online, Globally Accessible",
+                desc: "Flexible learning without compromising standard, structure, or quality.",
+                icon: Globe
               }
             ].map((pillar, idx) => (
               <ScrollAnimation key={pillar.title} animation="fade-in-up" delay={idx * 80}>
@@ -434,7 +411,7 @@ export default function Home() {
               <ScrollAnimation animation="fade-in" delay={150}>
                 <div className="relative aspect-[3/4] w-full max-w-sm mx-auto border-[10px] border-[#061222] shadow-2xl overflow-hidden group">
                   <Image
-                    src="/CEO Myne.jpg.jpeg"
+                    src="/CEO.jpeg"
                     alt="Myne Wilfred, Founder & CEO"
                     fill
                     className="object-cover object-top transition-transform duration-1000 group-hover:scale-105"
@@ -514,7 +491,7 @@ export default function Home() {
 
           <ScrollAnimation animation="fade-in-up" delay={100}>
             <h2 className="text-4xl md:text-6xl font-headline font-bold tracking-tighter text-[#0B1F3A] leading-none">
-              Step into a <span className="italic text-[#C8A96A]">Higher Standard.</span>
+              Step into a <span className="text-[#C8A96A]">Higher Standard.</span>
             </h2>
           </ScrollAnimation>
 

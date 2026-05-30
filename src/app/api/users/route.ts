@@ -138,6 +138,12 @@ const upsertSchema = z.object({
     dateOfBirth: z.string().max(40).optional(),
     expertise: z.string().max(500).optional(),
     organization: z.string().max(200).optional(),
+    phone: z.string().max(40).optional(),
+    country: z.string().max(120).optional(),
+    programmeOfInterest: z.string().max(200).optional(),
+    highestQualification: z.string().max(120).optional(),
+    professionalBackground: z.string().max(2000).optional(),
+    applicationStatement: z.string().max(3000).optional(),
 });
 
 export async function POST(req: NextRequest): Promise<Response> {
@@ -217,6 +223,12 @@ export async function POST(req: NextRequest): Promise<Response> {
             dateOfBirth: body.dateOfBirth ?? existing?.dateOfBirth,
             expertise: body.expertise ?? existing?.expertise,
             organization: body.organization ?? existing?.organization,
+            phone: body.phone ?? existing?.phone,
+            country: body.country ?? existing?.country,
+            programmeOfInterest: body.programmeOfInterest ?? existing?.programmeOfInterest,
+            highestQualification: body.highestQualification ?? existing?.highestQualification,
+            professionalBackground: body.professionalBackground ?? existing?.professionalBackground,
+            applicationStatement: body.applicationStatement ?? existing?.applicationStatement,
         };
 
         // Admin-provisioned accounts skip the email-OTP step — the admin has

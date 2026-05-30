@@ -138,7 +138,7 @@ export default function DashboardPage() {
               </div>
               <h1 className="text-4xl md:text-6xl font-serif text-[#0B1F3A] tracking-tight leading-tight">
                 Welcome, <br />
-                <span className="italic text-[#C8A96A]">{user?.displayName?.split(' ')[0]}.</span>
+                <span className="text-[#C8A96A]">{user?.displayName?.split(' ')[0]}.</span>
               </h1>
               <p className="text-slate-500 font-medium text-lg max-w-lg leading-relaxed font-serif">
                 You are currently taking {enrollments.length} courses. Keep up the great work.

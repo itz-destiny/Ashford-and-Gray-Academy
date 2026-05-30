@@ -20,7 +20,7 @@ export default function PrivacyPage() {
                             <div className="w-8 md:w-12 h-[1px] bg-[#C8A96A]" />
                         </div>
                         <h1 className="text-5xl md:text-7xl font-serif text-[#0B1F3A] tracking-tight leading-tight">
-                            Privacy <span className="italic text-[#C8A96A]">Policy.</span>
+                            Privacy <span className="text-[#C8A96A]">Policy.</span>
                         </h1>
                         <p className="text-slate-500 font-medium mt-6">Last updated {LAST_UPDATED}</p>
                     </ScrollAnimation>
@@ -83,7 +83,7 @@ export default function PrivacyPage() {
                     <li>Object to or restrict certain processing</li>
                     <li>Withdraw consent for newsletter communications</li>
                 </ul>
-                <p>To exercise any of these rights, contact us at <Link href="mailto:info@ashfordandgrayacademy.com">info@ashfordandgrayacademy.com</Link>.</p>
+                <p>To exercise any of these rights, contact us at <Link href="mailto:info@ashfordgrayacademy.com">info@ashfordgrayacademy.com</Link>.</p>
 
                 <h2>7. Security</h2>
                 <p>We protect your data with industry-standard safeguards including encrypted transport (HTTPS), encrypted storage, role-based access controls, signed authentication tokens, and rate limiting. Despite these measures, no system can be guaranteed to be entirely secure. If a breach occurs that materially affects your data, we will notify you in accordance with applicable law.</p>
@@ -100,7 +100,7 @@ export default function PrivacyPage() {
                 <h2>11. Contact</h2>
                 <p>
                     Ashford &amp; Gray Fusion Academy<br />
-                    Email: <Link href="mailto:info@ashfordandgrayacademy.com">info@ashfordandgrayacademy.com</Link><br />
+                    Email: <Link href="mailto:info@ashfordgrayacademy.com">info@ashfordgrayacademy.com</Link><br />
                     Phone: +234 916 000 8451 · +234 916 702 9427
                 </p>
             </article>

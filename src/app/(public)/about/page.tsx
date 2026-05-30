@@ -32,7 +32,7 @@ export default function AboutPage() {
                         </div>
                         <h1 className="text-5xl md:text-7xl font-serif text-[#0B1F3A] tracking-tight leading-tight max-w-4xl mx-auto">
                             About Ashford &amp; Gray <br />
-                            <span className="italic text-[#C8A96A]">Fusion Academy.</span>
+                            <span className="text-[#C8A96A]">Fusion Academy.</span>
                         </h1>
                     </ScrollAnimation>
                 </div>
@@ -137,7 +137,7 @@ export default function AboutPage() {
                 <div className="container px-6 lg:px-12 text-center">
                     <ScrollAnimation animation="fade-in-up">
                         <h2 className="text-4xl md:text-5xl lg:text-6xl font-serif text-[#0B1F3A] tracking-tight mb-10">
-                            Begin Your <span className="italic text-[#C8A96A]">Transformation.</span>
+                            Begin Your <span className="text-[#C8A96A]">Transformation.</span>
                         </h2>
                         <div className="flex flex-col sm:flex-row justify-center gap-4">
                             <Button asChild className="h-16 md:h-20 px-10 md:px-16 bg-[#C8A96A] hover:bg-[#B69859] text-[#0B1F3A] font-black text-[10px] uppercase tracking-[0.4em] rounded-full shadow-2xl">

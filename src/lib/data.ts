@@ -12,18 +12,18 @@ import type { Course, AppEvent } from './types';
  */
 
 const ACADEMY_AVATAR = '/A & G2.png';
-const FOUNDER_AVATAR = '/CEO Myne.jpg.jpeg';
+const FOUNDER_AVATAR = '/CEO.jpeg';
 
-const academyBoard = {
-    name: 'Ashford & Gray Faculty',
-    avatarUrl: ACADEMY_AVATAR,
-    verified: true,
-};
-
-const founder = {
-    name: 'Dr. Myne Wilfred',
-    avatarUrl: FOUNDER_AVATAR,
-    verified: true,
+// Per-programme faculty leads. Portraits land in /public as they are received;
+// for now most use the academy crest placeholder.
+const faculty = {
+    fashola: { name: 'Dr Akeem Fashola', avatarUrl: ACADEMY_AVATAR, verified: true },
+    maimoona: { name: 'Dr Salim Maimoona', avatarUrl: ACADEMY_AVATAR, verified: true },
+    banigo: { name: 'Mr D. T. I. Banigo Esq', avatarUrl: ACADEMY_AVATAR, verified: true },
+    wilfred: { name: 'Myne Wilfred', avatarUrl: FOUNDER_AVATAR, verified: true },
+    karibi: { name: 'Karibi T. George, Esq.', avatarUrl: '/Mr Karibi.jpeg', verified: true },
+    woko: { name: 'Dr Emmanuel Woko', avatarUrl: ACADEMY_AVATAR, verified: true },
+    ogah: { name: 'Dr. Sarah Ogah', avatarUrl: ACADEMY_AVATAR, verified: true },
 };
 
 // Brand photography from /public — already curated to Ashford & Gray's
@@ -49,7 +49,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     {
         title: 'Housekeeping & Domestic Management',
         category: 'Certification',
-        instructor: academyBoard,
+        instructor: faculty.fashola,
         rating: 4.9,
         reviews: 124,
         duration: 12,
@@ -151,7 +151,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     {
         title: 'Hospitality Management',
         category: 'Certification',
-        instructor: academyBoard,
+        instructor: faculty.maimoona,
         rating: 4.9,
         reviews: 198,
         duration: 12,
@@ -256,7 +256,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     {
         title: 'Events & Protocol Management',
         category: 'Certification',
-        instructor: academyBoard,
+        instructor: faculty.banigo,
         rating: 4.8,
         reviews: 156,
         duration: 12,
@@ -361,7 +361,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     {
         title: 'Executive Assistant Management',
         category: 'Certification',
-        instructor: academyBoard,
+        instructor: faculty.wilfred,
         rating: 4.9,
         reviews: 173,
         duration: 12,
@@ -467,7 +467,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     {
         title: 'Hospitality & Global Relationship Management',
         category: 'Certification',
-        instructor: academyBoard,
+        instructor: faculty.karibi,
         rating: 4.8,
         reviews: 142,
         duration: 12,
@@ -576,7 +576,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     {
         title: 'Diploma in Hospitality Management',
         category: 'Diploma',
-        instructor: academyBoard,
+        instructor: faculty.maimoona,
         rating: 4.9,
         reviews: 87,
         duration: 24,
@@ -698,7 +698,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     {
         title: 'Diploma in Professional Development & Global Relations',
         category: 'Diploma',
-        instructor: academyBoard,
+        instructor: faculty.ogah,
         rating: 4.8,
         reviews: 76,
         duration: 24,
@@ -820,7 +820,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     {
         title: 'Diploma in Business Innovation & Entrepreneurship',
         category: 'Diploma',
-        instructor: academyBoard,
+        instructor: faculty.woko,
         rating: 4.9,
         reviews: 102,
         duration: 24,
@@ -942,7 +942,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     {
         title: 'Diploma in Event & Protocol Management',
         category: 'Diploma',
-        instructor: academyBoard,
+        instructor: faculty.banigo,
         rating: 4.9,
         reviews: 91,
         duration: 24,
@@ -1066,8 +1066,8 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     // ===================================================================
     {
         title: 'The Silent Standard Certification Programme',
-        category: 'Executive MBA',
-        instructor: founder,
+        category: 'Executive Master Class',
+        instructor: faculty.wilfred,
         rating: 5.0,
         reviews: 38,
         duration: 12,

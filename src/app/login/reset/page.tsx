@@ -11,6 +11,9 @@ import { Label } from "@/components/ui/label";
 import { ArrowRight, ArrowLeft, Loader2, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+const inputClass =
+    "h-12 rounded-none border border-slate-200 bg-white px-5 font-medium text-[#0B1F3A] placeholder:text-slate-400 shadow-none focus-visible:ring-0 focus-visible:border-[#0B1F3A] transition-colors";
+
 export default function PasswordResetPage() {
     const { toast } = useToast();
     const [email, setEmail] = useState("");
@@ -27,14 +30,9 @@ export default function PasswordResetPage() {
             setSent(true);
         } catch (err: any) {
             const code = err?.code || "";
-            // Firebase returns an error for unknown emails; for security we
-            // show the same message regardless so we don't leak whether an
-            // address is on file. (This matches Google's own recommendation.)
             if (code === "auth/invalid-email") {
                 toast({ variant: "destructive", title: "Check your email", description: "That doesn't look like a valid email address." });
             } else {
-                // Any other failure (rate-limit, network) — still claim success
-                // for security, but log it.
                 console.error("Password reset error:", err);
                 setSent(true);
             }
@@ -52,15 +50,15 @@ export default function PasswordResetPage() {
                 footerLinkText=""
             >
                 <div className="space-y-8">
-                    <div className="flex flex-col items-center gap-4 py-6">
-                        <div className="w-16 h-16 rounded-2xl bg-emerald-50 flex items-center justify-center">
+                    <div className="flex flex-col items-center gap-5 py-4">
+                        <div className="w-16 h-16 bg-emerald-50 flex items-center justify-center border border-emerald-100">
                             <CheckCircle2 className="w-8 h-8 text-emerald-600" />
                         </div>
                         <p className="text-sm font-medium text-slate-500 text-center max-w-sm leading-relaxed">
                             The reset link expires in 1 hour. If you don't see it, check your spam folder or try again.
                         </p>
                     </div>
-                    <Button asChild className="w-full h-16 rounded-full bg-[#0B1F3A] hover:bg-[#0B1F3A]/90 text-white font-black text-[10px] uppercase tracking-[0.3em] shadow-xl">
+                    <Button asChild className="w-full h-12 rounded-none bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black text-[10px] uppercase tracking-[0.3em] shadow-none border-none transition-colors">
                         <Link href="/login"><ArrowLeft className="mr-3 h-4 w-4" /> Back to sign in</Link>
                     </Button>
                 </div>
@@ -76,24 +74,24 @@ export default function PasswordResetPage() {
             footerLinkText="Sign in"
             onFooterLinkClick={() => { window.location.href = "/login"; }}
         >
-            <form onSubmit={handleSubmit} className="space-y-8">
-                <div className="space-y-3">
-                    <Label htmlFor="reset-email" className="text-[10px] font-black uppercase tracking-[0.2em] text-[#0B1F3A] ml-4">Email address</Label>
+            <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-2">
+                    <Label htmlFor="reset-email" className="text-[10px] font-black uppercase tracking-[0.3em] text-[#0B1F3A]">Email address</Label>
                     <Input
                         id="reset-email"
                         type="email"
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="executive@academy.com"
+                        placeholder="you@email.com"
                         disabled={submitting}
-                        className="h-16 rounded-full bg-slate-50 border-slate-200 focus:bg-white px-8 font-medium placeholder:text-slate-400 shadow-sm"
+                        className={inputClass}
                     />
                 </div>
                 <Button
                     type="submit"
                     disabled={submitting || !email}
-                    className="w-full h-16 rounded-full bg-[#0B1F3A] hover:bg-[#0B1F3A]/90 text-white font-black text-[10px] uppercase tracking-[0.3em] shadow-xl"
+                    className="w-full h-14 rounded-none bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black text-[10px] uppercase tracking-[0.3em] shadow-none border-none transition-colors !mt-8"
                 >
                     {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : <>Send reset link <ArrowRight className="ml-3 h-4 w-4" /></>}
                 </Button>

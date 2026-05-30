@@ -15,13 +15,13 @@ export default function CoursesPage() {
     "664f3a8b2d1c9e8a7f0e0007", // Diploma in Professional Development & Global Relations
     "664f3a8b2d1c9e8a7f0e0008", // Diploma in Business Innovation & Entrepreneurship
     "664f3a8b2d1c9e8a7f0e0009", // Diploma in Event & Protocol Management
-    "664f3a8b2d1c9e8a7f0e0010"  // The Silent Standard Certification Program (MBA)
+    "664f3a8b2d1c9e8a7f0e0010"  // The Silent Standard Certification Program
   ];
 
   return (
     <CurriculumCatalog
       title="Elite Academic Divisions"
-      subtitle="Immersive general management curricula built on case study methodologies, physical residency modules, and Board certification credentials."
+      subtitle="Immersive general management curricula delivered through online classes, case study methodologies, and Board certification credentials."
       badge="Full Academic Registry"
       courseIds={allCourseIds}
     />

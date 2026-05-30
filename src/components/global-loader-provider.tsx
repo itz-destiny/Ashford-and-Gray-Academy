@@ -2,109 +2,145 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
 
 /**
- * Premium Global Splash Loader Provider to wow users on hard refreshes
+ * Premium Global Splash Loader — pure CSS animations.
+ * No framer-motion import: keeps it out of the root layout chunk.
  */
 export function GlobalLoaderProvider({ children }: { children: React.ReactNode }) {
-  const [loading, setLoading] = useState(true);
+  const [visible, setVisible] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Show splash screen for exactly 1.8s to establish the high-end brand identity
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1800);
-
+    setMounted(true);
+    const timer = setTimeout(() => setVisible(false), 1800);
     return () => clearTimeout(timer);
   }, []);
 
   return (
     <>
-      <AnimatePresence mode="wait">
-        {loading && (
-          <motion.div
-            key="global-loader"
-            initial={{ opacity: 1 }}
-            exit={{ 
-              opacity: 0,
-              transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } 
-            }}
-            className="fixed inset-0 bg-[#0B1F3A] flex flex-col items-center justify-center z-[99999] overflow-hidden"
+      {/* Keyframe definitions */}
+      <style>{`
+        @keyframes ag-pulse {
+          0%, 100% { opacity: 0.6; transform: scale(0.99); }
+          50%       { opacity: 1;   transform: scale(1);    }
+        }
+        @keyframes ag-sweep {
+          0%   { left: -55%; }
+          100% { left: 110%; }
+        }
+        @keyframes ag-fadein-text {
+          from { opacity: 0; }
+          to   { opacity: 0.4; }
+        }
+        @keyframes ag-fadeout {
+          0%   { opacity: 1; pointer-events: auto; }
+          85%  { opacity: 1; }
+          100% { opacity: 0; pointer-events: none; }
+        }
+        @keyframes ag-content-in {
+          from { opacity: 0; }
+          to   { opacity: 1; }
+        }
+        .ag-loader {
+          animation: ag-fadeout 0.6s ease 1.55s forwards;
+        }
+        .ag-logo {
+          animation: ag-pulse 2.2s ease-in-out infinite;
+        }
+        .ag-sweep {
+          animation: ag-sweep 2s ease-in-out infinite;
+        }
+        .ag-caption {
+          animation: ag-fadein-text 0.8s ease 0.3s forwards;
+          opacity: 0;
+        }
+        .ag-content {
+          animation: ag-content-in 0.8s ease 1.6s forwards;
+          opacity: 0;
+        }
+      `}</style>
+
+      {/* Splash overlay — only rendered client-side to avoid SSR mismatch */}
+      {mounted && visible && (
+        <div
+          className="ag-loader fixed inset-0 z-[99999] flex flex-col items-center justify-center overflow-hidden"
+          style={{ background: "#0B1F3A" }}
+        >
+          {/* Gold radial glow */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{ opacity: 0.2 }}
           >
-            {/* Soft gold backdrop radial glow */}
-            <div className="absolute inset-0 pointer-events-none select-none opacity-20">
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#C8A96A] rounded-full blur-[160px]" />
+            <div
+              className="absolute"
+              style={{
+                top: "50%", left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: 500, height: 500,
+                background: "#C8A96A",
+                borderRadius: "50%",
+                filter: "blur(160px)",
+              }}
+            />
+          </div>
+
+          <div className="relative z-10 flex flex-col items-center" style={{ gap: 32, maxWidth: 400, padding: "0 24px" }}>
+            {/* Logo pulse */}
+            <div
+              className="ag-logo relative"
+              style={{ width: 288, height: 80 }}
+            >
+              <Image
+                src="/A & G2.png"
+                alt="Ashford & Gray Academy"
+                fill
+                priority
+                className="object-contain"
+              />
             </div>
 
-            <div className="relative flex flex-col items-center space-y-8 z-10 max-w-xs md:max-w-md px-6">
-              {/* Logo breathing pulse */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ 
-                  opacity: [0.6, 1, 0.6], 
-                  scale: [0.99, 1, 0.99] 
+            {/* Sweeping gold progress bar */}
+            <div
+              style={{
+                width: 208,
+                height: 1,
+                background: "rgba(255,255,255,0.1)",
+                position: "relative",
+                overflow: "hidden",
+              }}
+            >
+              <div
+                className="ag-sweep absolute top-0 bottom-0"
+                style={{
+                  width: "55%",
+                  background: "linear-gradient(to right, transparent, #C8A96A, transparent)",
                 }}
-                transition={{
-                  opacity: {
-                    repeat: Infinity,
-                    duration: 2.2,
-                    ease: "easeInOut"
-                  },
-                  scale: {
-                    repeat: Infinity,
-                    duration: 2.2,
-                    ease: "easeInOut"
-                  },
-                  initial: { duration: 0.8, ease: "easeOut" }
-                }}
-                className="relative h-20 w-72 md:h-24 md:w-80"
-              >
-                <Image
-                  src="/A & G2.png"
-                  alt="Ashford & Gray Fusion Academy"
-                  fill
-                  priority
-                  className="object-contain"
-                />
-              </motion.div>
-
-              {/* Progress bar sweeping */}
-              <div className="w-52 h-[1px] bg-white/10 relative overflow-hidden">
-                <motion.div
-                  initial={{ left: "-100%" }}
-                  animate={{ left: "100%" }}
-                  transition={{
-                    repeat: Infinity,
-                    duration: 2.0,
-                    ease: "easeInOut"
-                  }}
-                  className="absolute top-0 bottom-0 w-1/2 bg-gradient-to-r from-transparent via-[#C8A96A] to-transparent"
-                />
-              </div>
-
-              {/* Verification subtext */}
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 0.4 }}
-                transition={{ delay: 0.3, duration: 0.8 }}
-                className="text-[9px] font-black uppercase tracking-[0.3em] text-[#FAF9F6] text-center"
-              >
-                Verifying Institutional Registry
-              </motion.p>
+              />
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
-      {/* Main site layout content fades in beautifully */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.6, duration: 0.8, ease: "easeOut" }}
-      >
+            {/* Caption */}
+            <p
+              className="ag-caption text-center"
+              style={{
+                fontSize: 9,
+                fontWeight: 900,
+                letterSpacing: "0.3em",
+                textTransform: "uppercase",
+                color: "#FAF9F6",
+              }}
+            >
+              Verifying Institutional Registry
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Page content fades in */}
+      <div className="ag-content">
         {children}
-      </motion.div>
+      </div>
     </>
   );
 }
+

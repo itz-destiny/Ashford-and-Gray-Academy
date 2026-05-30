@@ -32,6 +32,7 @@ export type Course = {
   learningOutcomes?: { module: string; topics: string[] }[];
   certificationDetails?: string[];
   careerOpportunities?: string[];
+  brochurePath?: string; // filename under /public/brochures/, served via auth-gated API
 };
 
 export type AppEvent = {

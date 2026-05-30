@@ -74,13 +74,11 @@ export function CurriculumCatalog({ title, subtitle, badge, courseIds }: Curricu
 
   const filteredCourses = useMemo(() => {
     let subset = courses.filter(c => courseIds.includes(c.id));
-    
-    // Default fallback sorting to match priority order
-    subset.sort((a, b) => {
-      if (a.id === "664f3a8b2d1c9e8a7f0e0010") return -1;
-      if (b.id === "664f3a8b2d1c9e8a7f0e0010") return 1;
-      return a.title.localeCompare(b.title);
-    });
+
+    // Preserve the order callers passed in `courseIds` so the academy's
+    // canonical progression (Certifications → Diplomas → Executive Master
+    // Class) is honoured on the All Programs view.
+    subset.sort((a, b) => courseIds.indexOf(a.id) - courseIds.indexOf(b.id));
 
     if (searchQuery.trim()) {
       subset = subset.filter(course =>
@@ -208,7 +206,7 @@ export function CurriculumCatalog({ title, subtitle, badge, courseIds }: Curricu
             Academic Register
           </span>
           <h2 className="text-3xl md:text-5xl font-serif text-[#0B1F3A] tracking-tight leading-none">
-            Registered Curricula &amp; <span className="italic text-[#C8A96A]">Tracks</span>
+            Registered Curricula &amp; <span className="text-[#C8A96A]">Tracks</span>
           </h2>
           <p className="text-slate-500 text-sm font-semibold max-w-xl leading-relaxed">
             Submit your candidacy online to secure placement in the upcoming rolling enrollment.
@@ -218,8 +216,8 @@ export function CurriculumCatalog({ title, subtitle, badge, courseIds }: Curricu
         <div className="space-y-20">
           <AnimatePresence mode="popLayout">
             {filteredCourses.map((course, idx) => {
-              const programFormat = course.id === "664f3a8b2d1c9e8a7f0e0010" ? "Hybrid Executive" : "In-Person Residency";
-              const targetLink = course.id === "664f3a8b2d1c9e8a7f0e0010" ? "/mba" : `/courses/${course.id}`;
+              const programFormat = "Online Classes";
+              const targetLink = `/courses/${course.id}`;
               
               // Get dynamic modules showcase from course data
               const highlightTopics = course.whoFor?.slice(0, 4) || [
