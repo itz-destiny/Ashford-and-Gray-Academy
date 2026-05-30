@@ -20,7 +20,7 @@ export default function TermsPage() {
                             <div className="w-8 md:w-12 h-[1px] bg-[#C8A96A]" />
                         </div>
                         <h1 className="text-5xl md:text-7xl font-serif text-[#0B1F3A] tracking-tight leading-tight">
-                            Terms of <span className="italic text-[#C8A96A]">Service.</span>
+                            Terms of <span className="text-[#C8A96A]">Service.</span>
                         </h1>
                         <p className="text-slate-500 font-medium mt-6">Last updated {LAST_UPDATED}</p>
                     </ScrollAnimation>
@@ -33,7 +33,7 @@ export default function TermsPage() {
                 </p>
 
                 <h2>1. Eligibility &amp; Account</h2>
-                <p>You must be at least 16 years of age (or the age of majority in your jurisdiction, whichever is higher) to create an account. You are responsible for keeping your sign-in credentials confidential and for all activity that occurs under your account. Notify us immediately at <Link href="mailto:info@ashfordandgrayacademy.com">info@ashfordandgrayacademy.com</Link> if you suspect unauthorised access.</p>
+                <p>You must be at least 16 years of age (or the age of majority in your jurisdiction, whichever is higher) to create an account. You are responsible for keeping your sign-in credentials confidential and for all activity that occurs under your account. Notify us immediately at <Link href="mailto:info@ashfordgrayacademy.com">info@ashfordgrayacademy.com</Link> if you suspect unauthorised access.</p>
 
                 <h2>2. Programmes &amp; Certification</h2>
                 <p>The Academy offers structured programmes including certificate courses, diplomas, executive masterclasses, and the Silent Standard Certification. Award of certification is contingent on completion of all stipulated assessments, attendance requirements, and adherence to academic integrity standards. Certificates are non-transferable and do not constitute employment or licensure of any kind.</p>
@@ -89,7 +89,7 @@ export default function TermsPage() {
                 <h2>13. Contact</h2>
                 <p>
                     Ashford &amp; Gray Fusion Academy<br />
-                    Email: <Link href="mailto:info@ashfordandgrayacademy.com">info@ashfordandgrayacademy.com</Link><br />
+                    Email: <Link href="mailto:info@ashfordgrayacademy.com">info@ashfordgrayacademy.com</Link><br />
                     Phone: +234 916 000 8451 · +234 916 702 9427
                 </p>
 

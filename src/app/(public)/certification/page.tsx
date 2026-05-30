@@ -106,7 +106,7 @@ export default function CertificationPage() {
             
             <h1 className="text-5xl md:text-7xl font-serif text-white tracking-tight mb-8">
               Certification of <br />
-              <span className="italic text-[#C8A96A]">Mastery.</span>
+              <span className="text-[#C8A96A]">Mastery.</span>
             </h1>
             <p className="text-xl text-slate-300 font-medium leading-relaxed mb-12 max-w-3xl mx-auto">
               Elevate your professional profile with credentials recognized by the world’s leading institutions. Distinctive. Professional. Recognized.
@@ -309,7 +309,7 @@ export default function CertificationPage() {
                      </div>
                      <h2 className="text-5xl md:text-6xl font-serif text-white tracking-tight leading-tight mb-8">
                         Verify a <br />
-                        <span className="italic text-[#C8A96A]">Credential.</span>
+                        <span className="text-[#C8A96A]">Credential.</span>
                      </h2>
                      <p className="text-slate-400 font-medium text-xl leading-relaxed mb-12">
                         Employers and institutions can instantly verify the authenticity of Ashford & Gray credentials through our secure registry.

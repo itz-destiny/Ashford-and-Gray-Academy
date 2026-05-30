@@ -1,9 +1,6 @@
-
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { signInWithGoogle } from "@/firebase/auth";
 import { useRouter } from "next/navigation";
 import { FaGoogle } from "react-icons/fa";
@@ -40,7 +37,7 @@ export function AuthForm({ title, description, children, footerText, footerLinkT
                 const response = await fetch(`/api/users?uid=${user.uid}`, {
                     headers: { Authorization: `Bearer ${idToken}` },
                 });
-                
+
                 if (response.ok) {
                     const dbUser = await response.json();
                     if (dbUser.role === 'admin') router.push('/admin');
@@ -66,38 +63,43 @@ export function AuthForm({ title, description, children, footerText, footerLinkT
 
     return (
         <div className="w-full">
-            <div className="space-y-4 mb-12 text-center lg:text-left">
-                <h2 className="text-4xl md:text-5xl font-serif text-[#0B1F3A] tracking-tight">{title}</h2>
-                <p className="text-slate-500 font-medium text-lg leading-relaxed">{description}</p>
+            <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-[1px] bg-[#C8A96A]" />
+                <span className="text-[#C8A96A] font-black text-[10px] uppercase tracking-[0.4em]">Ashford &amp; Gray</span>
             </div>
-            
-            <div className="space-y-8">
-                <div className="grid grid-cols-1 gap-4">
-                    <Button variant="outline" onClick={handleGoogleSignIn} className="h-16 rounded-full border-slate-200 hover:bg-slate-50 font-black text-[10px] uppercase tracking-widest w-full shadow-sm hover:shadow-md transition-all text-[#0B1F3A]">
-                        <FaGoogle className="mr-3 h-4 w-4 text-[#EA4335]" /> Continue with Google
-                    </Button>
-                </div>
-                
-                <div className="relative my-10">
-                    <div className="absolute inset-0 flex items-center">
-                        <span className="w-full border-t border-slate-100" />
-                    </div>
-                    <div className="relative flex justify-center text-[10px] uppercase font-black tracking-[0.2em] text-slate-400">
-                        <span className="bg-white px-6">Institutional Credential</span>
-                    </div>
-                </div>
 
-                {children}
-
-                {footerText && footerLinkText && (
-                    <div className="mt-12 text-center text-slate-500 font-medium pb-10 text-sm">
-                        {footerText}{" "}
-                        <button onClick={onFooterLinkClick} className="text-[#1F7A5A] hover:text-[#0B1F3A] font-black uppercase tracking-widest ml-2 transition-colors">
-                            {footerLinkText}
-                        </button>
-                    </div>
-                )}
+            <div className="space-y-3 mb-10">
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif text-[#0B1F3A] tracking-tight leading-[1.1]">{title}</h2>
+                <p className="text-slate-500 font-medium text-base leading-relaxed max-w-md">{description}</p>
             </div>
+
+            <Button
+                variant="outline"
+                onClick={handleGoogleSignIn}
+                className="h-12 w-full rounded-none border border-slate-200 hover:border-[#0B1F3A] hover:bg-white font-black text-[10px] uppercase tracking-[0.3em] text-[#0B1F3A] shadow-none transition-colors"
+            >
+                <FaGoogle className="mr-3 h-4 w-4 text-[#EA4335]" /> Continue with Google
+            </Button>
+
+            <div className="relative my-8">
+                <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-slate-100" />
+                </div>
+                <div className="relative flex justify-center text-[10px] uppercase font-black tracking-[0.3em] text-slate-400">
+                    <span className="bg-white px-5">Or with credentials</span>
+                </div>
+            </div>
+
+            {children}
+
+            {footerText && footerLinkText && (
+                <div className="mt-10 pt-6 border-t border-slate-100 text-center text-slate-500 font-medium text-sm">
+                    {footerText}{" "}
+                    <button onClick={onFooterLinkClick} className="text-[#0B1F3A] hover:text-[#C8A96A] font-black uppercase tracking-[0.2em] text-[10px] ml-2 transition-colors border-b border-[#C8A96A] hover:border-[#0B1F3A] pb-0.5">
+                        {footerLinkText}
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

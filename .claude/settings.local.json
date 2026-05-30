@@ -32,7 +32,14 @@
       "Bash(git push *)",
       "Bash(node *)",
       "Bash(git ls-remote *)",
-      "Bash(git commit -m 'fix\\(vercel\\): use daily cron schedule to fit Hobby plan limits *)"
+      "Bash(git commit -m 'fix\\(vercel\\): use daily cron schedule to fit Hobby plan limits *)",
+      "Bash(findstr -i course)",
+      "WebFetch(domain:selar.com)",
+      "WebFetch(domain:www.amazon.com)",
+      "Bash(netstat -ano)",
+      "Bash(findstr :9002)",
+      "Bash(taskkill *)",
+      "Bash(findstr -i \"ceo myne\")"
     ]
   }
 }

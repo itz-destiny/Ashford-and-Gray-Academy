@@ -11,6 +11,7 @@ import { ScrollAnimation } from "@/components/ui/scroll-animation";
 import dbConnect from "@/lib/mongodb";
 import Course from "@/models/Course";
 import { STATIC_COURSES } from "@/lib/courses-data";
+import { BrochureButton } from "./brochure-button";
 
 type RouteProps = { params: Promise<{ id: string }> };
 
@@ -176,19 +177,6 @@ export default async function CourseDetailPage({ params }: RouteProps) {
 
                 {/* 2. Core Experience Grid (HBS Style Rectangular Cards) */}
                 <section id="experience" className="scroll-mt-36 space-y-16">
-                    <div className="max-w-3xl mb-12 space-y-4">
-                        <div className="inline-flex items-center gap-3">
-                            <span className="text-[#C8A96A] font-black text-xs uppercase tracking-[0.3em]">Academic Advantage</span>
-                            <span className="w-10 h-[1px] bg-[#C8A96A]/30"></span>
-                        </div>
-                        <h2 className="text-3xl md:text-5xl font-headline font-bold text-[#0B1F3A] tracking-tighter">
-                            Two Years. A World of Difference.
-                        </h2>
-                        <p className="text-[#0B1F3A]/60 text-sm font-semibold max-w-xl">
-                            Combining deep-domain frameworks with proactive, case-based learning to shape professionals into authoritative authorities.
-                        </p>
-                    </div>
-
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                         {/* Box 1: The Case Methodology */}
                         <ScrollAnimation animation="fade-in-up">
@@ -253,7 +241,7 @@ export default async function CourseDetailPage({ params }: RouteProps) {
                                 </p>
                                 <ul className="space-y-2 border-t border-slate-100 pt-4 text-[11px] font-bold text-[#0B1F3A]/60">
                                     <li className="flex items-center gap-2"><ChevronRight className="w-3.5 h-3.5 text-[#C8A96A]" /> Lifetime credentials</li>
-                                    <li className="flex items-center gap-2"><ChevronRight className="w-3.5 h-3.5 text-[#C8A96A]" /> Verified Registry Badge</li>
+                                    <li className="flex items-center gap-2"><ChevronRight className="w-3.5 h-3.5 text-[#C8A96A]" /> Globally recognised certification</li>
                                 </ul>
                             </div>
                         </ScrollAnimation>
@@ -391,10 +379,14 @@ export default async function CourseDetailPage({ params }: RouteProps) {
                                         </div>
                                     </div>
 
-                                    <div className="pt-4">
+                                    <div className="pt-4 space-y-3">
                                         <Button asChild className="w-full h-16 bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black text-[10px] uppercase tracking-[0.2em] rounded-none shadow-none border-none">
                                             <Link href={`/login?view=signup&redirectUrl=${encodeURIComponent('/courses?dialog=' + id)}`}>Begin Online Application</Link>
                                         </Button>
+                                        <BrochureButton courseId={id} courseTitle={course.title} />
+                                        <p className="text-[10px] text-slate-400 font-medium text-center pt-1">
+                                            Brochure download is reserved for registered candidates.
+                                        </p>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -437,41 +429,37 @@ export default async function CourseDetailPage({ params }: RouteProps) {
                     </section>
                 )}
 
-                {/* 7. Faculty Leader Section */}
+                {/* Faculty Lead — minimal attribution, uses course.instructor */}
                 {course.instructor?.name && (
                     <section id="faculty" className="scroll-mt-36 pt-16 border-t border-slate-200">
-                        <div className="max-w-3xl mb-16 space-y-4">
+                        <div className="max-w-3xl mb-12 space-y-3">
                             <div className="inline-flex items-center gap-3">
-                                <span className="text-[#C8A96A] font-black text-xs uppercase tracking-[0.3em]">Board of Regents</span>
+                                <span className="text-[#C8A96A] font-black text-xs uppercase tracking-[0.3em]">Faculty Lead</span>
                             </div>
-                            <h2 className="text-3xl md:text-5xl font-headline font-bold text-[#0B1F3A] tracking-tighter">
-                                World-Class Researchers &amp; Practitioners
+                            <h2 className="text-3xl md:text-4xl font-serif font-bold text-[#0B1F3A] tracking-tight">
+                                Programme led by
                             </h2>
                         </div>
 
-                        <div className="bg-white border border-slate-200 p-8 md:p-16 flex flex-col md:flex-row gap-12 items-center md:items-start text-center md:text-left">
-                            <div className="shrink-0 relative w-48 h-48 border-[6px] border-[#0B1F3A] shadow-lg overflow-hidden">
-                                <Image src={course.instructor.avatarUrl || '/CEO Myne.jpg.jpeg'} alt={course.instructor.name} fill className="object-cover" />
+                        <div className="bg-white border border-slate-200 p-8 md:p-12 flex flex-col sm:flex-row gap-8 items-center sm:items-center text-center sm:text-left max-w-3xl">
+                            <div className="relative w-28 h-28 rounded-full overflow-hidden shrink-0 ring-2 ring-[#C8A96A]/30 bg-slate-50">
+                                <Image
+                                    src={course.instructor.avatarUrl || '/A & G2.png'}
+                                    alt={course.instructor.name}
+                                    fill
+                                    sizes="112px"
+                                    className="object-cover object-top"
+                                />
                             </div>
-                            <div className="space-y-6">
-                                <div>
-                                    <h4 className="text-2xl md:text-3xl font-serif font-bold text-[#0B1F3A]">{course.instructor.name}</h4>
-                                    <p className="text-[#C8A96A] font-black text-[10px] uppercase tracking-[0.3em] mt-1">Senior Program Faculty Director</p>
-                                    {course.instructor.verified && (
-                                        <Badge className="bg-[#1F7A5A]/10 text-[#1F7A5A] border-none text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-none mt-3">
-                                            ✓ Verified Registry Leader
-                                        </Badge>
-                                    )}
-                                </div>
-                                <p className="text-slate-500 text-sm font-semibold leading-relaxed italic max-w-2xl">
-                                    "Our programs combine academic theory with absolute practitioner-centered learning. We guide each candidate with the same operational discipline and executive excellence that commands respect worldwide."
-                                </p>
+                            <div className="space-y-2">
+                                <h3 className="text-2xl md:text-3xl font-serif font-bold text-[#0B1F3A] leading-tight">{course.instructor.name}</h3>
+                                <p className="text-[#C8A96A] font-black text-[10px] uppercase tracking-[0.3em]">Programme Faculty · Ashford &amp; Gray Fusion Academy</p>
                             </div>
                         </div>
                     </section>
                 )}
 
-                {/* 8. Final CTA Showcase (HBS closing application) */}
+                {/* Final CTA Showcase (HBS closing application) */}
                 <section className="pt-20 border-t border-slate-200">
                     <ScrollAnimation animation="fade-in-up">
                         <div className="bg-[#0B1F3A] text-white rounded-none p-12 md:p-24 text-center relative overflow-hidden">
@@ -484,7 +472,7 @@ export default async function CourseDetailPage({ params }: RouteProps) {
                                 </div>
                                 <h3 className="text-4xl md:text-6xl font-serif text-white tracking-tight leading-none">
                                     Blaze a New Trail.<br />
-                                    <span className="italic text-[#C8A96A] font-serif font-normal">Command Respect.</span>
+                                    <span className="text-[#C8A96A] font-serif font-normal">Command Respect.</span>
                                 </h3>
                                 <p className="text-slate-400 font-medium leading-relaxed max-w-xl mx-auto text-sm">
                                     Submit your credentials online to our Registry today and take your seat in the next distinguished cohort.

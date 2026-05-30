@@ -28,19 +28,8 @@ export function MainNav() {
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
 
   const primaryLinks: PrimaryLink[] = [
-    { 
-      href: "/academic-programs", 
-      label: "Academic Programs",
-      dropdownItems: [
-        { label: "MBA Program", href: "/mba", desc: "Our signature Executive MBA curriculum (The Silent Standard)." },
-        { label: "Diplomas & Programs", href: "/programs", desc: "Elite academic pathways in high-end domestic and hospitality operations." },
-        { label: "Executive Education", href: "/executive", desc: "High-level leadership and administrative alignment training for C-Suite." },
-        { label: "Professional Certifications", href: "/certifications", desc: "Board-accredited credentials, global diplomacies, and innovation." }
-      ]
-    },
-    { href: "/faculty", label: "Faculty" },
-    { 
-      href: "/about", 
+    {
+      href: "/about",
       label: "About",
       dropdownItems: [
         { label: "Our Vision & Mission", href: "/about", desc: "The elite standards and academic foundations of Ashford & Gray." },
@@ -48,7 +37,18 @@ export function MainNav() {
         { label: "Registry & Campus", href: "/contact", desc: "Contact our admissions advisors and registrar desk." }
       ]
     },
-    { href: "/contact", label: "Contact" },
+    {
+      href: "/academic-programs",
+      label: "Academic Programs",
+      dropdownItems: [
+        { label: "Professional Certifications", href: "/certifications", desc: "Certifications in housekeeping, hospitality, events, executive assistance, and global relations." },
+        { label: "Diploma Programs", href: "/programs", desc: "Six-month diplomas in hospitality, business innovation, professional development, and events." },
+        { label: "Executive Master Class", href: "/executive", desc: "The Silent Standard — our signature executive-level leadership and operational excellence programme." }
+      ]
+    },
+    { href: "/faculty", label: "Executive Leadership Team" },
+    { href: "/press", label: "Academic Press" },
+    { href: "/contact", label: "Contact Us" },
   ];
 
   return (
@@ -59,18 +59,18 @@ export function MainNav() {
           <div className="flex items-center gap-6">
             <Logo />
           </div>
-          
+
           {/* Desktop Nav with Dropdowns */}
           <nav className="hidden xl:flex items-center gap-6 text-[10.5px] font-bold uppercase tracking-[0.1em] text-[#0B1F3A] h-full">
             {primaryLinks.map((link, idx) => (
-              <div 
+              <div
                 key={link.href}
                 className="relative h-full flex items-center"
                 onMouseEnter={() => link.dropdownItems && setActiveDropdown(idx)}
                 onMouseLeave={() => setActiveDropdown(null)}
               >
-                <Link 
-                  href={link.href} 
+                <Link
+                  href={link.href}
                   className="hover:text-[#1F7A5A] transition-colors relative py-8 group flex items-center gap-1"
                 >
                   <span>{link.label}</span>
@@ -87,7 +87,7 @@ export function MainNav() {
                       SELECT SECTION
                     </div>
                     {link.dropdownItems.map((item) => (
-                      <Link 
+                      <Link
                         key={item.label}
                         href={item.href}
                         className="block group/item space-y-1 text-left"
@@ -127,57 +127,57 @@ export function MainNav() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-full sm:max-w-md border-none p-0 bg-[#0B1F3A] text-white">
-                 <div className="p-8 h-full flex flex-col justify-between overflow-y-auto">
-                    <div>
-                      <SheetHeader className="text-left space-y-2 p-0 mb-12">
-                         <div className="flex justify-between items-center">
-                           <Logo variant="white" />
-                         </div>
-                         <SheetTitle className="text-white/45 text-[9px] font-black uppercase tracking-[0.3em] mt-4">Global Academic Authority</SheetTitle>
-                      </SheetHeader>
-
-                      <nav className="flex flex-col gap-6 mb-12">
-                         {primaryLinks.map((link, i) => (
-                            <Link 
-                               key={link.href} 
-                               href={link.href} 
-                               onClick={() => setIsOpen(false)}
-                               className="text-3xl font-serif hover:text-[#C8A96A] transition-all flex items-center justify-between py-2 border-b border-white/5 group"
-                            >
-                               <span>{link.label}</span>
-                               <ChevronRight className="w-5 h-5 text-white/20 group-hover:text-[#C8A96A] transition-colors" />
-                            </Link>
-                         ))}
-                      </nav>
-
-                      {/* Mobile Utility list */}
-                      <div className="space-y-4 pt-6 border-t border-white/5">
-                        <Link href="/about" onClick={() => setIsOpen(false)} className="block text-xs text-white/60 hover:text-white transition-colors">Our Legacy</Link>
-                        <Link href="/faculty" onClick={() => setIsOpen(false)} className="block text-xs text-white/60 hover:text-white transition-colors">Research & Ideas</Link>
-                        <Link href="/events" onClick={() => setIsOpen(false)} className="block text-xs text-white/60 hover:text-white transition-colors">Global Forums</Link>
-                        <Link href="/newsletter" onClick={() => setIsOpen(false)} className="block text-xs text-white/60 hover:text-white transition-colors">Newsletter Insights</Link>
+                <div className="p-8 h-full flex flex-col justify-between overflow-y-auto">
+                  <div>
+                    <SheetHeader className="text-left space-y-2 p-0 mb-12">
+                      <div className="flex justify-between items-center">
+                        <Logo variant="white" />
                       </div>
-                    </div>
+                      <SheetTitle className="text-white/45 text-[9px] font-black uppercase tracking-[0.3em] mt-4">Global Academic Authority</SheetTitle>
+                    </SheetHeader>
 
-                    <div className="space-y-6 pt-12">
-                       <div className="h-[1px] bg-white/10 w-full" />
-                       {user ? (
-                          <Button className="w-full h-12 bg-[#C8A96A] hover:bg-[#B69759] text-[#0B1F3A] font-extrabold text-[10px] uppercase tracking-widest rounded-none shadow-none border-none" asChild onClick={() => setIsOpen(false)}>
-                             <Link href="/dashboard">Access Dashboard</Link>
-                          </Button>
-                       ) : (
-                          <div className="grid grid-cols-2 gap-4">
-                             <Button className="h-12 border border-white/20 bg-transparent text-white hover:bg-white/5 font-extrabold text-[10px] uppercase tracking-widest rounded-none shadow-none" asChild onClick={() => setIsOpen(false)}>
-                                <Link href="/login">Log In</Link>
-                             </Button>
-                             <Button className="h-12 bg-white text-[#0B1F3A] hover:bg-slate-100 font-extrabold text-[10px] uppercase tracking-widest rounded-none" asChild onClick={() => setIsOpen(false)}>
-                                <Link href="/login?view=signup">Apply</Link>
-                             </Button>
-                          </div>
-                       )}
-                       <p className="text-center text-white/40 text-[9px] font-black uppercase tracking-[0.2em]">Ashford & Gray Academy • Ivy Standard</p>
+                    <nav className="flex flex-col gap-6 mb-12">
+                      {primaryLinks.map((link, i) => (
+                        <Link
+                          key={link.href}
+                          href={link.href}
+                          onClick={() => setIsOpen(false)}
+                          className="text-3xl font-serif hover:text-[#C8A96A] transition-all flex items-center justify-between py-2 border-b border-white/5 group"
+                        >
+                          <span>{link.label}</span>
+                          <ChevronRight className="w-5 h-5 text-white/20 group-hover:text-[#C8A96A] transition-colors" />
+                        </Link>
+                      ))}
+                    </nav>
+
+                    {/* Mobile Utility list */}
+                    <div className="space-y-4 pt-6 border-t border-white/5">
+                      <Link href="/about" onClick={() => setIsOpen(false)} className="block text-xs text-white/60 hover:text-white transition-colors">Our Legacy</Link>
+                      <Link href="/faculty" onClick={() => setIsOpen(false)} className="block text-xs text-white/60 hover:text-white transition-colors">Research & Ideas</Link>
+                      <Link href="/events" onClick={() => setIsOpen(false)} className="block text-xs text-white/60 hover:text-white transition-colors">Global Forums</Link>
+                      <Link href="/newsletter" onClick={() => setIsOpen(false)} className="block text-xs text-white/60 hover:text-white transition-colors">Newsletter Insights</Link>
                     </div>
-                 </div>
+                  </div>
+
+                  <div className="space-y-6 pt-12">
+                    <div className="h-[1px] bg-white/10 w-full" />
+                    {user ? (
+                      <Button className="w-full h-12 bg-[#C8A96A] hover:bg-[#B69759] text-[#0B1F3A] font-extrabold text-[10px] uppercase tracking-widest rounded-none shadow-none border-none" asChild onClick={() => setIsOpen(false)}>
+                        <Link href="/dashboard">Access Dashboard</Link>
+                      </Button>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-4">
+                        <Button className="h-12 border border-white/20 bg-transparent text-white hover:bg-white/5 font-extrabold text-[10px] uppercase tracking-widest rounded-none shadow-none" asChild onClick={() => setIsOpen(false)}>
+                          <Link href="/login">Log In</Link>
+                        </Button>
+                        <Button className="h-12 bg-white text-[#0B1F3A] hover:bg-slate-100 font-extrabold text-[10px] uppercase tracking-widest rounded-none" asChild onClick={() => setIsOpen(false)}>
+                          <Link href="/login?view=signup">Apply</Link>
+                        </Button>
+                      </div>
+                    )}
+                    <p className="text-center text-white/40 text-[9px] font-black uppercase tracking-[0.2em]">Ashford & Gray Academy • Ivy Standard</p>
+                  </div>
+                </div>
               </SheetContent>
             </Sheet>
           </div>

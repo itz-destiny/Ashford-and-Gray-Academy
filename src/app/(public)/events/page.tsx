@@ -187,7 +187,7 @@ export default function EventsPage() {
             </div>
             
             <h1 className="text-5xl md:text-7xl font-serif text-white tracking-tight mb-8">
-              Institutional <span className="italic text-[#C8A96A]">Events.</span>
+              Institutional <span className="text-[#C8A96A]">Events.</span>
             </h1>
             <p className="text-xl text-slate-300 font-medium max-w-2xl mx-auto leading-relaxed mb-12">
               Distinctive. Global. Authoritative. Engage with world-class faculty and industry visionaries.
@@ -402,7 +402,7 @@ export default function EventsPage() {
          <ScrollAnimation animation="fade-in-up">
             <div className="bg-[#0B1F3A] rounded-[4rem] p-24 md:p-32 relative overflow-hidden text-center text-white">
                <div className="absolute top-0 right-0 w-[50%] h-full bg-emerald-500/5 blur-[120px] rounded-full translate-x-1/2" />
-               <h2 className="text-4xl md:text-6xl font-serif tracking-tight leading-tight mb-10">Host Your Next <br /><span className="italic text-[#C8A96A]">Signature Event.</span></h2>
+               <h2 className="text-4xl md:text-6xl font-serif tracking-tight leading-tight mb-10">Host Your Next <br /><span className="text-[#C8A96A]">Signature Event.</span></h2>
                <p className="text-slate-400 font-medium text-xl max-w-2xl mx-auto mb-12 leading-relaxed">
                  Leverage our institutional infrastructure to host high-impact workshops, seminars, and corporate retreats.
                </p>
