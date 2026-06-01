@@ -81,9 +81,12 @@ export function CurriculumCatalog({ title, subtitle, badge, courseIds }: Curricu
     subset.sort((a, b) => courseIds.indexOf(a.id) - courseIds.indexOf(b.id));
 
     if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
       subset = subset.filter(course =>
-        course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        course.description?.toLowerCase().includes(searchQuery.toLowerCase())
+        course.title.toLowerCase().includes(q) ||
+        course.description?.toLowerCase().includes(q) ||
+        course.category?.toLowerCase().includes(q) ||
+        course.level?.toLowerCase().includes(q)
       );
     }
     return subset;
@@ -230,10 +233,11 @@ export function CurriculumCatalog({ title, subtitle, badge, courseIds }: Curricu
               return (
                 <motion.div
                   key={course.id}
+                  layout
                   initial={{ opacity: 0, y: 40 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                   className="grid lg:grid-cols-12 gap-12 items-stretch py-16 border-b border-slate-200 hover:bg-[#FAF9F6] transition-colors"
                 >
                   {/* Left: generated African luxury image with golden est badge */}
