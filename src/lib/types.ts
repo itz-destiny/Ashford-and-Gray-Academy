@@ -18,7 +18,7 @@ export type Course = {
   rating: number;
   reviews: number;
   duration: number; // in weeks
-  level: 'Beginner' | 'Intermediate' | 'Advanced' | 'All Levels';
+  level: 'Beginner' | 'Intermediate' | 'Advanced' | 'All Levels' | 'Executive';
   price: number;
   currency?: string;
   originalPrice?: number;

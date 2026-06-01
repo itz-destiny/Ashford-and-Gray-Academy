@@ -39,7 +39,10 @@
       "Bash(netstat -ano)",
       "Bash(findstr :9002)",
       "Bash(taskkill *)",
-      "Bash(findstr -i \"ceo myne\")"
+      "Bash(findstr -i \"ceo myne\")",
+      "mcp__claude_ai_Higgsfield__generate_image",
+      "mcp__claude_ai_Higgsfield__job_status",
+      "Bash(curl -sL \"https://d8j0ntlcm91z4.cloudfront.net/user_3DoUUlJ9eYtd8JCcE6LJzrfootj/hf_20260601_202845_0131273c-20a4-4fe8-ad87-79207128c78c.png\" -o \"public/award_ceremony_stage.png\")"
     ]
   }
 }

@@ -7,18 +7,18 @@ export const STATIC_COURSES: Course[] = [
     category: "Certification",
     brochurePath: "housekeeping-and-domestic-management.pdf",
     instructor: {
-      name: "Dr Akeem Fashola",
+      name: "Dr Akeem Fashola – Faculty Lead",
       avatarUrl: "/A & G2.png",
       verified: true
     },
     rating: 4.8,
     reviews: 124,
-    duration: 12, // 3 months
+    duration: 12,
     level: "Intermediate",
     price: 350000,
-    imageUrl: "/housekeeping_certificate.png",
+    imageUrl: "/african_luxury_domestic.png",
     imageHint: "Housekeeping operations and domestic management systems.",
-    description: "Equip yourself with practical, executive-level skills in housekeeping operations, domestic management, wardrobe coordination, and luxury service standards.",
+    description: "The Housekeeping & Domestic Management Certificate Program at Ashford and Gray Fusion Academy is a professionally structured training designed to equip learners with practical, executive-level skills in housekeeping operations, domestic management, wardrobe coordination, and luxury service standards.\n\nThis program combines industry-based techniques with modern hospitality practices to prepare students for excellence in residential, hospitality, and executive service environments. Participants will gain hands-on knowledge in cleaning systems, hygiene protocols, wardrobe care, household coordination, client preference management, and luxury domestic operations.\n\nThe program is intentionally designed to reflect international hospitality standards while remaining practical, applicable, and career-focused.",
     whoFor: [
       "Aspiring housekeepers and domestic professionals",
       "Hospitality and hotel operations personnel",
@@ -81,7 +81,11 @@ export const STATIC_COURSES: Course[] = [
       "Professional Certificate in Housekeeping & Domestic Management",
       "Practical Competency Assessment Report",
       "Executive Skills Development Recognition",
-      "Ashford and Gray Fusion Academy Certification of Completion"
+      "Ashford and Gray Fusion Academy Certification of Completion",
+      "Outstanding participants may also qualify for:",
+      "Professional recommendation references",
+      "Internship or placement opportunities",
+      "Advanced executive domestic management training pathways"
     ],
     careerOpportunities: [
       "Professional Housekeepers",
@@ -93,7 +97,8 @@ export const STATIC_COURSES: Course[] = [
       "Luxury Home Service Professionals",
       "Personal Household Coordinators",
       "Hospitality Support Executives",
-      "Cleaning & Domestic Service Entrepreneurs"
+      "Cleaning & Domestic Service Entrepreneurs",
+      "This program also provides a strong foundation for careers within luxury hospitality, private residences, executive households, estates, and international domestic service operations."
     ]
   },
   {
@@ -102,18 +107,18 @@ export const STATIC_COURSES: Course[] = [
     category: "Certification",
     brochurePath: "hospitality-management.pdf",
     instructor: {
-      name: "Dr Salim Maimoona",
+      name: "Dr Salim Maimoona – Faculty Lead",
       avatarUrl: "/A & G2.png",
       verified: true
     },
     rating: 4.9,
     reviews: 182,
-    duration: 12, // 3 months
+    duration: 12,
     level: "Intermediate",
     price: 450000,
-    imageUrl: "/hospitality_management_certificate.png",
+    imageUrl: "/african_hospitality_management.png",
     imageHint: "Hospitality and luxury concierge services.",
-    description: "Premium professional training designed to develop highly skilled hospitality professionals equipped to operate within luxury, corporate, executive, and international service environments.",
+    description: "The Hospitality Management Certificate Program at Ashford and Gray Fusion Academy is a premium professional training designed to develop highly skilled hospitality professionals equipped to operate within luxury, corporate, executive, and international service environments.\n\nThis program combines the principles of hospitality excellence, executive service delivery, guest relations, protocol management, and luxury client experience into a structured, industry-focused curriculum. Participants will gain practical knowledge in butlering, concierge services, VIP coordination, communication, customer retention, conflict resolution, and high-end hospitality operations.\n\nBuilt on global hospitality standards, the program prepares learners to confidently manage guests, clients, events, and service operations with professionalism, discretion, and precision.",
     whoFor: [
       "Aspiring hospitality professionals",
       "Hotel and guest service personnel",
@@ -178,7 +183,11 @@ export const STATIC_COURSES: Course[] = [
       "Professional Certificate in Hospitality Management",
       "Executive Hospitality Skills Recognition",
       "Practical Competency Assessment Report",
-      "Ashford and Gray Fusion Academy Certification of Completion"
+      "Ashford and Gray Fusion Academy Certification of Completion",
+      "Exceptional participants may also qualify for:",
+      "Professional recommendation references",
+      "Hospitality internship opportunities",
+      "Advanced executive hospitality specialization pathways"
     ],
     careerOpportunities: [
       "Hospitality Managers",
@@ -191,7 +200,8 @@ export const STATIC_COURSES: Course[] = [
       "Lifestyle & Travel Assistants",
       "Event Hospitality Coordinators",
       "Customer Experience Executives",
-      "Luxury Hospitality Consultants"
+      "Luxury Hospitality Consultants",
+      "This program also serves as a strong foundation for careers within hotels, luxury residences, executive households, corporate hospitality, tourism, event management, and international guest service operations."
     ]
   },
   {
@@ -200,18 +210,18 @@ export const STATIC_COURSES: Course[] = [
     category: "Certification",
     brochurePath: "events-and-protocol-management.pdf",
     instructor: {
-      name: "Mr D. T. I. Banigo Esq",
+      name: "Mr D. T. I. Banigo Esq – Faculty Lead",
       avatarUrl: "/A & G2.png",
       verified: true
     },
     rating: 4.7,
     reviews: 96,
-    duration: 12, // 3 months
+    duration: 12,
     level: "Intermediate",
     price: 400000,
-    imageUrl: "/course1.jpeg",
+    imageUrl: "/african_events_protocol.png",
     imageHint: "Professional events and official protocol systems.",
-    description: "Equip learners with the strategic, operational, and executive-level skills required to successfully manage events, ceremonies, corporate functions, VIP engagements, and protocol operations.",
+    description: "The Events & Protocol Management Certificate Program at Ashford and Gray Fusion Academy is a comprehensive professional training designed to equip learners with the strategic, operational, and executive-level skills required to successfully manage events, ceremonies, corporate functions, VIP engagements, and protocol operations.\n\nThis program blends modern event management practices with international protocol standards, preparing participants to confidently coordinate high-level events with precision, professionalism, discretion, and excellence. Learners will gain practical knowledge in event planning, vendor coordination, budgeting, security management, crisis communication, crowd control, official protocol, and high-profile guest relations.\n\nDesigned to meet global industry expectations, the program focuses on developing professionals capable of delivering seamless experiences within corporate, diplomatic, hospitality, entertainment, and executive environments.",
     whoFor: [
       "Aspiring event planners and coordinators",
       "Hospitality and protocol professionals",
@@ -276,7 +286,11 @@ export const STATIC_COURSES: Course[] = [
       "Professional Certificate in Events & Protocol Management",
       "Executive Event Coordination Skills Recognition",
       "Practical Competency Assessment Report",
-      "Ashford and Gray Fusion Academy Certification of Completion"
+      "Ashford and Gray Fusion Academy Certification of Completion",
+      "Outstanding participants may also qualify for:",
+      "Professional recommendation references",
+      "Event internship or industry placement opportunities",
+      "Advanced executive protocol specialization pathways"
     ],
     careerOpportunities: [
       "Event Planners & Coordinators",
@@ -289,7 +303,8 @@ export const STATIC_COURSES: Course[] = [
       "Government & Diplomatic Event Assistants",
       "Conference & Convention Coordinators",
       "Security & Crowd Management Supervisors",
-      "Entrepreneurs in Event & Hospitality Services"
+      "Entrepreneurs in Event & Hospitality Services",
+      "This program also provides a strong foundation for careers in hospitality, corporate events, government functions, diplomatic services, entertainment, luxury lifestyle management, and international protocol operations."
     ]
   },
   {
@@ -298,18 +313,18 @@ export const STATIC_COURSES: Course[] = [
     category: "Certification",
     brochurePath: "executive-assistant-management.pdf",
     instructor: {
-      name: "Myne Wilfred",
+      name: "Myne Wilfred – Faculty Lead",
       avatarUrl: "/CEO.jpeg",
       verified: true
     },
     rating: 4.8,
     reviews: 115,
-    duration: 12, // 3 months
+    duration: 12,
     level: "Intermediate",
     price: 420000,
-    imageUrl: "/course2.jpeg",
+    imageUrl: "/african_executive_assistant.png",
     imageHint: "Executive assistance, time management, and corporate operations.",
-    description: "High-level professional training designed to prepare participants for strategic support roles within executive, corporate, diplomatic, hospitality, and luxury service environments.",
+    description: "The Executive Assistant Management Certificate Program at Ashford and Gray Fusion Academy is a high-level professional training designed to prepare participants for strategic support roles within executive, corporate, diplomatic, hospitality, and luxury service environments.\n\nThis program equips learners with the practical, organizational, communication, and leadership skills required to effectively manage executives, high-net-worth individuals, business operations, schedules, travel coordination, confidential communication, and corporate engagements. Participants will also gain insight into luxury concierge services, lifestyle management, protocol, executive decision support, and crisis handling.\n\nCombining administrative excellence with executive-level professionalism, the program is structured to develop highly competent professionals capable of operating with discretion, precision, and confidence in demanding environments.",
     whoFor: [
       "Aspiring executive assistants and personal assistants",
       "Administrative and office professionals",
@@ -375,7 +390,11 @@ export const STATIC_COURSES: Course[] = [
       "Professional Certificate in Executive Assistant Management",
       "Executive Administrative Skills Recognition",
       "Practical Competency Assessment Report",
-      "Ashford and Gray Fusion Academy Certification of Completion"
+      "Ashford and Gray Fusion Academy Certification of Completion",
+      "Exceptional participants may also qualify for:",
+      "Professional recommendation references",
+      "Internship or executive placement opportunities",
+      "Advanced executive leadership and administrative specialization pathways"
     ],
     careerOpportunities: [
       "Executive Assistants",
@@ -387,7 +406,9 @@ export const STATIC_COURSES: Course[] = [
       "Protocol & Executive Support Officers",
       "Corporate Office Managers",
       "Travel & Executive Logistics Coordinators",
-      "Executive Event Support Professionals"
+      "Executive Event Support Professionals",
+      "Business Support Consultants",
+      "This program also provides a strong foundation for careers within corporate organizations, executive offices, luxury hospitality, diplomatic environments, government institutions, private estates, and international business operations."
     ]
   },
   {
@@ -396,18 +417,18 @@ export const STATIC_COURSES: Course[] = [
     category: "Certification",
     brochurePath: "hospitality-and-global-relationship.pdf",
     instructor: {
-      name: "Karibi T. George, Esq.",
+      name: "Karibi T. George Esq. – Faculty Lead",
       avatarUrl: "/Mr Karibi.jpeg",
       verified: true
     },
     rating: 4.9,
     reviews: 140,
-    duration: 12, // 3 months
+    duration: 12,
     level: "Intermediate",
     price: 480000,
-    imageUrl: "/course3.jpeg",
+    imageUrl: "/african_global_relationships.png",
     imageHint: "International relations, global business, and diplomatic protocol.",
-    description: "Professionally designed training focused on developing globally minded professionals equipped with the skills required to navigate international business environments, diplomatic engagements, negotiation, and cross-cultural relationships.",
+    description: "The Hospitality & Global Relationship Management Certificate Program at Ashford and Gray Fusion Academy is a professionally designed training focused on developing globally minded professionals equipped with the skills required to navigate international business environments, diplomatic engagements, negotiation processes, and cross-cultural relationships.\n\nThis program blends hospitality excellence with international relations, business diplomacy, negotiation strategy, conflict management, and global communication practices. Participants will gain practical knowledge in diplomatic protocol, international business ethics, mediation, workplace dispute resolution, and strategic relationship management.\n\nStructured to meet international standards, the program prepares learners to confidently operate within corporate, diplomatic, hospitality, governmental, and multinational environments where professionalism, negotiation, and relationship management are critical.",
     whoFor: [
       "Hospitality and corporate professionals",
       "Diplomacy and protocol enthusiasts",
@@ -473,7 +494,11 @@ export const STATIC_COURSES: Course[] = [
       "Professional Certificate in Hospitality & Global Relationship Management",
       "Negotiation & Conflict Resolution Skills Recognition",
       "Practical Competency Assessment Report",
-      "Ashford and Gray Fusion Academy Certification of Completion"
+      "Ashford and Gray Fusion Academy Certification of Completion",
+      "Outstanding participants may also qualify for:",
+      "Professional recommendation references",
+      "Internship or placement opportunities",
+      "Advanced diplomacy and executive relationship management specialization pathways"
     ],
     careerOpportunities: [
       "Relationship Managers",
@@ -486,7 +511,8 @@ export const STATIC_COURSES: Course[] = [
       "International Business Coordinators",
       "Customer Experience Managers",
       "Public Relations & Stakeholder Engagement Officers",
-      "Executive Liaison Officers"
+      "Executive Liaison Officers",
+      "This program also provides a strong foundation for careers within hospitality, multinational corporations, diplomatic services, government agencies, international organizations, public relations firms, and executive business environments where relationship management and strategic communication are essential."
     ]
   },
   {
@@ -495,18 +521,18 @@ export const STATIC_COURSES: Course[] = [
     category: "Diploma",
     brochurePath: "diploma-hospitality-management.pdf",
     instructor: {
-      name: "Dr Salim Maimoona",
+      name: "Dr Salim Maimoona – Faculty Lead",
       avatarUrl: "/A & G2.png",
       verified: true
     },
     rating: 4.9,
     reviews: 210,
-    duration: 24, // 6 months
+    duration: 24,
     level: "Advanced",
     price: 750000,
-    imageUrl: "/course4.jpeg",
+    imageUrl: "/african_diploma_hospitality.png",
     imageHint: "Advanced hospitality systems and luxury operational administration.",
-    description: "An advanced professional program designed to develop highly competent hospitality professionals equipped with practical expertise, leadership capacity, and global service standards.",
+    description: "The Diploma in Hospitality Management at Ashford and Gray Fusion Academy is an advanced professional program designed to develop highly competent hospitality professionals equipped with practical expertise, leadership capacity, and global service standards.\n\nThis diploma program combines housekeeping operations, executive hospitality, guest relations, luxury service delivery, wardrobe management, protocol systems, and hospitality administration into a comprehensive learning experience tailored for today’s evolving hospitality industry.\n\nStructured with a blend of theoretical knowledge and practical industry application, the program prepares students to confidently manage hospitality environments, luxury guest experiences, executive residences, hotels, and high-end service operations with professionalism, discretion, and excellence.\n\nThe curriculum is intentionally designed to reflect international hospitality standards while developing professionals capable of operating effectively within local and global hospitality environments.",
     whoFor: [
       "Aspiring hospitality professionals and managers",
       "Hotel and guest service personnel",
@@ -586,7 +612,12 @@ export const STATIC_COURSES: Course[] = [
       "Professional Hospitality Competency Certification",
       "Executive Service & Guest Relations Recognition",
       "Practical Skills Assessment Report",
-      "Ashford and Gray Fusion Academy Diploma Certification"
+      "Ashford and Gray Fusion Academy Diploma Certification",
+      "Outstanding students may also qualify for:",
+      "Internship and industry placement opportunities",
+      "Executive hospitality specialization pathways",
+      "Professional recommendation references",
+      "Leadership and management advancement opportunities"
     ],
     careerOpportunities: [
       "Hospitality Managers",
@@ -601,7 +632,8 @@ export const STATIC_COURSES: Course[] = [
       "Lifestyle & Travel Managers",
       "Hospitality Consultants",
       "Customer Experience Managers",
-      "Hospitality Entrepreneurs"
+      "Hospitality Entrepreneurs",
+      "This diploma program also provides a strong foundation for leadership careers within hotels, luxury residences, executive households, resorts, corporate hospitality environments, tourism organizations, and international service industries."
     ]
   },
   {
@@ -610,18 +642,18 @@ export const STATIC_COURSES: Course[] = [
     category: "Diploma",
     brochurePath: "diploma-professional-development-and-global-relations.pdf",
     instructor: {
-      name: "Dr. Sarah Ogah",
+      name: "Dr. Sarah Ogah – Faculty Lead",
       avatarUrl: "/A & G2.png",
       verified: true
     },
     rating: 4.8,
     reviews: 154,
-    duration: 24, // 6 months
+    duration: 24,
     level: "Advanced",
     price: 800000,
-    imageUrl: "/course5.jpeg",
+    imageUrl: "/award_ceremony_stage.png",
     imageHint: "Leadership development, global relations, and career development.",
-    description: "A comprehensive professional program designed to develop confident leaders, strategic communicators, globally minded professionals, and effective negotiators equipped to thrive in modern corporate, diplomatic, and international settings.",
+    description: "The Diploma in Professional Development & Global Relations at Ashford and Gray Fusion Academy is a comprehensive professional program designed to develop confident leaders, strategic communicators, globally minded professionals, and effective negotiators equipped to thrive within modern corporate, diplomatic, and international business environments.\n\nThis diploma program combines leadership development, emotional intelligence, workplace professionalism, global relations, diplomacy, negotiation, and conflict management into a practical, industry-focused learning experience. Participants will gain the knowledge, confidence, and strategic skills required to lead teams, manage professional relationships, communicate effectively across cultures, and navigate complex workplace and international environments with professionalism and authority.\n\nBuilt on international standards and executive-level training principles, the program prepares learners for leadership, career advancement, global engagement, and professional excellence across multiple industries.",
     whoFor: [
       "Emerging and aspiring leaders",
       "Corporate professionals and administrators",
@@ -701,7 +733,12 @@ export const STATIC_COURSES: Course[] = [
       "Leadership & Negotiation Competency Certification",
       "Professional Communication & Global Relations Recognition",
       "Practical Skills Assessment Report",
-      "Ashford and Gray Fusion Academy Diploma Certification"
+      "Ashford and Gray Fusion Academy Diploma Certification",
+      "Outstanding participants may also qualify for:",
+      "Executive mentorship opportunities",
+      "Internship and placement opportunities",
+      "Leadership development recommendations",
+      "Advanced professional specialization pathways"
     ],
     careerOpportunities: [
       "Corporate Executives & Team Leaders",
@@ -713,7 +750,10 @@ export const STATIC_COURSES: Course[] = [
       "Leadership Development Coordinators",
       "Public Relations & Stakeholder Managers",
       "International Business Coordinators",
-      "Professional Development Consultants"
+      "Professional Development Consultants",
+      "Career & Workplace Coaches",
+      "Mediation & Workplace Relations Officers",
+      "This diploma program also provides a strong foundation for leadership and professional careers within multinational organizations, diplomatic institutions, government agencies, corporate enterprises, international business environments, consulting firms, and executive management structures where communication, leadership, and global engagement are essential."
     ]
   },
   {
@@ -722,18 +762,18 @@ export const STATIC_COURSES: Course[] = [
     category: "Diploma",
     brochurePath: "diploma-business-innovation-and-entrepreneurship.pdf",
     instructor: {
-      name: "Dr Emmanuel Woko",
+      name: "Dr Emmanuel Woko – Faculty Lead",
       avatarUrl: "/A & G2.png",
       verified: true
     },
     rating: 4.9,
     reviews: 236,
-    duration: 24, // 6 months
+    duration: 24,
     level: "Advanced",
     price: 850000,
-    imageUrl: "/course6.jpeg",
+    imageUrl: "/african_business_innovation.png",
     imageHint: "Business administration, corporate branding, and economics.",
-    description: "A modern, industry-driven professional program designed to develop innovative entrepreneurs, strategic business leaders, and globally competitive professionals capable of building sustainable businesses.",
+    description: "The Diploma in Business Innovation & Entrepreneurship at Ashford and Gray Fusion Academy is a modern, industry-driven professional program designed to develop innovative entrepreneurs, strategic business leaders, and globally competitive professionals capable of building sustainable businesses and leading organizational growth.\n\nThis diploma program combines business administration, entrepreneurship, economics, finance, branding, digital innovation, and corporate communication into a comprehensive curriculum focused on practical execution, strategic thinking, and market relevance. Participants will gain executive-level insight into business operations, innovation systems, investment strategies, leadership, and brand positioning while learning how to identify opportunities, solve business challenges, and create profitable ventures.\n\nDesigned to align with global business realities and evolving market trends, the program equips learners with the knowledge, confidence, and practical skills needed to excel in entrepreneurial, corporate, and international business environments.",
     whoFor: [
       "Aspiring entrepreneurs and startup founders",
       "Business owners and executives",
@@ -813,7 +853,12 @@ export const STATIC_COURSES: Course[] = [
       "Entrepreneurship & Business Strategy Competency Certification",
       "Corporate Communication & Branding Recognition",
       "Practical Project Assessment Report",
-      "Ashford and Gray Fusion Academy Diploma Certification"
+      "Ashford and Gray Fusion Academy Diploma Certification",
+      "Outstanding participants may also qualify for:",
+      "Business mentorship and incubation opportunities",
+      "Startup development and networking support",
+      "Professional recommendation references",
+      "Advanced executive business specialization pathways"
     ],
     careerOpportunities: [
       "Entrepreneurs & Startup Founders",
@@ -825,7 +870,10 @@ export const STATIC_COURSES: Course[] = [
       "Marketing & Digital Branding Specialists",
       "Financial & Investment Coordinators",
       "Public Relations Officers",
-      "Corporate Communication Executives"
+      "Corporate Communication Executives",
+      "Business Operations Managers",
+      "Social Media & Brand Strategists",
+      "This diploma program also provides a strong foundation for leadership careers within startups, multinational corporations, consulting firms, financial institutions, branding agencies, digital enterprises, entrepreneurial ventures, and global business environments where innovation, strategic thinking, and communication are essential for success."
     ]
   },
   {
@@ -834,18 +882,18 @@ export const STATIC_COURSES: Course[] = [
     category: "Diploma",
     brochurePath: "diploma-event-and-protocol-management.pdf",
     instructor: {
-      name: "Mr D. T. I. Banigo Esq",
+      name: "Mr D. T. I. Banigo Esq – Faculty Lead",
       avatarUrl: "/A & G2.png",
       verified: true
     },
     rating: 4.8,
-    reviews: 178,
-    duration: 24, // 6 months
+    reviews: 175,
+    duration: 24,
     level: "Advanced",
     price: 780000,
-    imageUrl: "/course7.jpeg",
-    imageHint: "Advanced VIP hospitality, events, and diplomatic protocol operations.",
-    description: "Comprehensive professional program designed to develop highly skilled event professionals, protocol officers, executive coordinators, and VIP service specialists capable of managing high-level events.",
+    imageUrl: "/african_diploma_events.png",
+    imageHint: "Advanced event logistics and global protocol management.",
+    description: "The Diploma in Event & Protocol Management at Ashford and Gray Fusion Academy is a comprehensive professional program designed to develop highly skilled event professionals, protocol officers, executive coordinators, and VIP service specialists capable of managing high-level events and executive engagements with precision, professionalism, and excellence.\n\nThis diploma program combines event planning, protocol management, executive assistance, concierge services, VIP coordination, crisis management, and leadership support into a structured, industry-focused curriculum tailored for modern corporate, diplomatic, hospitality, and luxury service environments.\n\nParticipants will gain practical knowledge in event design, vendor coordination, budgeting, security management, crowd control, protocol systems, executive communication, travel coordination, and high-profile client management while developing the confidence and operational competence required to manage both local and international engagements successfully.\n\nDesigned to reflect international standards and executive service expectations, the program prepares learners for leadership roles within the fast-growing event, hospitality, protocol, and executive support industries.",
     whoFor: [
       "Aspiring event planners and coordinators",
       "Protocol and diplomatic service professionals",
@@ -925,39 +973,47 @@ export const STATIC_COURSES: Course[] = [
       "Executive Coordination & Protocol Competency Certification",
       "VIP Service & Event Management Recognition",
       "Practical Skills Assessment Report",
-      "Ashford and Gray Fusion Academy Diploma Certification"
+      "Ashford and Gray Fusion Academy Diploma Certification",
+      "Outstanding participants may also qualify for:",
+      "Internship and placement opportunities",
+      "Executive mentorship and protocol specialization pathways",
+      "Professional recommendation references",
+      "Leadership development opportunities within hospitality and corporate sectors"
     ],
     careerOpportunities: [
       "Event Planners & Coordinators",
       "Protocol Officers",
       "Executive Assistants",
       "VIP Concierge Professionals",
-      "Lifestyle & Travel Managers",
       "Corporate Event Managers",
+      "Lifestyle & Travel Managers",
       "Public Relations & Event Executives",
       "Celebrity & VIP Liaison Officers",
       "Conference & Convention Coordinators",
-      "Executive Support Professionals"
+      "Executive Support Professionals",
+      "Hospitality & Guest Experience Managers",
+      "Entrepreneurs in Event & Luxury Service Industries",
+      "This diploma program also provides a strong foundation for leadership careers within corporate organizations, government institutions, diplomatic services, luxury hospitality, entertainment industries, executive households, international conferences, and global event management environments where professionalism, discretion, and strategic coordination are essential."
     ]
   },
   {
     id: "664f3a8b2d1c9e8a7f0e0010",
     title: "The Silent Standard Certification Program",
-    category: "Executive Master Class",
-    brochurePath: "the-silent-standard.pdf",
+    category: "Master Class",
+    brochurePath: "silent-standard-certification.pdf",
     instructor: {
-      name: "Myne Wilfred",
+      name: "Myne Wilfred – Faculty Lead",
       avatarUrl: "/CEO.jpeg",
       verified: true
     },
     rating: 5.0,
-    reviews: 342,
-    duration: 12, // 3 months
-    level: "Advanced",
-    price: 1200000,
-    imageUrl: "/graduate-diploma.jpg",
-    imageHint: "The signature silent standard certification for elite operational authorities.",
-    description: "Our ultra-premium executive-level professional development program designed to cultivate disciplined leaders, operational strategists, and institutional authorities.",
+    reviews: 89,
+    duration: 12,
+    level: "Executive",
+    price: 1500000,
+    imageUrl: "/butler.jpg.jpeg",
+    imageHint: "Executive leadership and operational excellence.",
+    description: "The Silent Standard Certification Program at Ashford and Gray Fusion Academy is a premium executive-level professional development program designed to cultivate disciplined leaders, operational strategists, hospitality professionals, executive managers, and institutional thinkers capable of delivering excellence with precision, structure, and authority.\n\nBuilt on the philosophy that true excellence is intentional, structured, and consistently sustained, this program focuses on developing professionals who understand the power of systems, discipline, operational intelligence, discretion, leadership, and institutional order.\n\nThe program combines executive management principles, hospitality excellence, estate operations, leadership psychology, protocol systems, organizational governance, and strategic positioning into a transformational learning experience tailored for individuals operating within high-performance environments.\n\nUnlike conventional professional training, The Silent Standard Certification Program goes beyond skills acquisition; it develops mindset, structure, operational philosophy, and long-term leadership capacity designed for modern executive, hospitality, corporate, and institutional environments.",
     whoFor: [
       "Hospitality and executive management professionals",
       "Estate and residence managers",
@@ -1086,7 +1142,12 @@ export const STATIC_COURSES: Course[] = [
       "Certified Silent Standard Professional Certification",
       "Executive Leadership & Operational Excellence Recognition",
       "Professional Competency Assessment Report",
-      "Ashford and Gray Fusion Academy Certification of Completion"
+      "Ashford and Gray Fusion Academy Certification of Completion",
+      "Outstanding participants may also qualify for:",
+      "Executive mentorship opportunities",
+      "Leadership and institutional development pathways",
+      "Professional recommendation references",
+      "Advanced executive specialization opportunities"
     ],
     careerOpportunities: [
       "Executive & Estate Managers",
@@ -1098,7 +1159,9 @@ export const STATIC_COURSES: Course[] = [
       "Leadership & Systems Consultants",
       "High-Profile Event & Operations Coordinators",
       "Executive Service Professionals",
-      "Organizational Structure & Compliance Managers"
+      "Organizational Structure & Compliance Managers",
+      "Professional Development & Governance Consultants",
+      "This program also serves as a transformational foundation for professionals seeking to build structured organizations, lead with authority, improve operational systems, manage high-profile environments, and establish globally respected standards of excellence within hospitality, corporate, executive, and institutional settings"
     ]
   }
 ];
