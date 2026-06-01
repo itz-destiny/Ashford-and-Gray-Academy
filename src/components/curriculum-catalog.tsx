@@ -148,8 +148,8 @@ export function CurriculumCatalog({ title, subtitle, badge, courseIds }: Curricu
               </div>
               <div>
                 <p className="text-[10px] font-black text-[#C8A96A] uppercase tracking-[0.2em] mb-1">ACADEMIC FORMAT</p>
-                <p className="text-base font-bold text-white">Hybrid / In-Person</p>
-                <p className="text-[9px] text-white/40 mt-0.5">Cohort Assemblies</p>
+                <p className="text-base font-bold text-white">Fully Online</p>
+                <p className="text-[9px] text-white/40 mt-0.5">Live Virtual Cohorts</p>
               </div>
               <div>
                 <p className="text-[10px] font-black text-[#C8A96A] uppercase tracking-[0.2em] mb-1">REGISTRY DESK</p>

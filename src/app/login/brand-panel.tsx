@@ -41,7 +41,7 @@ export function BrandPanel() {
                             True luxury is not excess — it is precision, discipline, and excellence expressed effortlessly.
                         </p>
                         <footer className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-[#C8A96A]">
-                            Myne Wilfred · Founder &amp; CEO
+                            Myne Wilfred · Founder/President
                         </footer>
                     </blockquote>
                 </div>

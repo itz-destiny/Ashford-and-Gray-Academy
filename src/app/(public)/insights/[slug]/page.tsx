@@ -94,7 +94,7 @@ export default async function ArticlePage({ params }: RouteProps) {
                     </div>
                     <div>
                         <p className="font-serif text-xl text-[#0B1F3A] leading-tight">{article.author}</p>
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#C8A96A] mt-2">Founder &amp; Chief Executive Officer · Ashford &amp; Gray Fusion Academy</p>
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#C8A96A] mt-2">Founder/President · Ashford &amp; Gray Fusion Academy</p>
                     </div>
                 </div>
             </article>

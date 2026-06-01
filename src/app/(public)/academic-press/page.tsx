@@ -36,7 +36,7 @@ const PUBLICATIONS: Publication[] = [
     title: "Beyond Service",
     subtitle: "Hospitality Management as Structure, Standards, and Sustainability",
     author: "Myne Wilfred",
-    authorTitle: "Founder & CEO, Ashford & Gray Academy",
+    authorTitle: "Founder/President, Ashford & Gray Academy",
     year: "2024",
     isbn: "978-978-684132-8",
     coverImage: "/beyond_service_book_1779871505249.png",
