@@ -33,7 +33,7 @@ export function MainNav() {
       label: "About",
       dropdownItems: [
         { label: "Our Vision & Mission", href: "/about", desc: "The elite standards and academic foundations of Ashford & Gray." },
-        { label: "Founder's Address", href: "/#founder-address", desc: "Strategic address from Founder & CEO Myne Wilfred." },
+        { label: "Founder's Address", href: "/#founder-address", desc: "Strategic address from Founder/President Myne Wilfred." },
         { label: "Registry & Campus", href: "/contact", desc: "Contact our admissions advisors and registrar desk." }
       ]
     },

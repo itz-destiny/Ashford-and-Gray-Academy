@@ -107,7 +107,7 @@ export default async function CourseDetailPage({ params }: RouteProps) {
                                     </div>
                                     <div>
                                         <p className="text-[10px] font-black text-[#C8A96A] uppercase tracking-[0.2em] mb-1">Format</p>
-                                        <p className="text-lg font-bold text-white">Hybrid / Cohort</p>
+                                        <p className="text-lg font-bold text-white">Fully Online</p>
                                         <p className="text-[9px] text-white/40 mt-0.5">Global Learning Network</p>
                                     </div>
                                     <div>
@@ -441,16 +441,7 @@ export default async function CourseDetailPage({ params }: RouteProps) {
                             </h2>
                         </div>
 
-                        <div className="bg-white border border-slate-200 p-8 md:p-12 flex flex-col sm:flex-row gap-8 items-center sm:items-center text-center sm:text-left max-w-3xl">
-                            <div className="relative w-28 h-28 rounded-full overflow-hidden shrink-0 ring-2 ring-[#C8A96A]/30 bg-slate-50">
-                                <Image
-                                    src={course.instructor.avatarUrl || '/A & G2.png'}
-                                    alt={course.instructor.name}
-                                    fill
-                                    sizes="112px"
-                                    className="object-cover object-top"
-                                />
-                            </div>
+                        <div className="bg-white border border-slate-200 p-8 md:p-12 text-center sm:text-left max-w-3xl">
                             <div className="space-y-2">
                                 <h3 className="text-2xl md:text-3xl font-serif font-bold text-[#0B1F3A] leading-tight">{course.instructor.name}</h3>
                                 <p className="text-[#C8A96A] font-black text-[10px] uppercase tracking-[0.3em]">Programme Faculty · Ashford &amp; Gray Fusion Academy</p>

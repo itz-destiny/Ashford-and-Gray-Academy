@@ -24,7 +24,7 @@ export default function InsightsIndexPage() {
                             Research &amp; <span className="text-[#C8A96A]">Insights.</span>
                         </h1>
                         <p className="text-lg md:text-xl text-slate-500 font-medium max-w-2xl mx-auto mt-8 leading-relaxed">
-                            Articles by Myne Wilfred — Founder &amp; CEO of Ashford &amp; Gray Fusion Academy — on hospitality leadership, luxury service philosophy, business innovation, and the silent standard of professional excellence.
+                            Articles by Myne Wilfred — Founder/President of Ashford &amp; Gray Fusion Academy — on hospitality leadership, luxury service philosophy, business innovation, and the silent standard of professional excellence.
                         </p>
                     </ScrollAnimation>
                 </div>

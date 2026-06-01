@@ -34,7 +34,6 @@ import {
   DialogTrigger,
   DialogTitle
 } from "@/components/ui/dialog"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
 import { ScrollAnimation } from "@/components/ui/scroll-animation";
 import { STATIC_COURSES } from "@/lib/courses-data";
@@ -75,10 +74,6 @@ export default function CertificationPage() {
 
   const handleEnrollClick = (course: Course) => {
     router.push(`/login?courseId=${course.id}`);
-  };
-
-  const getInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
   const renderStars = (rating: number) => {
@@ -274,10 +269,6 @@ export default function CertificationPage() {
                                  {/* Instructor */}
                                  <section className="pt-16 border-t border-slate-100">
                                     <div className="flex flex-col md:flex-row gap-12 items-center text-center md:text-left">
-                                       <Avatar className="h-32 w-32 shadow-xl ring-4 ring-slate-50">
-                                          <AvatarImage src={c.instructor?.avatarUrl} />
-                                          <AvatarFallback>{getInitials(c.instructor?.name || '')}</AvatarFallback>
-                                       </Avatar>
                                        <div>
                                           <h4 className="text-3xl font-serif text-[#0B1F3A] mb-2">{c.instructor?.name || 'Faculty Member'}</h4>
                                           <p className="text-[#1F7A5A] font-black text-[10px] uppercase tracking-widest mb-6">Distinguished Faculty</p>

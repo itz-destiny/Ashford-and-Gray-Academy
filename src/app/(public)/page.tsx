@@ -397,7 +397,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 5. DEAN'S VISION STYLE SECTION: The Founder & CEO's Message in Signature Navy */}
+      {/* 5. DEAN'S VISION STYLE SECTION: The Founder/President's Message in Signature Navy */}
       <section id="founder-address" className="py-20 md:py-32 bg-[#0B1F3A] text-white relative overflow-hidden">
         {/* Subtle background gold graphic */}
         <div className="absolute inset-0 opacity-[0.02] pointer-events-none select-none">
@@ -412,7 +412,7 @@ export default function Home() {
                 <div className="relative aspect-[3/4] w-full max-w-sm mx-auto border-[10px] border-[#061222] shadow-2xl overflow-hidden group">
                   <Image
                     src="/CEO.jpeg"
-                    alt="Myne Wilfred, Founder & CEO"
+                    alt="Myne Wilfred, Founder/President"
                     fill
                     className="object-cover object-top transition-transform duration-1000 group-hover:scale-105"
                   />
@@ -433,7 +433,7 @@ export default function Home() {
               <ScrollAnimation animation="fade-in-up" delay={100}>
                 <h2 className="text-4xl md:text-6xl font-headline font-bold tracking-tighter leading-[0.95] text-white">
                   Message from the <br />
-                  <span className="italic font-serif font-normal text-[#C8A96A] tracking-normal">Founder &amp; CEO.</span>
+                  <span className="italic font-serif font-normal text-[#C8A96A] tracking-normal">Founder/President.</span>
                 </h2>
               </ScrollAnimation>
 
@@ -468,7 +468,7 @@ export default function Home() {
                   <span className="h-[2px] w-12 bg-[#C8A96A]"></span>
                   <div>
                     <h4 className="font-serif text-xl font-bold tracking-tight text-white">Myne Wilfred</h4>
-                    <p className="text-[#C8A96A] text-[9px] font-black uppercase tracking-[0.3em] mt-1">Founder & Chief Executive Officer</p>
+                    <p className="text-[#C8A96A] text-[9px] font-black uppercase tracking-[0.3em] mt-1">Founder/President</p>
                   </div>
                 </div>
               </ScrollAnimation>
