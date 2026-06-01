@@ -1,21 +1,19 @@
-import Image from "next/image";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { LEADERSHIP, type LeadershipMember } from "@/lib/leadership-data";
 import { ProfileDialog } from "./profile-dialog";
 
 export const metadata = {
-    title: "Executive Leadership Team — Ashford & Gray Fusion Academy",
+    title: "Executive Management Council — Ashford & Gray Fusion Academy",
     description:
-        "The Executive Leadership Team of Ashford & Gray Fusion Academy — the founder, directors, dean, registrar, and partnership leads stewarding every cohort.",
+        "The Executive Management Council of Ashford & Gray Fusion Academy represents the institution’s strategic leadership and operational governance structure.",
 };
 
-export default function ExecutiveLeadershipPage() {
-    const [founder, ...team] = LEADERSHIP;
-
+export default function ExecutiveManagementCouncilPage() {
     return (
         <div className="bg-white">
-            {/* Hero — tight, editorial */}
+            {/* Hero */}
             <header className="border-b border-slate-100">
                 <div className="container px-6 lg:px-12 py-20 md:py-28">
                     <div className="flex items-center gap-3 mb-6">
@@ -23,65 +21,65 @@ export default function ExecutiveLeadershipPage() {
                         <span className="text-[#C8A96A] font-black text-[10px] uppercase tracking-[0.4em]">The Institution</span>
                     </div>
                     <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif text-[#0B1F3A] tracking-tight leading-[1.05] max-w-4xl">
-                        Executive Leadership Team
+                        Executive Management Council
                     </h1>
-                    <p className="text-base md:text-lg text-slate-500 font-medium max-w-2xl mt-8 leading-relaxed">
-                        Practitioners of standing — law, finance, communications, engineering, education, and research — directing every dimension of Ashford &amp; Gray Fusion Academy.
-                    </p>
                 </div>
             </header>
 
-            {/* Founder feature row */}
-            <section className="container px-6 lg:px-12 py-20 md:py-28">
-                <div className="grid lg:grid-cols-[440px_1fr] gap-14 md:gap-20 items-start">
-                    <div className="relative w-full max-w-md mx-auto lg:mx-0">
-                        <div className="relative aspect-[3/4] overflow-hidden bg-slate-100">
-                            <Image
-                                src={founder.photo}
-                                alt={founder.name}
-                                fill
-                                sizes="(max-width: 1024px) 100vw, 440px"
-                                className="object-cover object-top"
-                                priority
-                            />
-                        </div>
-                        <div className="absolute -bottom-4 left-4 right-4 h-1 bg-[#C8A96A]" />
-                    </div>
-
-                    <div className="space-y-6 lg:pt-4">
-                        <div className="space-y-2">
-                            <p className="text-[10px] font-black text-[#C8A96A] uppercase tracking-[0.4em]">{founder.title}</p>
-                            <h2 className="text-4xl md:text-5xl font-serif text-[#0B1F3A] leading-[1.1]">{founder.name}</h2>
-                            {founder.postNominals && (
-                                <p className="text-sm text-slate-500 italic font-semibold">{founder.postNominals}</p>
-                            )}
-                        </div>
-                        <p className="text-base md:text-lg text-slate-600 leading-relaxed font-medium">
-                            {founder.bio[0]}
-                        </p>
-                        <ProfileDialog member={founder} variant="primary" />
-                    </div>
+            {/* Introduction & Vision */}
+            <section className="container px-6 lg:px-12 py-20 md:py-28 max-w-4xl mx-auto">
+                <div className="space-y-8 text-base md:text-lg text-slate-700 leading-relaxed font-medium">
+                    <h2 className="text-2xl font-serif text-[#0B1F3A] uppercase tracking-wider mb-4">THE EXECUTIVE MANAGEMENT COUNCIL</h2>
+                    <p>
+                        The Executive Management Council (EMC) of Ashford &amp; Gray Fusion Academy represents the institution’s strategic leadership and operational governance structure, bringing together professionals from diverse fields including hospitality, business innovation, communications, finance, academic development, administration, and institutional partnerships.
+                    </p>
+                    <p>
+                        The Council exists to provide visionary direction, academic oversight, operational structure, and sustainable institutional growth in alignment with the Academy’s commitment to excellence, discipline, leadership, and global relevance.
+                    </p>
+                    <p>
+                        Comprised of individuals with professional experience and strategic competence across multiple sectors, the Executive Management Council functions as the driving force behind the Academy’s mission to develop globally relevant professionals equipped with practical knowledge, executive discipline, leadership capacity, and innovative thinking.
+                    </p>
+                    <p>
+                        The Council is committed to building an institution that reflects:
+                    </p>
+                    <ul className="list-disc pl-6 space-y-2 text-slate-700">
+                        <li>Academic credibility,</li>
+                        <li>Operational professionalism,</li>
+                        <li>Institutional integrity,</li>
+                        <li>Executive functionality,</li>
+                        <li>And industry relevance.</li>
+                    </ul>
+                    <p>
+                        As a fully online institution, Ashford &amp; Gray Fusion Academy recognizes the importance of structured leadership, collaborative governance, and continuous innovation in delivering impactful learning experiences across hospitality, business, leadership, protocol management, entrepreneurship, and professional development.
+                    </p>
+                    <p>
+                        Guided by the Academy’s philosophy of “The Silent Standard,” the Executive Management Council remains committed to fostering a culture of:
+                    </p>
+                    <ul className="list-disc pl-6 space-y-2 text-slate-700">
+                        <li>excellence without noise,</li>
+                        <li>structure without confusion,</li>
+                        <li>leadership with responsibility,</li>
+                        <li>and professionalism with purpose.</li>
+                    </ul>
+                    <p>
+                        Together, the Council continues to drive the Academy toward becoming a globally respected institution for executive and professional education.
+                    </p>
                 </div>
             </section>
 
-            {/* Directors grid */}
+            {/* Council Members List */}
             <section className="bg-[#FAF9F6] border-y border-slate-100">
-                <div className="container px-6 lg:px-12 py-20 md:py-28">
-                    <div className="flex items-end justify-between gap-8 mb-14 md:mb-20">
-                        <div className="space-y-4 max-w-xl">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-[1px] bg-[#1F7A5A]" />
-                                <span className="text-[#1F7A5A] font-black text-[10px] uppercase tracking-[0.4em]">Directing Team</span>
-                            </div>
-                            <h2 className="text-3xl md:text-4xl font-serif text-[#0B1F3A] leading-tight">
-                                The directors stewarding the Academy.
-                            </h2>
-                        </div>
+                <div className="container px-6 lg:px-12 py-20 md:py-28 max-w-4xl mx-auto">
+                    <div className="mb-14">
+                        <h2 className="text-2xl md:text-3xl font-serif text-[#0B1F3A] leading-tight uppercase tracking-wider">
+                            ASHFORD AND GRAY FUSION ACADEMY EXECUTIVE MANAGEMENT COUNCIL (EMC)
+                        </h2>
+                        <div className="w-16 h-[2px] bg-[#C8A96A] mt-6" />
                     </div>
 
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14">
-                        {team.map((member) => (
-                            <LeadershipCard key={member.slug} member={member} />
+                    <div className="space-y-12">
+                        {LEADERSHIP.map((member) => (
+                            <LeadershipRow key={member.slug} member={member} />
                         ))}
                     </div>
                 </div>
@@ -107,29 +105,28 @@ export default function ExecutiveLeadershipPage() {
     );
 }
 
-function LeadershipCard({ member }: { member: LeadershipMember }) {
+function LeadershipRow({ member }: { member: LeadershipMember }) {
     return (
-        <article className="group">
-            <div className="relative aspect-[4/5] overflow-hidden bg-slate-100 mb-6">
+        <article className="border-l-2 border-[#C8A96A] pl-6 py-2 flex items-start gap-5 sm:gap-7">
+            <div className="relative shrink-0 w-20 h-20 sm:w-24 sm:h-24 overflow-hidden rounded-full ring-1 ring-slate-200 bg-slate-100">
                 <Image
                     src={member.photo}
                     alt={member.name}
                     fill
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                    className="object-cover object-top grayscale-[0.15] group-hover:grayscale-0 transition-[filter] duration-500"
+                    sizes="96px"
+                    className="object-cover object-top"
                 />
-                <div className="absolute -bottom-px left-0 w-12 h-[3px] bg-[#C8A96A]" />
             </div>
-            <div className="space-y-3">
-                <p className="text-[10px] font-black text-[#C8A96A] uppercase tracking-[0.35em]">{member.title}</p>
-                <h3 className="text-xl md:text-2xl font-serif text-[#0B1F3A] leading-tight">{member.name}</h3>
+            <div className="min-w-0">
+                <h3 className="text-2xl font-serif text-[#0B1F3A] leading-tight">
+                    {member.name} {member.title ? `– ${member.title}` : ''}
+                </h3>
                 {member.postNominals && (
-                    <p className="text-[11px] text-slate-500 italic font-semibold">{member.postNominals}</p>
+                    <p className="text-xs text-slate-500 italic font-semibold mt-1">{member.postNominals}</p>
                 )}
-                <p className="text-sm text-slate-600 leading-relaxed font-medium line-clamp-3 pt-1">
-                    {member.bio[0]}
-                </p>
-                <ProfileDialog member={member} />
+                <div className="mt-4">
+                    <ProfileDialog member={member} />
+                </div>
             </div>
         </article>
     );

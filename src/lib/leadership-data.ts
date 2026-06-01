@@ -16,11 +16,11 @@ export const LEADERSHIP: LeadershipMember[] = [
     {
         slug: 'myne-wilfred',
         name: 'Myne Wilfred',
-        title: 'Founder & Chief Executive Officer',
+        title: 'Founder/President',
         photo: '/CEO.jpeg',
         bio: [
             'A distinguished hospitality specialist, executive leader, and strategist with over two decades of experience in hospitality, business innovation, and high-level management. Her leadership philosophy is rooted in discipline, excellence, and the relentless pursuit of global standards.',
-            'As Founder and Chief Executive Officer of Ashford & Gray Fusion Academy, Dr. Wilfred has built an institution where excellence is not aspirational — it is foundational. Under her stewardship, the Academy has become a global ecosystem where mastery, character, and refinement converge to shape the next generation of distinguished professionals.',
+            'As Founder and President of Ashford & Gray Fusion Academy, Dr. Wilfred has built an institution where excellence is not aspirational — it is foundational. Under her stewardship, the Academy has become a global ecosystem where mastery, character, and refinement converge to shape the next generation of distinguished professionals.',
             '“True luxury is not excess — it is precision, discipline, and excellence expressed effortlessly.”',
         ],
     },
@@ -75,7 +75,7 @@ export const LEADERSHIP: LeadershipMember[] = [
     {
         slug: 'tamunodiepiriye-gift-ajubo',
         name: 'Tamunodiepiriye Gift Ajubo',
-        title: 'Dean of Academics',
+        title: 'Director, Academic Affairs',
         photo: '/Tamunodiepiriye Ajubo.jpeg',
         bio: [
             'Educator · Strategic Leader · Engineer · EQ Practitioner',
@@ -101,19 +101,28 @@ export const LEADERSHIP: LeadershipMember[] = [
 
     {
         slug: 'dr-sunday-odum',
-        name: 'Dr. Sunday Odum',
+        name: 'Dr. Sunday Edum',
         title: 'Director, Academic Partnership',
         photo: '/Dr. Edum.jpeg',
         bio: [
-            'Dr. Sunday Odum is a Nigerian scholar, lecturer, researcher, administrator, theatre practitioner, and rights activist from Okana in Abua–Odual Local Government Area of Rivers State.',
+            'Dr. Sunday Edum is a Nigerian scholar, lecturer, researcher, administrator, theatre practitioner, and rights activist from Okana in Abua–Odual Local Government Area of Rivers State.',
             'He obtained his Bachelor’s and Master’s degrees in Theatre Arts from the University of Port Harcourt and later earned a PhD in Theatre and Film Studies from Nnamdi Azikiwe University between 2008 and 2017.',
-            'Dr. Odum is a lecturer in the Department of Theatre and Film Studies at the University of Port Harcourt, where he teaches courses in Directing, Acting, Theatre and Entrepreneurship, Theatre and Tourism, and Production Management. He is recognised for his dedication to teaching, mentorship, research, and academic administration.',
+            'Dr. Edum is a lecturer in the Department of Theatre and Film Studies at the University of Port Harcourt, where he teaches courses in Directing, Acting, Theatre and Entrepreneurship, Theatre and Tourism, and Production Management. He is recognised for his dedication to teaching, mentorship, research, and academic administration.',
             'His scholarly engagements include writing, presenting, and publishing academic papers and reviews at conferences, workshops, and in journals and book chapters. He has over 36 local publications and 13 international journal publications to his credit.',
             'Between 2021 and 2025, he served as Associate Dean, Student Affairs at the University of Port Harcourt, contributing immensely to student welfare and institutional administration. He is currently on sabbatical leave at the Federal University of Environment and Technology, where he serves as the pioneer Dean of Student Affairs.',
             'Professionally, he serves as Assistant Secretary and Public Relations Officer of the Society of Nigerian Theatre Artists (SONTA) and is also a member of the National Association of Nigerian Theatre Arts Practitioners (NANTAP). In addition, he is a member of the Academic Staff Union of Universities (ASUU).',
-            'Beyond academia, Dr. Odum is a talented drummer, an active footballer, and a dedicated rights activist who is passionate about justice, equity, and the advancement of society.',
+            'Beyond academia, Dr. Edum is a talented drummer, an active footballer, and a dedicated rights activist who is passionate about justice, equity, and the advancement of society.',
         ],
     },
+    {
+        slug: 'iminabo-vivian-yellowe-sekibo',
+        name: 'Iminabo Vivian Yellowe Sekibo',
+        title: 'Academic Advisor',
+        photo: '/Iminabo Vivian Sekibo Yellowe.jpeg',
+        bio: [
+            'Iminabo Vivian Yellowe Sekibo is an Academic Advisor at Ashford & Gray Fusion Academy, committed to fostering academic excellence and supporting students in achieving their professional goals.'
+        ]
+    }
 ];
 
 export function getLeader(slug: string): LeadershipMember | undefined {
