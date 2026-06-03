@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollAnimation } from "@/components/ui/scroll-animation";
 import { BookOpen, ShoppingBag, ExternalLink, Tablet, Bookmark } from "lucide-react";
+import { ExpandableBlurb } from "./expandable-blurb";
 
 export const metadata = {
     title: "Academic Press — Ashford & Gray Fusion Academy",
@@ -22,7 +23,7 @@ type Book = {
     title: string;
     subtitle: string;
     author: string;
-    year: string;
+    year?: string;
     isbn?: string;
     publisher?: string;
     blurb: string;
@@ -60,6 +61,61 @@ const BOOKS: Book[] = [
             {
                 label: "Kindle Edition",
                 href: "https://www.amazon.com/Beyond-Service-Hospitality-Management-Sustainability-ebook/dp/B0H2JZC9NV",
+                icon: Tablet,
+                note: "eBook",
+            },
+        ],
+    },
+    {
+        id: "beyond-labour",
+        title: "Beyond Labour",
+        subtitle: "Redefining Domestic Service as a Professional System",
+        author: "Myne Wilfred",
+        year: "2026",
+        isbn: "978-9786287126",
+        publisher: "Ashford & Gray Academic Press",
+        blurb:
+            "Beyond Labour is not just a book—it is a necessary correction.\n\n" +
+            "Domestic service has long operated in silence. Behind closed doors, within private homes, across estates, offices, and institutions, a system has continued to function without structure, without standardization, and too often, without dignity.\n\n" +
+            "Workers carry responsibility without recognition. Employers carry risk without systems. Trust is expected, yet rarely managed. Performance is demanded, yet rarely developed.\n\n" +
+            "This book changes that. In Beyond Labour, Myne Wilfred delivers a powerful, experience-driven framework that redefines domestic service as a professional system—not informal labour.\n\n" +
+            "Drawing from over two decades of expertise in hospitality, private service, and executive management, this book exposes the realities within domestic service while offering a clear, structured path forward.\n\n" +
+            "Inside this book, you will discover:\n" +
+            "• Why domestic service remains one of the most misunderstood yet critical systems in modern life\n" +
+            "• The hidden risks of unstructured household management\n" +
+            "• The realities of abuse, underpayment, and performance gaps\n" +
+            "• The employer’s vulnerability in high-trust environments\n" +
+            "• The mindset shift required for both workers and employers\n" +
+            "• The importance of documentation, training, and accountability\n" +
+            "• A complete system for structuring roles, welfare, and performance\n" +
+            "• The MW Framework—a practical model for transforming domestic service into a professional discipline\n\n" +
+            "Who this book is for:\n" +
+            "• Employers and household heads\n" +
+            "• Estate and facility managers\n" +
+            "• Domestic staff and service professionals\n" +
+            "• Hospitality leaders and practitioners\n" +
+            "• Recruitment agencies\n" +
+            "• Training institutions\n" +
+            "• Policy and labour advocates\n\n" +
+            "This book is a call to action. A call to:\n" +
+            "• Move from assumption to structure\n" +
+            "• Replace silence with clarity\n" +
+            "• Build systems that protect both employer and worker\n" +
+            "• Redefine dignity in service\n" +
+            "• Create a future where domestic service is respected, trained, and professionally managed\n\n" +
+            "Because service should never mean invisibility. And labour should never exist without dignity.",
+        coverImage: "/books/secondbook.jpg",
+        backCoverImage: "/books/back%20of%20beyond%20the%20labour.jpg",
+        retailers: [
+            {
+                label: "Paperback on Amazon",
+                href: "https://www.amazon.com/dp/9786287126",
+                icon: BookOpen,
+                note: "Paperback",
+            },
+            {
+                label: "Kindle Edition",
+                href: "https://www.amazon.com/dp/B0H3ML3GZ1",
                 icon: Tablet,
                 note: "eBook",
             },
@@ -141,7 +197,9 @@ export default function PressPage() {
                                 <div className="space-y-8">
                                     <div className="flex flex-wrap items-center gap-3">
                                         <Badge className="bg-[#0B1F3A] text-white border-none font-black text-[10px] uppercase tracking-[0.3em] px-3 py-1.5">Now Available</Badge>
-                                        <Badge className="bg-[#C8A96A]/10 text-[#0B1F3A] border-none font-black text-[10px] uppercase tracking-[0.3em] px-3 py-1.5">{book.year}</Badge>
+                                        {book.year && (
+                                            <Badge className="bg-[#C8A96A]/10 text-[#0B1F3A] border-none font-black text-[10px] uppercase tracking-[0.3em] px-3 py-1.5">{book.year}</Badge>
+                                        )}
                                         {book.publisher && (
                                             <Badge className="bg-slate-100 text-slate-700 border-none font-black text-[10px] uppercase tracking-[0.3em] px-3 py-1.5">{book.publisher}</Badge>
                                         )}
@@ -161,9 +219,10 @@ export default function PressPage() {
                                         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#0B1F3A]">By {book.author}</p>
                                     </div>
 
-                                    <p className="text-base md:text-lg text-slate-600 leading-relaxed font-medium whitespace-pre-line">
-                                        {book.blurb}
-                                    </p>
+                                    <ExpandableBlurb
+                                        text={book.blurb}
+                                        className="text-base md:text-lg text-slate-600 leading-relaxed font-medium whitespace-pre-line"
+                                    />
 
                                     {book.isbn && (
                                         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">ISBN {book.isbn}</p>

@@ -49,7 +49,18 @@
       "Read(//tmp/**)",
       "Bash(curl -s -o /dev/null -w \"%{http_code} %{content_type}\\\\n\" \"http://localhost:9002/COURSE%20IMAGES/Events%20and%20Protocol/single-frame-depicting-elite-tier-events-and-proto%20\\(1\\).jpeg\")",
       "Bash(curl -s -o /dev/null -w \"%{http_code} %{content_type}\\\\n\" \"http://localhost:9002/COURSE%20IMAGES/Events%20and%20Protocol/event%20and%20protocol.png\")",
-      "Bash(curl -s -o /dev/null -w \"%{http_code} %{content_type}\\\\n\" \"http://localhost:9002/COURSE%20IMAGES/Events%20and%20Protocol/eventandprotocol.png\")"
+      "Bash(curl -s -o /dev/null -w \"%{http_code} %{content_type}\\\\n\" \"http://localhost:9002/COURSE%20IMAGES/Events%20and%20Protocol/eventandprotocol.png\")",
+      "Bash(curl -s -o /dev/null -w \"secondbook.jpg -> %{http_code} %{content_type}\\\\n\" \"http://localhost:9002/books/secondbook.jpg\")",
+      "Bash(curl -s -o /dev/null -w '__TRACKED_VAR__ -> %{http_code} %{content_type}\\\\n' http://localhost:9002/__TRACKED_VAR__)",
+      "Bash(curl -s -o /dev/null -w \"/press -> HTTP %{http_code}\\\\n\" http://localhost:9002/press)",
+      "Bash(curl -s \"http://localhost:9002/press\")",
+      "Bash(curl -s \"http://localhost:9002/press\" -o /tmp/press.html -w \"HTTP %{http_code}\\\\n\")",
+      "Bash(curl -s \"http://localhost:9002/press\" -o /tmp/press2.html -w \"HTTP %{http_code}\\\\n\")",
+      "Bash(curl -s \"http://localhost:9002/press\" -o /tmp/press3.html -w \"HTTP %{http_code}\\\\n\")",
+      "Bash(curl -s \"http://localhost:9002/press?cb=$\\(date +%s\\)\")",
+      "Bash(curl -s \"http://localhost:9002/press?cb2=1\" -o /tmp/p.html -w \"HTTP %{http_code}\\\\n\")",
+      "Bash(curl -s \"http://localhost:9002/press\" -o /tmp/q.html)",
+      "Bash(python -c ' *)"
     ]
   }
 }

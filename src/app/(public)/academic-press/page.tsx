@@ -22,7 +22,7 @@ interface Publication {
   subtitle: string;
   author: string;
   authorTitle: string;
-  year: string;
+  year?: string;
   isbn?: string;
   coverImage: string;
   description: string;
@@ -59,6 +59,61 @@ const PUBLICATIONS: Publication[] = [
       {
         platform: "Amazon Kindle",
         url: "https://www.amazon.com/s?k=Beyond+Service+Myne+Wilfred+Kindle",
+        label: "Kindle eBook — Amazon",
+        icon: "tablet",
+      },
+    ],
+  },
+  {
+    id: "beyond-labour",
+    title: "Beyond Labour",
+    subtitle: "Redefining Domestic Service as a Professional System",
+    author: "Myne Wilfred",
+    authorTitle: "Founder/President, Ashford & Gray Academy",
+    year: "2026",
+    isbn: "978-9786287126",
+    coverImage: "/books/secondbook.jpg",
+    featured: true,
+    description:
+      "Beyond Labour is not just a book—it is a necessary correction.\n\n" +
+      "Domestic service has long operated in silence. Behind closed doors, within private homes, across estates, offices, and institutions, a system has continued to function without structure, without standardization, and too often, without dignity.\n\n" +
+      "Workers carry responsibility without recognition. Employers carry risk without systems. Trust is expected, yet rarely managed. Performance is demanded, yet rarely developed.\n\n" +
+      "This book changes that. In Beyond Labour, Myne Wilfred delivers a powerful, experience-driven framework that redefines domestic service as a professional system—not informal labour.\n\n" +
+      "Drawing from over two decades of expertise in hospitality, private service, and executive management, this book exposes the realities within domestic service while offering a clear, structured path forward.\n\n" +
+      "Inside this book, you will discover:\n" +
+      "• Why domestic service remains one of the most misunderstood yet critical systems in modern life\n" +
+      "• The hidden risks of unstructured household management\n" +
+      "• The realities of abuse, underpayment, and performance gaps\n" +
+      "• The employer’s vulnerability in high-trust environments\n" +
+      "• The mindset shift required for both workers and employers\n" +
+      "• The importance of documentation, training, and accountability\n" +
+      "• A complete system for structuring roles, welfare, and performance\n" +
+      "• The MW Framework—a practical model for transforming domestic service into a professional discipline\n\n" +
+      "Who this book is for:\n" +
+      "• Employers and household heads\n" +
+      "• Estate and facility managers\n" +
+      "• Domestic staff and service professionals\n" +
+      "• Hospitality leaders and practitioners\n" +
+      "• Recruitment agencies\n" +
+      "• Training institutions\n" +
+      "• Policy and labour advocates\n\n" +
+      "This book is a call to action. A call to:\n" +
+      "• Move from assumption to structure\n" +
+      "• Replace silence with clarity\n" +
+      "• Build systems that protect both employer and worker\n" +
+      "• Redefine dignity in service\n" +
+      "• Create a future where domestic service is respected, trained, and professionally managed\n\n" +
+      "Because service should never mean invisibility. And labour should never exist without dignity.",
+    purchaseLinks: [
+      {
+        platform: "Amazon Paperback",
+        url: "https://www.amazon.com/dp/9786287126",
+        label: "Paperback — Amazon",
+        icon: "book",
+      },
+      {
+        platform: "Amazon Kindle",
+        url: "https://www.amazon.com/dp/B0H3ML3GZ1",
         label: "Kindle eBook — Amazon",
         icon: "tablet",
       },
@@ -135,9 +190,11 @@ function FeaturedBookCard({ book }: { book: Publication }) {
                 ISBN {book.isbn}
               </span>
             )}
-            <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest border border-[#0B1F3A]/8 px-3 py-1">
-              {book.year}
-            </span>
+            {book.year && (
+              <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest border border-[#0B1F3A]/8 px-3 py-1">
+                {book.year}
+              </span>
+            )}
           </div>
 
           {/* Title */}
@@ -160,7 +217,7 @@ function FeaturedBookCard({ book }: { book: Publication }) {
           </div>
 
           {/* Description */}
-          <p className="text-sm font-serif text-slate-500 leading-loose max-w-xl border-l-2 border-[#C8A96A]/30 pl-5">
+          <p className="text-sm font-serif text-slate-500 leading-loose max-w-xl border-l-2 border-[#C8A96A]/30 pl-5 whitespace-pre-line">
             {book.description}
           </p>
         </div>
