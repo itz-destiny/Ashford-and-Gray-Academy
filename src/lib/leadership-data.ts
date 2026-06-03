@@ -120,7 +120,10 @@ export const LEADERSHIP: LeadershipMember[] = [
         title: 'Academic Advisor',
         photo: '/Iminabo Vivian Sekibo Yellowe.jpeg',
         bio: [
-            'Iminabo Vivian Yellowe Sekibo is an Academic Advisor at Ashford & Gray Fusion Academy, committed to fostering academic excellence and supporting students in achieving their professional goals.'
+            'Iminabo Vivian Yellowe Sekibo is a seasoned administrator, human resource professional, and technology-driven strategist with a strong passion for academic excellence, leadership development, and professional mentorship.',
+            'She holds a Master of Science (M.Sc.) degree in Human Resource Management and a Postgraduate Diploma in Management Sciences from Rivers State University, alongside a Bachelor of Science (B.Sc.) degree in Computing and Information Systems from Oxford Brookes University. She also obtained both the International Diploma and Advanced International Diploma in Computing from Informatics Academy Singapore. Her educational background combines management, technology, research, and organizational development, equipping her with a multidimensional approach to academic leadership.',
+            'With professional experience spanning banking operations, administration, accounting, customer relationship management, project coordination, and data systems management, Iminabo has built a reputation for excellence, integrity, and strategic problem-solving.',
+            'Beyond her corporate experience, she possesses a deep interest in research, human capital development, mentoring, and effective organizational management. Her academic research focused on employee commitment and incentive systems, reflecting her passion for institutional growth and people development.'
         ]
     }
 ];
