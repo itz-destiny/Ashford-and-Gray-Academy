@@ -48,7 +48,8 @@
       "Bash(curl -s http://localhost:9002/courses -o /tmp/courses.html -w \"HTTP %{http_code}\\\\n\")",
       "Read(//tmp/**)",
       "Bash(curl -s -o /dev/null -w \"%{http_code} %{content_type}\\\\n\" \"http://localhost:9002/COURSE%20IMAGES/Events%20and%20Protocol/single-frame-depicting-elite-tier-events-and-proto%20\\(1\\).jpeg\")",
-      "Bash(curl -s -o /dev/null -w \"%{http_code} %{content_type}\\\\n\" \"http://localhost:9002/COURSE%20IMAGES/Events%20and%20Protocol/event%20and%20protocol.png\")"
+      "Bash(curl -s -o /dev/null -w \"%{http_code} %{content_type}\\\\n\" \"http://localhost:9002/COURSE%20IMAGES/Events%20and%20Protocol/event%20and%20protocol.png\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code} %{content_type}\\\\n\" \"http://localhost:9002/COURSE%20IMAGES/Events%20and%20Protocol/eventandprotocol.png\")"
     ]
   }
 }
