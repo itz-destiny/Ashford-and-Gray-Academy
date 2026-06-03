@@ -219,7 +219,7 @@ export const STATIC_COURSES: Course[] = [
     duration: 12,
     level: "Intermediate",
     price: 400000,
-    imageUrl: "/COURSE%20IMAGES/Events%20and%20Protocol/single-frame-depicting-elite-tier-events-and-proto%20(1).jpeg",
+    imageUrl: "/COURSE%20IMAGES/Events%20and%20Protocol/event%20and%20protocol.png",
     imageHint: "Professional events and official protocol systems.",
     description: "The Events & Protocol Management Certificate Program at Ashford and Gray Fusion Academy is a comprehensive professional training designed to equip learners with the strategic, operational, and executive-level skills required to successfully manage events, ceremonies, corporate functions, VIP engagements, and protocol operations.\n\nThis program blends modern event management practices with international protocol standards, preparing participants to confidently coordinate high-level events with precision, professionalism, discretion, and excellence. Learners will gain practical knowledge in event planning, vendor coordination, budgeting, security management, crisis communication, crowd control, official protocol, and high-profile guest relations.\n\nDesigned to meet global industry expectations, the program focuses on developing professionals capable of delivering seamless experiences within corporate, diplomatic, hospitality, entertainment, and executive environments.",
     whoFor: [
