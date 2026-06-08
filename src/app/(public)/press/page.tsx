@@ -69,7 +69,7 @@ const BOOKS: Book[] = [
     {
         id: "beyond-labour",
         title: "Beyond Labour",
-        subtitle: "Redefining Domestic Service as a Professional System",
+        subtitle: "Redefining Domestic Service through Dignity, Structure and Professionalism",
         author: "Myne Wilfred",
         year: "2026",
         isbn: "978-9786287126",

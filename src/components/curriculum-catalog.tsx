@@ -24,6 +24,7 @@ import { usePathname } from "next/navigation";
 import { STATIC_COURSES } from "@/lib/courses-data";
 import { ScrollAnimation } from "@/components/ui/scroll-animation";
 import { motion, AnimatePresence } from "framer-motion";
+import { CheckoutDialog } from "@/components/checkout-dialog";
 
 interface CurriculumCatalogProps {
   title: string;
@@ -94,7 +95,10 @@ export function CurriculumCatalog({ title, subtitle, badge, courseIds }: Curricu
 
   return (
     <div className="bg-[#FAF9F6] min-h-screen pb-32 text-[#0B1F3A]">
-      
+
+      {/* Enrolment checkout — opens when the URL carries ?dialog=<courseId> */}
+      <CheckoutDialog courses={courses} />
+
       {/* Top Gold Border */}
       <div className="h-2 bg-[#C8A96A] w-full" />
 

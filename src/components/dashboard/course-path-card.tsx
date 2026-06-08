@@ -26,15 +26,15 @@ export function CoursePathCard({
     imageUrl
 }: CoursePathCardProps) {
     return (
-        <Card className="flex flex-col md:flex-row gap-8 p-6 rounded-[3rem] border-none bg-white shadow-sm hover:shadow-xl transition-all duration-700 group overflow-hidden">
-            <div className="relative w-full md:w-56 h-56 rounded-[2.5rem] overflow-hidden flex-shrink-0">
+        <Card className="flex flex-col md:flex-row gap-8 p-6 rounded-none border border-[#0B1F3A]/10 border-t-4 border-t-[#C8A96A] bg-white shadow-md hover:shadow-xl transition-all duration-700 group overflow-hidden">
+            <div className="relative w-full md:w-56 h-56 rounded-none overflow-hidden flex-shrink-0 border border-[#0B1F3A]/10">
                 <Image
                     src={imageUrl || "/placeholder-course.jpg"}
                     alt={title || "Course image"}
                     fill
                     className="object-cover transition-transform duration-1000 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-all duration-700" />
+                <div className="absolute inset-0 bg-[#0B1F3A]/10 group-hover:bg-transparent transition-all duration-700" />
             </div>
 
             <div className="flex-1 flex flex-col justify-between py-4">
@@ -47,7 +47,7 @@ export function CoursePathCard({
                             <MoreHorizontal size={24} />
                         </button>
                     </div>
-                    <h3 className="text-2xl font-serif text-[#0B1F3A] leading-tight group-hover:text-[#1F7A5A] transition-colors duration-500">
+                    <h3 className="text-2xl font-serif text-[#0B1F3A] leading-tight group-hover:text-[#C8A96A] transition-colors duration-500">
                         {title}
                     </h3>
                     <div className="flex flex-wrap items-center gap-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">
@@ -68,14 +68,14 @@ export function CoursePathCard({
 
                 <div className="space-y-6 mt-8">
                     <div className="space-y-3">
-                        <div className="flex justify-between text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                        <div className="flex justify-between text-[10px] font-black text-[#0B1F3A]/40 uppercase tracking-widest">
                             <span>Institutional Progress</span>
                             <span className="text-[#0B1F3A]">{progress}%</span>
                         </div>
-                        <Progress value={progress} className="h-1.5 bg-slate-50 rounded-full [&>div]:bg-gradient-to-r [&>div]:from-[#1F7A5A] [&>div]:to-emerald-400" />
+                        <Progress value={progress} className="h-1.5 bg-[#0B1F3A]/5 rounded-none [&>div]:bg-[#C8A96A] [&>div]:rounded-none" />
                     </div>
                     <div className="flex justify-end">
-                        <Button className="bg-[#0B1F3A] hover:bg-[#0B1F3A]/90 text-white font-black rounded-2xl px-10 py-5 h-auto text-[10px] uppercase tracking-widest transition-all shadow-lg hover:translate-x-2 group/btn">
+                        <Button className="bg-[#0B1F3A] hover:bg-[#C8A96A] hover:text-[#0B1F3A] text-white font-black rounded-none px-10 py-5 h-auto text-[10px] uppercase tracking-widest transition-all shadow-none hover:translate-x-1 group/btn">
                             {progress === 0 ? "Authorize Commencement" : "Resume Mastery"}
                             <ArrowRight className="ml-2 w-4 h-4 opacity-0 -translate-x-2 group-hover/btn:opacity-100 group-hover/btn:translate-x-0 transition-all" />
                         </Button>

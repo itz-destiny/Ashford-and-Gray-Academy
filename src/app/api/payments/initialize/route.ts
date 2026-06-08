@@ -1,11 +1,11 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import dbConnect from '@/lib/mongodb';
-import Course from '@/models/Course';
 import Enrollment from '@/models/Enrollment';
 import Transaction from '@/models/Transaction';
 import { withAuth } from '@/lib/auth-server';
 import { initializeTransaction, PaystackError } from '@/lib/paystack';
+import { resolveCourse } from '@/lib/resolve-course';
 
 const requestSchema = z.object({
     courseId: z.string().min(1),
@@ -23,7 +23,9 @@ export const POST = withAuth(async (req: NextRequest, { auth }) => {
 
     try {
         await dbConnect();
-        const course = await Course.findById(parsed.data.courseId);
+        // Resolve from the DB or the static catalogue — catalogue courses are
+        // NOT created in the backend. No Course document is written here.
+        const course = await resolveCourse(parsed.data.courseId);
         if (!course) {
             return NextResponse.json({ error: 'Course not found' }, { status: 404 });
         }
@@ -33,8 +35,14 @@ export const POST = withAuth(async (req: NextRequest, { auth }) => {
                 { status: 400 }
             );
         }
+        if (!course.price || course.price <= 0) {
+            return NextResponse.json(
+                { error: 'This course is free — no payment required.' },
+                { status: 400 }
+            );
+        }
 
-        const existing = await Enrollment.findOne({ userId: auth.uid, courseId: course._id });
+        const existing = await Enrollment.findOne({ userId: auth.uid, courseId: course.id });
         if (existing) {
             return NextResponse.json(
                 { error: 'You are already enrolled in this course.' },
@@ -43,14 +51,14 @@ export const POST = withAuth(async (req: NextRequest, { auth }) => {
         }
 
         const amountKobo = Math.round(course.price * 100);
-        const currency = course.currency || 'NGN';
+        const currency = course.currency;
 
         // Record an intent up-front so the verify/webhook path can be idempotent.
         const pending = await Transaction.create({
             userId: auth.uid,
             userEmail: auth.email,
             userName: auth.displayName,
-            courseId: course._id,
+            courseId: course.id,
             courseName: course.title,
             amount: course.price,
             currency,
@@ -65,7 +73,7 @@ export const POST = withAuth(async (req: NextRequest, { auth }) => {
             currency,
             reference,
             metadata: {
-                courseId: course._id.toString(),
+                courseId: course.id,
                 userId: auth.uid,
                 transactionId: pending._id.toString(),
             },

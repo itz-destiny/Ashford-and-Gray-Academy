@@ -3,7 +3,6 @@ import { z } from 'zod';
 import dbConnect from '@/lib/mongodb';
 import Transaction from '@/models/Transaction';
 import Enrollment from '@/models/Enrollment';
-import Course from '@/models/Course';
 import { withAuth } from '@/lib/auth-server';
 import { PaystackError, verifyTransaction } from '@/lib/paystack';
 import { createNotification } from '@/lib/notifications';
@@ -104,8 +103,9 @@ export async function finalizeSuccessfulPayment(params: {
     // Side-effects: in-app notification + receipt email. Best-effort; failures
     // here must NOT roll back the enrollment.
     try {
-        const course = await Course.findById(courseId).select('title');
-        const courseName = course?.title || 'your course';
+        // The course title was captured on the Transaction at initialize time,
+        // so this works for static-catalogue courses that have no Course doc.
+        const courseName = tx.courseName || 'your course';
         await createNotification({
             userId: tx.userId,
             type: 'payment',

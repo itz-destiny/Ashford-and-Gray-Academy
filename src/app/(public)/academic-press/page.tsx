@@ -67,7 +67,7 @@ const PUBLICATIONS: Publication[] = [
   {
     id: "beyond-labour",
     title: "Beyond Labour",
-    subtitle: "Redefining Domestic Service as a Professional System",
+    subtitle: "Redefining Domestic Service through Dignity, Structure and Professionalism",
     author: "Myne Wilfred",
     authorTitle: "Founder/President, Ashford & Gray Academy",
     year: "2026",

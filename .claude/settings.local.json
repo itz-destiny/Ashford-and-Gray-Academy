@@ -60,7 +60,11 @@
       "Bash(curl -s \"http://localhost:9002/press?cb=$\\(date +%s\\)\")",
       "Bash(curl -s \"http://localhost:9002/press?cb2=1\" -o /tmp/p.html -w \"HTTP %{http_code}\\\\n\")",
       "Bash(curl -s \"http://localhost:9002/press\" -o /tmp/q.html)",
-      "Bash(python -c ' *)"
+      "Bash(python -c ' *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\pc\\\\Desktop\\\\project\\\\Ashford-and-Gray-Academy\" -Recurse -Filter \"*.ts\")",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(grep -iE \"ensure-course|checkout-dialog|curriculum-catalog|payments/initialize|enrollments/route|login/verify|login\\\\\\\\\\\\\\\\verify\")",
+      "Bash(grep -iE \"resolve-course|payments/initialize|payments\\\\\\\\\\\\\\\\initialize|enrollments|payments/verify|payments\\\\\\\\\\\\\\\\verify|ensure-course\")"
     ]
   }
 }

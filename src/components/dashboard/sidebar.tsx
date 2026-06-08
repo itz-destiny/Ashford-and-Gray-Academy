@@ -94,7 +94,7 @@ export function Sidebar({ className }: { className?: string }) {
 
             {/* Sidebar Footer / User Banner */}
             <div className="p-6 mt-auto">
-                <div className="bg-gradient-to-br from-white/[0.04] to-white/[0.01] border border-white/10 rounded-none p-6 relative overflow-hidden group">
+                <div className="bg-white/[0.03] border border-white/10 border-t-2 border-t-[#C8A96A] rounded-none p-6 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-3 opacity-[0.03] group-hover:opacity-[0.08] transition-all duration-500 group-hover:rotate-12">
                         <Sparkles className="w-12 h-12 text-white" />
                     </div>
