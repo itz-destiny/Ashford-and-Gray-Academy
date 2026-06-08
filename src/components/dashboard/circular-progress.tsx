@@ -20,7 +20,7 @@ export function CircularProgress({ value, size = 160, strokeWidth = 12, label = 
             <svg className="transform -rotate-90" width={size} height={size}>
                 {/* Background Circle */}
                 <circle
-                    className="text-slate-100"
+                    className="text-[#0B1F3A]/10"
                     strokeWidth={strokeWidth}
                     stroke="currentColor"
                     fill="transparent"
@@ -30,11 +30,11 @@ export function CircularProgress({ value, size = 160, strokeWidth = 12, label = 
                 />
                 {/* Progress Circle */}
                 <circle
-                    className="text-indigo-600 transition-all duration-1000 ease-out"
+                    className="text-[#C8A96A] transition-all duration-1000 ease-out"
                     strokeWidth={strokeWidth}
                     strokeDasharray={circumference}
                     strokeDashoffset={offset}
-                    strokeLinecap="round"
+                    strokeLinecap="butt"
                     stroke="currentColor"
                     fill="transparent"
                     r={radius}
@@ -43,8 +43,8 @@ export function CircularProgress({ value, size = 160, strokeWidth = 12, label = 
                 />
             </svg>
             <div className="absolute flex flex-col items-center justify-center text-center">
-                <span className="text-3xl font-bold text-slate-900">{value}%</span>
-                {label && <span className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">{label}</span>}
+                <span className="text-4xl font-serif text-[#0B1F3A]">{value}%</span>
+                {label && <span className="text-[9px] font-black tracking-[0.3em] text-[#0B1F3A]/40 uppercase mt-1">{label}</span>}
             </div>
         </div>
     );

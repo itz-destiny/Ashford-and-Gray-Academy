@@ -2,9 +2,9 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import dbConnect from '@/lib/mongodb';
 import Enrollment from '@/models/Enrollment';
-import Course from '@/models/Course';
 import { withAuth, type AuthContext } from '@/lib/auth-server';
 import { sendEmail, emailTemplates } from '@/lib/email';
+import { resolveCourse, resolveCourses } from '@/lib/resolve-course';
 
 const ELEVATED_ROLES = ['admin', 'instructor', 'registrar', 'course_registrar'] as const;
 
@@ -28,17 +28,26 @@ export const GET = withAuth(async (req: NextRequest, { auth }) => {
 
     try {
         await dbConnect();
-        const enrollments = await Enrollment.find({ userId: targetUserId })
-            .populate('courseId')
-            .exec();
+        // Don't populate — a catalogue course has no Course document, and
+        // populate would null out the id. Resolve each course from the DB or
+        // the static catalogue instead.
+        const enrollments = await Enrollment.find({ userId: targetUserId }).lean();
+        const courseMap = await resolveCourses(
+            enrollments.map(enr => enr.courseId?.toString()).filter(Boolean) as string[]
+        );
 
-        const formatted = enrollments.map(enr => ({
-            id: enr._id,
-            userId: enr.userId,
-            courseId: enr.courseId?._id,
-            enrolledAt: enr.enrolledAt,
-            course: enr.courseId,
-        }));
+        const formatted = enrollments.map(enr => {
+            const cid = enr.courseId?.toString();
+            const course = (cid && courseMap.get(cid)) || null;
+            return {
+                id: enr._id,
+                userId: enr.userId,
+                courseId: cid,
+                enrolledAt: enr.enrolledAt,
+                progress: enr.progress ?? 0,
+                course: course ? { ...course, progress: enr.progress ?? course.progress ?? 0 } : null,
+            };
+        });
         return NextResponse.json(formatted);
     } catch (error: any) {
         console.error('GET /api/enrollments failed:', error);
@@ -66,6 +75,13 @@ export const POST = withAuth(async (req: NextRequest, { auth }) => {
         const userId = auth.uid;
         const { courseId } = parsed.data;
 
+        // Validate the course exists (DB or static catalogue) without creating
+        // a backend Course document.
+        const course = await resolveCourse(courseId);
+        if (!course) {
+            return NextResponse.json({ error: 'Course not found' }, { status: 404 });
+        }
+
         const existing = await Enrollment.findOne({ userId, courseId });
         if (existing) {
             return NextResponse.json({ message: 'Already enrolled', enrollment: existing });
@@ -76,8 +92,7 @@ export const POST = withAuth(async (req: NextRequest, { auth }) => {
         // Fire-and-forget enrollment confirmation email. Failures are logged
         // inside sendEmail and never block the API response.
         try {
-            const course = await Course.findById(courseId).select('title').lean<{ title?: string } | null>();
-            if (course?.title && auth.email) {
+            if (course.title && auth.email) {
                 const { getAppUrl } = await import('@/lib/app-url');
                 const appUrl = getAppUrl();
                 const tpl = emailTemplates.enrollment({

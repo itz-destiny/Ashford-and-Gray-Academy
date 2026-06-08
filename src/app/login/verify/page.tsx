@@ -18,6 +18,11 @@ function VerifyInner() {
     const { toast } = useToast();
 
     const purpose: Purpose = (params.get("purpose") as Purpose) || "signup";
+    // Where to send the user after verifying — carried from the "Apply" handoff
+    // (e.g. /courses?dialog=<id>) so they resume checkout instead of dead-ending
+    // on the dashboard. Only honour same-origin relative paths.
+    const redirectParam = params.get("redirectUrl");
+    const safeRedirect = redirectParam && redirectParam.startsWith("/") ? redirectParam : null;
     const [digits, setDigits] = useState<string[]>(["", "", "", "", "", ""]);
     const inputs = useRef<Array<HTMLInputElement | null>>([]);
     const [submitting, setSubmitting] = useState(false);
@@ -114,7 +119,7 @@ function VerifyInner() {
                 return;
             }
             toast({ title: isStaff2fa ? "Signed in" : "Email verified", description: isStaff2fa ? "Welcome back." : "Your account is ready." });
-            router.push(body.redirect || "/dashboard");
+            router.push(safeRedirect || body.redirect || "/dashboard");
         } catch (err: any) {
             toast({ variant: "destructive", title: "Verification failed", description: err?.message || "Network error." });
         } finally {
