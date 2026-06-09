@@ -65,7 +65,10 @@
       "Bash(Select-Object -ExpandProperty FullName)",
       "Bash(grep -iE \"ensure-course|checkout-dialog|curriculum-catalog|payments/initialize|enrollments/route|login/verify|login\\\\\\\\\\\\\\\\verify\")",
       "Bash(grep -iE \"resolve-course|payments/initialize|payments\\\\\\\\\\\\\\\\initialize|enrollments|payments/verify|payments\\\\\\\\\\\\\\\\verify|ensure-course\")",
-      "Bash(curl -s -o /tmp/nl2.txt -w \"HTTP %{http_code}\\\\n\" -X POST http://localhost:9002/api/newsletter -H \"Content-Type: application/json\" -d '{\"email\":\"michealace85@gmail.com\",\"source\":\"landing\"}')"
+      "Bash(curl -s -o /tmp/nl2.txt -w \"HTTP %{http_code}\\\\n\" -X POST http://localhost:9002/api/newsletter -H \"Content-Type: application/json\" -d '{\"email\":\"michealace85@gmail.com\",\"source\":\"landing\"}')",
+      "Bash(grep -iE \"users/route|users\\\\\\\\\\\\\\\\route|use-user|RoleGuard|signup-form\")",
+      "Bash(git check-ignore *)",
+      "Bash(git ls-files *)"
     ]
   }
 }

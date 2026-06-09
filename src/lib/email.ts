@@ -209,32 +209,6 @@ export const emailTemplates = {
         `
     }),
 
-    signupOtp: (data: { recipientName: string; code: string; expiresInMinutes: number }) => ({
-        subject: `Your Ashford & Gray verification code: ${data.code}`,
-        html: brandedShell({
-            preheader: `Your verification code is ${data.code}`,
-            title: 'Verify your email',
-            body: `
-                <p style="font-size:16px;line-height:1.6;color:#334155;margin:0 0 24px">Welcome to Ashford &amp; Gray Fusion Academy, ${escapeHtml(data.recipientName)}. Enter the code below to verify your email and unlock your dashboard.</p>
-                ${otpBlock(data.code)}
-                <p style="font-size:14px;color:#64748b;margin:24px 0 0">This code is valid for ${data.expiresInMinutes} minutes. If you didn't create an account with us, you can safely ignore this message.</p>
-            `,
-        }),
-    }),
-
-    loginOtp: (data: { recipientName: string; code: string; expiresInMinutes: number }) => ({
-        subject: `Ashford & Gray security code: ${data.code}`,
-        html: brandedShell({
-            preheader: `Your sign-in code is ${data.code}`,
-            title: 'Confirm your sign-in',
-            body: `
-                <p style="font-size:16px;line-height:1.6;color:#334155;margin:0 0 24px">Hello ${escapeHtml(data.recipientName)} — a sign-in attempt to your privileged account requires verification. Enter this code in the prompt to continue.</p>
-                ${otpBlock(data.code)}
-                <p style="font-size:14px;color:#64748b;margin:24px 0 0">This code expires in ${data.expiresInMinutes} minutes. If you didn't attempt to sign in, change your password immediately and contact academy administration.</p>
-            `,
-        }),
-    }),
-
     welcome: (data: { recipientName: string; portalUrl: string; coursesUrl: string }) => ({
         subject: 'Welcome to Ashford & Gray Fusion Academy',
         html: brandedShell({
@@ -324,15 +298,6 @@ function escapeHtml(input: string): string {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
-}
-
-function otpBlock(code: string): string {
-    return `
-        <div style="background:#0B1F3A;border-radius:24px;padding:32px 24px;text-align:center;margin:8px 0 24px">
-            <p style="margin:0 0 12px;color:#C8A96A;font-weight:900;letter-spacing:0.3em;text-transform:uppercase;font-size:10px">Verification Code</p>
-            <p style="margin:0;color:#ffffff;font-family:'SF Mono','Menlo','Consolas',monospace;font-weight:700;letter-spacing:0.45em;font-size:36px">${escapeHtml(code)}</p>
-        </div>
-    `;
 }
 
 function brandedShell(args: { preheader: string; title: string; body: string }): string {
