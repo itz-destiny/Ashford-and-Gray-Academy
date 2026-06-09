@@ -42,8 +42,6 @@ export function RoleGuard({ allowed, children }: RoleGuardProps) {
     const userRole = user?.role as keyof typeof PORTAL_BY_ROLE | undefined;
     const isAuthorized = !!userRole && allowed.includes(userRole);
 
-    const emailVerified = (user as any)?.emailVerified === true;
-
     useEffect(() => {
         if (loading) return;
         if (!user) {
@@ -56,16 +54,12 @@ export function RoleGuard({ allowed, children }: RoleGuardProps) {
             router.replace("/login/complete-profile");
             return;
         }
-        if (!emailVerified) {
-            router.replace("/login/verify?purpose=signup");
-            return;
-        }
         if (!isAuthorized) {
             router.replace(PORTAL_BY_ROLE[userRole] ?? "/dashboard");
         }
-    }, [loading, user, userRole, isAuthorized, emailVerified, pathname, router]);
+    }, [loading, user, userRole, isAuthorized, pathname, router]);
 
-    if (loading || !user || !isAuthorized || !emailVerified) {
+    if (loading || !user || !isAuthorized) {
         return <RoleGuardSplash />;
     }
 

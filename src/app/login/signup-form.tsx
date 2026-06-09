@@ -136,13 +136,8 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
             });
             if (!profileRes.ok) throw new Error("Profile sync failed");
 
-            // Auto-trigger the verification email
-            fetch("/api/auth/otp/request", {
-                method: "POST",
-                headers: { "Content-Type": "application/json", Authorization: `Bearer ${idToken}` },
-                body: JSON.stringify({ purpose: "signup" }),
-            }).catch(() => { /* surfaced on verify page */ });
-
+            // No email verification step — the account is ready immediately and
+            // a welcome email is dispatched server-side by /api/users.
             setSubmittedEmail(form.email);
         } catch (err) {
             console.error("Error syncing applicant profile:", err);
@@ -178,17 +173,17 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
                     <div className="border border-slate-200 p-5 flex items-start gap-3 bg-slate-50">
                         <Mail className="w-5 h-5 text-[#0B1F3A] shrink-0 mt-0.5" />
                         <div className="text-sm">
-                            <p className="font-bold text-[#0B1F3A]">A verification email is on its way</p>
+                            <p className="font-bold text-[#0B1F3A]">A welcome email is on its way</p>
                             <p className="text-slate-500 mt-1 leading-relaxed">
-                                We have sent a 6-digit verification code to <span className="font-bold text-[#0B1F3A]">{submittedEmail}</span>. You can verify your address now or later from your inbox.
+                                We've sent a welcome note to <span className="font-bold text-[#0B1F3A]">{submittedEmail}</span>. Your account is ready — you can continue straight to your dashboard.
                             </p>
                         </div>
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-3 pt-2">
                         <Button asChild className="flex-1 h-12 rounded-none bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black text-[10px] uppercase tracking-[0.3em] shadow-none border-none transition-colors">
-                            <Link href={`/login/verify?purpose=signup${searchParams.get('redirectUrl') ? `&redirectUrl=${encodeURIComponent(searchParams.get('redirectUrl') as string)}` : ''}`}>
-                                Verify Email Now <ArrowRight className="ml-3 h-4 w-4" />
+                            <Link href={searchParams.get('redirectUrl') || '/dashboard'}>
+                                Continue to Dashboard <ArrowRight className="ml-3 h-4 w-4" />
                             </Link>
                         </Button>
                         <Button asChild variant="outline" className="flex-1 h-12 rounded-none border border-slate-200 hover:border-[#0B1F3A] hover:bg-white text-[#0B1F3A] font-black text-[10px] uppercase tracking-[0.3em] shadow-none">

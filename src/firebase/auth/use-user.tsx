@@ -62,7 +62,6 @@ export const useUser = () => {
 
           // Redirections logic
           const isLoginPage = pathname === '/login';
-          const STAFF_2FA_ROLES = ['admin', 'registrar', 'course_registrar', 'finance'];
 
           if (isLoginPage) {
             if (!appUser.role) {
@@ -75,11 +74,9 @@ export const useUser = () => {
                     photoURL: firebaseUser.photoURL || ''
                 });
                 router.push(`/login/complete-profile?${params.toString()}`);
-            } else if (!(appUser as any).emailVerified) {
-                router.push('/login/verify?purpose=signup');
-            } else if (STAFF_2FA_ROLES.includes(appUser.role)) {
-                router.push('/login/verify?purpose=login_2fa');
             } else {
+                // No email-verification or 2FA gate — go straight to the
+                // role dashboard after a successful sign-in.
                 router.push(getDashboardByRole(appUser.role));
             }
           }

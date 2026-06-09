@@ -231,10 +231,10 @@ export async function POST(req: NextRequest): Promise<Response> {
             applicationStatement: body.applicationStatement ?? existing?.applicationStatement,
         };
 
-        // Admin-provisioned accounts skip the email-OTP step — the admin has
-        // already vetted them. Public self-signup keeps emailVerified=false
-        // (its default) so the user has to enter the 6-digit code.
-        if (callerIsAdmin && !existing) {
+        // Email verification is not required to use the academy (frictionless
+        // signup for Phase-1 marketing). Every newly created profile is marked
+        // verified; a welcome email is sent after the upsert below.
+        if (!existing) {
             updateData.emailVerified = true;
             updateData.emailVerifiedAt = new Date();
         }
@@ -283,6 +283,30 @@ export async function POST(req: NextRequest): Promise<Response> {
             { $set: updateData },
             { new: true, upsert: true, setDefaultsOnInsert: true }
         );
+
+        // Welcome a brand-new self-service registration. Best-effort — never
+        // blocks the response.
+        if (!existing && user?.email) {
+            try {
+                const { getAppUrl } = await import('@/lib/app-url');
+                const { sendEmail, emailTemplates } = await import('@/lib/email');
+                const appUrl = getAppUrl();
+                const portalByRole: Record<string, string> = {
+                    admin: '/admin', registrar: '/registrar', course_registrar: '/course-registrar',
+                    finance: '/finance', instructor: '/instructor', student: '/dashboard',
+                };
+                const portal = portalByRole[user.role] || '/dashboard';
+                const tpl = emailTemplates.welcome({
+                    recipientName: user.displayName || 'there',
+                    portalUrl: `${appUrl}${portal}`,
+                    coursesUrl: `${appUrl}/courses`,
+                });
+                void sendEmail({ to: user.email, subject: tpl.subject, html: tpl.html });
+            } catch (mailErr) {
+                console.warn('welcome email skipped:', mailErr);
+            }
+        }
+
         return NextResponse.json(user);
     } catch (error: any) {
         console.error('POST /api/users failed:', error);
