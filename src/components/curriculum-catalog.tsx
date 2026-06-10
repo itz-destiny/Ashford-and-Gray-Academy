@@ -31,9 +31,10 @@ interface CurriculumCatalogProps {
   subtitle: string;
   badge: string;
   courseIds: string[];
+  acceleration?: string;
 }
 
-export function CurriculumCatalog({ title, subtitle, badge, courseIds }: CurriculumCatalogProps) {
+export function CurriculumCatalog({ title, subtitle, badge, courseIds, acceleration = "12 - 24 Weeks" }: CurriculumCatalogProps) {
   const pathname = usePathname();
   const [courses, setCourses] = useState<Course[]>(STATIC_COURSES);
   const [searchQuery, setSearchQuery] = useState("");
@@ -150,7 +151,7 @@ export function CurriculumCatalog({ title, subtitle, badge, courseIds }: Curricu
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-left">
               <div>
                 <p className="text-[10px] font-black text-[#C8A96A] uppercase tracking-[0.2em] mb-1">ACCELERATION</p>
-                <p className="text-base font-bold text-white">12 - 24 Weeks</p>
+                <p className="text-base font-bold text-white">{acceleration}</p>
                 <p className="text-[9px] text-white/40 mt-0.5">Executive Cadence</p>
               </div>
               <div>

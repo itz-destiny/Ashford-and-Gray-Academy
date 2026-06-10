@@ -15,6 +15,7 @@ export default function CertificationsPage() {
       subtitle="Internationally recognised professional credentials in hospitality, domestic management, events, executive assistance, and global relations."
       badge="Professional Certifications"
       courseIds={certificationCourseIds}
+      acceleration="12 Weeks"
     />
   );
 }

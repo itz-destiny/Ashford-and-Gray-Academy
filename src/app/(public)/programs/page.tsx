@@ -14,6 +14,7 @@ export default function ProgramsPage() {
       subtitle="Comprehensive professional diploma programs in hospitality, business innovation, professional development, and events management."
       badge="Diploma Programs"
       courseIds={diplomaCourseIds}
+      acceleration="24 Weeks"
     />
   );
 }

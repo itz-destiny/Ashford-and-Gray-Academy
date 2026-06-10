@@ -11,6 +11,7 @@ export default function ExecutiveEducationPage() {
       subtitle="Our signature executive-level programme designed to cultivate disciplined leaders, operational strategists, and institutional authorities."
       badge="Executive Master Class"
       courseIds={executiveCourseIds}
+      acceleration="4 Weeks"
     />
   );
 }
