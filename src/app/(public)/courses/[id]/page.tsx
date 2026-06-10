@@ -152,7 +152,6 @@ export default async function CourseDetailPage({ params }: RouteProps) {
                     <a href="#experience" className="py-6 border-b-2 border-transparent hover:border-[#1F7A5A] hover:text-[#1F7A5A] transition-colors">Academic Experience</a>
                     <a href="#curriculum" className="py-6 border-b-2 border-transparent hover:border-[#1F7A5A] hover:text-[#1F7A5A] transition-colors">Curriculum Modules</a>
                     <a href="#admissions" className="py-6 border-b-2 border-transparent hover:border-[#1F7A5A] hover:text-[#1F7A5A] transition-colors">Tuition &amp; Aid</a>
-                    <a href="#faculty" className="py-6 border-b-2 border-transparent hover:border-[#1F7A5A] hover:text-[#1F7A5A] transition-colors">Faculty Lead</a>
                 </div>
             </div>
 
@@ -424,27 +423,6 @@ export default async function CourseDetailPage({ params }: RouteProps) {
                                         ))}
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </section>
-                )}
-
-                {/* Faculty Lead — minimal attribution, uses course.instructor */}
-                {course.instructor?.name && (
-                    <section id="faculty" className="scroll-mt-36 pt-16 border-t border-slate-200">
-                        <div className="max-w-3xl mb-12 space-y-3">
-                            <div className="inline-flex items-center gap-3">
-                                <span className="text-[#C8A96A] font-black text-xs uppercase tracking-[0.3em]">Faculty Lead</span>
-                            </div>
-                            <h2 className="text-3xl md:text-4xl font-serif font-bold text-[#0B1F3A] tracking-tight">
-                                Programme led by
-                            </h2>
-                        </div>
-
-                        <div className="bg-white border border-slate-200 p-8 md:p-12 text-center sm:text-left max-w-3xl">
-                            <div className="space-y-2">
-                                <h3 className="text-2xl md:text-3xl font-serif font-bold text-[#0B1F3A] leading-tight">{course.instructor.name}</h3>
-                                <p className="text-[#C8A96A] font-black text-[10px] uppercase tracking-[0.3em]">Programme Faculty · Ashford &amp; Gray Fusion Academy</p>
                             </div>
                         </div>
                     </section>
