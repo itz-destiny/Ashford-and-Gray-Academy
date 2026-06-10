@@ -44,7 +44,7 @@ const IMG = {
 
 export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     // ===================================================================
-    // CERTIFICATE PROGRAMS — 3 months · ₦450,000
+    // CERTIFICATE PROGRAMS — 12 weeks · ₦350,000
     // ===================================================================
     {
         title: 'Housekeeping & Domestic Management',
@@ -54,7 +54,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
         reviews: 124,
         duration: 12,
         level: 'Intermediate',
-        price: 450000,
+        price: 350000,
         currency: 'NGN',
         imageUrl: IMG.housekeeping,
         imageHint: 'Pristine luxury bedroom with crisp linens',
@@ -156,7 +156,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
         reviews: 198,
         duration: 12,
         level: 'Intermediate',
-        price: 450000,
+        price: 350000,
         currency: 'NGN',
         imageUrl: IMG.hospitality,
         imageHint: 'Refined hotel lobby with concierge presence',
@@ -261,7 +261,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
         reviews: 156,
         duration: 12,
         level: 'Intermediate',
-        price: 450000,
+        price: 350000,
         currency: 'NGN',
         imageUrl: IMG.events,
         imageHint: 'Ballroom prepared for a formal evening event',
@@ -366,7 +366,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
         reviews: 173,
         duration: 12,
         level: 'Intermediate',
-        price: 450000,
+        price: 350000,
         currency: 'NGN',
         imageUrl: IMG.executive,
         imageHint: 'Executive office workspace and calendar planning',
@@ -472,7 +472,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
         reviews: 142,
         duration: 12,
         level: 'Intermediate',
-        price: 450000,
+        price: 350000,
         currency: 'NGN',
         imageUrl: IMG.globalRelations,
         imageHint: 'International business handshake across cultures',
@@ -571,7 +571,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     },
 
     // ===================================================================
-    // DIPLOMA PROGRAMS — 6 months · ₦950,000
+    // DIPLOMA PROGRAMS — 24 weeks · ₦850,000
     // ===================================================================
     {
         title: 'Diploma in Hospitality Management',
@@ -581,7 +581,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
         reviews: 87,
         duration: 24,
         level: 'Advanced',
-        price: 950000,
+        price: 850000,
         currency: 'NGN',
         imageUrl: IMG.diplomaHospitality,
         imageHint: 'Luxury hotel staff in formal service attire',
@@ -703,7 +703,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
         reviews: 76,
         duration: 24,
         level: 'Advanced',
-        price: 950000,
+        price: 850000,
         currency: 'NGN',
         imageUrl: IMG.diplomaLeadership,
         imageHint: 'Leadership boardroom and professional development',
@@ -825,7 +825,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
         reviews: 102,
         duration: 24,
         level: 'Advanced',
-        price: 950000,
+        price: 850000,
         currency: 'NGN',
         imageUrl: IMG.diplomaBusiness,
         imageHint: 'Modern entrepreneurs collaborating at a strategy session',
@@ -947,7 +947,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
         reviews: 91,
         duration: 24,
         level: 'Advanced',
-        price: 950000,
+        price: 850000,
         currency: 'NGN',
         imageUrl: IMG.diplomaEvents,
         imageHint: 'Gala ceremony with elegant table arrangement',
@@ -1062,7 +1062,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     },
 
     // ===================================================================
-    // EXECUTIVE MASTERCLASS — 3 months · ₦1,500,000
+    // EXECUTIVE MASTERCLASS — 4 weeks · ₦150,000
     // ===================================================================
     {
         title: 'The Silent Standard Certification Programme',
@@ -1070,9 +1070,9 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
         instructor: faculty.wilfred,
         rating: 5.0,
         reviews: 38,
-        duration: 12,
+        duration: 4,
         level: 'Advanced',
-        price: 1500000,
+        price: 150000,
         currency: 'NGN',
         imageUrl: IMG.silentStandard,
         imageHint: 'Minimalist luxury interior signalling discipline and order',

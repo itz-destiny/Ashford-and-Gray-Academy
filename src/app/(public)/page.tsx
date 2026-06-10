@@ -93,7 +93,7 @@ export default function Home() {
                 <div className="inline-flex items-center gap-3">
                   <span className="text-[#C8A96A] font-black text-xs uppercase tracking-[0.3em] font-body">Ashford & Gray Academy</span>
                   <span className="w-1.5 h-1.5 bg-[#C8A96A] rounded-full"></span>
-                  <span className="text-[#0B1F3A]/60 text-xs font-semibold uppercase tracking-[0.2em]">Est. 2024</span>
+                  <span className="text-[#0B1F3A]/60 text-xs font-semibold uppercase tracking-[0.2em]">RC: 8403353</span>
                 </div>
               </ScrollAnimation>
 

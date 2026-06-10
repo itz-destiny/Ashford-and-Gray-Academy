@@ -255,10 +255,7 @@ export function CurriculumCatalog({ title, subtitle, badge, courseIds }: Curricu
                       />
                       <div className="absolute inset-0 bg-[#0B1F3A]/10 mix-blend-multiply group-hover:bg-transparent transition-all duration-700" />
                       
-                      {/* Golden crest label */}
-                      <div className="absolute bottom-4 left-4 bg-[#C8A96A] text-[#0B1F3A] font-black text-[8px] uppercase tracking-widest px-3 py-1.5 shadow-md">
-                        EST. 2012 / COHORT PATHWAY
-                      </div>
+
                     </div>
                   </div>
 
