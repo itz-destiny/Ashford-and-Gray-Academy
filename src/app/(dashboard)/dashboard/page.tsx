@@ -76,15 +76,15 @@ export default function DashboardPage() {
     ? Math.round(enrollments.reduce((acc, curr) => acc + (curr.course?.progress || 0), 0) / enrollments.length)
     : 0;
 
-  // Filter events for today's schedule
-  const todayEvents = events
-    .filter(ev => ev.date && !isNaN(new Date(ev.date).getTime()) && isToday(new Date(ev.date)))
+  const formattedEvents = events
+    .filter(ev => ev.date && !isNaN(new Date(ev.date).getTime()))
     .map(ev => ({
       id: ev.id,
       title: ev.title,
       time: format(new Date(ev.date), "hh:mm a"),
       location: ev.location,
-      isLive: ev.isLive || false
+      isLive: ev.isLive || false,
+      date: new Date(ev.date)
     }));
 
   // Filter upcoming events for timeline
@@ -227,11 +227,7 @@ export default function DashboardPage() {
                <div className="w-2 h-6 bg-[#C8A96A]" />
                My Schedule
             </h2>
-            <ScheduleWidget
-              items={todayEvents}
-              dateLabel={format(new Date(), "MMMM yyyy")}
-              dayLabel={format(new Date(), "EEEE, do")}
-            />
+            <ScheduleWidget items={formattedEvents} />
           </div>
 
           {/* Event Timeline */}
