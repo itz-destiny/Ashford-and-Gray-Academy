@@ -85,8 +85,8 @@ export async function GET(req: NextRequest): Promise<Response> {
             if (!dbOk || !user) {
                 return NextResponse.json({
                     uid: uid,
-                    email: identity.email || 'executive@academy.com',
-                    displayName: 'Elite Candidate',
+                    email: identity.email || 'student@academy.com',
+                    displayName: identity.email?.split('@')[0] || 'Student',
                     role: 'student',
                     createdAt: new Date().toISOString(),
                 });
@@ -200,7 +200,7 @@ export async function POST(req: NextRequest): Promise<Response> {
         return NextResponse.json({
             uid: body.uid,
             email: body.email,
-            displayName: body.displayName || 'Elite Candidate',
+            displayName: body.displayName || body.email?.split('@')[0] || 'Student',
             role: body.role || 'student',
             school: body.school,
             dateOfBirth: body.dateOfBirth,

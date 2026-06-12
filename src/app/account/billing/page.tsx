@@ -19,8 +19,8 @@ import { useToast } from "@/hooks/use-toast";
 
 const BANK_DETAILS = {
   bankName: "Zenith Bank",
-  accountName: "Ashford & Gray Fusion Academy",
-  accountNumber: "1234567890",
+  accountName: "Ashford and Gray Fusion Academy",
+  accountNumber: "1311180687",
   sortCode: "057",
 };
 
