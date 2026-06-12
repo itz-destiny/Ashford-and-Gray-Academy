@@ -13,6 +13,23 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 import Link from 'next/link';
 
 export default function AdminCoursesPage() {
@@ -20,6 +37,14 @@ export default function AdminCoursesPage() {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [filterCategory, setFilterCategory] = useState('All');
+    
+    // Assign Instructor State
+    const [instructors, setInstructors] = useState<any[]>([]);
+    const [isAssignOpen, setIsAssignOpen] = useState(false);
+    const [selectedCourse, setSelectedCourse] = useState<any>(null);
+    const [selectedInstructorUid, setSelectedInstructorUid] = useState<string>('');
+    const [assigning, setAssigning] = useState(false);
+    const { toast } = useToast();
 
     const fetchCourses = async () => {
         try {
@@ -30,6 +55,18 @@ export default function AdminCoursesPage() {
             console.error('Error fetching courses:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchInstructors = async () => {
+        try {
+            const res = await fetch('/api/users?role=instructor');
+            const data = await res.json();
+            if (Array.isArray(data)) {
+                setInstructors(data);
+            }
+        } catch (error) {
+            console.error('Error fetching instructors:', error);
         }
     };
 
@@ -66,7 +103,43 @@ export default function AdminCoursesPage() {
 
     useEffect(() => {
         fetchCourses();
+        fetchInstructors();
     }, []);
+
+    const handleAssignInstructor = async () => {
+        if (!selectedCourse || !selectedInstructorUid) return;
+        setAssigning(true);
+        
+        const selectedInstructor = instructors.find(i => i.uid === selectedInstructorUid);
+        if (!selectedInstructor) return;
+
+        try {
+            const res = await fetch(`/api/courses/${selectedCourse._id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    instructorUid: selectedInstructor.uid,
+                    instructor: {
+                        name: selectedInstructor.displayName,
+                        avatarUrl: selectedInstructor.photoURL || '',
+                        verified: true
+                    }
+                })
+            });
+
+            if (res.ok) {
+                toast({ title: 'Instructor Assigned', description: `Course assigned to ${selectedInstructor.displayName}` });
+                setIsAssignOpen(false);
+                fetchCourses();
+            } else {
+                toast({ variant: 'destructive', title: 'Error', description: 'Failed to assign instructor' });
+            }
+        } catch (error) {
+            console.error('Error assigning instructor:', error);
+        } finally {
+            setAssigning(false);
+        }
+    };
 
     const handleDelete = async (id: string) => {
         if (!confirm('Are you sure you want to delete this course? This action cannot be undone.')) return;
@@ -171,6 +244,16 @@ export default function AdminCoursesPage() {
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuItem className="gap-2"><Eye className="w-4 h-4" /> View Details</DropdownMenuItem>
                                                 <DropdownMenuItem className="gap-2 text-indigo-600 font-bold"><Edit2 className="w-4 h-4" /> Edit Course</DropdownMenuItem>
+                                                <DropdownMenuItem 
+                                                    className="gap-2 text-emerald-600 font-bold cursor-pointer"
+                                                    onClick={() => {
+                                                        setSelectedCourse(course);
+                                                        setSelectedInstructorUid(course.instructorUid || '');
+                                                        setIsAssignOpen(true);
+                                                    }}
+                                                >
+                                                    <Search className="w-4 h-4" /> Assign Instructor
+                                                </DropdownMenuItem>
                                                 <DropdownMenuItem
                                                     className="gap-2 text-red-600 font-bold cursor-pointer"
                                                     onClick={() => handleDelete(course._id)}
@@ -187,6 +270,46 @@ export default function AdminCoursesPage() {
                     {loading && <div className="p-8 text-center text-slate-400">Loading courses...</div>}
                 </CardContent>
             </Card>
+
+            {/* Assign Instructor Dialog */}
+            <Dialog open={isAssignOpen} onOpenChange={setIsAssignOpen}>
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <DialogTitle>Assign Instructor</DialogTitle>
+                        <DialogDescription>
+                            Assign {selectedCourse?.title} to an instructor. They will manage this course's live classes.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                            <Label htmlFor="instructor">Select Instructor</Label>
+                            <Select
+                                value={selectedInstructorUid}
+                                onValueChange={setSelectedInstructorUid}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select an instructor" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {instructors.length > 0 ? instructors.map(inst => (
+                                        <SelectItem key={inst.uid} value={inst.uid}>
+                                            {inst.displayName} ({inst.email})
+                                        </SelectItem>
+                                    )) : (
+                                        <SelectItem value="none" disabled>No instructors found</SelectItem>
+                                    )}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsAssignOpen(false)}>Cancel</Button>
+                        <Button onClick={handleAssignInstructor} disabled={assigning} className="bg-indigo-600">
+                            {assigning ? 'Assigning...' : 'Assign Instructor'}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

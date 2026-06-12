@@ -58,9 +58,9 @@ export async function authenticate(req: NextRequest): Promise<AuthContext> {
     if (!dbOk || !user) {
         return {
             uid: decoded.uid,
-            email: decoded.email || 'executive@academy.com',
+            email: decoded.email || 'student@academy.com',
             role: 'student', // Fallback role for local testing
-            displayName: decoded.name || 'Elite Candidate',
+            displayName: decoded.name || decoded.email?.split('@')[0] || 'Student',
         };
     }
 
