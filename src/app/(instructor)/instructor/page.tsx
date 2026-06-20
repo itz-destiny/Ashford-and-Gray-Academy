@@ -221,7 +221,7 @@ export default function InstructorDashboard() {
                                                     <Link href={`/instructor/courses/${course._id || course.id}`}>Manage</Link>
                                                 </Button>
                                                 <Button asChild variant="outline" className="h-11 px-4 rounded-none border-[#0B1F3A]/10 bg-white hover:bg-[#F6F4F2] hover:border-[#C8A96A] transition-colors">
-                                                    <Link href={`/live-classes/course-${course._id || course.id}`}>
+                                                    <Link href={`/meeting/course-${course._id || course.id}`}>
                                                         <Video className="w-4 h-4 text-[#C8A96A]" />
                                                     </Link>
                                                 </Button>
@@ -316,7 +316,7 @@ export default function InstructorDashboard() {
                             </div>
                             <div className="space-y-3">
                                 <Button asChild className="w-full h-14 bg-[#C8A96A] hover:bg-[#B69859] text-[#0B1F3A] font-black rounded-none shadow-xl text-[10px] uppercase tracking-widest">
-                                    <Link href={courses.length > 0 ? `/live-classes/course-${courses[0]._id || courses[0].id}` : '/live-classes'}>
+                                    <Link href={courses.length > 0 ? `/meeting/course-${courses[0]._id || courses[0].id}` : '/live-classes'}>
                                         <Video className="w-4 h-4 mr-2" /> Start Live Class
                                     </Link>
                                 </Button>
