@@ -45,21 +45,23 @@ export function LoginForm({ onSwitchToSignUp }: LoginFormProps) {
 
   React.useEffect(() => {
     if (!userLoading && user) {
-      if (redirectUrl) router.push(redirectUrl);
-      else if ((user as any).role === 'instructor') router.push('/instructor');
-      else if ((user as any).role === 'admin') router.push('/admin');
-      else if ((user as any).role === 'registrar') router.push('/registrar');
-      else if ((user as any).role === 'course_registrar') router.push('/course-registrar');
-      else if ((user as any).role === 'finance') router.push('/finance');
-      else if ((user as any).role === 'student') router.push('/dashboard');
-      else {
-        const params = new URLSearchParams({
-            uid: user.uid,
-            email: user.email || '',
-            displayName: user.displayName || '',
-        });
-        router.push(`/login/complete-profile?${params.toString()}`);
-      }
+      const role = (user as any).role as string | undefined;
+      // Staff portals always take priority — never follow a redirectUrl that would
+      // land a staff member on the wrong portal (e.g. a stale ?redirectUrl=/dashboard).
+      if (role === 'admin') { router.push('/admin'); return; }
+      if (role === 'instructor') { router.push('/instructor'); return; }
+      if (role === 'registrar') { router.push('/registrar'); return; }
+      if (role === 'course_registrar') { router.push('/course-registrar'); return; }
+      if (role === 'finance') { router.push('/finance'); return; }
+      // Students may follow the redirectUrl (e.g. back to a course page they tried to visit).
+      if (role === 'student') { router.push(redirectUrl || '/dashboard'); return; }
+      // No role yet — route to profile completion.
+      const params = new URLSearchParams({
+          uid: user.uid,
+          email: user.email || '',
+          displayName: user.displayName || '',
+      });
+      router.push(`/login/complete-profile?${params.toString()}`);
     }
   }, [user, userLoading, router, redirectUrl]);
 

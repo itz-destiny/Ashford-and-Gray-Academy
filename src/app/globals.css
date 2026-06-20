@@ -87,3 +87,35 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* ── Ashford & Gray LiveKit Theme ──────────────────────────────────────────
+   Override the default LiveKit dark theme to match the academy's
+   deep-navy / gold / sharp-corner design language.
+   Scoped to .lk-academy so it only applies inside MeetingRoom.
+   ───────────────────────────────────────────────────────────────────────── */
+.lk-academy [data-lk-theme="default"] {
+  --lk-bg:  #0B1F3A;
+  --lk-bg2: #0e2748;
+  --lk-bg3: #112f56;
+  --lk-bg4: #153764;
+  --lk-bg5: #1a3f72;
+
+  /* Gold as the primary accent instead of LiveKit blue */
+  --lk-accent-fg:  #0B1F3A;
+  --lk-accent-bg:  #C8A96A;
+  --lk-accent2:    #d4b87c;
+  --lk-accent3:    #dfc78e;
+  --lk-accent4:    #ead6a0;
+
+  /* Emerald success to match the academy palette */
+  --lk-success:  #1F7A5A;
+  --lk-success2: #237d5e;
+  --lk-success3: #279062;
+  --lk-success4: #2ba366;
+
+  /* Subtle gold-tinted borders */
+  --lk-border-color: rgba(200, 169, 106, 0.15);
+
+  /* Square corners throughout */
+  --lk-border-radius: 0px;
+}
