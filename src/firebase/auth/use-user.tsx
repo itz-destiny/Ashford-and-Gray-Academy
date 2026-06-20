@@ -60,27 +60,6 @@ export const useUser = () => {
           setUser(appUser);
           console.log("useUser: Final user state set.");
 
-          // Redirections logic
-          const isLoginPage = pathname === '/login';
-
-          if (isLoginPage) {
-            if (!appUser.role) {
-                // Authenticated with Firebase but no Mongo profile (Google sign-in
-                // first-timer). Send them to complete their profile.
-                const params = new URLSearchParams({
-                    uid: firebaseUser.uid,
-                    email: firebaseUser.email || '',
-                    displayName: firebaseUser.displayName || '',
-                    photoURL: firebaseUser.photoURL || ''
-                });
-                router.push(`/login/complete-profile?${params.toString()}`);
-            } else {
-                // No email-verification or 2FA gate — go straight to the
-                // role dashboard after a successful sign-in.
-                router.push(getDashboardByRole(appUser.role));
-            }
-          }
-
         } catch (error) {
           console.error("useUser: Error in auth processing:", error);
           setUser(firebaseUser as AppUser);
@@ -94,20 +73,8 @@ export const useUser = () => {
       }
     });
 
-    function getDashboardByRole(role: string) {
-      const routes: Record<string, string> = {
-        instructor: '/instructor',
-        admin: '/admin',
-        registrar: '/registrar',
-        course_registrar: '/course-registrar',
-        finance: '/finance',
-        student: '/dashboard'
-      };
-      return routes[role] || '/dashboard';
-    }
-
     return () => unsubscribeAuth();
-  }, [auth, router, pathname]);
+  }, [auth]);
 
   return { user, loading };
 };

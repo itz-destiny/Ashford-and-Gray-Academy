@@ -52,6 +52,14 @@ export function LoginForm({ onSwitchToSignUp }: LoginFormProps) {
       else if ((user as any).role === 'course_registrar') router.push('/course-registrar');
       else if ((user as any).role === 'finance') router.push('/finance');
       else if ((user as any).role === 'student') router.push('/dashboard');
+      else {
+        const params = new URLSearchParams({
+            uid: user.uid,
+            email: user.email || '',
+            displayName: user.displayName || '',
+        });
+        router.push(`/login/complete-profile?${params.toString()}`);
+      }
     }
   }, [user, userLoading, router, redirectUrl]);
 

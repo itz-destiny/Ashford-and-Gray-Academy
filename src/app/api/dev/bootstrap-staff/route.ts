@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import dbConnect from '@/lib/mongodb';
 import User from '@/models/User';
+import Course from '@/models/Course';
 import { adminAuth } from '@/lib/firebase-admin';
 import { assertDevEndpointAllowed } from '@/lib/dev-only';
 import { AuthError, type Role } from '@/lib/auth-server';
@@ -23,6 +24,7 @@ type StaffSpec = {
 
 const STAFF: readonly StaffSpec[] = [
     { role: 'admin',            localPart: 'admin',            displayName: 'Academy Admin',     portal: '/admin' },
+    { role: 'instructor',       localPart: 'instructor',       displayName: 'Dr. Alex Carter',   portal: '/instructor' },
     { role: 'registrar',        localPart: 'registrar',        displayName: 'Academy Registrar', portal: '/registrar' },
     { role: 'course_registrar', localPart: 'course-registrar', displayName: 'Course Registrar',  portal: '/course-registrar' },
     { role: 'finance',          localPart: 'finance',          displayName: 'Finance Manager',   portal: '/finance' },
@@ -37,6 +39,7 @@ type ProvisionResult = {
     password: string;
     portal: string;
     created: boolean;
+    uid: string;
 };
 
 async function provisionStaff(
@@ -95,6 +98,7 @@ async function provisionStaff(
         password,
         portal: spec.portal,
         created: createdInFirebase,
+        uid,
     };
 }
 
@@ -130,13 +134,57 @@ export async function POST(req: NextRequest): Promise<Response> {
     try {
         await dbConnect();
         const results = [];
+        let instructorUid: string | null = null;
         for (const spec of STAFF) {
-            results.push(await provisionStaff(spec, emailDomain, password));
+            const result = await provisionStaff(spec, emailDomain, password);
+            if (spec.role === 'instructor') instructorUid = result.uid ?? null;
+            results.push(result);
         }
+
+        // Seed a test course for the instructor so they can test the live class system.
+        let testCourse: any = null;
+        if (instructorUid) {
+            testCourse = await Course.findOneAndUpdate(
+                { title: 'Business Strategy Fundamentals (Dev Test)' },
+                {
+                    $set: {
+                        title: 'Business Strategy Fundamentals (Dev Test)',
+                        category: 'Business Strategy',
+                        instructorUid,
+                        instructor: {
+                            name: 'Dr. Alex Carter',
+                            avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=DrAlexCarter',
+                            verified: true,
+                        },
+                        rating: 4.8,
+                        reviews: 24,
+                        duration: 8,
+                        level: 'Intermediate',
+                        price: 0,
+                        currency: 'NGN',
+                        imageUrl: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800',
+                        imageHint: 'business strategy meeting',
+                        description: 'A dev-seeded course for testing instructor and live class features. Sign in as Dr. Alex Carter to manage this course and launch live sessions.',
+                        curriculum: [
+                            'Module 1: Introduction to Business Strategy',
+                            'Module 2: Competitive Analysis',
+                            'Module 3: Strategic Planning',
+                            'Module 4: Execution & Measurement',
+                        ],
+                        status: 'published',
+                    },
+                },
+                { upsert: true, new: true }
+            );
+        }
+
         return NextResponse.json({
             message:
                 'Staff accounts ready. Sign in at /login with any of the credentials below.',
             credentials: results,
+            testCourse: testCourse
+                ? { id: testCourse._id.toString(), title: testCourse.title, instructorPortal: '/instructor' }
+                : null,
         });
     } catch (err: any) {
         console.error('bootstrap-staff failed:', err);
