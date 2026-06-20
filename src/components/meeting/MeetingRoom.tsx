@@ -213,7 +213,12 @@ export default function MeetingRoom({ roomId }: Props) {
                     connect
                     video
                     audio
-                    onDisconnected={() => router.push('/')}
+                    onDisconnected={() => {
+                        const role = state.status === 'ready' ? state.data.role : 'student';
+                        if (role === 'instructor') router.push('/instructor');
+                        else if (role === 'admin') router.push('/admin');
+                        else router.push('/dashboard');
+                    }}
                     data-lk-theme="default"
                     style={{ height: '100%' }}
                 >
