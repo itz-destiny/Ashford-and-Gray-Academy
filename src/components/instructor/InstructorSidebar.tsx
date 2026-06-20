@@ -31,7 +31,7 @@ export function InstructorSidebar({ className }: { className?: string }) {
     { href: "/instructor/schedule", label: "Class Schedule", icon: Clock },
     { href: "/instructor/students", label: "My Students", icon: Users },
     { href: "/instructor/communications", label: "My Messages", icon: MessageSquare },
-    { href: "/live-classes", label: "Live Room", icon: Video },
+    { href: "/meeting", label: "Live Room", icon: Video },
   ];
 
   return (
