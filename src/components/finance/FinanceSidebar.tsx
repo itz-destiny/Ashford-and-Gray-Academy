@@ -6,16 +6,9 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/logo";
 import {
-    LayoutDashboard,
-    DollarSign,
-    Wallet,
-    GraduationCap,
-    BarChart3,
-    LifeBuoy,
-    MessageSquare,
-    Settings,
-    LogOut,
-    Receipt,
+    LayoutDashboard, DollarSign, Wallet, GraduationCap,
+    BarChart3, LifeBuoy, MessageSquare, Settings, LogOut,
+    Receipt, Sparkles,
 } from "lucide-react";
 import { useUser } from "@/firebase";
 import { signOut } from "@/firebase/auth";
@@ -36,43 +29,37 @@ export function FinanceSidebar({ className }: { className?: string }) {
     const { user } = useUser();
 
     return (
-        <aside
-            className={cn(
-                "fixed left-0 top-0 h-screen w-72 bg-white border-r border-slate-100 flex flex-col z-50",
-                className
-            )}
-        >
-            <div className="p-10 pb-12">
-                <Logo />
+        <aside className={cn(
+            "fixed left-0 top-0 h-screen w-72 bg-[#0B1F3A] border-r border-white/5 flex flex-col z-50",
+            className
+        )}>
+            <div className="p-8 pb-12">
+                <Logo variant="white" />
             </div>
 
-            <nav className="flex-1 px-8 space-y-2 overflow-y-auto custom-scrollbar">
-                <p className="px-5 text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] mb-6">
-                    Financial Office
-                </p>
+            <nav className="flex-1 px-6 space-y-1.5 overflow-y-auto custom-scrollbar">
+                <p className="px-4 text-[9px] font-black text-white/30 uppercase tracking-[0.2em] mb-4">Financial Office</p>
 
-                {navItems.map(item => {
+                {navItems.map((item) => {
                     const isActive = pathname === item.href;
                     return (
                         <Link
                             key={item.href}
                             href={item.href}
                             className={cn(
-                                "group flex items-center gap-4 px-6 py-4 rounded-[2rem] transition-all duration-500",
+                                "group flex items-center gap-4 px-5 py-3.5 transition-all duration-300 relative rounded-none",
                                 isActive
-                                    ? "bg-[#0B1F3A] text-white shadow-2xl shadow-blue-900/10"
-                                    : "text-slate-400 hover:bg-slate-50 hover:text-[#0B1F3A]"
+                                    ? "bg-white/5 text-[#C8A96A] border-l-4 border-[#C8A96A]"
+                                    : "text-white/60 hover:bg-white/[0.02] hover:text-white"
                             )}
                         >
-                            <item.icon
-                                className={cn(
-                                    "w-5 h-5 transition-all duration-500",
-                                    isActive
-                                        ? "text-[#C8A96A] scale-110"
-                                        : "text-slate-300 group-hover:text-[#0B1F3A] group-hover:scale-110"
-                                )}
-                            />
-                            <span className="text-sm font-bold tracking-tight">{item.label}</span>
+                            <item.icon className={cn(
+                                "w-4 h-4 transition-all duration-300",
+                                isActive
+                                    ? "text-[#C8A96A] scale-110"
+                                    : "text-white/40 group-hover:text-white group-hover:scale-110"
+                            )} />
+                            <span className="text-xs font-black uppercase tracking-wider">{item.label}</span>
                             {isActive && (
                                 <div className="ml-auto">
                                     <div className="w-1.5 h-1.5 bg-[#C8A96A] rounded-full animate-pulse shadow-[0_0_8px_rgba(200,169,106,0.8)]" />
@@ -82,57 +69,41 @@ export function FinanceSidebar({ className }: { className?: string }) {
                     );
                 })}
 
-                <div className="pt-10">
-                    <p className="px-5 text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] mb-6">
-                        Settings
-                    </p>
+                <div className="pt-8">
+                    <p className="px-4 text-[9px] font-black text-white/30 uppercase tracking-[0.2em] mb-4">System</p>
                     <Link
                         href="/finance/settings"
                         className={cn(
-                            "group flex items-center gap-4 px-6 py-4 rounded-[2rem] transition-all duration-500",
+                            "group flex items-center gap-4 px-5 py-3.5 transition-all duration-300 rounded-none",
                             pathname === "/finance/settings"
-                                ? "bg-[#0B1F3A] text-white"
-                                : "text-slate-400 hover:bg-slate-50 hover:text-[#0B1F3A]"
+                                ? "bg-white/5 text-[#C8A96A] border-l-4 border-[#C8A96A]"
+                                : "text-white/60 hover:bg-white/[0.02] hover:text-white"
                         )}
                     >
-                        <Settings
-                            className={cn(
-                                "w-5 h-5",
-                                pathname === "/finance/settings"
-                                    ? "text-[#C8A96A]"
-                                    : "text-slate-300 group-hover:text-[#0B1F3A]"
-                            )}
-                        />
-                        <span className="text-sm font-bold tracking-tight">Account Settings</span>
+                        <Settings className={cn(
+                            "w-4 h-4",
+                            pathname === "/finance/settings" ? "text-[#C8A96A]" : "text-white/40 group-hover:text-white"
+                        )} />
+                        <span className="text-xs font-black uppercase tracking-wider">Account Settings</span>
                     </Link>
                 </div>
             </nav>
 
-            <div className="p-8 mt-auto border-t border-slate-50">
-                <div className="flex items-center gap-4 px-4 py-4 bg-slate-50 rounded-[2.5rem] border border-slate-100 mb-6">
-                    <div className="w-12 h-12 rounded-2xl bg-[#0B1F3A] flex items-center justify-center text-[#C8A96A] font-black text-xs uppercase shadow-lg shadow-blue-900/10">
-                        {user?.displayName
-                            ? user.displayName.split(' ').map(n => n[0]).join('')
-                            : 'FI'}
+            <div className="p-6 mt-auto">
+                <div className="bg-white/[0.03] border border-white/10 border-t-2 border-t-[#C8A96A] rounded-none p-6 relative overflow-hidden group mb-4">
+                    <div className="absolute top-0 right-0 p-3 opacity-[0.03] group-hover:opacity-[0.08] transition-all duration-500 group-hover:rotate-12">
+                        <Sparkles className="w-12 h-12 text-white" />
                     </div>
-                    <div className="overflow-hidden">
-                        <p className="text-sm font-black text-[#0B1F3A] truncate">
-                            {user?.displayName || "Finance Manager"}
-                        </p>
-                        <p className="text-[10px] font-black text-[#C8A96A] uppercase tracking-wider mt-0.5">
-                            Tuition Office
-                        </p>
-                    </div>
+                    <p className="text-[#C8A96A] text-[9px] font-black uppercase tracking-[0.2em] mb-1">Signed In As</p>
+                    <p className="text-white text-sm font-black truncate">{user?.displayName || "Finance Manager"}</p>
+                    <p className="text-white/40 text-[9px] font-black uppercase tracking-wider mt-0.5">Tuition Office</p>
                 </div>
                 <button
-                    onClick={async () => {
-                        await signOut();
-                        window.location.href = '/login';
-                    }}
-                    className="w-full flex items-center gap-4 px-6 py-4 rounded-[1.8rem] text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition-all group"
+                    onClick={async () => { await signOut(); window.location.href = '/login'; }}
+                    className="w-full flex items-center gap-4 px-5 py-3.5 rounded-none text-white/60 hover:bg-white/[0.02] hover:text-white/90 transition-all group"
                 >
-                    <LogOut className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                    <span className="text-sm font-bold">Sign Out</span>
+                    <LogOut className="w-4 h-4 group-hover:scale-110 transition-transform text-white/40 group-hover:text-white" />
+                    <span className="text-xs font-black uppercase tracking-wider">Sign Out</span>
                 </button>
             </div>
         </aside>

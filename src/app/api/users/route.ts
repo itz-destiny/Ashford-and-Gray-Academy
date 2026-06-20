@@ -12,6 +12,8 @@ import {
     type Role,
 } from '@/lib/auth-server';
 
+export const dynamic = 'force-dynamic';
+
 const limiter = rateLimit({
     interval: 60 * 1000,
     uniqueTokenPerInterval: 500,
