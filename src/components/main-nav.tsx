@@ -47,7 +47,7 @@ export function MainNav() {
       ]
     },
     { href: "/faculty", label: "Executive Leadership Team" },
-    { href: "/press", label: "Academic Press" },
+    { href: "/academic-press", label: "Academic Press" },
     { href: "/contact", label: "Contact Us" },
   ];
 
