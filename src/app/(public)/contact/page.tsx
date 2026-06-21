@@ -101,8 +101,8 @@ export default function ContactPage() {
                                         </div>
                                         <div>
                                             <p className="text-[10px] font-black text-[#C8A96A] uppercase tracking-widest mb-1">Phone</p>
-                                            <a href="tel:+2349160008451" className="block text-white hover:underline font-medium">+234 916 000 8451</a>
-                                            <a href="tel:+2349167029427" className="block text-white hover:underline font-medium">+234 916 702 9427</a>
+                                            <a href="tel:+2348166918942" className="block text-white hover:underline font-medium">+234 816 691 8942</a>
+                                            <a href="tel:+2348080971690" className="block text-white hover:underline font-medium">+234 808 097 1690</a>
                                         </div>
                                     </div>
 
