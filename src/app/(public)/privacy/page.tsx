@@ -101,7 +101,7 @@ export default function PrivacyPage() {
                 <p>
                     Ashford &amp; Gray Fusion Academy<br />
                     Email: <Link href="mailto:info@ashfordgrayacademy.com">info@ashfordgrayacademy.com</Link><br />
-                    Phone: +234 916 000 8451 · +234 916 702 9427
+                    Phone: +234 816 691 8942 · +234 808 097 1690
                 </p>
             </article>
         </div>

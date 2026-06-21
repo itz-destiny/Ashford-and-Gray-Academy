@@ -90,7 +90,7 @@ export default function TermsPage() {
                 <p>
                     Ashford &amp; Gray Fusion Academy<br />
                     Email: <Link href="mailto:info@ashfordgrayacademy.com">info@ashfordgrayacademy.com</Link><br />
-                    Phone: +234 916 000 8451 · +234 916 702 9427
+                    Phone: +234 816 691 8942 · +234 808 097 1690
                 </p>
 
                 <p className="text-xs text-slate-400 mt-12 italic">These Terms are a starting template prepared for the Academy. We recommend formal review by Nigerian counsel before reliance in a regulated or contentious matter.</p>
