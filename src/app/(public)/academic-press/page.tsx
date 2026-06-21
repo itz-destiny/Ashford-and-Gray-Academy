@@ -1,9 +1,32 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ExternalLink, BookOpen, ShoppingCart, Tablet } from "lucide-react";
+
+function ExpandableBlurb({ text, className }: { text: string; className?: string }) {
+    const [expanded, setExpanded] = useState(false);
+    const paragraphs = text.split("\n\n");
+    const isLong = paragraphs.length > 2;
+    const shown = expanded || !isLong ? text : paragraphs.slice(0, 2).join("\n\n");
+    return (
+        <div className="space-y-3">
+            <p className={className}>
+                {shown}{isLong && !expanded && " …"}
+            </p>
+            {isLong && (
+                <button
+                    type="button"
+                    onClick={() => setExpanded((v) => !v)}
+                    className="text-[10px] font-black uppercase tracking-[0.3em] text-[#C8A96A] hover:text-[#0B1F3A] transition-colors"
+                >
+                    {expanded ? "Read less" : "Read more"}
+                </button>
+            )}
+        </div>
+    );
+}
 
 /* ─────────────────────────────────────────────────────────────
    PUBLICATIONS DATA
@@ -257,9 +280,10 @@ function FeaturedBookCard({ book }: { book: Publication }) {
           </div>
 
           {/* Description */}
-          <p className="text-sm font-serif text-slate-500 leading-loose max-w-xl border-l-2 border-[#C8A96A]/30 pl-5 whitespace-pre-line">
-            {book.description}
-          </p>
+          <ExpandableBlurb
+            text={book.description}
+            className="text-sm font-serif text-slate-500 leading-loose max-w-xl border-l-2 border-[#C8A96A]/30 pl-5 whitespace-pre-line"
+          />
         </div>
 
         {/* Purchase links */}
@@ -325,7 +349,7 @@ function BookCard({ book }: { book: Publication }) {
             <div className="w-4 h-px bg-[#C8A96A]" />
             <p className="text-[10px] font-black text-[#0B1F3A] uppercase tracking-wider">{book.author}</p>
           </div>
-          <p className="text-xs font-serif text-slate-500 leading-relaxed line-clamp-3">{book.description}</p>
+          <ExpandableBlurb text={book.description} className="text-xs font-serif text-slate-500 leading-relaxed whitespace-pre-line" />
         </div>
 
         <div className="space-y-2 pt-2 border-t border-[#0B1F3A]/8">
