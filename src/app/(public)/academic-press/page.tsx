@@ -119,6 +119,46 @@ const PUBLICATIONS: Publication[] = [
       },
     ],
   },
+  {
+    id: "hospitality-with-authority",
+    title: "Hospitality with Authority",
+    subtitle: "Lead with Control. Deliver Excellence.",
+    author: "Myne Wilfred",
+    authorTitle: "Founder/President, Ashford & Gray Academy",
+    year: "2025",
+    isbn: "978-9786872576",
+    coverImage: "/books/hospitality-with-authority.png",
+    featured: true,
+    description:
+      "Hospitality is not service. It is control.\n\n" +
+      "In an industry where excellence is often assumed but rarely sustained, Hospitality with Authority challenges conventional thinking and redefines what it means to operate at the highest level of hospitality leadership.\n\n" +
+      "This is not a book about doing more. It is about doing what matters—with precision, discipline, structure, and consistency under pressure.\n\n" +
+      "Drawing from years of practical experience in hospitality operations, executive support, estate management, protocol coordination, and high-level service environments, Myne Wilfred presents a powerful framework for professionals seeking to move beyond routine service into intentional excellence.\n\n" +
+      "Inside this book, you will discover:\n" +
+      "• How to build systems that sustain excellence\n" +
+      "• The difference between management and authority\n" +
+      "• How to maintain control under pressure\n" +
+      "• Strategies for managing high-profile clients and environments\n" +
+      "• The role of discipline, consistency, and operational precision in hospitality leadership\n" +
+      "• How to create guest experiences that are deliberate, not accidental\n" +
+      "• The future of hospitality leadership in a rapidly changing world\n\n" +
+      "Whether you are a hospitality professional, executive assistant, estate manager, protocol officer, business leader, entrepreneur, or aspiring leader, this book will challenge how you think, lead, and execute.\n\n" +
+      "You are not here to participate in hospitality. You are here to define it.",
+    purchaseLinks: [
+      {
+        platform: "Amazon Kindle",
+        url: "https://www.amazon.com/dp/B0GX2Z6J6X",
+        label: "Kindle eBook — Amazon",
+        icon: "tablet",
+      },
+      {
+        platform: "Amazon Paperback",
+        url: "https://www.amazon.com/dp/9786872576",
+        label: "Paperback — Amazon",
+        icon: "book",
+      },
+    ],
+  },
   // Future publications go here — copy the structure above
 ];
 
