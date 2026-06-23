@@ -53,6 +53,7 @@ export default function PublicLayout({
                 <li><Link href="/courses" className="text-slate-300 hover:text-white transition-colors">Academic Programs</Link></li>
                 <li><Link href="/faculty" className="text-slate-300 hover:text-white transition-colors">Executive Leadership Team</Link></li>
                 <li><Link href="/academic-press" className="text-slate-300 hover:text-white transition-colors">Academic Press</Link></li>
+                <li><Link href="/partners" className="text-slate-300 hover:text-white transition-colors">Partners &amp; Impact</Link></li>
               </ul>
             </div>
             <div>
