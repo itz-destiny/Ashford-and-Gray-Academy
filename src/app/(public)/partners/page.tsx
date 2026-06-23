@@ -11,12 +11,18 @@ const PARTNERS = [
     {
         id: "partner-1",
         image: "/partners/partner-1.png",
-        alt: "Esteemed Partner — Ashford & Gray Fusion Academy",
+        alt: "Hon. Allison Anderson Igbiks — Esteemed Partner",
+        name: "Hon. Allison Anderson Igbiks",
+        title: "Member, Okrika/Ogu-Bolo Federal Constituency",
+        body: "House of Representatives",
     },
     {
         id: "partner-2",
         image: "/partners/partner-2.png",
-        alt: "Esteemed Partner — Ashford & Gray Fusion Academy",
+        alt: "Hon Linda Somiari-Stewart DSSRS — Esteemed Partner",
+        name: "Amaopuerembo Hon Linda Somiari-Stewart DSSRS",
+        title: "Deputy Leader, RSHA · Member Representing Okrika Constituency",
+        body: "Rivers State House of Assembly",
     },
 ];
 
@@ -125,12 +131,18 @@ export default function PartnersPage() {
                                         className="object-cover object-top group-hover:scale-105 transition-transform duration-700"
                                     />
                                 </div>
-                                <div className="p-6 border-t border-[#0B1F3A]/8">
+                                <div className="p-6 border-t border-[#0B1F3A]/8 space-y-1">
                                     <p className="text-[9px] font-black uppercase tracking-[0.35em] text-[#C8A96A]">
                                         Esteemed Partner
                                     </p>
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
-                                        Ashford &amp; Gray Fusion Academy
+                                    <p className="text-sm font-serif font-bold text-[#0B1F3A] leading-snug mt-2">
+                                        {p.name}
+                                    </p>
+                                    <p className="text-[11px] font-medium text-slate-500 leading-relaxed">
+                                        {p.title}
+                                    </p>
+                                    <p className="text-[11px] font-black uppercase tracking-wider text-slate-400">
+                                        {p.body}
                                     </p>
                                 </div>
                             </div>
