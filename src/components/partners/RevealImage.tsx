@@ -27,7 +27,7 @@ export function RevealImage() {
             />
             {/* The image itself scales gently into place */}
             <motion.div
-                className="relative w-full aspect-[16/9] lg:aspect-[21/9]"
+                className="relative w-full max-w-xl mx-auto aspect-[3/4]"
                 initial={{ scale: 1.08 }}
                 animate={inView ? { scale: 1 } : { scale: 1.08 }}
                 transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
