@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Heart, Star, Users, Quote } from "lucide-react";
+import { RevealImage } from "@/components/partners/RevealImage";
 
 export const metadata = {
     title: "Partnership & Impact — Ashford & Gray Fusion Academy",
@@ -199,6 +200,9 @@ export default function PartnersPage() {
                     </div>
 
                 </section>
+
+                {/* ── REVEAL: Second Miss World image ─────── */}
+                <RevealImage />
 
                 {/* ── CLOSING STATEMENT ────────────────────── */}
                 <section className="border border-[#0B1F3A]/10 bg-[#0B1F3A] border-t-4 border-t-[#C8A96A] p-12 lg:p-20 text-center space-y-8">
