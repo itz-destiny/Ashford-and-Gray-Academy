@@ -211,6 +211,12 @@ const PUBLICATIONS: Publication[] = [
         label: "Kindle eBook — Amazon",
         icon: "tablet",
       },
+      {
+        platform: "Amazon Paperback",
+        url: "https://www.amazon.com/dp/978628710X",
+        label: "Paperback — Amazon",
+        icon: "book",
+      },
     ],
   },
   // Future publications go here — copy the structure above
