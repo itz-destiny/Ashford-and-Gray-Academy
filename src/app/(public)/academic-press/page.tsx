@@ -182,6 +182,37 @@ const PUBLICATIONS: Publication[] = [
       },
     ],
   },
+  {
+    id: "events-with-precision",
+    title: "Events with Precision",
+    subtitle: "Principles, Strategy & Execution",
+    author: "Myne Wilfred",
+    authorTitle: "Founder/President, Ashford & Gray Academy",
+    coverImage: "/books/events-with-precision.png",
+    featured: true,
+    description:
+      "Events are not merely gatherings—they are strategic instruments of influence, perception, and reputation.\n\n" +
+      "In Events with Precision: Principles, Strategy & Execution, Myne Wilfred presents a practical and professional blueprint for planning, managing, and executing events with clarity, structure, and control.\n\n" +
+      "Drawing from real-world experience in hospitality, executive service, and high-level event management, this book explores:\n" +
+      "• Event strategy and concept development\n" +
+      "• Budgeting and financial discipline\n" +
+      "• Vendor selection and control systems\n" +
+      "• Timeline engineering and execution mastery\n" +
+      "• Crisis and risk management\n" +
+      "• Crowd control, protocol, and VIP management\n" +
+      "• Reputation management and client retention\n" +
+      "• Business growth and premium brand positioning\n\n" +
+      "Whether you are an event professional, corporate planner, hospitality practitioner, or entrepreneur, this book provides the systems and insights required to deliver exceptional experiences consistently.\n\n" +
+      "This is not simply a book about event planning. It is a framework for executing excellence with precision.",
+    purchaseLinks: [
+      {
+        platform: "Amazon Kindle",
+        url: "https://www.amazon.com/dp/B0H6LQ5YPG",
+        label: "Kindle eBook — Amazon",
+        icon: "tablet",
+      },
+    ],
+  },
   // Future publications go here — copy the structure above
 ];
 
