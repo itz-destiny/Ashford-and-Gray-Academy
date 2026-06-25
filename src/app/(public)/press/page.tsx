@@ -166,6 +166,8 @@ const BOOKS: Book[] = [
         title: "Events with Precision",
         subtitle: "Principles, Strategy & Execution",
         author: "Myne Wilfred",
+        year: "2026",
+        isbn: "978-9786287102",
         publisher: "Ashford & Gray Academic Press",
         blurb:
             "Events are not merely gatherings—they are strategic instruments of influence, perception, and reputation.\n\n" +
