@@ -188,6 +188,8 @@ const PUBLICATIONS: Publication[] = [
     subtitle: "Principles, Strategy & Execution",
     author: "Myne Wilfred",
     authorTitle: "Founder/President, Ashford & Gray Academy",
+    year: "2026",
+    isbn: "978-9786287102",
     coverImage: "/books/events-with-precision.png",
     featured: true,
     description:
