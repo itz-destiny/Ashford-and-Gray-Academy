@@ -189,6 +189,12 @@ const BOOKS: Book[] = [
                 icon: Tablet,
                 note: "eBook",
             },
+            {
+                label: "Paperback on Amazon",
+                href: "https://www.amazon.com/dp/978628710X",
+                icon: BookOpen,
+                note: "Paperback",
+            },
         ],
     },
 ];
