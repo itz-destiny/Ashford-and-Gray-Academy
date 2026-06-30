@@ -4,8 +4,23 @@ import { ARTICLES } from "@/lib/insights-data";
 import { ScrollAnimation } from "@/components/ui/scroll-animation";
 
 export const metadata = {
-    title: "Research & Insights — Ashford & Gray Fusion Academy",
-    description: "Articles by Myne Wilfred on hospitality leadership, luxury service philosophy, business innovation, and the silent standard of professional excellence.",
+    title: "Research & Insights — Hospitality Leadership & Strategy",
+    description:
+        "Articles and insights by Myne Wilfred and the Ashford & Gray Fusion Academy team on hospitality leadership, luxury service philosophy, domestic service, event management, and the silent standard of professional excellence in Nigeria and globally.",
+    keywords: [
+        "hospitality insights Nigeria",
+        "hospitality leadership articles",
+        "Myne Wilfred articles",
+        "luxury hospitality blog Nigeria",
+        "hospitality management tips",
+        "domestic service insights",
+    ],
+    alternates: { canonical: "https://www.ashfordandgrayfusionacademy.com/insights" },
+    openGraph: {
+        title: "Research & Insights — Ashford & Gray Fusion Academy",
+        description: "Articles on hospitality leadership, luxury service, and the silent standard of professional excellence.",
+        url: "https://www.ashfordandgrayfusionacademy.com/insights",
+    },
 };
 
 export default function InsightsIndexPage() {

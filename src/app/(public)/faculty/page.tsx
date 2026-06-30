@@ -5,9 +5,16 @@ import { LEADERSHIP, type LeadershipMember } from "@/lib/leadership-data";
 import { ProfileDialog } from "./profile-dialog";
 
 export const metadata = {
-    title: "Executive Management Council — Ashford & Gray Fusion Academy",
+    title: "Executive Leadership Team — Ashford & Gray Fusion Academy",
     description:
-        "The Executive Management Council of Ashford & Gray Fusion Academy represents the institution’s strategic leadership and operational governance structure.",
+        "Meet the Executive Management Council of Ashford & Gray Fusion Academy — Nigeria's foremost hospitality educators and practitioners, led by Founder and President Myne Wilfred.",
+    keywords: ["Myne Wilfred", "Ashford Gray faculty", "hospitality educators Nigeria", "executive management council"],
+    alternates: { canonical: "https://www.ashfordandgrayfusionacademy.com/faculty" },
+    openGraph: {
+        title: "Executive Leadership Team — Ashford & Gray Fusion Academy",
+        description: "Meet the founding faculty and executive council shaping Nigeria's premier hospitality academy.",
+        url: "https://www.ashfordandgrayfusionacademy.com/faculty",
+    },
 };
 
 export default function ExecutiveManagementCouncilPage() {

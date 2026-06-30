@@ -6,8 +6,23 @@ import { Button } from "@/components/ui/button";
 import { ScrollAnimation } from "@/components/ui/scroll-animation";
 
 export const metadata = {
-    title: "About — Ashford & Gray Fusion Academy",
-    description: "An institution defined by distinction. Discover the philosophy, mission, vision, and values shaping the next generation of luxury hospitality and business leaders.",
+  title: "About Us — Nigeria's Premier Hospitality Academy",
+  description:
+    "Ashford & Gray Fusion Academy is Nigeria's leading institution for hospitality management, domestic service, and executive leadership training. Founded by Myne Wilfred, we train professionals to master luxury, elevate business, and serve with distinction.",
+  keywords: [
+    "about Ashford Gray Academy",
+    "hospitality academy Nigeria",
+    "Myne Wilfred",
+    "hospitality training institution Nigeria",
+    "luxury hospitality school",
+    "Rivers State hospitality training",
+  ],
+  alternates: { canonical: "https://www.ashfordandgrayfusionacademy.com/about" },
+  openGraph: {
+    title: "About Us — Ashford & Gray Fusion Academy",
+    description: "Nigeria's premier hospitality management academy, founded by Myne Wilfred. Training professionals to master luxury, elevate business, and serve with distinction.",
+    url: "https://www.ashfordandgrayfusionacademy.com/about",
+  },
 };
 
 export default function AboutPage() {
