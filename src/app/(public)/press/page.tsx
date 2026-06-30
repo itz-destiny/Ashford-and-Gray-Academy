@@ -7,8 +7,26 @@ import { BookOpen, ShoppingBag, ExternalLink, Tablet, Bookmark } from "lucide-re
 import { ExpandableBlurb } from "./expandable-blurb";
 
 export const metadata = {
-    title: "Academic Press — Ashford & Gray Fusion Academy",
-    description: "Scholarly works and published volumes from Ashford & Gray Fusion Academy — including Beyond Service by Myne Wilfred.",
+    title: "Academic Press — Books by Myne Wilfred on Hospitality & Leadership",
+    description:
+        "Published works from Ashford & Gray Fusion Academy. Books by Myne Wilfred on hospitality management, domestic service, event planning, and leadership — including Beyond Service, Beyond Labour, Hospitality with Authority, and Events with Precision. Available on Amazon.",
+    keywords: [
+        "hospitality books Nigeria",
+        "Myne Wilfred books",
+        "hospitality management book",
+        "Beyond Service Myne Wilfred",
+        "Events with Precision",
+        "Hospitality with Authority",
+        "domestic service book Nigeria",
+        "event management book",
+        "hospitality leadership book Africa",
+    ],
+    alternates: { canonical: "https://www.ashfordandgrayfusionacademy.com/press" },
+    openGraph: {
+        title: "Academic Press — Books by Myne Wilfred | Ashford & Gray",
+        description: "Hospitality management, domestic service, and leadership books by Myne Wilfred. Available on Amazon Kindle and Paperback.",
+        url: "https://www.ashfordandgrayfusionacademy.com/press",
+    },
 };
 
 type Retailer = {
