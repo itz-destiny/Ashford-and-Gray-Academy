@@ -6,6 +6,8 @@ export default function ProgramsPage() {
     "664f3a8b2d1c9e8a7f0e0008", // Diploma in Business Innovation & Entrepreneurship
     "664f3a8b2d1c9e8a7f0e0007", // Diploma in Professional Development & Global Relations
     "664f3a8b2d1c9e8a7f0e0009", // Diploma in Event & Protocol Management
+    "664f3a8b2d1c9e8a7f0e0015", // Diploma in Food & Beverage Management
+    "664f3a8b2d1c9e8a7f0e0016", // Diploma in Hospitality Labour Management & Workforce Development
   ];
 
   return (

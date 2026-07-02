@@ -9,7 +9,7 @@ export default function AcademicProgramsOverview() {
   const pathways = [
     {
       title: "Professional Certifications",
-      description: "Internationally recognised credentials covering housekeeping, hospitality, events & protocol, executive assistance, and global relationship management.",
+      description: "Internationally recognised credentials covering hospitality, food & beverage, events & protocol, executive assistance, restaurant & bar service, labour management, business innovation, and global relationship management.",
       href: "/certifications",
       badge: "Professional Certifications",
       programs: [
@@ -17,12 +17,16 @@ export default function AcademicProgramsOverview() {
         "Hospitality Management",
         "Events and Protocol Management",
         "Executive Assistant Management",
-        "Hospitality and Global Relationship",
+        "Hospitality and Global Relationship Management",
+        "Business Innovation & Entrepreneurship",
+        "Food & Beverage Management",
+        "Hospitality Labour Management",
+        "Restaurant & Bar Service",
       ],
     },
     {
       title: "Diploma Programs",
-      description: "Comprehensive six-month professional diplomas in hospitality, business innovation, professional development, and events management.",
+      description: "Comprehensive six-month professional diplomas in hospitality, food & beverage, business innovation, professional development, events management, and workforce development.",
       href: "/programs",
       badge: "Diploma Programs",
       programs: [
@@ -30,6 +34,8 @@ export default function AcademicProgramsOverview() {
         "Business Innovation and Entrepreneurship",
         "Professional Development and Global Relations",
         "Events and Protocol Management",
+        "Food & Beverage Management",
+        "Hospitality Labour Management & Workforce Development",
       ],
     },
     {
