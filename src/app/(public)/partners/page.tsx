@@ -149,59 +149,56 @@ export default function PartnersPage() {
                         </h2>
                     </div>
 
-                    {/* ── FEATURE: Miss World Nigeria 2026 ─── */}
+                    {/* ── FEATURE: Chukwudi Dimkpa Foundation Partnership ─── */}
                     <div className="bg-[#0B1F3A] border-t-4 border-t-[#C8A96A] p-6 lg:p-10 mb-4">
                         <p className="text-[9px] font-black uppercase tracking-[0.4em] text-[#C8A96A] mb-2">Featured Impact Story</p>
                         <h3 className="text-2xl lg:text-3xl font-serif text-white leading-tight">
-                            Congratulatory Message on the Emergence of<br />
-                            <span className="text-[#C8A96A]">Miss Soye Karibi George as Miss World Nigeria</span>
+                            A Partnership for People. A Commitment to the Future.<br />
+                            <span className="text-[#C8A96A]">Chukwudi Dimkpa Human Capital Development Initiative</span>
                         </h3>
                     </div>
 
-                    {/* ── Card 1: Coined youth message + impact-1 ── */}
+                    {/* ── Card: Dimkpa Foundation write-up + flyer ── */}
                     <div className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] bg-white border border-[#0B1F3A]/10 shadow-sm overflow-hidden">
                         <div className="relative min-h-[420px] lg:min-h-0 bg-[#0B1F3A]">
                             <Image
-                                src="/partners/impact-1.png"
-                                alt="Miss Soye Karibi George — Miss World Nigeria 2026"
+                                src="/partners/dimkpa-initiative-flyer.png"
+                                alt="Chief Engr. Chukwudi Dimkpa Human Capital Development Initiative — 200 Beneficiaries across 23 Local Government Areas of Rivers State"
                                 fill
                                 sizes="(max-width: 1024px) 100vw, 40vw"
                                 className="object-cover object-top"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-[#0B1F3A]/60 via-transparent to-transparent" />
-                            <div className="absolute bottom-0 left-0 right-0 p-6">
-                                <p className="text-[9px] font-black uppercase tracking-[0.35em] text-[#C8A96A]">Miss World Nigeria</p>
-                                <p className="text-white font-serif font-bold text-base leading-snug">Miss Soye Karibi George</p>
-                                <p className="text-white/60 text-[10px] font-black uppercase tracking-widest">2026</p>
-                            </div>
                         </div>
                         <div className="p-8 lg:p-12 flex flex-col justify-center space-y-5 border-l border-[#0B1F3A]/8">
                             <div className="flex items-center gap-3">
                                 <Quote className="w-5 h-5 text-[#C8A96A] flex-shrink-0" />
-                                <span className="text-[9px] font-black uppercase tracking-[0.4em] text-[#0B1F3A]/50">A Message to Miss Soye</span>
+                                <span className="text-[9px] font-black uppercase tracking-[0.4em] text-[#0B1F3A]/50">A Partnership for People</span>
                             </div>
                             <p className="text-[13px] font-serif text-[#0B1F3A] font-bold leading-snug">
-                                To Miss Soye Karibi George — Miss World Nigeria 2026
+                                A Commitment to the Future.
                             </p>
-                            <div className="space-y-3 text-[13px] font-serif text-slate-600 leading-relaxed">
-                                <p>You are more than a crown. You are a declaration.</p>
-                                <p>In a generation often defined by noise and distraction, you have chosen the path of purpose — rising through discipline, beauty, and grace to claim your place on one of the world&apos;s most celebrated stages.</p>
-                                <p>Your emergence as Miss World Nigeria 2026 is a reminder to every young person that excellence is not an accident. It is the product of quiet preparation, courageous determination, and an unwavering belief in one&apos;s potential.</p>
-                                <p>As you carry the green-white-green flag to Vietnam and onto the global stage, know that an entire nation — and the Ashford and Gray Fusion Academy community — rises with you.</p>
-                                <p>We celebrate young people who are not content to simply exist in the world but are determined to shape it. You are that young person. Your crown is not the destination; it is the beginning.</p>
-                                <p>Go forth with wisdom, speak with authority, serve with grace, and let the world see what Nigeria&apos;s finest are truly made of.</p>
-                                <p className="font-bold text-[#0B1F3A]">Congratulations, Miss Soye. The world is yours to inspire.</p>
+                            <div className="space-y-3 text-[13px] font-serif text-slate-600 leading-relaxed max-h-[520px] overflow-y-auto pr-2">
+                                <p>Ashford and Gray Fusion Academy is honoured to announce a landmark partnership with Chief Engr. Chukwudi Dimkpa, through the Chukwudi Dimkpa Foundation, in a bold commitment to human capital development across Rivers State.</p>
+                                <p>Through this remarkable partnership, the Chukwudi Dimkpa Foundation has graciously sponsored 200 beneficiaries across the 23 Local Government Areas of Rivers State, reaffirming its dedication to expanding educational opportunities and empowering individuals through knowledge, leadership, and practical skills development.</p>
+                                <p>This initiative is more than a sponsorship programme: it is a strategic investment in people, potential, and the future of our state.</p>
+                                <p>Through this partnership, 200 deserving individuals will receive professional training, leadership development, practical skills, mentorship, and globally relevant learning opportunities designed to prepare them for meaningful careers, entrepreneurship, and lifelong growth.</p>
+                                <p>At Ashford and Gray Fusion Academy, we have always believed that the greatest investment any society can make is in its people. When opportunities are created, lives are transformed. When education is made accessible, communities become stronger.</p>
+                                <p>We therefore express our profound appreciation to Chief Engr. Chukwudi Dimkpa and the Chukwudi Dimkpa Foundation for embracing this vision and demonstrating, through action, that lasting impact begins with empowering others.</p>
+                                <p>Together, we are building a future where talent is nurtured, leadership is developed, and opportunity reaches every corner of Rivers State.</p>
+                                <p>Today, we celebrate not only a partnership but a shared commitment to developing people and strengthening communities through education.</p>
+                                <p>Thank you, Chief Engr. Chukwudi Dimkpa and the Chukwudi Dimkpa Foundation, for choosing to invest in the dreams, potential, and future of Rivers people.</p>
+                                <p className="font-bold text-[#0B1F3A]">200 Beneficiaries. 23 Local Government Areas. One Shared Vision.</p>
                             </div>
                             <div className="pt-2 border-t border-[#0B1F3A]/8">
                                 <p className="text-[9px] font-black uppercase tracking-[0.35em] text-[#C8A96A]">Ashford &amp; Gray Fusion Academy</p>
-                                <p className="text-[10px] text-slate-400 mt-0.5 italic font-serif">Mastering Luxury, Elevating Business.</p>
+                                <p className="text-[10px] text-slate-400 mt-0.5 italic font-serif">Empowering People. Elevating Futures. Transforming Communities.</p>
                             </div>
                         </div>
                     </div>
 
                 </section>
 
-                {/* ── REVEAL: Second Miss World image ─────── */}
+                {/* ── REVEAL: Dimkpa initiative flyer ─────── */}
                 <RevealImage />
 
                 {/* ── CLOSING STATEMENT ────────────────────── */}
