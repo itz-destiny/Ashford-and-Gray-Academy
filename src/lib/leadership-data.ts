@@ -130,7 +130,7 @@ export const LEADERSHIP: LeadershipMember[] = [
     {
         slug: 'alaibi-nnana-joseph',
         name: 'Alaibi Nnana Joseph',
-        title: 'Member, Executive Management Council',
+        title: 'Media Strategist',
         photo: '/Alaibi Nnana Joseph.jpeg',
         bio: [
             'Alaibi Nnana Joseph is a theatre director, actor, researcher, entrepreneur, and public affairs communicator with a passion for leadership, creativity, and social development. He is a PhD candidate in the Department of Theatre and Film Studies at the University of Port Harcourt, where his research explores contemporary theatre directing through the integration of digital technologies with live performance.',
