@@ -125,7 +125,18 @@ export const LEADERSHIP: LeadershipMember[] = [
             'With professional experience spanning banking operations, administration, accounting, customer relationship management, project coordination, and data systems management, Iminabo has built a reputation for excellence, integrity, and strategic problem-solving.',
             'Beyond her corporate experience, she possesses a deep interest in research, human capital development, mentoring, and effective organizational management. Her academic research focused on employee commitment and incentive systems, reflecting her passion for institutional growth and people development.'
         ]
-    }
+    },
+
+    {
+        slug: 'alaibi-nnana-joseph',
+        name: 'Alaibi Nnana Joseph',
+        title: 'Member, Executive Management Council',
+        photo: '/Alaibi Nnana Joseph.jpeg',
+        bio: [
+            'Alaibi Nnana Joseph is a theatre director, actor, researcher, entrepreneur, and public affairs communicator with a passion for leadership, creativity, and social development. He is a PhD candidate in the Department of Theatre and Film Studies at the University of Port Harcourt, where his research explores contemporary theatre directing through the integration of digital technologies with live performance.',
+            'A trained theatre practitioner, Joseph has directed, acted in, and coordinated several stage productions while mentoring emerging theatre artists. His expertise spans theatre directing, performance studies, production management, script interpretation, and arts administration. He is committed to using the performing arts as a tool for education, cultural preservation, innovation, and national development.',
+        ],
+    },
 ];
 
 export function getLeader(slug: string): LeadershipMember | undefined {

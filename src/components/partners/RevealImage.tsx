@@ -33,8 +33,8 @@ export function RevealImage() {
                 transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
             >
                 <Image
-                    src="/partners/impact-2.png"
-                    alt="Miss Soye Karibi George — Miss World Nigeria 2026"
+                    src="/partners/dimkpa-initiative-flyer.png"
+                    alt="Chukwudi Dimkpa Human Capital Development Initiative — 200 beneficiaries across 23 Local Government Areas of Rivers State"
                     fill
                     sizes="100vw"
                     className="object-cover object-top"
@@ -50,13 +50,13 @@ export function RevealImage() {
                     transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.9 }}
                 >
                     <p className="text-[9px] font-black uppercase tracking-[0.4em] text-[#C8A96A] mb-1">
-                        Miss World Nigeria
+                        Chukwudi Dimkpa Foundation
                     </p>
                     <p className="text-white font-serif text-2xl lg:text-4xl font-bold leading-tight">
-                        Miss Soye Karibi George
+                        Human Capital Development Initiative
                     </p>
                     <p className="text-white/50 text-[10px] font-black uppercase tracking-[0.3em] mt-1">
-                        2026 · Representing Nigeria
+                        200 Beneficiaries · 23 Local Government Areas
                     </p>
                 </motion.div>
             </motion.div>
