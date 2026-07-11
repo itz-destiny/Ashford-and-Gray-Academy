@@ -158,16 +158,21 @@ export default function PartnersPage() {
                         </h3>
                     </div>
 
-                    {/* ── Card: Dimkpa Foundation write-up + flyer ── */}
+                    {/* ── Card: Dimkpa Foundation write-up + portrait ── */}
                     <div className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] bg-white border border-[#0B1F3A]/10 shadow-sm overflow-hidden">
                         <div className="relative min-h-[420px] lg:min-h-0 bg-[#0B1F3A]">
                             <Image
-                                src="/partners/dimkpa-initiative-flyer.png"
-                                alt="Chief Engr. Chukwudi Dimkpa Human Capital Development Initiative — 200 Beneficiaries across 23 Local Government Areas of Rivers State"
+                                src="/partners/chukwudi-dimkpa.png"
+                                alt="Chief Engr. Chukwudi Dimkpa — Chukwudi Dimkpa Foundation"
                                 fill
                                 sizes="(max-width: 1024px) 100vw, 40vw"
                                 className="object-cover object-top"
                             />
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#0B1F3A]/60 via-transparent to-transparent" />
+                            <div className="absolute bottom-0 left-0 right-0 p-6">
+                                <p className="text-[9px] font-black uppercase tracking-[0.35em] text-[#C8A96A]">Chukwudi Dimkpa Foundation</p>
+                                <p className="text-white font-serif font-bold text-base leading-snug">Chief Engr. Chukwudi Dimkpa</p>
+                            </div>
                         </div>
                         <div className="p-8 lg:p-12 flex flex-col justify-center space-y-5 border-l border-[#0B1F3A]/8">
                             <div className="flex items-center gap-3">

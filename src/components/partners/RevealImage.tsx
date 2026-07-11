@@ -33,8 +33,8 @@ export function RevealImage() {
                 transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
             >
                 <Image
-                    src="/partners/dimkpa-initiative-flyer.png"
-                    alt="Chukwudi Dimkpa Human Capital Development Initiative — 200 beneficiaries across 23 Local Government Areas of Rivers State"
+                    src="/partners/chukwudi-dimkpa.png"
+                    alt="Chief Engr. Chukwudi Dimkpa — Chukwudi Dimkpa Foundation"
                     fill
                     sizes="100vw"
                     className="object-cover object-top"
@@ -53,7 +53,7 @@ export function RevealImage() {
                         Chukwudi Dimkpa Foundation
                     </p>
                     <p className="text-white font-serif text-2xl lg:text-4xl font-bold leading-tight">
-                        Human Capital Development Initiative
+                        Chief Engr. Chukwudi Dimkpa
                     </p>
                     <p className="text-white/50 text-[10px] font-black uppercase tracking-[0.3em] mt-1">
                         200 Beneficiaries · 23 Local Government Areas
