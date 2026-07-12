@@ -133,8 +133,11 @@ export const LEADERSHIP: LeadershipMember[] = [
         title: 'Media Strategist',
         photo: '/Alaibi Nnana Joseph.jpeg',
         bio: [
-            'Alaibi Nnana Joseph is a theatre director, actor, researcher, entrepreneur, and public affairs communicator with a passion for leadership, creativity, and social development. He is a PhD candidate in the Department of Theatre and Film Studies at the University of Port Harcourt, where his research explores contemporary theatre directing through the integration of digital technologies with live performance.',
-            'A trained theatre practitioner, Joseph has directed, acted in, and coordinated several stage productions while mentoring emerging theatre artists. His expertise spans theatre directing, performance studies, production management, script interpretation, and arts administration. He is committed to using the performing arts as a tool for education, cultural preservation, innovation, and national development.',
+            'Alaibi Nnana Joseph is a theatre director, actor, researcher, entrepreneur and public affairs communicator with a distinguished passion for leadership, creativity and social development.',
+            'He is currently a PhD candidate in the Department of Theatre and Film Studies at the University of Port Harcourt, where his research explores contemporary theatre directing through the integration of digital technologies with live performance, contributing to emerging conversations on innovation in the performing arts.',
+            'As a trained theatre practitioner, Mr. Joseph has directed, performed in and coordinated numerous stage productions while mentoring emerging theatre artists and creative professionals. His professional expertise spans theatre directing, performance studies, production management, script interpretation, arts administration and strategic communication.',
+            'His work reflects a strong commitment to harnessing the performing arts, digital media and creative storytelling as instruments for education, cultural preservation, institutional development and national advancement.',
+            'At Ashford & Gray Fusion Academy, he brings this unique combination of artistic creativity, communication expertise and digital innovation to strengthen the Academy’s public image and institutional visibility.',
         ],
     },
 ];
