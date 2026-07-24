@@ -17,18 +17,30 @@ export class PaystackError extends Error {
     }
 }
 
-export function getPaystackConfig(env: EnvLike = process.env): PaystackConfig {
+export function getPaystackConfig(
+    env: EnvLike = process.env,
+    opts?: { fallbackOrigin?: string }
+): PaystackConfig {
     const secretKey = env.PAYSTACK_SECRET_KEY;
     if (!secretKey) {
         throw new Error(
             'Paystack is not configured. Set PAYSTACK_SECRET_KEY (and optionally NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY).'
         );
     }
-    const appUrl = env.NEXT_PUBLIC_APP_URL || 'http://localhost:9002';
+
+    const rawAppUrl = env.NEXT_PUBLIC_APP_URL?.trim();
+    const fallbackOrigin = opts?.fallbackOrigin?.trim();
+    const isProd = env.NODE_ENV === 'production';
+    const isLocalhost = rawAppUrl && /https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0)(:|\/|$)/.test(rawAppUrl);
+
+    const baseUrl = rawAppUrl && !(isProd && isLocalhost)
+        ? rawAppUrl
+        : fallbackOrigin || rawAppUrl || 'http://localhost:9002';
+
     return {
         secretKey,
         publicKey: env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY,
-        callbackUrl: `${appUrl.replace(/\/$/, '')}/payments/callback`,
+        callbackUrl: `${baseUrl.replace(/\/$/, '')}/payments/callback`,
     };
 }
 

@@ -26,6 +26,11 @@ describe('getPaystackConfig', () => {
         expect(cfg.callbackUrl).toBe('http://localhost:9002/payments/callback');
     });
 
+    it('uses a provided fallback origin for the callback URL when the app URL is missing', () => {
+        const cfg = getPaystackConfig({ PAYSTACK_SECRET_KEY: 'sk' }, { fallbackOrigin: 'https://academy.example.com' });
+        expect(cfg.callbackUrl).toBe('https://academy.example.com/payments/callback');
+    });
+
     it('throws when PAYSTACK_SECRET_KEY is missing', () => {
         expect(() => getPaystackConfig({})).toThrow(/PAYSTACK_SECRET_KEY/);
     });

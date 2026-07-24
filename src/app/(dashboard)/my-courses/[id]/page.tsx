@@ -16,6 +16,7 @@ import { ChevronRight, PlayCircle, CheckCircle2, MessageSquare, FileText, Lock, 
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { RecordingsList } from '@/components/meeting/RecordingsList';
+import { normalizeCourseContent } from '@/lib/course-content';
 
 export default function CourseViewerPage() {
     const { id: courseId } = useParams();
@@ -45,13 +46,11 @@ export default function CourseViewerPage() {
                 const courseData = await courseRes.json();
                 const contentData = await contentRes.json();
 
+                const normalized = normalizeCourseContent(contentData);
                 setCourse(courseData);
-                setModules(contentData.modules);
-                setLessons(contentData.lessons);
-
-                if (contentData.lessons.length > 0) {
-                    setCurrentLesson(contentData.lessons[0]);
-                }
+                setModules(normalized.modules);
+                setLessons(normalized.lessons);
+                setCurrentLesson(normalized.currentLesson);
             } catch (error) {
                 console.error('Error fetching course data:', error);
             } finally {

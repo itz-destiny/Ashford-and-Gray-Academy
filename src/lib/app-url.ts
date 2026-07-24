@@ -1,3 +1,22 @@
+export function getRequestOrigin(req?: { headers: { get(name: string): string | null } | Headers }): string | undefined {
+    const headers = req?.headers;
+    if (!headers) return undefined;
+
+    const forwardedProto = headers.get?.('x-forwarded-proto')?.split(',')[0]?.trim();
+    const forwardedHost = headers.get?.('x-forwarded-host')?.split(',')[0]?.trim();
+    const host = headers.get?.('host')?.trim();
+
+    if (forwardedProto && forwardedHost) {
+        return `${forwardedProto}://${forwardedHost}`;
+    }
+
+    if (forwardedProto && host) {
+        return `${forwardedProto}://${host}`;
+    }
+
+    return undefined;
+}
+
 /**
  * Canonical resolver for the public app URL used inside every transactional
  * email, signed token URL, and external redirect.
