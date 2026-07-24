@@ -7,6 +7,7 @@ import { withAuth } from '@/lib/auth-server';
 import { PaystackError, verifyTransaction } from '@/lib/paystack';
 import { createNotification } from '@/lib/notifications';
 import { sendEmail, emailTemplates } from '@/lib/email';
+import { adminAuth } from '@/lib/firebase-admin';
 
 const querySchema = z.object({
     reference: z.string().min(1),
@@ -122,6 +123,21 @@ export async function finalizeSuccessfulPayment(params: {
                 transactionId: tx.transactionId || params.verifiedReference,
             });
             await sendEmail({ to: tx.userEmail, subject: tpl.subject, html: tpl.html });
+        }
+
+        const adminRecipients = [
+            process.env.ADMIN_NOTIFICATION_EMAIL,
+            process.env.ADMIN_EMAIL,
+            process.env.CONTACT_EMAIL,
+        ].filter(Boolean) as string[];
+
+        if (adminRecipients.length > 0) {
+            const adminTpl = emailTemplates.systemAlert({
+                userName: tx.userName || tx.userEmail || 'A student',
+                alertTitle: 'New enrollment payment received',
+                alertMessage: `${tx.userName || tx.userEmail || 'A student'} completed payment for ${courseName} (${tx.amount} ${tx.currency || 'NGN'}). Reference: ${tx.transactionId || params.verifiedReference}.`,
+            });
+            await Promise.allSettled(adminRecipients.map((email) => sendEmail({ to: email, subject: adminTpl.subject, html: adminTpl.html })));
         }
     } catch (err) {
         console.error('finalizeSuccessfulPayment side-effects failed:', err);

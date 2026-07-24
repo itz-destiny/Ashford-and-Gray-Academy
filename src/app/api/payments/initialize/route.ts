@@ -4,7 +4,8 @@ import dbConnect from '@/lib/mongodb';
 import Enrollment from '@/models/Enrollment';
 import Transaction from '@/models/Transaction';
 import { withAuth } from '@/lib/auth-server';
-import { initializeTransaction, PaystackError } from '@/lib/paystack';
+import { getRequestOrigin } from '@/lib/app-url';
+import { initializeTransaction, PaystackError, getPaystackConfig } from '@/lib/paystack';
 import { resolveCourse } from '@/lib/resolve-course';
 
 const requestSchema = z.object({
@@ -67,6 +68,7 @@ export const POST = withAuth(async (req: NextRequest, { auth }) => {
         });
 
         const reference = `enr_${pending._id.toString()}`;
+        const paystackConfig = getPaystackConfig(process.env, { fallbackOrigin: getRequestOrigin(req) });
         const init = await initializeTransaction({
             email: auth.email,
             amountKobo,
@@ -77,7 +79,7 @@ export const POST = withAuth(async (req: NextRequest, { auth }) => {
                 userId: auth.uid,
                 transactionId: pending._id.toString(),
             },
-        });
+        }, paystackConfig);
 
         await Transaction.findByIdAndUpdate(pending._id, {
             $set: { transactionId: init.reference },
