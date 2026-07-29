@@ -28,7 +28,7 @@ export function ProfileDialog({
     variant = "secondary",
 }: {
     facilitator: Facilitator;
-    variant?: "primary" | "secondary";
+    variant?: "primary" | "secondary" | "onDark";
 }) {
     const [open, setOpen] = useState(false);
 
@@ -39,6 +39,14 @@ export function ProfileDialog({
                     <Button className="h-12 px-8 bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black text-[10px] uppercase tracking-[0.3em] rounded-none shadow-none border-none">
                         Read Full Profile <ArrowUpRight className="ml-2 h-4 w-4" />
                     </Button>
+                ) : variant === "onDark" ? (
+                    <button
+                        type="button"
+                        className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-white border-b border-[#C8A96A] pb-1 hover:text-[#C8A96A] transition-colors"
+                    >
+                        View Profile
+                        <ArrowUpRight className="h-3.5 w-3.5" />
+                    </button>
                 ) : (
                     <button
                         type="button"
