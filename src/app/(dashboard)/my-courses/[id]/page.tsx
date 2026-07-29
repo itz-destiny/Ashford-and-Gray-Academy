@@ -2,17 +2,18 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useUser, useDirectMessages } from '@/firebase';
 import { apiFetch } from '@/lib/api-client';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
-import { ChevronRight, PlayCircle, CheckCircle2, MessageSquare, FileText, Lock, Menu, X, Send, Calendar, Video } from 'lucide-react';
+import { PlayCircle, CheckCircle2, MessageSquare, FileText, Send, Calendar, Video } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { RecordingsList } from '@/components/meeting/RecordingsList';
@@ -27,8 +28,8 @@ export default function CourseViewerPage() {
     const [modules, setModules] = useState<any[]>([]);
     const [lessons, setLessons] = useState<any[]>([]);
     const [currentLesson, setCurrentLesson] = useState<any>(null);
+    const [liveClasses, setLiveClasses] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
     // Chat State
     const [messages, setMessages] = useState<any[]>([]);
@@ -39,18 +40,23 @@ export default function CourseViewerPage() {
 
         const fetchData = async () => {
             try {
-                const [courseRes, contentRes] = await Promise.all([
+                const [courseRes, contentRes, zoomRes] = await Promise.all([
                     fetch(`/api/courses?id=${courseId}`),
-                    fetch(`/api/courses/${courseId}/content`)
+                    fetch(`/api/courses/${courseId}/content`),
+                    fetch(`/api/courses/${courseId}/live-classes`)
                 ]);
                 const courseData = await courseRes.json();
                 const contentData = await contentRes.json();
+                const zoomData = await zoomRes.json();
 
                 const normalized = normalizeCourseContent(contentData);
                 setCourse(courseData);
                 setModules(normalized.modules);
                 setLessons(normalized.lessons);
                 setCurrentLesson(normalized.currentLesson);
+                if (zoomData.success) {
+                    setLiveClasses(zoomData.classes);
+                }
             } catch (error) {
                 console.error('Error fetching course data:', error);
             } finally {
@@ -107,72 +113,23 @@ export default function CourseViewerPage() {
     if (!course) return <div>Course not found</div>;
 
     return (
-        <div className="flex h-[calc(100vh-4rem)] overflow-hidden -m-4 md:-m-8">
-            {/* Sidebar - Course Content */}
-            <aside className={`${isSidebarOpen ? 'w-96' : 'w-0'} bg-white border-r transition-all duration-500 flex flex-col overflow-hidden shadow-2xl z-20`}>
-                <div className="p-8 border-b flex justify-between items-center bg-[#0B1F3A] text-white">
-                    <div>
-                        <h2 className="font-serif text-xl font-bold tracking-tight">Curriculum</h2>
-                        <p className="text-[9px] uppercase tracking-[0.3em] text-[#C8A96A] mt-1 font-black">Program Modules</p>
-                    </div>
-                    <Button variant="ghost" size="icon" onClick={() => setIsSidebarOpen(false)} className="text-white/60 hover:text-white hover:bg-white/10 rounded-full">
-                        <X className="w-5 h-5" />
-                    </Button>
-                </div>
-                <div className="flex-1 min-h-0 overflow-y-auto bg-white">
-                    {modules.map((mod: any, mIdx: number) => (
-                        <div key={mod._id} className="border-b border-slate-100 last:border-0">
-                            <div className="px-8 py-6 bg-slate-50/50 flex flex-col gap-1">
-                                <span className="text-[9px] font-black text-[#C8A96A] uppercase tracking-[0.2em]">Module 0{mIdx + 1}</span>
-                                <h3 className="font-serif text-lg text-[#0B1F3A] font-bold">{mod.title}</h3>
-                            </div>
-                            <div className="py-2">
-                                {lessons.filter(l => l.moduleId === mod._id).map((lesson: any) => (
-                                    <button
-                                        key={lesson._id}
-                                        onClick={() => setCurrentLesson(lesson)}
-                                        className={`w-full text-left px-8 py-5 flex items-center gap-4 hover:bg-slate-50 transition-all group ${currentLesson?._id === lesson._id ? 'bg-slate-50 border-r-4 border-[#1F7A5A]' : ''
-                                            }`}
-                                    >
-                                        <div className={cn(
-                                            "w-10 h-10 rounded-xl flex items-center justify-center transition-all",
-                                            currentLesson?._id === lesson._id ? "bg-[#1F7A5A] text-white" : "bg-slate-100 text-slate-400 group-hover:bg-slate-200"
-                                        )}>
-                                            {lesson.isLive ? <Calendar className="w-4 h-4" /> : <PlayCircle className="w-4 h-4" />}
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <p className={cn(
-                                                "text-sm font-bold tracking-tight mb-1",
-                                                currentLesson?._id === lesson._id ? "text-[#0B1F3A]" : "text-slate-600"
-                                            )}>{lesson.title}</p>
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">{lesson.duration} Minutes</span>
-                                                {lesson.isLive && <Badge className="bg-orange-500/10 text-orange-600 border-none text-[8px] font-black uppercase tracking-tighter px-2 h-4">Live</Badge>}
-                                            </div>
-                                        </div>
-                                        {lesson.completed && <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />}
-                                    </button>
-                                ))}
-                            </div>
+        <Dialog>
+            <div className="flex h-[calc(100vh-4rem)] overflow-hidden -m-4 md:-m-8">
+                <main className="flex-1 flex flex-col overflow-hidden">
+                    <div className="flex flex-col gap-4 p-4 border-b bg-white md:flex-row md:items-center md:justify-between md:p-6">
+                        <div className="min-w-0 space-y-2">
+                            <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Student course view</p>
+                            <h1 className="text-2xl font-bold text-slate-900 truncate">{course.title}</h1>
                         </div>
-                    ))}
-                </div>
-            </aside>
-
-            {/* Main Content - Player & Tabs */}
-            <main className="flex-1 flex flex-col overflow-hidden">
-                {/* Mobile Header */}
-                {!isSidebarOpen && (
-                    <div className="flex items-center gap-4 p-4 border-b bg-white">
-                        <Button variant="ghost" size="icon" onClick={() => setIsSidebarOpen(true)}>
-                            <Menu className="w-5 h-5" />
-                        </Button>
-                        <h1 className="font-bold truncate">{course.title}</h1>
+                        <DialogTrigger asChild>
+                            <Button variant="outline" className="h-12 rounded-full border-slate-200 text-slate-700 hover:bg-slate-50">
+                                View Curriculum
+                            </Button>
+                        </DialogTrigger>
                     </div>
-                )}
 
-                <ScrollArea className="flex-1">
-                    <div className="p-4 md:p-8 space-y-6">
+                    <ScrollArea className="flex-1">
+                        <div className="p-4 md:p-8 space-y-6">
                         {/* Player Placeholder */}
                         {currentLesson ? (
                             <div className="space-y-6">
@@ -186,27 +143,31 @@ export default function CourseViewerPage() {
                                     ) : (
                                         <div className="w-full h-full flex flex-col items-center justify-center text-white p-8 text-center">
                                             {currentLesson.isLive ? (
-                                                <>
-                                                    <Calendar className="w-16 h-16 text-[#C8A96A] mb-4 animate-pulse" />
-                                                    <h2 className="text-2xl md:text-3xl font-serif font-bold text-white">Live Class Scheduled</h2>
-                                                    <p className="opacity-70 mt-4 text-slate-300 font-medium">{new Date(currentLesson.scheduledAt).toLocaleString()}</p>
-                                                    <div className="flex gap-4 mt-8">
-                                                        <Button 
-                                                            className="h-16 px-10 rounded-full bg-[#1F7A5A] hover:bg-[#1F7A5A]/90 text-white font-black text-[10px] uppercase tracking-widest transition-all shadow-xl"
-                                                            onClick={() => router.push(`/live-classes/course-${courseId}`)}
-                                                        >
-                                                            Join Live Session
-                                                        </Button>
-                                                        <Button variant="outline" className="h-16 px-10 rounded-full border-white/20 text-white hover:bg-white/10 font-bold">
-                                                            Add to Calendar
-                                                        </Button>
-                                                    </div>
-                                                </>
+                                                liveClasses.length > 0 ? (
+                                                    <>
+                                                        <Calendar className="w-16 h-16 text-[#C8A96A] mb-4 animate-pulse" />
+                                                        <h2 className="text-2xl md:text-3xl font-serif font-bold text-white">Next Live Class: {liveClasses[0].topic}</h2>
+                                                        <p className="opacity-70 mt-4 text-slate-300 font-medium">Scheduled for: {new Date(liveClasses[0].startTime).toLocaleString()}</p>
+                                                        <div className="flex gap-4 mt-8">
+                                                            <Button asChild className="h-16 px-10 rounded-full bg-gradient-to-r from-[#1F7A5A] to-[#0B5F47] text-white font-black text-[10px] uppercase tracking-widest transition-all shadow-2xl">
+                                                                <a href={liveClasses[0].zoomJoinUrl} target="_blank" rel="noopener noreferrer">
+                                                                    Join Zoom Class
+                                                                </a>
+                                                            </Button>
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <FileText className="w-16 h-16 text-indigo-400 mb-4" />
+                                                        <h2 className="text-2xl font-bold">No Zoom classes scheduled yet</h2>
+                                                        <p className="opacity-70 mt-2">This programme is delivered through live sessions. If no time is published yet, please hold on and check your timetable for the latest announcement.</p>
+                                                    </>
+                                                )
                                             ) : (
                                                 <>
                                                     <FileText className="w-16 h-16 text-indigo-400 mb-4" />
-                                                    <h2 className="text-2xl font-bold">Reading Material</h2>
-                                                    <p className="opacity-70 mt-2">See resources below for details.</p>
+                                                    <h2 className="text-2xl font-bold">Content is coming soon</h2>
+                                                    <p className="opacity-70 mt-2">Check back later for updates.</p>
                                                 </>
                                             )}
                                         </div>
@@ -222,7 +183,7 @@ export default function CourseViewerPage() {
                                         <h2 className="text-3xl md:text-4xl font-serif font-bold text-[#0B1F3A] tracking-tight">{currentLesson.title}</h2>
                                         <p className="text-slate-500 mt-2 font-medium">{course.title} • Module 0{modules.findIndex(m => m._id === currentLesson.moduleId) + 1}</p>
                                     </div>
-                                    <Button size="lg" className="h-16 px-10 rounded-full bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black text-[10px] uppercase tracking-[0.3em] transition-all shadow-xl">
+                                    <Button size="lg" className="h-16 px-10 rounded-full bg-gradient-to-r from-[#0B1F3A] to-[#1F7A5A] text-white font-black text-[10px] uppercase tracking-[0.3em] transition-all shadow-2xl">
                                         Mark as Complete
                                     </Button>
                                 </div>
@@ -237,7 +198,7 @@ export default function CourseViewerPage() {
                                     </TabsList>
                                     <TabsContent value="overview" className="pt-6">
                                         <div className="prose max-w-none">
-                                            <p>{currentLesson.content || 'No description available for this lesson.'}</p>
+                                            <p>{currentLesson.content || 'This lesson has not been published yet. Your instructor will share the live class details and any relevant resources through the timetable and resources section.'}</p>
                                         </div>
                                     </TabsContent>
                                     <TabsContent value="recordings" className="pt-6">
@@ -245,16 +206,10 @@ export default function CourseViewerPage() {
                                     </TabsContent>
                                     <TabsContent value="resources" className="pt-6">
                                         <Card>
-                                            <CardContent className="p-4 flex flex-col gap-3">
-                                                <div className="flex items-center justify-between p-3 border rounded-lg hover:bg-slate-50 transition-colors">
-                                                    <div className="flex items-center gap-3">
-                                                        <FileText className="w-5 h-5 text-indigo-600" />
-                                                        <div>
-                                                            <p className="font-bold text-sm">Lecture Notes.pdf</p>
-                                                            <p className="text-xs text-slate-500">2.4 MB</p>
-                                                        </div>
-                                                    </div>
-                                                    <Button size="sm" variant="outline">Download</Button>
+                                            <CardContent className="p-6 flex flex-col gap-4">
+                                                <div className="rounded-3xl bg-white shadow-lg p-6 text-center border border-transparent">
+                                                    <p className="font-black text-[#0B1F3A] uppercase tracking-[0.25em] text-[10px]">Resources</p>
+                                                    <p className="mt-3 text-sm text-slate-600 font-medium">Resources will appear here when your instructor shares them for this programme. Until then, please stay tuned for the live class timetable.</p>
                                                 </div>
                                             </CardContent>
                                         </Card>
@@ -314,5 +269,73 @@ export default function CourseViewerPage() {
                 </ScrollArea>
             </main>
         </div>
+
+        <DialogContent className="sm:max-w-5xl p-0 overflow-hidden rounded-[2rem] border-none shadow-2xl bg-white max-h-[90vh] overflow-y-auto">
+            <DialogHeader className="p-8 pb-4">
+                <DialogTitle className="text-3xl font-serif font-bold tracking-tight text-slate-900">Curriculum</DialogTitle>
+                <DialogDescription className="mt-3 text-sm text-slate-500">
+                    Explore all modules and lessons for this course. Select a lesson to continue learning.
+                </DialogDescription>
+            </DialogHeader>
+            <div className="px-8 pb-8">
+                {modules.length === 0 ? (
+                    <div className="rounded-[32px] border border-[#0B1F3A]/10 bg-gradient-to-br from-[#0B1F3A] via-[#11213B] to-[#1F7A5A] p-8 shadow-2xl text-white">
+                        <div className="flex items-center justify-between gap-4 pb-4 border-b border-white/10">
+                            <div>
+                                <p className="text-[10px] font-black uppercase tracking-[0.35em] text-[#C8A96A]">Live class programme</p>
+                                <h3 className="mt-4 text-2xl font-serif font-bold tracking-tight">Class schedule is being prepared</h3>
+                            </div>
+                            <div className="rounded-full bg-white/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.35em] text-[#F8FAFC]">Instructor-led</div>
+                        </div>
+                        <p className="mt-6 text-sm leading-7 text-slate-200/90">
+                            This course is delivered through live sessions. Your instructor will publish the lesson schedule and module breakdown here as soon as it is confirmed.
+                        </p>
+                        <div className="mt-8 grid gap-3 sm:grid-cols-2">
+                            <Button asChild className="h-14 rounded-2xl bg-[#C8A96A] text-[#0B1F3A] font-black uppercase tracking-[0.2em] hover:bg-[#E3D09A]">
+                                <Link href="/my-courses">View course dashboard</Link>
+                            </Button>
+                            <Button asChild variant="outline" className="h-14 rounded-2xl border-white/20 text-white font-black uppercase tracking-[0.2em] hover:bg-white/10">
+                                <Link href="/courses">Browse other live programmes</Link>
+                            </Button>
+                        </div>
+                    </div>
+                ) : modules.map((mod: any, mIdx: number) => (
+                    <div key={mod._id} className="border-b border-slate-100 last:border-0">
+                        <div className="px-8 py-6 bg-slate-50/50 flex flex-col gap-1">
+                            <span className="text-[9px] font-black text-[#C8A96A] uppercase tracking-[0.2em]">Module 0{mIdx + 1}</span>
+                            <h3 className="font-serif text-lg text-[#0B1F3A] font-bold">{mod.title}</h3>
+                        </div>
+                        <div className="py-2">
+                            {lessons.filter(l => l.moduleId === mod._id).map((lesson: any) => (
+                                <button
+                                    key={lesson._id}
+                                    onClick={() => setCurrentLesson(lesson)}
+                                    className={`w-full text-left px-8 py-5 flex items-center gap-4 hover:bg-slate-50 transition-all group ${currentLesson?._id === lesson._id ? 'bg-slate-50 border-r-4 border-[#1F7A5A]' : ''}`}
+                                >
+                                    <div className={cn(
+                                        "w-10 h-10 rounded-xl flex items-center justify-center transition-all",
+                                        currentLesson?._id === lesson._id ? "bg-[#1F7A5A] text-white" : "bg-slate-100 text-slate-400 group-hover:bg-slate-200"
+                                    )}>
+                                        {lesson.isLive ? <Calendar className="w-4 h-4" /> : <PlayCircle className="w-4 h-4" />}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className={cn(
+                                            "text-sm font-bold tracking-tight mb-1",
+                                            currentLesson?._id === lesson._id ? "text-[#0B1F3A]" : "text-slate-600"
+                                        )}>{lesson.title}</p>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">{lesson.duration} Minutes</span>
+                                            {lesson.isLive && <Badge className="bg-orange-500/10 text-orange-600 border-none text-[8px] font-black uppercase tracking-tighter px-2 h-4">Live</Badge>}
+                                        </div>
+                                    </div>
+                                    {lesson.completed && <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </DialogContent>
+    </Dialog>
     );
 }

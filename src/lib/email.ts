@@ -132,7 +132,7 @@ export const emailTemplates = {
         `
     }),
 
-    paymentSuccess: (data: { studentName: string; amount: number; courseName: string; transactionId: string }) => ({
+    paymentSuccess: (data: { studentName: string; amount: number; currency?: string; courseName: string; transactionId: string }) => ({
         subject: 'Payment Successful - Receipt',
         html: `
             <!DOCTYPE html>
@@ -154,23 +154,100 @@ export const emailTemplates = {
                         <h2>✅ Payment Successful</h2>
                     </div>
                     <div class="content">
-                        <p>Hi ${data.studentName},</p>
+                        <p>Hi ${escapeHtml(data.studentName)},</p>
                         <p>Your payment has been processed successfully!</p>
                         <div class="receipt">
                             <div class="receipt-row">
                                 <span>Course:</span>
-                                <strong>${data.courseName}</strong>
+                                <strong>${escapeHtml(data.courseName)}</strong>
                             </div>
                             <div class="receipt-row">
-                                <span>Amount:</span>
-                                <strong class="total">$${data.amount.toFixed(2)}</strong>
+                                <span>Amount Paid:</span>
+                                <strong class="total">${formatCurrency(data.amount, data.currency)}</strong>
                             </div>
                             <div class="receipt-row">
                                 <span>Transaction ID:</span>
-                                <span>${data.transactionId}</span>
+                                <span>${escapeHtml(data.transactionId)}</span>
                             </div>
                         </div>
                         <p>Thank you for your purchase!</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+        `
+    }),
+
+    adminPaymentReceipt: (data: {
+        userName: string;
+        userEmail: string;
+        courseName: string;
+        courseId?: string;
+        amount: number;
+        currency?: string;
+        transactionId: string;
+        paymentMethod?: string;
+        paymentDate?: string;
+    }) => ({
+        subject: `New enrollment payment received for ${data.courseName}`,
+        html: `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                    .header { background: #0B1F3A; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+                    .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+                    .details { background: white; padding: 20px; border-radius: 6px; margin: 20px 0; }
+                    .details-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e5e7eb; }
+                    .details-row:last-child { border-bottom: none; }
+                    .label { color: #64748b; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h2>New Enrollment Payment Received</h2>
+                    </div>
+                    <div class="content">
+                        <p>A student has completed payment. Review the details below:</p>
+                        <div class="details">
+                            <div class="details-row">
+                                <span class="label">Student</span>
+                                <strong>${escapeHtml(data.userName)} (${escapeHtml(data.userEmail)})</strong>
+                            </div>
+                            <div class="details-row">
+                                <span class="label">Course</span>
+                                <strong>${escapeHtml(data.courseName)}</strong>
+                            </div>
+                            ${data.courseId ? `
+                            <div class="details-row">
+                                <span class="label">Course ID</span>
+                                <strong>${escapeHtml(data.courseId)}</strong>
+                            </div>
+                            ` : ''}
+                            <div class="details-row">
+                                <span class="label">Amount Paid</span>
+                                <strong>${formatCurrency(data.amount, data.currency)}</strong>
+                            </div>
+                            <div class="details-row">
+                                <span class="label">Transaction Reference</span>
+                                <strong>${escapeHtml(data.transactionId)}</strong>
+                            </div>
+                            ${data.paymentMethod ? `
+                            <div class="details-row">
+                                <span class="label">Payment Method</span>
+                                <strong>${escapeHtml(data.paymentMethod)}</strong>
+                            </div>
+                            ` : ''}
+                            ${data.paymentDate ? `
+                            <div class="details-row">
+                                <span class="label">Processed At</span>
+                                <strong>${escapeHtml(data.paymentDate)}</strong>
+                            </div>
+                            ` : ''}
+                        </div>
                     </div>
                 </div>
             </body>
@@ -289,6 +366,16 @@ export function newsletterFooter(email: string, unsubscribeUrl: string): string 
             <p style="margin:8px 0 0;color:#94A3B8;font-size:11px;line-height:1.6"><a href="${unsubscribeUrl}" style="color:#64748B;text-decoration:underline">Unsubscribe</a> at any time.</p>
         </div>
     `;
+}
+
+function formatCurrency(amount: number, currency?: string): string {
+    const currencyCode = (currency || 'NGN').toUpperCase();
+    const locale = currencyCode === 'USD' ? 'en-US' : 'en-NG';
+    return new Intl.NumberFormat(locale, {
+        style: 'currency',
+        currency: currencyCode,
+        maximumFractionDigits: 2,
+    }).format(amount);
 }
 
 function escapeHtml(input: string): string {
