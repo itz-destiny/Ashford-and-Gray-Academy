@@ -73,15 +73,31 @@ export default function ManageCoursePage() {
     const [newLesson, setNewLesson] = useState<Record<string, { title: string; videoUrl: string; isLive: boolean; scheduledAt: string }>>({});
     const [adding, setAdding] = useState(false);
 
+    // Zoom scheduling state
+    const [liveClasses, setLiveClasses] = useState<any[]>([]);
+    const [zoomScheduleOpen, setZoomScheduleOpen] = useState(false);
+    const [zoomForm, setZoomForm] = useState({
+        topic: "",
+        description: "",
+        startTime: "",
+        durationMinutes: 60
+    });
+    const [schedulingZoom, setSchedulingZoom] = useState(false);
+
     useEffect(() => {
         if (userLoading || !user || !id) return;
         const load = async () => {
             try {
-                const [courseRes, contentRes] = await Promise.all([
+                const [courseRes, contentRes, zoomRes] = await Promise.all([
                     apiFetch('/api/courses'),
                     apiFetch(`/api/courses/${id}/content`),
+                    apiFetch(`/api/courses/${id}/live-classes`)
                 ]);
-                const [allCourses, content] = await Promise.all([courseRes.json(), contentRes.json()]);
+                const [allCourses, content, zoomData] = await Promise.all([
+                    courseRes.json(), 
+                    contentRes.json(),
+                    zoomRes.json()
+                ]);
                 const mine = Array.isArray(allCourses)
                     ? allCourses.find((c: any) => (c._id || c.id) === id)
                     : null;
@@ -103,9 +119,11 @@ export default function ManageCoursePage() {
                 });
                 setModules(content.modules || []);
                 setLessons(content.lessons || []);
+                if (zoomData.success) {
+                    setLiveClasses(zoomData.classes);
+                }
             } catch (err) {
-                console.error('manage course load failed:', err);
-                toast({ variant: "destructive", title: "Load failed", description: "Could not load course." });
+                console.error("Failed to load course details", err);
             } finally {
                 setLoading(false);
             }
@@ -201,20 +219,41 @@ export default function ManageCoursePage() {
             const res = await apiFetch(`/api/courses/${id}/content?type=lesson&id=${lessonId}`, { method: 'DELETE' });
             if (!res.ok) throw new Error('Delete failed.');
             setLessons(l => l.filter(x => x._id !== lessonId));
-        } catch (err: any) {
-            toast({ variant: "destructive", title: "Failed", description: err?.message });
+        } catch (error) {
+            toast({ variant: "destructive", title: "Error", description: "Failed to delete lesson" });
         }
     };
 
-    const handleDeleteModule = async (moduleId: string) => {
-        if (!confirm('Delete this module and all its lessons?')) return;
+    const handleScheduleZoom = async () => {
+        if (!zoomForm.topic || !zoomForm.startTime) {
+            toast({ variant: "destructive", title: "Missing fields", description: "Topic and Start Time are required." });
+            return;
+        }
+        setSchedulingZoom(true);
         try {
-            const res = await apiFetch(`/api/courses/${id}/content?type=module&id=${moduleId}`, { method: 'DELETE' });
-            if (!res.ok) throw new Error('Delete failed.');
-            setModules(m => m.filter(x => x._id !== moduleId));
-            setLessons(l => l.filter(x => x.moduleId !== moduleId));
-        } catch (err: any) {
-            toast({ variant: "destructive", title: "Failed", description: err?.message });
+            const res = await apiFetch(`/api/zoom/meetings`, {
+                method: "POST",
+                body: JSON.stringify({
+                    courseId: id,
+                    topic: zoomForm.topic,
+                    description: zoomForm.description,
+                    startTime: new Date(zoomForm.startTime).toISOString(),
+                    durationMinutes: Number(zoomForm.durationMinutes)
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                setLiveClasses([...liveClasses, data.liveClass]);
+                setZoomScheduleOpen(false);
+                toast({ title: "Zoom Class Scheduled", description: "The live class has been added to the timetable." });
+                setZoomForm({ topic: "", description: "", startTime: "", durationMinutes: 60 });
+            } else {
+                throw new Error(data.error);
+            }
+        } catch (error: any) {
+            toast({ variant: "destructive", title: "Error", description: error.message || "Failed to schedule class." });
+        } finally {
+            setSchedulingZoom(false);
         }
     };
 
@@ -320,13 +359,73 @@ export default function ManageCoursePage() {
                             <Send className="h-4 w-4" /> Submit for review
                         </Button>
                     )}
-                    <Button asChild className="bg-[#1F7A5A] hover:bg-[#1F7A5A]/90 text-white rounded-xl font-bold gap-2">
-                        <Link href={`/live-classes/course-${course._id}`}>
-                            <Video className="h-4 w-4" /> Start Live Class
-                        </Link>
-                    </Button>
+                    <Dialog open={zoomScheduleOpen} onOpenChange={setZoomScheduleOpen}>
+                        <DialogTrigger asChild>
+                            <Button className="bg-[#1F7A5A] hover:bg-[#1F7A5A]/90 text-white rounded-xl font-bold gap-2">
+                                <Video className="h-4 w-4" /> Schedule Zoom Class
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[425px]">
+                            <DialogHeader>
+                                <DialogTitle>Schedule Zoom Class</DialogTitle>
+                                <DialogDescription>Create a new Zoom meeting for this course.</DialogDescription>
+                            </DialogHeader>
+                            <div className="grid gap-4 py-4">
+                                <div className="space-y-2">
+                                    <Label>Topic / Title</Label>
+                                    <Input value={zoomForm.topic} onChange={e => setZoomForm({...zoomForm, topic: e.target.value})} placeholder="e.g. Week 1: Introduction" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Description (Optional)</Label>
+                                    <Input value={zoomForm.description} onChange={e => setZoomForm({...zoomForm, description: e.target.value})} placeholder="Brief agenda" />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label>Start Time</Label>
+                                        <Input type="datetime-local" value={zoomForm.startTime} onChange={e => setZoomForm({...zoomForm, startTime: e.target.value})} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Duration (mins)</Label>
+                                        <Input type="number" min={15} max={300} value={zoomForm.durationMinutes} onChange={e => setZoomForm({...zoomForm, durationMinutes: Number(e.target.value)})} />
+                                    </div>
+                                </div>
+                            </div>
+                            <DialogFooter>
+                                <Button variant="ghost" onClick={() => setZoomScheduleOpen(false)}>Cancel</Button>
+                                <Button onClick={handleScheduleZoom} disabled={schedulingZoom}>{schedulingZoom ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Schedule Meeting'}</Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
                 </div>
             </div>
+
+            {liveClasses.length > 0 && (
+                <Card className="border-none bg-indigo-50/50 rounded-[2.5rem] shadow-sm">
+                    <CardHeader className="p-8 pb-4">
+                        <CardTitle className="text-lg font-black text-[#0B1F3A] flex items-center gap-2">
+                            <Video className="h-5 w-5 text-indigo-600" /> Scheduled Zoom Classes
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-8 pt-0 space-y-4">
+                        {liveClasses.map(cls => (
+                            <div key={cls._id} className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-white rounded-2xl border border-indigo-100/50 shadow-sm gap-4">
+                                <div>
+                                    <h4 className="font-bold text-[#0B1F3A]">{cls.topic}</h4>
+                                    <p className="text-xs text-slate-500 font-medium">{new Date(cls.startTime).toLocaleString()} · {cls.durationMinutes} mins</p>
+                                </div>
+                                <div className="flex gap-2">
+                                    <Button asChild variant="outline" size="sm" className="rounded-xl border-slate-200">
+                                        <a href={cls.zoomJoinUrl} target="_blank" rel="noopener noreferrer">Guest Link</a>
+                                    </Button>
+                                    <Button asChild size="sm" className="bg-[#1F7A5A] text-white rounded-xl">
+                                        <a href={cls.zoomStartUrl} target="_blank" rel="noopener noreferrer">Start as Host</a>
+                                    </Button>
+                                </div>
+                            </div>
+                        ))}
+                    </CardContent>
+                </Card>
+            )}
 
             <div className="grid gap-6 md:grid-cols-3">
                 <Card className="border-none bg-white rounded-[2rem] shadow-sm">

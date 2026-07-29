@@ -28,7 +28,7 @@ export const LEADERSHIP: LeadershipMember[] = [
     {
         slug: 'cecilia-iniperitiari-dikibo',
         name: 'Cecilia Iniperitiari Dikibo',
-        title: 'Director, Brands Strategy',
+        title: 'Vice President/ Director Brand Strategy',
         photo: '/Cecilia Iniperitiari Dikibo.jpeg',
         bio: [
             'Cecilia Iniperitiari Dikibo is a Nigerian Brand Strategist, Outdoor Advertising Professional, and Corporate Communications Specialist with extensive experience in strategic brand visibility, media communications, and out-of-home (OOH) advertising.',
@@ -138,6 +138,22 @@ export const LEADERSHIP: LeadershipMember[] = [
             'As a trained theatre practitioner, Mr. Joseph has directed, performed in and coordinated numerous stage productions while mentoring emerging theatre artists and creative professionals. His professional expertise spans theatre directing, performance studies, production management, script interpretation, arts administration and strategic communication.',
             'His work reflects a strong commitment to harnessing the performing arts, digital media and creative storytelling as instruments for education, cultural preservation, institutional development and national advancement.',
             'At Ashford & Gray Fusion Academy, he brings this unique combination of artistic creativity, communication expertise and digital innovation to strengthen the Academy’s public image and institutional visibility.',
+        ],
+    },
+
+    {
+        slug: 'christopher-etete-sobere',
+        name: 'Christopher Etete Sobere',
+        title: 'Director, Quality Assurance and Quality Control',
+        photo: '/Christopher Etete Sobere.jpeg',
+        bio: [
+            'Comrade Christopher Etete Sobere is an accomplished public sector finance and governance professional with a distinguished record of service in accounting, institutional administration, compliance, and quality assurance. His career reflects a deep commitment to accountability, organizational excellence, and public service.',
+            'He currently serves as Chief Accountant with the Ahoada West Local Government Council, following progressive appointments as Payroll Accountant and Senior Council Accountant. Beyond his primary responsibilities, he serves as Secretary of the Accountants’ Forum for the 23 Local Government Councils of Rivers State, where he contributes to professional collaboration and the advancement of financial management practices across the local government system.',
+            'A respected labour leader, Christopher is the State Publicity Secretary of the Nigeria Union of Local Government Employees (NULGE), Rivers State Council, and a member of the State Executive Council (SEC). His leadership journey is marked by several pioneering milestones, including becoming the first Young Workers’ Representative from the South-South region to serve at both the State and Regional levels of NULGE. He also previously represented NULGE at the Nigeria Labour Congress (NLC) as the State School Representative, demonstrating his longstanding commitment to advocacy, leadership, and workforce development.',
+            'His public service experience extends to strategic governance through his appointment as a Board Member of the Rivers State Waste Management Agency (RIWAMA), where he contributed to policy formulation, institutional oversight, and strategic decision-making. He also serves as a Member of the State Decommissioning Board (SDB), providing oversight and collaborating with stakeholders to ensure the effective implementation of the Board’s objectives.',
+            'Christopher holds a Bachelor of Education (B.Ed.) in Education and Accounting and is a trained Health, Safety and Environment (HSE) Professional, with additional certification in Safety at Sea. He is currently pursuing professional qualifications with ICAD and ILGA, reflecting his commitment to continuous learning and professional growth.',
+            'His professional interests span quality assurance, institutional governance, compliance, human capacity development, research, information and communication technology, and organizational transformation. He is passionate about building systems that promote efficiency, accountability, and sustainable institutional excellence.',
+            'In recognition of his wealth of experience and unwavering commitment to high standards, he serves as the Director of Quality Control & Assurance at Ashford & Gray Fusion Academy (AGFA), where he provides strategic leadership in strengthening institutional quality systems, promoting continuous improvement, and ensuring that the Academy consistently delivers on its commitment to excellence.',
         ],
     },
 ];

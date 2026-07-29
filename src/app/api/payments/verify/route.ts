@@ -132,10 +132,16 @@ export async function finalizeSuccessfulPayment(params: {
         ].filter(Boolean) as string[];
 
         if (adminRecipients.length > 0) {
-            const adminTpl = emailTemplates.systemAlert({
-                userName: tx.userName || tx.userEmail || 'A student',
-                alertTitle: 'New enrollment payment received',
-                alertMessage: `${tx.userName || tx.userEmail || 'A student'} completed payment for ${courseName} (${tx.amount} ${tx.currency || 'NGN'}). Reference: ${tx.transactionId || params.verifiedReference}.`,
+            const adminTpl = emailTemplates.adminPaymentReceipt({
+                userName: tx.userName || 'Student',
+                userEmail: tx.userEmail || 'Unknown',
+                courseName,
+                courseId: courseId.toString(),
+                amount: tx.amount,
+                currency: tx.currency,
+                transactionId: tx.transactionId || params.verifiedReference,
+                paymentMethod: tx.paymentMethod || 'Paystack',
+                paymentDate: tx.processedAt?.toISOString(),
             });
             await Promise.allSettled(adminRecipients.map((email) => sendEmail({ to: email, subject: adminTpl.subject, html: adminTpl.html })));
         }

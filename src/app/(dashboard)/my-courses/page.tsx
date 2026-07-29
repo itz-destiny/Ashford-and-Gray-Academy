@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { BookOpen, Clock, Award, Play, ChevronRight, Search, Filter } from 'lucide-react';
+import { BookOpen, Clock, Award, Play, ChevronRight, Search, Calendar, Sparkles, MessagesSquare } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -63,8 +63,8 @@ export default function MyCoursesPage() {
       {/* Header & Stats Section */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
         <div>
-          <h1 className="text-4xl font-black text-slate-900 tracking-tight mb-2">My Learning Journey</h1>
-          <p className="text-slate-500 font-medium">Manage your active courses and track your academic progress.</p>
+          <h1 className="text-4xl font-black tracking-tight mb-2 bg-gradient-to-r from-[#0B1F3A] via-[#1F7A5A] to-[#C8A96A] bg-clip-text text-transparent">My Live Learning Journey</h1>
+          <p className="text-slate-400 font-medium max-w-xl">Your programme is delivered through expertly-led live classes. Timetables and resources are published by instructors — this space reflects your upcoming live sessions and materials.</p>
         </div>
 
         <div className="flex gap-4 w-full lg:w-auto overflow-x-auto pb-2 sm:pb-0">
@@ -87,10 +87,10 @@ export default function MyCoursesPage() {
 
       {/* Featured Resume Course */}
       {inProgress.length > 0 && (
-        <Card className="border-none bg-[#0B1F3A] rounded-[40px] overflow-hidden relative group">
+        <Card className="border-none rounded-[40px] overflow-hidden relative group shadow-2xl ring-1 ring-slate-900/5 bg-gradient-to-r from-[#041423] to-[#07293b]">
           <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-[#C8A96A]/10 to-transparent z-0" />
           <CardContent className="p-10 relative z-10 flex flex-col md:flex-row gap-10 items-center">
-            <div className="relative w-full md:w-64 h-40 rounded-3xl overflow-hidden">
+            <div className="relative w-full md:w-64 h-40 rounded-3xl overflow-hidden shadow-lg">
               <Image
                 src={inProgress[0].course?.imageUrl || ""}
                 alt="Continue Learning"
@@ -106,26 +106,26 @@ export default function MyCoursesPage() {
 
             <div className="flex-1 space-y-6 text-center md:text-left">
               <div className="space-y-2">
-                <Badge className="bg-[#C8A96A]/20 text-[#C8A96A] border-none px-3 py-1 font-black text-[10px] tracking-widest">RESUME LEARNING</Badge>
+                <Badge className="bg-[#C8A96A]/20 text-[#C8A96A] border-none px-3 py-1 font-black text-[10px] tracking-widest">LIVE CLASS TRACKER</Badge>
                 <h2 className="text-3xl font-black text-white leading-tight font-serif">{inProgress[0].course?.title}</h2>
                 <div className="flex items-center justify-center md:justify-start gap-4 text-slate-300 text-sm font-medium">
-                  <span className="flex items-center gap-1.5"><Clock className="w-4 h-4" /> 12h remaining</span>
+                  <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4" /> Your next class time will appear in your timetable</span>
                   <span>•</span>
                   <span>{inProgress[0].course?.category}</span>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <div className="flex justify-between items-end text-xs font-black text-[#C8A96A] uppercase tracking-widest">
+                <div className="flex justify-between items-end text-xs font-black text-[#E6D6B8] uppercase tracking-widest">
                   <span>Current Progress</span>
                   <span>{inProgress[0].course?.progress}%</span>
                 </div>
                 <Progress value={inProgress[0].course?.progress} className="h-2 bg-white/10" />
               </div>
 
-              <Button asChild className="bg-white text-slate-900 hover:bg-slate-100 font-black h-12 px-10 rounded-2xl group/btn">
+              <Button asChild className="h-12 px-10 rounded-2xl group/btn bg-gradient-to-r from-[#F5E0B3] to-[#C8A96A] text-slate-900 font-semibold shadow-md hover:opacity-95">
                 <Link href={`/my-courses/${inProgress[0].id}`}>
-                  Continue Lecture <ChevronRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  Open Live Class Desk <ChevronRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Button>
             </div>
@@ -175,8 +175,8 @@ function CourseGrid({ items }: { items: Enrollment[] }) {
           <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto text-slate-400">
             <BookOpen className="w-8 h-8" />
           </div>
-          <h3 className="text-lg font-black text-slate-900">No courses found</h3>
-          <p className="text-slate-400 font-medium text-sm">You haven't enrolled in any courses that match this view.</p>
+          <h3 className="text-lg font-black text-slate-900">No live classes yet</h3>
+          <p className="text-slate-400 font-medium text-sm">Your timetable will show your upcoming live sessions once your instructor publishes the schedule.</p>
           <Button asChild variant="outline" className="rounded-xl border-slate-200">
             <Link href="/courses">Explore Catalog</Link>
           </Button>
@@ -188,7 +188,7 @@ function CourseGrid({ items }: { items: Enrollment[] }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
       {items.map((en) => (
-        <Card key={en.id} className="group border-none bg-white rounded-[32px] overflow-hidden flex flex-col border border-slate-50 hover:-translate-y-2 transition-all duration-500">
+        <Card key={en.id} className="group border-none bg-white rounded-[32px] overflow-hidden flex flex-col border border-slate-50 hover:-translate-y-2 transform transition-all duration-500 shadow-lg">
           <div className="relative h-48">
             <Image
               src={en.course?.imageUrl || ""}
@@ -197,7 +197,7 @@ function CourseGrid({ items }: { items: Enrollment[] }) {
               className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
             <div className="absolute top-4 right-4">
-              <Badge className="bg-white/90 backdrop-blur text-slate-900 font-black text-[9px] uppercase tracking-widest border-none px-3 py-1">
+              <Badge className="bg-white/95 backdrop-blur-sm text-slate-900 font-black text-[10px] uppercase tracking-widest border-none px-3 py-1 shadow-sm">
                 {en.course?.category}
               </Badge>
             </div>
@@ -207,16 +207,18 @@ function CourseGrid({ items }: { items: Enrollment[] }) {
             <h3 className="font-black text-slate-900 leading-tight group-hover:text-indigo-600 transition-colors line-clamp-2">{en.course?.title}</h3>
 
             <div className="space-y-3 mt-auto">
-              <div className="flex justify-between items-end text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                <span>Course Progress</span>
-                <span className="text-[#1F7A5A]">{en.course?.progress || 0}%</span>
+              <div className="flex items-center gap-2 text-[10px] font-black text-[#C8A96A] uppercase tracking-widest">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Live class experience</span>
               </div>
-              <Progress value={en.course?.progress} className="h-1.5 bg-slate-50" />
+              <p className="text-sm text-slate-600 font-medium leading-relaxed">
+                {en.course?.progress === 100 ? 'Your class schedule is complete and resources are available here.' : 'Class timings will be shared in your timetable. Until then, please hold on for the live session announcement.'}
+              </p>
             </div>
 
-            <Button asChild variant="outline" className="w-full h-11 rounded-xl border-slate-100 bg-slate-50 hover:bg-[#0B1F3A] text-slate-600 font-bold transition-all group-hover:text-white group-hover:border-[#0B1F3A]">
+            <Button asChild variant="outline" className="w-full h-11 rounded-xl border-slate-100 bg-gradient-to-r from-white to-slate-50 hover:from-[#F5E0B3] hover:to-[#EFD9A3] text-slate-700 font-semibold transition-all group-hover:text-white group-hover:border-[#0B1F3A] shadow-sm">
               <Link href={`/my-courses/${en.id}`}>
-                {en.course?.progress === 100 ? "Review Material" : "Continue Lesson"}
+                {en.course?.progress === 100 ? 'View Resources' : 'Open Course Desk'}
               </Link>
             </Button>
           </div>

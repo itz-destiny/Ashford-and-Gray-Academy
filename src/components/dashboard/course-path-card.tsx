@@ -2,6 +2,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -15,6 +16,7 @@ interface CoursePathCardProps {
     hoursRemaining?: number;
     nextTopic?: string;
     imageUrl: string;
+    href: string;
 }
 
 export function CoursePathCard({
@@ -23,7 +25,8 @@ export function CoursePathCard({
     progress,
     hoursRemaining,
     nextTopic,
-    imageUrl
+    imageUrl,
+    href
 }: CoursePathCardProps) {
     return (
         <Card className="flex flex-col md:flex-row gap-8 p-6 rounded-none border border-[#0B1F3A]/10 border-t-4 border-t-[#C8A96A] bg-white shadow-md hover:shadow-xl transition-all duration-700 group overflow-hidden">
@@ -75,9 +78,11 @@ export function CoursePathCard({
                         <Progress value={progress} className="h-1.5 bg-[#0B1F3A]/5 rounded-none [&>div]:bg-[#C8A96A] [&>div]:rounded-none" />
                     </div>
                     <div className="flex justify-end">
-                        <Button className="bg-[#0B1F3A] hover:bg-[#C8A96A] hover:text-[#0B1F3A] text-white font-black rounded-none px-10 py-5 h-auto text-[10px] uppercase tracking-widest transition-all shadow-none hover:translate-x-1 group/btn">
-                            {progress === 0 ? "Authorize Commencement" : "Resume Mastery"}
-                            <ArrowRight className="ml-2 w-4 h-4 opacity-0 -translate-x-2 group-hover/btn:opacity-100 group-hover/btn:translate-x-0 transition-all" />
+                        <Button asChild className="bg-[#0B1F3A] hover:bg-[#C8A96A] hover:text-[#0B1F3A] text-white font-black rounded-none px-10 py-5 h-auto text-[10px] uppercase tracking-widest transition-all shadow-none hover:translate-x-1 group/btn">
+                            <Link href={href}>
+                                {progress === 0 ? "Authorize Commencement" : "Resume Mastery"}
+                                <ArrowRight className="ml-2 w-4 h-4 opacity-0 -translate-x-2 group-hover/btn:opacity-100 group-hover/btn:translate-x-0 transition-all" />
+                            </Link>
                         </Button>
                     </div>
                 </div>
