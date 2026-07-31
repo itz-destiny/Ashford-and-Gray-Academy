@@ -21,7 +21,7 @@ export function BrandPanel() {
             </div>
 
             <div className="relative z-10 p-12 lg:p-16 flex flex-col h-full">
-                <Logo variant="white" />
+                <Logo variant="white" imgClassName="h-28 w-[28rem] md:h-28 md:w-[28rem]" />
 
                 <div className="flex-1 flex flex-col justify-center max-w-xl">
                     <div className="flex items-center gap-3 mb-8">
@@ -41,7 +41,7 @@ export function BrandPanel() {
                             True luxury is not excess — it is precision, discipline, and excellence expressed effortlessly.
                         </p>
                         <footer className="mt-4 text-[10px] font-black uppercase tracking-[0.3em] text-[#C8A96A]">
-                            Myne Wilfred · Founder/President
+                            Ashford &amp; Gray Fusion Academy
                         </footer>
                     </blockquote>
                 </div>
