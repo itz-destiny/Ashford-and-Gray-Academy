@@ -219,7 +219,7 @@ export const STATIC_COURSES: Course[] = [
     duration: 12,
     level: "Intermediate",
     price: 150000,
-    imageUrl: "/COURSE%20IMAGES/Events%20and%20Protocol/eventandprotocol.png",
+    imageUrl: "/events-protocol-management-certificate.png",
     imageHint: "Professional events and official protocol systems.",
     description: "The Events & Protocol Management Certificate Program at Ashford and Gray Fusion Academy is a comprehensive professional training designed to equip learners with the strategic, operational, and executive-level skills required to successfully manage events, ceremonies, corporate functions, VIP engagements, and protocol operations.\n\nThis program blends modern event management practices with international protocol standards, preparing participants to confidently coordinate high-level events with precision, professionalism, discretion, and excellence. Learners will gain practical knowledge in event planning, vendor coordination, budgeting, security management, crisis communication, crowd control, official protocol, and high-profile guest relations.\n\nDesigned to meet global industry expectations, the program focuses on developing professionals capable of delivering seamless experiences within corporate, diplomatic, hospitality, entertainment, and executive environments.",
     whoFor: [
@@ -1011,7 +1011,7 @@ export const STATIC_COURSES: Course[] = [
     duration: 12,
     level: "Beginner",
     price: 150000,
-    imageUrl: "/imagefx-1.png",
+    imageUrl: "/business-innovation-entrepreneurship-certificate.png",
     imageHint: "Entrepreneurs collaborating on a business plan",
     description: "The Certificate in Business Innovation & Entrepreneurship is designed to provide participants with foundational knowledge and practical skills required to start, manage, and grow small businesses in today's competitive environment. The program introduces learners to entrepreneurship, innovation, business planning, branding, customer engagement, and digital business tools while equipping them with practical strategies for identifying opportunities and creating sustainable value.",
     whoFor: [
