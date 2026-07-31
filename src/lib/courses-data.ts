@@ -16,7 +16,7 @@ export const STATIC_COURSES: Course[] = [
     duration: 12,
     level: "Intermediate",
     price: 150000,
-    imageUrl: "/african_luxury_domestic.png",
+    imageUrl: "/housekeeping-domestic-management-certificate.png",
     imageHint: "Housekeeping operations and domestic management systems.",
     description: "The Housekeeping & Domestic Management Certificate Program at Ashford and Gray Fusion Academy is a professionally structured training designed to equip learners with practical, executive-level skills in housekeeping operations, domestic management, wardrobe coordination, and luxury service standards.\n\nThis program combines industry-based techniques with modern hospitality practices to prepare students for excellence in residential, hospitality, and executive service environments. Participants will gain hands-on knowledge in cleaning systems, hygiene protocols, wardrobe care, household coordination, client preference management, and luxury domestic operations.\n\nThe program is intentionally designed to reflect international hospitality standards while remaining practical, applicable, and career-focused.",
     whoFor: [
@@ -116,7 +116,7 @@ export const STATIC_COURSES: Course[] = [
     duration: 12,
     level: "Intermediate",
     price: 150000,
-    imageUrl: "/african_hospitality_management.png",
+    imageUrl: "/hospitality-management-certificate.png",
     imageHint: "Hospitality and luxury concierge services.",
     description: "The Hospitality Management Certificate Program at Ashford and Gray Fusion Academy is a premium professional training designed to develop highly skilled hospitality professionals equipped to operate within luxury, corporate, executive, and international service environments.\n\nThis program combines the principles of hospitality excellence, executive service delivery, guest relations, protocol management, and luxury client experience into a structured, industry-focused curriculum. Participants will gain practical knowledge in butlering, concierge services, VIP coordination, communication, customer retention, conflict resolution, and high-end hospitality operations.\n\nBuilt on global hospitality standards, the program prepares learners to confidently manage guests, clients, events, and service operations with professionalism, discretion, and precision.",
     whoFor: [
@@ -322,7 +322,7 @@ export const STATIC_COURSES: Course[] = [
     duration: 12,
     level: "Intermediate",
     price: 150000,
-    imageUrl: "/african_executive_assistant.png",
+    imageUrl: "/executive-assistant-management-certificate.png",
     imageHint: "Executive assistance, time management, and corporate operations.",
     description: "The Executive Assistant Management Certificate Program at Ashford and Gray Fusion Academy is a high-level professional training designed to prepare participants for strategic support roles within executive, corporate, diplomatic, hospitality, and luxury service environments.\n\nThis program equips learners with the practical, organizational, communication, and leadership skills required to effectively manage executives, high-net-worth individuals, business operations, schedules, travel coordination, confidential communication, and corporate engagements. Participants will also gain insight into luxury concierge services, lifestyle management, protocol, executive decision support, and crisis handling.\n\nCombining administrative excellence with executive-level professionalism, the program is structured to develop highly competent professionals capable of operating with discretion, precision, and confidence in demanding environments.",
     whoFor: [
@@ -426,7 +426,7 @@ export const STATIC_COURSES: Course[] = [
     duration: 12,
     level: "Intermediate",
     price: 150000,
-    imageUrl: "/african_global_relationships.png",
+    imageUrl: "/hospitality-global-relationship-certificate.png",
     imageHint: "International relations, global business, and diplomatic protocol.",
     description: "The Hospitality & Global Relationship Management Certificate Program at Ashford and Gray Fusion Academy is a professionally designed training focused on developing globally minded professionals equipped with the skills required to navigate international business environments, diplomatic engagements, negotiation processes, and cross-cultural relationships.\n\nThis program blends hospitality excellence with international relations, business diplomacy, negotiation strategy, conflict management, and global communication practices. Participants will gain practical knowledge in diplomatic protocol, international business ethics, mediation, workplace dispute resolution, and strategic relationship management.\n\nStructured to meet international standards, the program prepares learners to confidently operate within corporate, diplomatic, hospitality, governmental, and multinational environments where professionalism, negotiation, and relationship management are critical.",
     whoFor: [
@@ -1082,7 +1082,7 @@ export const STATIC_COURSES: Course[] = [
     duration: 12,
     level: "Intermediate",
     price: 150000,
-    imageUrl: "/imagefx-2.png",
+    imageUrl: "/food-beverage-management-certificate.png",
     imageHint: "Elegant restaurant table service and beverage presentation",
     description: "The Certificate in Food & Beverage Management is designed to provide participants with foundational knowledge and practical skills in food service operations, restaurant management, customer service, food safety, and beverage operations. The program equips learners with the essential competencies required to work effectively in restaurants, hotels, catering organizations, lounges, event operations, and hospitality establishments.",
     whoFor: [
@@ -1153,7 +1153,7 @@ export const STATIC_COURSES: Course[] = [
     duration: 12,
     level: "Intermediate",
     price: 150000,
-    imageUrl: "/imagefx-3.png",
+    imageUrl: "/hospitality-labour-management-certificate.png",
     imageHint: "Hospitality team leader in a briefing with staff",
     description: "The Certificate in Hospitality Labour Management is designed to equip participants with practical knowledge and essential skills required for effective workforce supervision, employee relations, labour coordination, and people management within hospitality and service organizations. The program provides participants with foundational competencies in labour management, workforce planning, staff development, workplace ethics, employee welfare, and organizational culture.",
     whoFor: [
@@ -1228,7 +1228,7 @@ export const STATIC_COURSES: Course[] = [
     duration: 12,
     level: "Intermediate",
     price: 150000,
-    imageUrl: "/imagefx-4.png",
+    imageUrl: "/restaurant-bar-service-certificate.png",
     imageHint: "Professional waiter presenting fine dining table service",
     description: "The Certificate in Restaurant & Bar Service is a practical hospitality program designed to equip participants with professional knowledge and service competencies required for effective restaurant and bar operations. The program focuses on service excellence, guest experience, table service procedures, beverage service, bar operations, wine and spirits knowledge, and professional hospitality etiquette. Participants will develop the technical, interpersonal, and operational skills necessary to deliver exceptional dining and beverage experiences in hotels, restaurants, resorts, lounges, clubs, and other hospitality establishments.",
     whoFor: [
@@ -1492,7 +1492,7 @@ export const STATIC_COURSES: Course[] = [
     duration: 4,
     level: "Executive",
     price: 150000,
-    imageUrl: "/butler.jpg.jpeg",
+    imageUrl: "/silent-standard-certificate.png",
     imageHint: "Executive leadership and operational excellence.",
     description: "The Silent Standard Certification Program at Ashford and Gray Fusion Academy is a premium executive-level professional development program designed to cultivate disciplined leaders, operational strategists, hospitality professionals, executive managers, and institutional thinkers capable of delivering excellence with precision, structure, and authority.\n\nBuilt on the philosophy that true excellence is intentional, structured, and consistently sustained, this program focuses on developing professionals who understand the power of systems, discipline, operational intelligence, discretion, leadership, and institutional order.\n\nThe program combines executive management principles, hospitality excellence, estate operations, leadership psychology, protocol systems, organizational governance, and strategic positioning into a transformational learning experience tailored for individuals operating within high-performance environments.\n\nUnlike conventional professional training, The Silent Standard Certification Program goes beyond skills acquisition; it develops mindset, structure, operational philosophy, and long-term leadership capacity designed for modern executive, hospitality, corporate, and institutional environments.",
     whoFor: [
