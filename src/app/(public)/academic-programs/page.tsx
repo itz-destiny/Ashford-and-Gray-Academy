@@ -24,20 +24,21 @@ export default function AcademicProgramsOverview() {
         "Restaurant & Bar Service",
       ],
     },
-    {
-      title: "Diploma Programs",
-      description: "Comprehensive six-month professional diplomas in hospitality, food & beverage, business innovation, professional development, events management, and workforce development.",
-      href: "/programs",
-      badge: "Diploma Programs",
-      programs: [
-        "Hospitality Management",
-        "Business Innovation and Entrepreneurship",
-        "Professional Development and Global Relations",
-        "Events and Protocol Management",
-        "Food & Beverage Management",
-        "Hospitality Labour Management & Workforce Development",
-      ],
-    },
+    // Diploma Programs hidden for now — restore by uncommenting this pathway.
+    // {
+    //   title: "Diploma Programs",
+    //   description: "Comprehensive six-month professional diplomas in hospitality, food & beverage, business innovation, professional development, events management, and workforce development.",
+    //   href: "/programs",
+    //   badge: "Diploma Programs",
+    //   programs: [
+    //     "Hospitality Management",
+    //     "Business Innovation and Entrepreneurship",
+    //     "Professional Development and Global Relations",
+    //     "Events and Protocol Management",
+    //     "Food & Beverage Management",
+    //     "Hospitality Labour Management & Workforce Development",
+    //   ],
+    // },
     {
       title: "Executive Master Class",
       description: "Our signature executive-level programme — The Silent Standard — designed to cultivate disciplined leaders, operational strategists, and institutional authorities.",

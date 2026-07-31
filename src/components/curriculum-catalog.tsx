@@ -22,6 +22,7 @@ import type { Course } from "@/lib/types";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { STATIC_COURSES } from "@/lib/courses-data";
+import { slugify } from "@/lib/slugify";
 import { ScrollAnimation } from "@/components/ui/scroll-animation";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckoutDialog } from "@/components/checkout-dialog";
@@ -195,9 +196,11 @@ export function CurriculumCatalog({ title, subtitle, badge, courseIds, accelerat
           <Link href="/academic-programs" className={`py-6 border-b-2 transition-all ${pathname === '/academic-programs' ? 'border-[#C8A96A] text-[#C8A96A]' : 'border-transparent text-slate-500 hover:text-[#0B1F3A]'}`}>
             All Programs
           </Link>
+          {/* Degrees & Diplomas hidden for now — restore by uncommenting this link.
           <Link href="/programs" className={`py-6 border-b-2 transition-all ${pathname === '/programs' ? 'border-[#C8A96A] text-[#C8A96A]' : 'border-transparent text-slate-500 hover:text-[#0B1F3A]'}`}>
             Degrees &amp; Diplomas
           </Link>
+          */}
           <Link href="/executive" className={`py-6 border-b-2 transition-all ${pathname === '/executive' ? 'border-[#C8A96A] text-[#C8A96A]' : 'border-transparent text-slate-500 hover:text-[#0B1F3A]'}`}>
             Executive Education
           </Link>
@@ -225,7 +228,7 @@ export function CurriculumCatalog({ title, subtitle, badge, courseIds, accelerat
           <AnimatePresence mode="popLayout">
             {filteredCourses.map((course, idx) => {
               const programFormat = "Online Classes";
-              const targetLink = `/courses/${course.id}`;
+              const targetLink = `/courses/${course.id}/${slugify(course.title)}`;
               
               // Get dynamic modules showcase from course data
               const highlightTopics = course.whoFor?.slice(0, 4) || [
