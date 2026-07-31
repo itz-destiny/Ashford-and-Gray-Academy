@@ -57,10 +57,10 @@ export default function AboutPage() {
             <section className="py-24 md:py-32 container px-6 lg:px-12">
                 <div className="grid lg:grid-cols-2 gap-16 md:gap-24 items-start">
                     <ScrollAnimation animation="fade-in">
-                        <div className="relative rounded-[3rem] overflow-hidden shadow-2xl aspect-[4/5]">
+                        <div className="relative rounded-[3rem] overflow-hidden shadow-2xl aspect-video">
                             <Image
-                                src="/student-library-writing.jpg"
-                                alt="An Ashford & Gray scholar at study"
+                                src="/about-us-banner.png"
+                                alt="Ashford & Gray Fusion Academy — About Us"
                                 fill
                                 className="object-cover"
                             />
