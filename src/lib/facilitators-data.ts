@@ -278,6 +278,23 @@ export const FACILITATORS: Facilitator[] = [
         ],
     },
     {
+        slug: 'sarah-ogah',
+        name: 'Sarah Ogah',
+        postNominals: 'LL.M., BL, LL.B.',
+        title: 'Facilitator – Strategic Leadership, Corporate Governance, and Organisational Excellence',
+        photo: '/facilitators/sarah-ogah.jpeg',
+        bio: [
+            'Sarah Ogah is a distinguished Business Transformation Strategist, Organisational Systems Architect, Corporate Governance Advisor, Executive Educator, and Legal Practitioner whose professional mission is centred on helping visionary leaders, organisations, and institutions build sustainable structures that endure beyond their founders.',
+            'With more than three decades of corporate and entrepreneurial leadership experience and over twenty-four years of post-call legal practice, Sarah has established herself as a trusted advisor to founders, boards, executive teams, and organisations seeking to strengthen governance, optimise operations, improve organisational performance, and achieve sustainable growth. Her unique ability to transform complexity into practical systems has earned her a reputation for developing resilient organisations built on sound leadership, disciplined execution, and operational excellence.',
+            'Sarah serves as the Chief Executive Officer of Yiwuke Limited and is the Founder and Lead Consultant of Visionary Legacy Consults, where she partners with businesses and institutions to design governance frameworks, strengthen organisational systems, improve strategic execution, and position organisations for long-term success. Her leadership across consulting, corporate services, and business development provides a practical perspective that bridges executive strategy with real-world implementation.',
+            'A highly accomplished legal professional, Sarah holds a Master of Laws (LL.M.) in Commercial and Corporate Law from Queen Mary University of London, alongside postgraduate qualifications in Law from the same institution, an LL.B. from Rivers State University, and a B.L. from the Nigerian Law School. She is also an active member of several respected professional bodies spanning law, governance, management, and corporate secretarial practice.',
+            'Sarah is the creator of the Structured CEO Operating System™ (S-CEOS™)—a transformational framework developed from decades of executive leadership and entrepreneurial experience. Through this innovative methodology, she equips founders and executive leadership teams to transition from founder-dependent businesses into structured, scalable institutions driven by effective governance, leadership accountability, operational discipline, and sustainable business systems.',
+            'An accomplished speaker, executive facilitator, author, and mentor, Sarah is passionate about developing leaders who build institutions rather than merely manage organisations. Her facilitation style combines strategic insight, practical application, and executive coaching to help leaders navigate complexity, embrace innovation, and create lasting organisational impact.',
+            'At Ashford & Gray Fusion Academy, Sarah Ogah serves as Facilitator for Strategic Leadership, Corporate Governance, and Organisational Excellence, where she equips participants with practical frameworks for executive leadership, governance, organisational systems, business transformation, strategic decision-making, and sustainable enterprise development. Drawing from decades of executive practice and entrepreneurial leadership, she prepares learners to lead with vision, build resilient organisations, and create enduring legacies.',
+            'Sarah’s professional philosophy reflects the essence of her life’s work: “True leadership is measured not by the titles we hold, but by the people we develop, the institutions we build, and the legacies we leave behind.”',
+        ],
+    },
+    {
         slug: 'thankgod-chimene-azubuike',
         name: 'ThankGod Chimene Azubuike',
         title: 'Facilitator – Finance, Economics and Business Management',
