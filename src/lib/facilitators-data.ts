@@ -78,6 +78,7 @@ export const FACILITATORS: Facilitator[] = [
         name: 'Dr. (Mrs.) Edughom I. Hanson',
         postNominals: 'FCA, ACE, CMC',
         title: 'Facilitator – Hospitality Workforce Management',
+        photo: '/facilitators/edughom-hanson.jpeg',
         bio: [
             'Dr. (Mrs.) Edughom I. Hanson is a distinguished Management Consultant, Human Capital Development Specialist, and Enterprise Development Strategist with over two decades of professional experience in organizational development, workforce capacity building, and business transformation.',
             'She holds a Doctorate in Development Economics and is a Fellow of the Institute of Chartered Accountants of Nigeria (ICAN). A Certified Management Consultant (CMC), Centre for Management Development (CMD) Certified Management Trainer, and Professional Member of the Learning and Development Network International (LDNI), she is also a certified trainer of the Learning and Performance Institute (LPI), United Kingdom, under the International Finance Corporation (IFC) Business Edge Programme.',
@@ -92,6 +93,7 @@ export const FACILITATORS: Facilitator[] = [
         name: 'Dr. Emmanuel Boma Woko',
         postNominals: 'Ph.D.',
         title: 'Lead Facilitator, Business Innovation & Entrepreneurship',
+        photo: '/facilitators/emmanuel-boma-woko.jpeg',
         bio: [
             'Dr. Emmanuel Boma Woko is an accomplished management scholar, institutional administrator, business consultant, and entrepreneurship expert with over two decades of distinguished experience spanning higher education administration, strategic management, entrepreneurship development, organizational leadership, and business innovation.',
             'Widely respected for his ability to bridge academic excellence with practical enterprise development, Dr. Woko has built a career dedicated to strengthening institutions, developing entrepreneurial capacity, and promoting innovative management practices that drive sustainable organizational growth and national development.',
@@ -121,23 +123,24 @@ export const FACILITATORS: Facilitator[] = [
     },
     {
         slug: 'maimoona-sheila-salim',
-        name: 'Dr. Maimoona Sheila Salim',
+        name: 'Dr. Maimoona Salim',
         title: 'Facilitator – Leadership Development and Professional Ethics',
         photo: '/facilitators/maimoona-salim.jpeg',
         bio: [
-            'Dr. Maimoona Sheila Salim is an accomplished leadership strategist, social entrepreneur, executive mentor, and nonprofit development expert with over twenty-five years of distinguished experience spanning the private sector, civil society, international development, and executive leadership across Africa.',
+            'Dr. Maimoona Salim is an accomplished leadership strategist, social entrepreneur, executive mentor, and nonprofit development expert with over twenty-five years of distinguished experience spanning the private sector, civil society, international development, and executive leadership across Africa.',
             'Widely respected for her transformational approach to leadership development and ethical governance, she has successfully designed and led high-impact initiatives that empower emerging leaders, strengthen institutions, and promote sustainable social change. Her work has influenced thousands of women, youth, entrepreneurs, nonprofit professionals, and community leaders across more than nine African countries.',
             'As the Group Chief Operations Executive of SI Group International, Dr. Salim provides strategic leadership for regional programmes focused on enterprise development, leadership capacity building, women’s economic empowerment, and cross-sector collaboration. Her ability to translate vision into measurable impact has positioned her as a trusted advisor to organisations seeking sustainable growth, ethical leadership, and inclusive development.',
             'An accomplished facilitator, executive coach, and master trainer, she has delivered numerous executive learning programmes in leadership development, professional ethics, emotional intelligence, self-mastery, entrepreneurship, organisational excellence, STEAM education, and youth transformation. Her facilitation style combines practical experience, strategic insight, and values-based leadership, creating learning environments that inspire innovation, accountability, and lasting behavioural change.',
             'Beyond executive leadership, Dr. Salim serves on several governing boards and advisory bodies, contributing to policy development, youth advancement, women’s leadership, peacebuilding, and community development. She currently serves as Board Chairperson of Peace Players South Africa, is a Board Member and Director of International Services at the Rotary Club, Abuja, and sits on the Governing Council of the Women Community in Africa, where she champions ethical leadership, gender inclusion, and sustainable development across the continent.',
             'Her distinguished career has earned her recognition as a respected voice in leadership, governance, nonprofit sustainability, youth development, and social innovation. She is a frequent speaker at international conferences and leadership forums, where she shares practical insights on ethical leadership, organisational transformation, women’s empowerment, and building resilient institutions.',
-            'At Ashford & Gray Fusion Academy (AGFA), Dr. Maimoona Sheila Salim serves as Facilitator for Leadership Development and Professional Ethics, where she equips executives, entrepreneurs, emerging leaders, and professionals with the mindset, principles, and ethical competencies required to lead with integrity, influence, and lasting impact in today’s dynamic global environment.',
+            'At Ashford & Gray Fusion Academy (AGFA), Dr. Maimoona Salim serves as Facilitator for Leadership Development and Professional Ethics, where she equips executives, entrepreneurs, emerging leaders, and professionals with the mindset, principles, and ethical competencies required to lead with integrity, influence, and lasting impact in today’s dynamic global environment.',
         ],
     },
     {
         slug: 'steve-chukwuemeka-john-n',
         name: 'Dr. Steve Chukwuemeka John-N',
         title: 'Facilitator – Events Management',
+        photo: '/facilitators/steve-john-n.jpeg',
         bio: [
             'Dr. Steve Chukwuemeka John-N is an accomplished Events Management and Protocol Specialist, Leadership Facilitator, Creative Producer, Broadcaster, Public Relations Professional, and Strategic Communications Consultant with extensive experience delivering transformative solutions across the events, media, public engagement, and creative industries.',
             'Renowned for his strategic insight, innovative thinking, and unwavering commitment to excellence, he has built an outstanding reputation for designing and executing high-impact events, developing leaders, and advancing meaningful stakeholder engagement. His ability to combine creativity with operational precision has made him a respected professional and sought-after resource person within Nigeria and beyond.',
@@ -215,6 +218,7 @@ export const FACILITATORS: Facilitator[] = [
         name: 'Nanneh Kemte-Giadom',
         postNominals: 'MSc, CMC, PWF',
         title: 'Facilitator – Hospitality Operations and Service Systems Management',
+        photo: '/facilitators/nanneh-kemte-giadom.jpeg',
         bio: [
             'Nanneh Kemte-Giadom is a distinguished Management Consultant, Hospitality Management Professional, Executive Trainer and Leadership Development Facilitator with over two decades of professional experience spanning hospitality operations, organisational development, executive education, banking, customer experience and management consulting.',
             'She combines extensive industry experience with a passion for developing people and organisations, equipping professionals with the practical knowledge, operational discipline and leadership competencies required to deliver exceptional service and sustainable organisational performance.',

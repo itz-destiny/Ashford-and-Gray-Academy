@@ -9,7 +9,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { ArrowUpRight, X } from "lucide-react";
+import { ArrowUpRight, Quote, X } from "lucide-react";
 import type { Facilitator } from "@/lib/facilitators-data";
 
 function initials(name: string) {
@@ -58,64 +58,90 @@ export function ProfileDialog({
                 )}
             </DialogTrigger>
             <DialogContent
-                className="max-w-3xl p-0 overflow-hidden bg-white border border-slate-200 rounded-none shadow-2xl max-h-[90vh] grid grid-rows-[auto_1fr]"
+                className="max-w-2xl p-0 overflow-hidden bg-white border-none rounded-[1.75rem] shadow-2xl max-h-[92vh] grid grid-rows-[auto_1fr]"
                 showCloseButton={false}
             >
-                {/* Header band */}
-                <div className="bg-[#0B1F3A] text-white px-8 md:px-12 py-8 relative">
+                {/* Magazine-style hero banner */}
+                <div className="relative h-72 sm:h-80 w-full shrink-0 bg-[#0B1F3A] overflow-hidden">
+                    {facilitator.photo ? (
+                        <>
+                            {/* Blurred backdrop fill so a portrait-oriented photo never gets cropped */}
+                            <Image
+                                src={facilitator.photo}
+                                alt=""
+                                aria-hidden="true"
+                                fill
+                                sizes="640px"
+                                className="object-cover object-top scale-110 blur-2xl opacity-60"
+                            />
+                            <Image
+                                src={facilitator.photo}
+                                alt={facilitator.name}
+                                fill
+                                sizes="640px"
+                                className="object-contain object-bottom"
+                            />
+                        </>
+                    ) : (
+                        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#0B1F3A] to-[#132C4F]">
+                            <span className="text-6xl font-serif font-bold text-[#C8A96A]/70">{initials(facilitator.name)}</span>
+                        </div>
+                    )}
+
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0B1F3A] via-[#0B1F3A]/10 to-transparent" />
+                    <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#C8A96A] via-[#E6D6B8] to-[#C8A96A]" />
+
                     <button
                         type="button"
                         onClick={() => setOpen(false)}
-                        className="absolute top-5 right-5 w-9 h-9 rounded-full bg-white/10 hover:bg-[#C8A96A] hover:text-[#0B1F3A] text-white flex items-center justify-center transition-colors"
+                        className="absolute top-5 right-5 w-9 h-9 rounded-full bg-black/30 backdrop-blur-sm hover:bg-[#C8A96A] hover:text-[#0B1F3A] text-white flex items-center justify-center transition-colors"
                         aria-label="Close"
                     >
                         <X className="w-4 h-4" />
                     </button>
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#C8A96A] mb-3">{facilitator.title}</p>
-                    <DialogTitle asChild>
-                        <h2 className="text-3xl md:text-4xl font-serif text-white leading-tight">{facilitator.name}</h2>
-                    </DialogTitle>
-                    {facilitator.postNominals && (
-                        <p className="text-sm text-white/70 italic font-semibold mt-2">{facilitator.postNominals}</p>
-                    )}
+
+                    <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
+                        <p className="text-[10px] font-black uppercase tracking-[0.35em] text-[#C8A96A] mb-2">{facilitator.title}</p>
+                        <DialogTitle asChild>
+                            <h2 className="text-2xl sm:text-3xl font-serif text-white leading-tight">{facilitator.name}</h2>
+                        </DialogTitle>
+                        {facilitator.postNominals && (
+                            <p className="text-xs text-white/60 italic font-semibold mt-1.5">{facilitator.postNominals}</p>
+                        )}
+                    </div>
                 </div>
 
-                {/* Body — scrollable, two-column on desktop */}
-                <div className="overflow-y-auto">
-                    <div className="grid md:grid-cols-[200px_1fr] gap-8 px-8 md:px-12 py-10">
-                        <div className="relative aspect-[3/4] w-full max-w-[200px] overflow-hidden bg-slate-100">
-                            {facilitator.photo ? (
-                                <Image
-                                    src={facilitator.photo}
-                                    alt={facilitator.name}
-                                    fill
-                                    sizes="200px"
-                                    className="object-cover object-top"
-                                />
-                            ) : (
-                                <div className="absolute inset-0 flex items-center justify-center bg-[#0B1F3A]">
-                                    <span className="text-3xl font-serif font-bold text-[#C8A96A]">{initials(facilitator.name)}</span>
-                                </div>
-                            )}
+                {/* Body — single column, scrollable */}
+                <div className="overflow-y-auto bg-white">
+                    <div className="px-6 sm:px-10 py-8 sm:py-10 space-y-6">
+                        <div className="flex items-start gap-3">
+                            <Quote className="w-6 h-6 text-[#C8A96A]/40 shrink-0 mt-1" />
+                            <p className="text-base sm:text-lg font-serif text-[#0B1F3A] leading-snug">
+                                {facilitator.bio[0]}
+                            </p>
                         </div>
-                        <div className="space-y-4 text-sm md:text-base text-slate-700 leading-relaxed font-medium">
-                            {facilitator.bio.map((p, i) => (
+
+                        <div className="space-y-4 text-sm sm:text-base text-slate-600 leading-relaxed font-medium">
+                            {facilitator.bio.slice(1).map((p, i) => (
                                 <p key={i}>{p}</p>
                             ))}
-                            {facilitator.expertise && facilitator.expertise.length > 0 && (
-                                <div className="pt-2">
-                                    <p className="font-bold text-[#0B1F3A] mb-2">Core Expertise</p>
-                                    <ul className="grid sm:grid-cols-2 gap-x-6 gap-y-1.5">
-                                        {facilitator.expertise.map((e, i) => (
-                                            <li key={i} className="flex items-start gap-2 text-sm">
-                                                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#C8A96A] flex-shrink-0" />
-                                                <span>{e}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            )}
                         </div>
+
+                        {facilitator.expertise && facilitator.expertise.length > 0 && (
+                            <div className="pt-4 border-t border-slate-100">
+                                <p className="text-[10px] font-black uppercase tracking-[0.35em] text-[#0B1F3A]/50 mb-3">Core Expertise</p>
+                                <div className="flex flex-wrap gap-2">
+                                    {facilitator.expertise.map((e, i) => (
+                                        <span
+                                            key={i}
+                                            className="text-[11px] font-bold text-[#0B1F3A] bg-[#FAF9F6] border border-[#C8A96A]/40 rounded-full px-3.5 py-1.5"
+                                        >
+                                            {e}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </DialogContent>
