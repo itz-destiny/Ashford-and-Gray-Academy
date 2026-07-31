@@ -11,6 +11,7 @@ export default function CertificationsPage() {
     "664f3a8b2d1c9e8a7f0e0012", // Certificate in Food & Beverage Management
     "664f3a8b2d1c9e8a7f0e0013", // Certificate in Hospitality Labour Management
     "664f3a8b2d1c9e8a7f0e0014", // Certificate in Restaurant & Bar Service
+    "664f3a8b2d1c9e8a7f0e0010", // The Silent Standard Certification Program (also listed under Executive Master Class)
   ];
 
   return (

@@ -3,10 +3,12 @@ import dbConnect from '@/lib/mongodb';
 import LiveClass from '@/models/LiveClass';
 import { withAuth } from '@/lib/auth-server';
 
-export const GET = withAuth(async (req, { auth, params }) => {
+type RouteParams = { params: Promise<{ id: string }> };
+
+export const GET = withAuth<RouteParams>(async (req, { params }) => {
     try {
         await dbConnect();
-        const courseId = params.id as string;
+        const { id: courseId } = await params;
 
         const classes = await LiveClass.find({ courseId }).sort({ startTime: 1 });
 

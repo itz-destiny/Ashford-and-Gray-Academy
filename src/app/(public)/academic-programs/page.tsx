@@ -22,6 +22,7 @@ export default function AcademicProgramsOverview() {
         "Food & Beverage Management",
         "Hospitality Labour Management",
         "Restaurant & Bar Service",
+        "The Silent Standard",
       ],
     },
     // Diploma Programs hidden for now — restore by uncommenting this pathway.
