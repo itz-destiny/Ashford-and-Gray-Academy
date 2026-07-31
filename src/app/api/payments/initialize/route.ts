@@ -7,6 +7,7 @@ import { withAuth } from '@/lib/auth-server';
 import { getRequestOrigin } from '@/lib/app-url';
 import { initializeTransaction, PaystackError, getPaystackConfig } from '@/lib/paystack';
 import { resolveCourse } from '@/lib/resolve-course';
+import { slugify } from '@/lib/slugify';
 
 const requestSchema = z.object({
     courseId: z.string().min(1),
@@ -67,7 +68,7 @@ export const POST = withAuth(async (req: NextRequest, { auth }) => {
             status: 'pending',
         });
 
-        const reference = `enr_${pending._id.toString()}`;
+        const reference = `enr-${slugify(course.title, 40)}-${pending._id.toString()}`;
         const paystackConfig = getPaystackConfig(process.env, { fallbackOrigin: getRequestOrigin(req) });
         const init = await initializeTransaction({
             email: auth.email,
@@ -78,6 +79,9 @@ export const POST = withAuth(async (req: NextRequest, { auth }) => {
                 courseId: course.id,
                 userId: auth.uid,
                 transactionId: pending._id.toString(),
+                custom_fields: [
+                    { display_name: 'Course', variable_name: 'course_name', value: course.title },
+                ],
             },
         }, paystackConfig);
 

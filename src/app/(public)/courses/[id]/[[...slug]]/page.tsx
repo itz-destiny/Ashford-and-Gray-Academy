@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -11,9 +11,10 @@ import { ScrollAnimation } from "@/components/ui/scroll-animation";
 import dbConnect from "@/lib/mongodb";
 import Course from "@/models/Course";
 import { STATIC_COURSES } from "@/lib/courses-data";
+import { slugify } from "@/lib/slugify";
 import { BrochureButton } from "./brochure-button";
 
-type RouteProps = { params: Promise<{ id: string }> };
+type RouteProps = { params: Promise<{ id: string; slug?: string[] }> };
 
 async function loadCourse(id: string) {
     const staticCourse = STATIC_COURSES.find(c => c.id === id);
@@ -40,13 +41,21 @@ export async function generateMetadata({ params }: RouteProps) {
     return {
         title: `${course.title} — Ashford & Gray Fusion Academy`,
         description: course.description?.slice(0, 160) || 'A signature programme from Ashford & Gray Fusion Academy.',
+        alternates: { canonical: `/courses/${id}/${slugify(course.title)}` },
     };
 }
 
 export default async function CourseDetailPage({ params }: RouteProps) {
-    const { id } = await params;
+    const { id, slug } = await params;
     const course = await loadCourse(id);
     if (!course) notFound();
+
+    // Keep the URL human-readable — redirect bare/legacy links to the canonical
+    // "/courses/<id>/<course-name>" form so the course name is always visible.
+    const canonicalSlug = slugify(course.title);
+    if (canonicalSlug && slug?.[0] !== canonicalSlug) {
+        redirect(`/courses/${id}/${canonicalSlug}`);
+    }
 
     const hasWhoFor = Array.isArray(course.whoFor) && course.whoFor.length > 0;
     const hasOutcomes = Array.isArray(course.learningOutcomes) && course.learningOutcomes.length > 0;

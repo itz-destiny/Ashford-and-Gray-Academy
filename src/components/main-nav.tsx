@@ -42,7 +42,8 @@ export function MainNav() {
       label: "Academic Programs",
       dropdownItems: [
         { label: "Professional Certifications", href: "/certifications", desc: "Certifications in housekeeping, hospitality, events, executive assistance, and global relations." },
-        { label: "Diploma Programs", href: "/programs", desc: "Six-month diplomas in hospitality, business innovation, professional development, and events." },
+        // Diploma Programs hidden for now — restore by uncommenting this entry.
+        // { label: "Diploma Programs", href: "/programs", desc: "Six-month diplomas in hospitality, business innovation, professional development, and events." },
         { label: "Executive Master Class", href: "/executive", desc: "The Silent Standard — our signature executive-level leadership and operational excellence programme." }
       ]
     },

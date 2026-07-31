@@ -6,6 +6,7 @@ import { useUser } from "@/firebase";
 import { apiFetch } from "@/lib/api-client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { slugify } from "@/lib/slugify";
 import { Download, FileDown, Loader2, Lock } from "lucide-react";
 
 type Props = {
@@ -31,7 +32,7 @@ export function BrochureButton({ courseId, courseTitle }: Props) {
     }
 
     if (!user) {
-        const redirect = encodeURIComponent(`/courses/${courseId}`);
+        const redirect = encodeURIComponent(`/courses/${courseId}/${slugify(courseTitle)}`);
         return (
             <Button
                 asChild
