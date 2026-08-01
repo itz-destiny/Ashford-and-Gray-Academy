@@ -29,6 +29,7 @@ export default function CourseViewerPage() {
     const [lessons, setLessons] = useState<any[]>([]);
     const [currentLesson, setCurrentLesson] = useState<any>(null);
     const [liveClasses, setLiveClasses] = useState<any[]>([]);
+    const [timetable, setTimetable] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     // Chat State
@@ -40,14 +41,16 @@ export default function CourseViewerPage() {
 
         const fetchData = async () => {
             try {
-                const [courseRes, contentRes, zoomRes] = await Promise.all([
+                const [courseRes, contentRes, zoomRes, timetableRes] = await Promise.all([
                     fetch(`/api/courses?id=${courseId}`),
-                    fetch(`/api/courses/${courseId}/content`),
-                    fetch(`/api/courses/${courseId}/live-classes`)
+                    apiFetch(`/api/courses/${courseId}/content`),
+                    apiFetch(`/api/courses/${courseId}/live-classes`),
+                    apiFetch(`/api/courses/${courseId}/timetable`),
                 ]);
                 const courseData = await courseRes.json();
                 const contentData = await contentRes.json();
                 const zoomData = await zoomRes.json();
+                const timetableData = await timetableRes.json();
 
                 const normalized = normalizeCourseContent(contentData);
                 setCourse(courseData);
@@ -56,6 +59,9 @@ export default function CourseViewerPage() {
                 setCurrentLesson(normalized.currentLesson);
                 if (zoomData.success) {
                     setLiveClasses(zoomData.classes);
+                }
+                if (timetableData.success) {
+                    setTimetable(timetableData.sessions);
                 }
             } catch (error) {
                 console.error('Error fetching course data:', error);
@@ -189,8 +195,9 @@ export default function CourseViewerPage() {
                                 </div>
 
                                 <Tabs defaultValue="overview" className="w-full">
-                                    <TabsList className="grid w-full grid-cols-5 lg:w-fit">
+                                    <TabsList className="grid w-full grid-cols-6 lg:w-fit">
                                         <TabsTrigger value="overview">Overview</TabsTrigger>
+                                        <TabsTrigger value="schedule"><Calendar className="w-3 h-3 mr-1" />Schedule</TabsTrigger>
                                         <TabsTrigger value="recordings"><Video className="w-3 h-3 mr-1" />Recordings</TabsTrigger>
                                         <TabsTrigger value="resources">Resources</TabsTrigger>
                                         <TabsTrigger value="assignments">Assignments</TabsTrigger>
@@ -200,6 +207,48 @@ export default function CourseViewerPage() {
                                         <div className="prose max-w-none">
                                             <p>{currentLesson.content || 'This lesson has not been published yet. Your instructor will share the live class details and any relevant resources through the timetable and resources section.'}</p>
                                         </div>
+                                    </TabsContent>
+                                    <TabsContent value="schedule" className="pt-6">
+                                        {timetable.length === 0 ? (
+                                            <Card>
+                                                <CardContent className="p-8 text-center text-slate-400 text-sm font-medium">
+                                                    No class schedule has been published for this programme yet. Check back soon.
+                                                </CardContent>
+                                            </Card>
+                                        ) : (
+                                            <div className="space-y-3">
+                                                {timetable.map((s) => {
+                                                    const isPast = new Date(s.endTime).getTime() < Date.now();
+                                                    return (
+                                                        <Card key={s._id} className={cn("border-none shadow-sm", isPast && "opacity-50")}>
+                                                            <CardContent className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                                                                <div className="min-w-0">
+                                                                    <div className="flex items-center gap-2 mb-1">
+                                                                        <Badge className="bg-[#0B1F3A]/5 text-[#0B1F3A] border-none text-[9px] font-black uppercase tracking-wider">
+                                                                            {s.weekCode}
+                                                                        </Badge>
+                                                                        {s.status === 'scheduled' && (
+                                                                            <Badge className="bg-emerald-50 text-emerald-700 border-none text-[9px] font-black uppercase tracking-wider">
+                                                                                Zoom Ready
+                                                                            </Badge>
+                                                                        )}
+                                                                    </div>
+                                                                    <p className="font-bold text-[#0B1F3A] truncate">{s.module}</p>
+                                                                    <p className="text-xs text-slate-500 font-medium">Facilitated by {s.lecturerName}</p>
+                                                                </div>
+                                                                <p className="text-xs text-slate-400 font-black uppercase tracking-wider shrink-0">
+                                                                    {new Date(s.startTime).toLocaleString('en-NG', { weekday: 'short', day: '2-digit', month: 'short' })}
+                                                                    {' · '}
+                                                                    {new Date(s.startTime).toLocaleTimeString('en-NG', { hour: 'numeric', minute: '2-digit' })}
+                                                                    {' – '}
+                                                                    {new Date(s.endTime).toLocaleTimeString('en-NG', { hour: 'numeric', minute: '2-digit' })}
+                                                                </p>
+                                                            </CardContent>
+                                                        </Card>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
                                     </TabsContent>
                                     <TabsContent value="recordings" className="pt-6">
                                         <RecordingsList courseId={String(courseId)} />
