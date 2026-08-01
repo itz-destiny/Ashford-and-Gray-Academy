@@ -32,8 +32,8 @@ const PARTNERS = [
 
 const IMPACT_STATS = [
     { value: 10, label: "Founder's Sponsored Beneficiaries" },
-    { value: 240, label: "Total Sponsored Beneficiaries" },
-    { value: 3, label: "Confirmed Impact Partners" },
+    { value: 258, label: "Total Sponsored Beneficiaries" },
+    { value: 4, label: "Confirmed Impact Partners" },
     { value: 23, label: "Local Government Areas Covered" },
 ];
 
@@ -45,6 +45,14 @@ const IMPACT_PARTNERS = [
         beneficiaries: 10,
         quote: "Leading by example through a personal investment in human capital development.",
         href: "#founders-commitment",
+    },
+    {
+        id: "cecilia-summary",
+        name: "Cecilia Iniperitiari Dikibo",
+        title: "Vice President & Director of Brand Strategy",
+        beneficiaries: 8,
+        quote: "Investing in people, in potential, and in the future of our communities.",
+        href: "#cecilia-dikibo",
     },
     {
         id: "linda-summary",
@@ -84,6 +92,25 @@ const FOUNDER_LETTER = [
     "This is only the beginning.",
     "Together, we will continue to empower people, elevate futures, and transform communities—one learner, one partner, and one success story at a time.",
 ];
+
+const CECILIA_PRESS_RELEASE = {
+    headline: "Ashford & Gray Fusion Academy Celebrates Cecilia Iniperitiari Dikibo's Sponsorship of Eight Candidates Through the Impact & Partnerships Development Initiative",
+    intro: [
+        "Ashford & Gray Fusion Academy is delighted to recognize and celebrate Cecilia Iniperitiari Dikibo, Vice President and Director of Brand Strategy, for her generous commitment to sponsor eight (8) deserving candidates across Rivers State under the Academy's Impact & Partnerships Development Initiative.",
+        "This remarkable gesture reflects Cecilia's unwavering belief in the transformative power of education and her commitment to empowering individuals with the knowledge, skills, and opportunities needed to excel personally and professionally.",
+        "Through her sponsorship, eight beneficiaries will gain access to the Academy's Executive Certificate Programmes, where they will receive industry-relevant training delivered by experienced facilitators across key areas of hospitality, business innovation, executive management, and professional development.",
+        "Speaking on the initiative, Myne Wilfred, Founder and President of Ashford & Gray Fusion Academy, expressed profound appreciation for Cecilia's continued support of the Academy's vision.",
+    ],
+    quote: "Cecilia's sponsorship is more than an investment in education; it is an investment in people, in potential, and in the future of our communities. Her generosity embodies the spirit of servant leadership and demonstrates how meaningful partnerships can transform lives.",
+    outro: [
+        "The sponsored candidates will join the Academy's 2026 Executive Certificate Cohort, with classes scheduled to commence on 4 September 2026 and conclude on 30 November 2026.",
+        "This sponsorship forms part of the Academy's broader mission to expand access to quality professional education through strategic partnerships with individuals, organizations, foundations, and public leaders who share a passion for developing human capacity.",
+        "To date, the generosity of the Academy's distinguished Impact Partners has provided sponsorship opportunities for 258 beneficiaries, creating pathways for learning, career advancement, and sustainable community development.",
+        "Ashford & Gray Fusion Academy sincerely appreciates Cecilia Iniperitiari Dikibo for her outstanding generosity and steadfast commitment to empowering others through education. Her contribution will undoubtedly leave a lasting legacy in the lives of the beneficiaries and the communities they will go on to serve.",
+        "The Academy welcomes individuals, corporate organizations, foundations, and public institutions who wish to join the Impact & Partnerships Development Initiative and become part of a growing movement dedicated to transforming lives through education.",
+    ],
+    about: "Ashford and Gray Fusion Academy is a premium professional learning institution committed to equipping individuals with practical skills, leadership competencies, business knowledge, and hospitality excellence required to succeed in a dynamic global environment. The Academy offers innovative programmes in hospitality management, business innovation, leadership development, executive operations, protocol and events management, and professional development.",
+};
 
 const LINDA_PRESS_RELEASE = {
     headline: "Hon. Linda Somiari Stewart Sponsors 10 Constituents for Professional Skills Training Through Ashford and Gray Fusion Academy",
@@ -282,6 +309,54 @@ export default function PartnersPage() {
                             <div className="pt-2 border-t border-[#0B1F3A]/8">
                                 <p className="text-[9px] font-black uppercase tracking-[0.35em] text-[#C8A96A]">Myne Wilfred — Founder &amp; President</p>
                                 <p className="text-[10px] text-slate-400 mt-0.5 italic font-serif">Ashford &amp; Gray Fusion Academy — Institute of Hospitality &amp; Business Innovation</p>
+                            </div>
+                        </div>
+                    </Reveal>
+                </section>
+
+                {/* ── Cecilia Iniperitiari Dikibo: FULL STORY ──────── */}
+                <section id="cecilia-dikibo" className="scroll-mt-24 space-y-6">
+                    <Reveal className="bg-[#0B1F3A] border-t-4 border-t-[#C8A96A] p-6 lg:p-10">
+                        <p className="text-[9px] font-black uppercase tracking-[0.4em] text-[#C8A96A] mb-2">Press Release · 8 Beneficiaries Sponsored</p>
+                        <h3 className="text-xl lg:text-2xl font-serif text-white leading-tight">
+                            {CECILIA_PRESS_RELEASE.headline}
+                        </h3>
+                    </Reveal>
+
+                    <Reveal delay={0.1} className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] bg-white border border-[#0B1F3A]/10 shadow-sm overflow-hidden">
+                        <div className="relative min-h-[420px] lg:min-h-0 bg-[#0B1F3A]">
+                            <Image
+                                src="/partners/cecilia-dikibo.jpeg"
+                                alt="Cecilia Iniperitiari Dikibo — Vice President & Director of Brand Strategy"
+                                fill
+                                sizes="(max-width: 1024px) 100vw, 40vw"
+                                className="object-cover object-top"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#0B1F3A]/60 via-transparent to-transparent" />
+                            <div className="absolute bottom-0 left-0 right-0 p-6">
+                                <p className="text-[9px] font-black uppercase tracking-[0.35em] text-[#C8A96A]">Vice President &amp; Director of Brand Strategy</p>
+                                <p className="text-white font-serif font-bold text-base leading-snug">Cecilia Iniperitiari Dikibo</p>
+                            </div>
+                        </div>
+                        <div className="p-8 lg:p-12 flex flex-col justify-center space-y-5 border-l border-[#0B1F3A]/8">
+                            <div className="flex items-center gap-3">
+                                <Quote className="w-5 h-5 text-[#C8A96A] flex-shrink-0" />
+                                <span className="text-[9px] font-black uppercase tracking-[0.4em] text-[#0B1F3A]/50">Investing in People and Potential</span>
+                            </div>
+                            <div className="space-y-3 text-[13px] font-serif text-slate-600 leading-relaxed max-h-[520px] overflow-y-auto pr-2">
+                                {CECILIA_PRESS_RELEASE.intro.map((p, i) => (
+                                    <p key={`intro-${i}`}>{p}</p>
+                                ))}
+                                <p className="italic text-[#0B1F3A] font-bold">&ldquo;{CECILIA_PRESS_RELEASE.quote}&rdquo;</p>
+                                {CECILIA_PRESS_RELEASE.outro.map((p, i) => (
+                                    <p key={`outro-${i}`}>{p}</p>
+                                ))}
+                                <p className="pt-2 font-bold text-[#0B1F3A]">About Ashford and Gray Fusion Academy</p>
+                                <p>{CECILIA_PRESS_RELEASE.about}</p>
+                            </div>
+                            <div className="pt-2 border-t border-[#0B1F3A]/8">
+                                <p className="text-[9px] font-black uppercase tracking-[0.35em] text-[#C8A96A]">Ashford &amp; Gray Fusion Academy</p>
+                                <p className="text-[10px] text-slate-400 mt-0.5 italic font-serif">Mastering Luxury, Elevating Business. · www.ashfordandgrayfusionacademy.com</p>
                             </div>
                         </div>
                     </Reveal>

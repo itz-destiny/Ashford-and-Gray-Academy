@@ -27,6 +27,9 @@ export interface ICourse extends Document {
     learningOutcomes?: { module: string; topics: string[] }[];
     certificationDetails?: string[];    // bullet list of what they receive
     careerOpportunities?: string[];     // bullet list of career options
+    programmePhilosophy?: string[];       // core principles the programme is built on
+    programmeObjectives?: string[];       // what the programme sets out to do
+    programmeLearningOutcomes?: string[]; // flat "by the end, you will be able to..." list
 }
 
 const CourseSchema: Schema = new Schema({
@@ -60,6 +63,9 @@ const CourseSchema: Schema = new Schema({
     },
     certificationDetails: { type: [String], default: undefined },
     careerOpportunities: { type: [String], default: undefined },
+    programmePhilosophy: { type: [String], default: undefined },
+    programmeObjectives: { type: [String], default: undefined },
+    programmeLearningOutcomes: { type: [String], default: undefined },
 }, { timestamps: true });
 
 export default mongoose.models.Course || mongoose.model<ICourse>('Course', CourseSchema);

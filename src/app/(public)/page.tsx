@@ -142,7 +142,7 @@ export default function Home() {
               <ScrollAnimation animation="scale-up" delay={300}>
                 <div className="relative aspect-[4/5] w-full max-w-md mx-auto border-8 border-white shadow-xl overflow-hidden group">
                   <Image
-                    src="/cohort-global-vision.jpg"
+                    src="/featured-cohort-hero.png"
                     alt="Ashford & Gray Global Seminar Cohort"
                     fill
                     className="object-cover transition-transform duration-1000 group-hover:scale-105"

@@ -33,6 +33,9 @@ export type Course = {
   certificationDetails?: string[];
   careerOpportunities?: string[];
   brochurePath?: string; // filename under /public/brochures/, served via auth-gated API
+  programmePhilosophy?: string[];       // core principles the programme is built on
+  programmeObjectives?: string[];       // what the programme sets out to do
+  programmeLearningOutcomes?: string[]; // flat "by the end, you will be able to..." list
 };
 
 export type AppEvent = {
