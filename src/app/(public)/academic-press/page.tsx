@@ -62,7 +62,7 @@ const PUBLICATIONS: Publication[] = [
     authorTitle: "Founder/President, Ashford & Gray Academy",
     year: "2024",
     isbn: "978-978-684132-8",
-    coverImage: "/beyond_service_book_1779871505249.png",
+    coverImage: "/beyond-service-cover.png",
     featured: true,
     description:
       "Beyond Service reframes hospitality management as a responsibility-bearing profession grounded in structure, judgement, and institutional discipline. Written from professional practice rather than theory, this book examines what truly sustains hospitality environments — operational systems, people management, professional conduct, business discipline, and long-term continuity.",

@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { getEmailUrl } from './app-url';
 
 /**
  * Transactional email is sent via Resend (https://resend.com).
@@ -427,16 +428,16 @@ function brandedShell(args: { preheader: string; title: string; body: string }):
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#FCFCFE;padding:32px 16px">
     <tr><td align="center">
         <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:560px;background:#ffffff;border-radius:32px;overflow:hidden;box-shadow:0 6px 30px rgba(11,31,58,0.06)">
-            <tr><td style="background:#0B1F3A;padding:32px 32px 28px;text-align:center">
-                <p style="margin:0;color:#C8A96A;font-weight:900;letter-spacing:0.35em;text-transform:uppercase;font-size:10px">Ashford &amp; Gray</p>
-                <p style="margin:6px 0 0;color:#ffffff;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;font-size:13px">Fusion Academy</p>
+            <tr><td style="background:#0B1F3A;padding:36px 32px 30px;text-align:center">
+                <img src="${getEmailUrl()}/A%20%26%20G2.png" alt="Ashford &amp; Gray Fusion Academy" width="180" style="display:block;margin:0 auto 14px;max-width:180px;height:auto" />
+                <p style="margin:0;color:#C8A96A;font-weight:900;letter-spacing:0.3em;text-transform:uppercase;font-size:9px">Institute of Hospitality &amp; Business Innovation</p>
             </td></tr>
             <tr><td style="padding:40px 36px 32px">
                 <h1 style="font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:28px;color:#0B1F3A;margin:0 0 16px">${escapeHtml(args.title)}</h1>
                 ${args.body}
             </td></tr>
             <tr><td style="padding:24px 36px 36px;border-top:1px solid #F1F5F9">
-                <p style="margin:0;color:#94A3B8;font-size:11px;line-height:1.6;text-align:center">&copy; ${new Date().getFullYear()} Ashford &amp; Gray Fusion Academy. This message was sent to you in connection with your account. If this was unexpected, please disregard.</p>
+                <p style="margin:0;color:#94A3B8;font-size:11px;line-height:1.6;text-align:center">&copy; 2026 Ashford and Gray Fusion Academy. This message was sent to you in connection with your account. If this was unexpected, please disregard.</p>
             </td></tr>
         </table>
     </td></tr>

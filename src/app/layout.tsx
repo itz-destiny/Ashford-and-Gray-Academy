@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { FirebaseClientProvider } from "@/firebase/client-provider";
 import { JsonLd, organizationSchema } from "@/components/seo/JsonLd";
 import { ScrollToTop } from "@/components/scroll-to-top";
+import { ForcePasswordChangeModal } from "@/components/auth/ForcePasswordChangeModal";
 import React from "react";
 
 export const metadata: Metadata = {
@@ -120,6 +121,7 @@ export default function RootLayout({
           <GlobalLoaderProvider>
             {children}
           </GlobalLoaderProvider>
+          <ForcePasswordChangeModal />
         </FirebaseClientProvider>
         <Toaster />
         <ScrollToTop />
