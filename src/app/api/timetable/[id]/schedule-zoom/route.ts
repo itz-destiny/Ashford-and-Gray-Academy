@@ -17,8 +17,9 @@ export const POST = withAuth<RouteParams>(async (_req, { auth, params }) => {
             return NextResponse.json({ error: 'Timetable session not found' }, { status: 404 });
         }
 
-        const isOwner = session.instructorUid === auth.uid;
-        if (!isOwner && auth.role !== 'admin') {
+        // Creating the Zoom meeting is an admin-only action — instructors only
+        // start a class once it has already been created for them.
+        if (auth.role !== 'admin') {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
         }
 

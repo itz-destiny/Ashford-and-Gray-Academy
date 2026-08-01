@@ -9,7 +9,7 @@ import { RoleGuard } from "@/components/auth/RoleGuard";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Menu, Plus, Settings } from "lucide-react";
+import { Search, Menu, Settings } from "lucide-react";
 
 export default function InstructorLayout({
     children,
@@ -55,15 +55,6 @@ export default function InstructorLayout({
                         </div>
 
                         <div className="flex items-center gap-3 md:gap-4 ml-auto">
-                            <Button
-                                asChild
-                                className="hidden sm:flex h-12 px-6 rounded-none bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black text-[10px] uppercase tracking-widest shadow-none border-none transition-colors"
-                            >
-                                <Link href="/instructor/courses/new">
-                                    <Plus className="h-4 w-4 mr-2" /> Add Course
-                                </Link>
-                            </Button>
-
                             <NotificationBell />
 
                             <Button

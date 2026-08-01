@@ -109,7 +109,7 @@ export default function CourseRegistrarCoursesPage() {
                         <RefreshCcw className={cn("w-4 h-4 mr-2", loading && "animate-spin")} /> Refresh
                     </Button>
                     <Button asChild className="bg-slate-900 text-white rounded-xl h-11 px-6 font-bold shadow-lg shadow-slate-200">
-                        <Link href="/instructor/courses/new">
+                        <Link href="/course-registrar/courses/new">
                             <Plus className="w-4 h-4 mr-2" /> New Course
                         </Link>
                     </Button>

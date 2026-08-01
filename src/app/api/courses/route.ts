@@ -114,7 +114,7 @@ const createSchema = z.object({
 
 export const POST = withAuth(async (req: NextRequest, { auth }) => {
     try {
-        requireRole(auth, ['admin', 'instructor', 'course_registrar']);
+        requireRole(auth, ['admin', 'course_registrar']);
     } catch (err) {
         if (err instanceof AuthError) {
             return NextResponse.json({ error: err.message }, { status: err.status });

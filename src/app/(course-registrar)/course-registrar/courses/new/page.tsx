@@ -109,8 +109,11 @@ export default function NewCoursePage() {
         setPublishStage('Creating Course Identity...');
 
         try {
-            const instructorName = user.displayName || (user as any).name || (user as any).fullName || "Instructor";
-            const instructorAvatar = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(instructorName)}&background=random`;
+            // Course Registrars create the course shell — a lecturer is assigned
+            // separately via the timetable, so the instructor is left as a
+            // placeholder rather than defaulting to the registrar's own name.
+            const instructorName = "Faculty To Be Assigned";
+            const instructorAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(instructorName)}&background=random`;
 
             // 1. Create Course
             const courseRes = await apiFetch('/api/courses', {
@@ -191,7 +194,7 @@ export default function NewCoursePage() {
                     ? "Your course is now live for students."
                     : "Submit it for review from the course manage page when you're ready to publish."
             });
-            setTimeout(() => router.push(`/instructor/courses/${course._id}`), 1500);
+            setTimeout(() => router.push('/course-registrar/courses'), 1500);
         } catch (error: any) {
             toast({ variant: "destructive", title: "Publication Failed", description: error.message });
         } finally {
@@ -252,7 +255,7 @@ export default function NewCoursePage() {
                     <p className="text-slate-500 font-medium">Drafting: <span className="text-indigo-600">{courseData.title || "Untitled Course"}</span></p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button variant="ghost" onClick={() => router.push('/instructor')} disabled={isSaving}>Cancel</Button>
+                    <Button variant="ghost" onClick={() => router.push('/course-registrar/courses')} disabled={isSaving}>Cancel</Button>
                     {currentStep === 4 && (
                         <Button
                             onClick={handleSaveCourse}

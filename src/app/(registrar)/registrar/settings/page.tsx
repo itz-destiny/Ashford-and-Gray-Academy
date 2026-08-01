@@ -8,12 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import {
-    Settings,
     Bell,
-    Shield,
     User,
     Mail,
-    Lock,
     Check,
     Building
 } from "lucide-react";
@@ -139,27 +136,6 @@ export default function RegistrarSettingsPage() {
                             />
                         </div>
                     ))}
-                </CardContent>
-            </Card>
-
-            {/* Security */}
-            <Card className="border-none shadow-xl shadow-slate-100 rounded-[2.5rem]">
-                <CardHeader className="p-8">
-                    <CardTitle className="flex items-center gap-2 text-xl">
-                        <Shield className="w-5 h-5 text-indigo-500" />
-                        Security & Privacy
-                    </CardTitle>
-                    <CardDescription>Manage your account security settings</CardDescription>
-                </CardHeader>
-                <CardContent className="p-8 pt-0 space-y-4">
-                    <Button variant="outline" className="w-full justify-start h-12 rounded-xl font-bold">
-                        <Lock className="w-4 h-4 mr-2" />
-                        Change Password
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start h-12 rounded-xl font-bold">
-                        <Settings className="w-4 h-4 mr-2" />
-                        Two-Factor Authentication
-                    </Button>
                 </CardContent>
             </Card>
 
