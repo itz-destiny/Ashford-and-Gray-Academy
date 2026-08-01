@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -73,16 +73,9 @@ export default function ManageCoursePage() {
     const [newLesson, setNewLesson] = useState<Record<string, { title: string; videoUrl: string; isLive: boolean; scheduledAt: string }>>({});
     const [adding, setAdding] = useState(false);
 
-    // Zoom scheduling state
+    // Zoom classes for this course are read-only here — they come from the
+    // academy timetable (see /instructor/schedule), not free-form scheduling.
     const [liveClasses, setLiveClasses] = useState<any[]>([]);
-    const [zoomScheduleOpen, setZoomScheduleOpen] = useState(false);
-    const [zoomForm, setZoomForm] = useState({
-        topic: "",
-        description: "",
-        startTime: "",
-        durationMinutes: 60
-    });
-    const [schedulingZoom, setSchedulingZoom] = useState(false);
 
     useEffect(() => {
         if (userLoading || !user || !id) return;
@@ -224,36 +217,15 @@ export default function ManageCoursePage() {
         }
     };
 
-    const handleScheduleZoom = async () => {
-        if (!zoomForm.topic || !zoomForm.startTime) {
-            toast({ variant: "destructive", title: "Missing fields", description: "Topic and Start Time are required." });
-            return;
-        }
-        setSchedulingZoom(true);
+    const handleDeleteModule = async (moduleId: string) => {
+        if (!confirm('Delete this module and all its lessons?')) return;
         try {
-            const res = await apiFetch(`/api/zoom/meetings`, {
-                method: "POST",
-                body: JSON.stringify({
-                    courseId: id,
-                    topic: zoomForm.topic,
-                    description: zoomForm.description,
-                    startTime: new Date(zoomForm.startTime).toISOString(),
-                    durationMinutes: Number(zoomForm.durationMinutes)
-                })
-            });
-            const data = await res.json();
-            if (data.success) {
-                setLiveClasses([...liveClasses, data.liveClass]);
-                setZoomScheduleOpen(false);
-                toast({ title: "Zoom Class Scheduled", description: "The live class has been added to the timetable." });
-                setZoomForm({ topic: "", description: "", startTime: "", durationMinutes: 60 });
-            } else {
-                throw new Error(data.error);
-            }
-        } catch (error: any) {
-            toast({ variant: "destructive", title: "Error", description: error.message || "Failed to schedule class." });
-        } finally {
-            setSchedulingZoom(false);
+            const res = await apiFetch(`/api/courses/${id}/content?type=module&id=${moduleId}`, { method: 'DELETE' });
+            if (!res.ok) throw new Error('Delete failed.');
+            setModules(m => m.filter(x => x._id !== moduleId));
+            setLessons(l => l.filter(x => x.moduleId !== moduleId));
+        } catch (error) {
+            toast({ variant: "destructive", title: "Error", description: "Failed to delete module" });
         }
     };
 
@@ -359,43 +331,11 @@ export default function ManageCoursePage() {
                             <Send className="h-4 w-4" /> Submit for review
                         </Button>
                     )}
-                    <Dialog open={zoomScheduleOpen} onOpenChange={setZoomScheduleOpen}>
-                        <DialogTrigger asChild>
-                            <Button className="bg-[#1F7A5A] hover:bg-[#1F7A5A]/90 text-white rounded-xl font-bold gap-2">
-                                <Video className="h-4 w-4" /> Schedule Zoom Class
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px]">
-                            <DialogHeader>
-                                <DialogTitle>Schedule Zoom Class</DialogTitle>
-                                <DialogDescription>Create a new Zoom meeting for this course.</DialogDescription>
-                            </DialogHeader>
-                            <div className="grid gap-4 py-4">
-                                <div className="space-y-2">
-                                    <Label>Topic / Title</Label>
-                                    <Input value={zoomForm.topic} onChange={e => setZoomForm({...zoomForm, topic: e.target.value})} placeholder="e.g. Week 1: Introduction" />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>Description (Optional)</Label>
-                                    <Input value={zoomForm.description} onChange={e => setZoomForm({...zoomForm, description: e.target.value})} placeholder="Brief agenda" />
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <Label>Start Time</Label>
-                                        <Input type="datetime-local" value={zoomForm.startTime} onChange={e => setZoomForm({...zoomForm, startTime: e.target.value})} />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label>Duration (mins)</Label>
-                                        <Input type="number" min={15} max={300} value={zoomForm.durationMinutes} onChange={e => setZoomForm({...zoomForm, durationMinutes: Number(e.target.value)})} />
-                                    </div>
-                                </div>
-                            </div>
-                            <DialogFooter>
-                                <Button variant="ghost" onClick={() => setZoomScheduleOpen(false)}>Cancel</Button>
-                                <Button onClick={handleScheduleZoom} disabled={schedulingZoom}>{schedulingZoom ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Schedule Meeting'}</Button>
-                            </DialogFooter>
-                        </DialogContent>
-                    </Dialog>
+                    <Button asChild className="bg-[#1F7A5A] hover:bg-[#1F7A5A]/90 text-white rounded-xl font-bold gap-2">
+                        <Link href="/instructor/schedule">
+                            <Video className="h-4 w-4" /> My Schedule
+                        </Link>
+                    </Button>
                 </div>
             </div>
 
@@ -405,6 +345,10 @@ export default function ManageCoursePage() {
                         <CardTitle className="text-lg font-black text-[#0B1F3A] flex items-center gap-2">
                             <Video className="h-5 w-5 text-indigo-600" /> Scheduled Zoom Classes
                         </CardTitle>
+                        <CardDescription className="text-xs text-slate-500 font-medium">
+                            Class times come from the academy timetable. Manage them from{" "}
+                            <Link href="/instructor/schedule" className="underline font-bold text-[#1F7A5A]">My Schedule</Link>.
+                        </CardDescription>
                     </CardHeader>
                     <CardContent className="p-8 pt-0 space-y-4">
                         {liveClasses.map(cls => (

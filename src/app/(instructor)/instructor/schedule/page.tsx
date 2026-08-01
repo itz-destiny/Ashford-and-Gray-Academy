@@ -1,224 +1,180 @@
-
 "use client";
 
+import React, { useState, useEffect, useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-import { CalendarCheck, Video, Clock, MapPin, ChevronRight, Bell, Plus, Calendar as CalendarIcon, Filter, Layers } from "lucide-react";
-import React, { useState, useEffect } from "react";
-import { useUser } from "@/firebase";
+import { Card, CardContent } from "@/components/ui/card";
+import { CalendarClock, Video, Loader2, CheckCircle2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { apiFetch } from "@/lib/api-client";
+import { useToast } from "@/hooks/use-toast";
+
+type TimetableSession = {
+    _id: string;
+    weekCode: string;
+    sessionCode: string;
+    startTime: string;
+    endTime: string;
+    programmeName: string;
+    courseTitle?: string;
+    module: string;
+    status: 'unassigned' | 'assigned' | 'scheduled' | 'completed' | 'cancelled';
+    zoomJoinUrl?: string;
+    zoomStartUrl?: string;
+};
+
+function fmtDate(iso: string) {
+    return new Date(iso).toLocaleDateString('en-NG', { weekday: 'long', day: '2-digit', month: 'short', year: 'numeric' });
+}
+function fmtTimeRange(startIso: string, endIso: string) {
+    const opts: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: '2-digit' };
+    return `${new Date(startIso).toLocaleTimeString('en-NG', opts)} – ${new Date(endIso).toLocaleTimeString('en-NG', opts)}`;
+}
 
 export default function InstructorSchedulePage() {
-    const { user } = useUser();
-    const [events, setEvents] = useState<any[]>([]);
-    const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+    const [sessions, setSessions] = useState<TimetableSession[]>([]);
     const [loading, setLoading] = useState(true);
+    const [schedulingId, setSchedulingId] = useState<string | null>(null);
+    const { toast } = useToast();
 
-    useEffect(() => {
-        if (!user) return;
-        const fetchSchedule = async () => {
-            try {
-                // Fetch events relevant to the instructor
-                const res = await fetch(`/api/events`);
-                const data = await res.json();
-                if (Array.isArray(data)) {
-                    setEvents(data);
-                }
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchSchedule();
-    }, [user]);
+    const fetchSessions = async () => {
+        try {
+            const res = await apiFetch('/api/timetable/my-sessions');
+            const data = await res.json();
+            if (data.success) setSessions(data.sessions);
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    const eventsOnSelectedDate = events.filter(event => {
-        if (!event.date) return false;
-        const eventDate = new Date(event.date);
-        return selectedDate &&
-            eventDate.getDate() === selectedDate.getDate() &&
-            eventDate.getMonth() === selectedDate.getMonth() &&
-            eventDate.getFullYear() === selectedDate.getFullYear();
-    });
+    useEffect(() => { fetchSessions(); }, []);
+
+    const now = Date.now();
+    const upcoming = useMemo(
+        () => sessions.filter(s => s.status !== 'cancelled' && s.status !== 'completed' && new Date(s.endTime).getTime() >= now),
+        [sessions]
+    );
+    const past = useMemo(
+        () => sessions.filter(s => s.status === 'cancelled' || s.status === 'completed' || new Date(s.endTime).getTime() < now),
+        [sessions]
+    );
+
+    const handleStartZoom = async (session: TimetableSession) => {
+        setSchedulingId(session._id);
+        try {
+            const res = await apiFetch(`/api/timetable/${session._id}/schedule-zoom`, { method: 'POST' });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to create Zoom class');
+            setSessions(prev => prev.map(s => s._id === session._id
+                ? { ...s, status: 'scheduled', zoomJoinUrl: data.session.zoomJoinUrl, zoomStartUrl: data.session.zoomStartUrl }
+                : s));
+            toast({ title: 'Zoom class created', description: 'Your session is live and ready to start.' });
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: 'Could not create Zoom class', description: e.message });
+        } finally {
+            setSchedulingId(null);
+        }
+    };
 
     return (
-        <div className="mx-auto px-6 md:px-10 py-8 space-y-10 max-w-[1600px] animate-in fade-in duration-700">
-            {/* Header Section */}
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
-                <div className="space-y-1">
-                    <h1 className="text-4xl font-black text-[#0B1F3A] tracking-tight mb-2">My Schedule</h1>
-                    <p className="text-slate-500 font-medium italic">Coordinate your upcoming lessons and academy events.</p>
-                </div>
-
-                <div className="flex gap-4 w-full lg:w-auto">
-                    <Button variant="outline" className="flex-1 lg:flex-none h-12 px-6 rounded-2xl border-slate-100 font-bold text-slate-600 gap-2 hover:bg-slate-50 transition-all">
-                        <Filter className="w-4 h-4" />
-                        Filter
-                    </Button>
-                    <Button className="flex-1 lg:flex-none bg-[#0B1F3A] hover:bg-slate-800 text-white font-black h-12 px-8 rounded-2xl shadow-none gap-2 transition-all hover:scale-[1.02] active:scale-95">
-                        <Plus className="w-5 h-5" />
-                        New Event
-                    </Button>
-                </div>
+        <div className="mx-auto px-6 md:px-10 py-8 space-y-10 max-w-[1200px] animate-in fade-in duration-700">
+            <div className="space-y-1">
+                <h1 className="text-4xl font-black text-[#0B1F3A] tracking-tight mb-2 flex items-center gap-3">
+                    <CalendarClock className="w-8 h-8 text-[#C8A96A]" /> My Schedule
+                </h1>
+                <p className="text-slate-500 font-medium italic">
+                    Your teaching sessions, as assigned on the academy timetable. Times and modules are set by the Registry — start your Zoom class when it's your turn.
+                </p>
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-12 gap-10 items-start">
-                {/* Main Calendar Card */}
-                <div className="xl:col-span-8 space-y-8">
-                    <Card className="border-none shadow-none rounded-[40px] overflow-hidden bg-white group">
-                        <CardHeader className="bg-slate-50/50 p-8 border-b border-slate-100 flex flex-row items-center justify-between">
-                            <div>
-                                <CardTitle className="text-2xl font-black text-[#0B1F3A] uppercase tracking-tighter">Class Calendar</CardTitle>
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-1">Academy schedule overview</p>
-                            </div>
-                            <div className="hidden sm:flex items-center gap-4">
-                                <div className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase">
-                                    <div className="w-2 h-2 bg-indigo-500 rounded-full" />
-                                    Live Class
-                                </div>
-                                <div className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase">
-                                    <div className="w-2 h-2 bg-emerald-500 rounded-full" />
-                                    Workshop
-                                </div>
-                            </div>
-                        </CardHeader>
-                        <CardContent className="p-4 md:p-10">
-                            <Calendar
-                                mode="single"
-                                selected={selectedDate}
-                                onSelect={setSelectedDate}
-                                className="w-full"
-                                classNames={{
-                                    months: "flex flex-col space-y-12",
-                                    month: "space-y-6 w-full",
-                                    caption: "flex justify-center pt-2 relative items-center mb-8",
-                                    caption_label: "text-3xl font-black text-[#0B1F3A] uppercase tracking-tighter px-6",
-                                    nav: "flex items-center gap-3",
-                                    nav_button: "h-12 w-12 bg-slate-50 hover:bg-slate-100 text-slate-600 transition-all rounded-2xl flex items-center justify-center p-0",
-                                    nav_button_previous: "absolute left-2",
-                                    nav_button_next: "absolute right-2",
-                                    table: "w-full border-collapse",
-                                    head_row: "flex w-full mb-6",
-                                    head_cell: "text-slate-400 rounded-md w-full font-black text-xs uppercase tracking-[0.2em]",
-                                    row: "flex w-full mt-3",
-                                    cell: cn(
-                                        "h-24 w-full text-center text-sm p-0 relative transition-all duration-300",
-                                        "[&:has([aria-selected])]:bg-indigo-50/30 first:[&:has([aria-selected])]:rounded-l-[2rem] last:[&:has([aria-selected])]:rounded-r-[2rem]"
-                                    ),
-                                    day: cn(
-                                        "h-full w-full p-4 font-bold text-slate-600 transition-all hover:bg-slate-50 rounded-[1.5rem] flex flex-col items-center justify-center gap-1",
-                                        "aria-selected:opacity-100"
-                                    ),
-                                    day_selected: "bg-[#0B1F3A] text-white hover:bg-[#1E293B] hover:text-white focus:bg-[#0B1F3A] focus:text-white shadow-none border-none scale-105 z-10",
-                                    day_today: "bg-slate-100 text-slate-900 border-2 border-slate-200 ring-4 ring-white",
-                                    day_outside: "text-slate-200 opacity-40",
-                                    day_disabled: "text-slate-200 opacity-40",
-                                }}
-                            />
-                        </CardContent>
-                    </Card>
-
-                    <div className="bg-indigo-50/50 p-6 rounded-[2rem] border border-indigo-100/50 flex gap-4 items-center">
-                        <div className="bg-white p-3 rounded-2xl"><CalendarIcon className="w-5 h-5 text-indigo-600" /></div>
-                        <p className="text-sm font-medium text-slate-600">
-                            Select a date to view the <strong>Daily Schedule</strong> in the side menu.
-                        </p>
-                    </div>
+            {loading && (
+                <div className="space-y-4">
+                    {[1, 2, 3].map(i => <Skeleton key={i} className="h-24 w-full rounded-2xl" />)}
                 </div>
+            )}
 
-                {/* Sidebar Widget: Daily Docket */}
-                <div className="xl:col-span-4 space-y-10">
-                    <Card className="border-none shadow-none rounded-[40px] overflow-hidden bg-white/80 backdrop-blur-xl border border-white">
-                        <CardHeader className="p-8 pb-4">
-                            <div className="flex justify-between items-start">
-                                <div className="space-y-1">
-                                    <CardTitle className="text-2xl font-black text-[#0B1F3A] uppercase tracking-tighter flex items-center gap-3">
-                                        <div className="p-2 bg-amber-50 rounded-xl">
-                                            <Bell className="w-5 h-5 text-amber-500" />
-                                        </div>
-                                        Today's Classes
-                                    </CardTitle>
-                                    <CardDescription className="text-slate-400 font-bold text-[10px] uppercase tracking-[0.2em] px-1">Academy Events</CardDescription>
-                                </div>
-                                <div className="px-4 py-1.5 bg-[#0B1F3A] text-white rounded-xl text-xs font-black">
-                                    {selectedDate?.toLocaleDateString([], { day: 'numeric', month: 'short' })}
-                                </div>
-                            </div>
-                        </CardHeader>
-                        <CardContent className="p-8 pt-2">
-                            <div className="space-y-6">
-                                {loading ? (
-                                    Array.from({ length: 2 }).map((_, i) => (
-                                        <div key={i} className="h-24 bg-slate-50 rounded-3xl animate-pulse" />
-                                    ))
-                                ) : eventsOnSelectedDate.length > 0 ? (
-                                    eventsOnSelectedDate.map((event) => (
-                                        <div key={event._id} className="group flex items-start gap-6 p-5 rounded-[2rem] hover:bg-slate-50 transition-all duration-500 border border-transparent hover:border-slate-100">
-                                            <div className="mt-1 flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-500 text-white shadow-none group-hover:scale-110 transition-transform duration-300">
-                                                <Video className="w-6 h-6" />
-                                            </div>
-                                            <div className="flex-1 min-w-0 py-1">
-                                                <p className="font-black text-[#0B1F3A] text-lg leading-tight group-hover:text-indigo-600 transition-colors truncate tracking-tight">
-                                                    {event.title}
-                                                </p>
-                                                <div className="flex flex-col gap-2 mt-3 text-slate-500">
-                                                    <div className="flex items-center gap-2.5">
-                                                        <Clock className="w-3.5 h-3.5" />
-                                                        <span className="text-[11px] font-black uppercase tracking-widest">{event.time || 'Pending'}</span>
-                                                    </div>
-                                                    <div className="flex items-center gap-2.5">
-                                                        <MapPin className="w-3.5 h-3.5" />
-                                                        <span className="text-[11px] font-black uppercase tracking-widest truncate">{event.location || 'Lecture Hall Delta'}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="self-center">
-                                                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-slate-300 group-hover:text-indigo-600 group-hover:bg-indigo-100 transition-all">
-                                                    <ChevronRight className="h-6 w-6" />
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <div className="text-center py-24 px-8 flex flex-col items-center gap-8 group/empty transition-all">
-                                        <div className="relative">
-                                            <div className="absolute inset-0 bg-indigo-100 rounded-full blur-2xl opacity-0 group-hover/empty:opacity-60 transition-opacity" />
-                                            <div className="relative p-8 bg-slate-50 text-slate-200 rounded-[2.5rem] border border-slate-100 group-hover/empty:scale-110 group-hover/empty:text-indigo-200 group-hover/empty:bg-white transition-all duration-700">
-                                                <CalendarCheck className="w-16 h-16" />
-                                            </div>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <p className="text-xl font-black text-[#0B1F3A] uppercase tracking-tighter">Free Day</p>
-                                            <p className="text-sm font-medium text-slate-400 max-w-[200px] leading-relaxed">No classes scheduled for this date.</p>
-                                        </div>
+            {!loading && sessions.length === 0 && (
+                <Card className="border-none shadow-sm rounded-2xl">
+                    <CardContent className="p-12 text-center text-slate-400">
+                        No sessions have been assigned to you on the timetable yet. Contact the Registry if you believe this is a mistake.
+                    </CardContent>
+                </Card>
+            )}
+
+            {!loading && upcoming.length > 0 && (
+                <div className="space-y-4">
+                    <h2 className="text-xs font-black uppercase tracking-widest text-slate-400">Upcoming Sessions ({upcoming.length})</h2>
+                    {upcoming.map(session => (
+                        <Card key={session._id} className="border-none shadow-sm rounded-2xl overflow-hidden">
+                            <CardContent className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                <div className="space-y-1.5 min-w-0">
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                        <Badge className="bg-[#0B1F3A]/5 text-[#0B1F3A] border-none text-[9px] font-black uppercase tracking-wider">
+                                            {session.weekCode} · {session.sessionCode}
+                                        </Badge>
+                                        <Badge className={
+                                            session.status === 'scheduled'
+                                                ? "bg-emerald-50 text-emerald-700 border-none text-[9px] font-black uppercase tracking-wider"
+                                                : "bg-amber-50 text-amber-700 border-none text-[9px] font-black uppercase tracking-wider"
+                                        }>
+                                            {session.status === 'scheduled' ? 'Zoom Ready' : 'Not Started'}
+                                        </Badge>
                                     </div>
-                                )}
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* Secondary CTA: Symposia */}
-                    <Card className="border-none shadow-none rounded-[40px] bg-[#0B1F3A] text-white overflow-hidden relative group cursor-pointer transition-all active:scale-95">
-                        <div className="absolute top-0 right-0 p-10 transform group-hover:scale-125 group-hover:rotate-12 transition-all duration-1000 opacity-20">
-                            <Video className="w-32 h-32" />
-                        </div>
-                        <CardContent className="p-10 relative z-10 space-y-6">
-                            <Badge className="bg-[#C8A96A] text-[#0B1F3A] border-none px-3 py-1 font-black text-[10px] tracking-widest">LIVE NOW</Badge>
-                            <div className="space-y-2">
-                                <h3 className="text-2xl font-black leading-tight">Live Class Room</h3>
-                                <p className="text-slate-400 text-sm font-medium">Join 12 students in the active lesson.</p>
-                            </div>
-                            <Button className="w-full bg-white text-[#0B1F3A] border-none hover:bg-slate-100 font-black h-12 rounded-2xl transition-all">
-                                Enter Room
-                            </Button>
-                        </CardContent>
-                    </Card>
+                                    <h3 className="font-black text-[#0B1F3A] text-lg truncate">{session.module}</h3>
+                                    <p className="text-sm text-slate-500 font-medium truncate">{session.courseTitle || session.programmeName}</p>
+                                    <p className="text-xs text-slate-400 font-bold">{fmtDate(session.startTime)} · {fmtTimeRange(session.startTime, session.endTime)}</p>
+                                </div>
+                                <div className="flex gap-2 shrink-0">
+                                    {session.status === 'scheduled' ? (
+                                        <Button asChild className="h-12 px-6 rounded-xl bg-[#1F7A5A] hover:bg-[#1F7A5A]/90 text-white font-black text-[10px] uppercase tracking-widest gap-2">
+                                            <a href={session.zoomStartUrl} target="_blank" rel="noopener noreferrer">
+                                                <Video className="w-4 h-4" /> Start Class
+                                            </a>
+                                        </Button>
+                                    ) : (
+                                        <Button
+                                            onClick={() => handleStartZoom(session)}
+                                            disabled={schedulingId === session._id}
+                                            className="h-12 px-6 rounded-xl bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black text-[10px] uppercase tracking-widest gap-2"
+                                        >
+                                            {schedulingId === session._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Video className="w-4 h-4" />}
+                                            Create Zoom Class
+                                        </Button>
+                                    )}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))}
                 </div>
-            </div>
+            )}
+
+            {!loading && past.length > 0 && (
+                <div className="space-y-4">
+                    <h2 className="text-xs font-black uppercase tracking-widest text-slate-400">Past &amp; Cancelled ({past.length})</h2>
+                    {past.map(session => (
+                        <Card key={session._id} className="border-none shadow-sm rounded-2xl overflow-hidden opacity-60">
+                            <CardContent className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                <div className="space-y-1.5 min-w-0">
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                        <Badge className="bg-slate-100 text-slate-500 border-none text-[9px] font-black uppercase tracking-wider">
+                                            {session.weekCode} · {session.sessionCode}
+                                        </Badge>
+                                    </div>
+                                    <h3 className="font-bold text-slate-600 truncate">{session.module}</h3>
+                                    <p className="text-xs text-slate-400 font-bold">{fmtDate(session.startTime)} · {fmtTimeRange(session.startTime, session.endTime)}</p>
+                                </div>
+                                {session.status === 'completed' && (
+                                    <Badge className="bg-slate-800 text-white border-none text-[9px] font-black uppercase tracking-wider gap-1">
+                                        <CheckCircle2 className="w-3 h-3" /> Completed
+                                    </Badge>
+                                )}
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
