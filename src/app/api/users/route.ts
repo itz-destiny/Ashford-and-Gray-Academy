@@ -11,7 +11,7 @@ import {
     type AuthContext,
     type Role,
 } from '@/lib/auth-server';
-import { getAppUrl, getRequestOrigin } from '@/lib/app-url';
+import { getEmailUrl } from '@/lib/app-url';
 
 export const dynamic = 'force-dynamic';
 
@@ -292,7 +292,7 @@ export async function POST(req: NextRequest): Promise<Response> {
         if (!existing && user?.email) {
             try {
                 const { sendEmail, emailTemplates } = await import('@/lib/email');
-                const appUrl = getAppUrl({ fallbackOrigin: getRequestOrigin(req) });
+                const appUrl = getEmailUrl();
                 const portalByRole: Record<string, string> = {
                     admin: '/admin', registrar: '/registrar', course_registrar: '/course-registrar',
                     finance: '/finance', instructor: '/instructor', student: '/dashboard',

@@ -9,7 +9,7 @@ import { PaystackError, verifyTransaction } from '@/lib/paystack';
 import { createNotification } from '@/lib/notifications';
 import { sendEmail, emailTemplates } from '@/lib/email';
 import { adminAuth } from '@/lib/firebase-admin';
-import { getAppUrl } from '@/lib/app-url';
+import { getEmailUrl } from '@/lib/app-url';
 
 /** `AGFA-<First>-<Last>-2026` — same simple, typeable scheme used for staff accounts. */
 function generateStudentPassword(name: string): string {
@@ -128,7 +128,7 @@ export async function finalizeSuccessfulPayment(params: {
                     recipientName: tx.userName || 'Student',
                     email: tx.userEmail,
                     password,
-                    loginUrl: `${getAppUrl()}/login`,
+                    loginUrl: `${getEmailUrl()}/login`,
                 });
                 await sendEmail({ to: tx.userEmail, subject: tpl.subject, html: tpl.html });
             }

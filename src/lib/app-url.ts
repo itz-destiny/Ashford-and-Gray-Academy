@@ -49,3 +49,18 @@ export function getAppUrl(opts?: { fallbackOrigin?: string }): string {
 
     return (raw || 'http://localhost:9002').replace(/\/$/, '');
 }
+
+const PUBLIC_SITE_URL = 'https://www.ashfordandgrayfusionacademy.com';
+
+/**
+ * The URL to use inside outbound emails specifically. `NEXT_PUBLIC_APP_URL`
+ * is intentionally left as localhost in local dev (see .env.local) so
+ * Paystack callbacks round-trip to a developer's machine — but a real
+ * recipient's inbox must never show a `localhost` link regardless of where
+ * the sending code happens to run. This always resolves to the real site.
+ */
+export function getEmailUrl(): string {
+    const resolved = getAppUrl();
+    const isLocalhost = /^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0)(:|\/|$)/.test(resolved);
+    return isLocalhost ? PUBLIC_SITE_URL : resolved;
+}

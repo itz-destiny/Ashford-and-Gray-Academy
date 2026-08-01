@@ -93,8 +93,8 @@ export const POST = withAuth(async (req: NextRequest, { auth }) => {
         // inside sendEmail and never block the API response.
         try {
             if (course.title && auth.email) {
-                const { getAppUrl } = await import('@/lib/app-url');
-                const appUrl = getAppUrl();
+                const { getEmailUrl } = await import('@/lib/app-url');
+                const appUrl = getEmailUrl();
                 const tpl = emailTemplates.enrollment({
                     studentName: auth.displayName || 'Student',
                     courseName: course.title,

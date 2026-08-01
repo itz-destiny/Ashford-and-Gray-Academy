@@ -87,15 +87,15 @@ export function verifyNewsletterToken(
 }
 
 export function buildConfirmUrl(email: string): string {
-    const { getAppUrl } = require('./app-url') as typeof import('./app-url');
-    const appUrl = getAppUrl();
+    const { getEmailUrl } = require('./app-url') as typeof import('./app-url');
+    const appUrl = getEmailUrl();
     const token = signNewsletterToken({ purpose: 'confirm', email });
     return `${appUrl}/api/newsletter/confirm?token=${encodeURIComponent(token)}`;
 }
 
 export function buildUnsubscribeUrl(email: string): string {
-    const { getAppUrl } = require('./app-url') as typeof import('./app-url');
-    const appUrl = getAppUrl();
+    const { getEmailUrl } = require('./app-url') as typeof import('./app-url');
+    const appUrl = getEmailUrl();
     const token = signNewsletterToken({ purpose: 'unsubscribe', email });
     return `${appUrl}/api/newsletter/unsubscribe?token=${encodeURIComponent(token)}`;
 }

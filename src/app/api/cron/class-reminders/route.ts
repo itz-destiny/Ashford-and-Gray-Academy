@@ -62,8 +62,8 @@ export async function GET(req: NextRequest): Promise<Response> {
             const userIds = enrollments.map((e: any) => e.userId);
             const users = await User.find({ uid: { $in: userIds } }).select('email displayName emailVerified').lean();
 
-            const { getAppUrl } = await import('@/lib/app-url');
-            const appUrl = getAppUrl();
+            const { getEmailUrl } = await import('@/lib/app-url');
+            const appUrl = getEmailUrl();
             const joinUrl = `${appUrl}/live-classes/course-${courseId}`;
             const startsAt = new Date(lesson.scheduledAt).toLocaleString('en-GB', {
                 weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',

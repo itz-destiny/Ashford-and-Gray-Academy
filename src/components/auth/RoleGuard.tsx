@@ -54,16 +54,15 @@ export function RoleGuard({ allowed, children }: RoleGuardProps) {
             router.replace("/login/complete-profile");
             return;
         }
-        if (user.mustChangePassword && pathname !== "/account/change-password") {
-            router.replace("/account/change-password");
-            return;
-        }
         if (!isAuthorized) {
             router.replace(PORTAL_BY_ROLE[userRole] ?? "/dashboard");
         }
+        // A forced password change (system-issued password) is handled by a
+        // blocking modal mounted at the root layout — the portal still renders
+        // underneath it, it just can't be interacted with until dismissed.
     }, [loading, user, userRole, isAuthorized, pathname, router]);
 
-    if (loading || !user || !isAuthorized || user.mustChangePassword) {
+    if (loading || !user || !isAuthorized) {
         return <RoleGuardSplash />;
     }
 

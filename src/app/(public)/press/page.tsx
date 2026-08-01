@@ -61,7 +61,7 @@ const BOOKS: Book[] = [
         publisher: "Ashford & Gray Academic Press",
         blurb:
             "Hospitality is often judged by what is seen. Management is revealed by what endures.\n\nBeyond Service reframes hospitality management as a responsibility-bearing profession grounded in structure, judgement, and institutional discipline. Written from professional practice rather than theory, this book examines what truly sustains hospitality environments beyond visible service delivery — operational systems, people management, professional conduct, business discipline, and long-term continuity.\n\nIt moves beyond surface-level service to present hospitality management as governance: the coordination of people, resources, and standards in environments where discretion, accountability, and consistency are essential.\n\nThis book is designed for:\n• Hospitality professionals and managers\n• Estate and facility managers\n• Executives and institutional leaders\n• Students and emerging professionals\n\nClear, grounded, and authoritative, Beyond Service challenges conventional thinking and positions hospitality management not as performance — but as professional responsibility.\n\nThis is not a book about service. It is a book about what sustains it.",
-        coverImage: "https://m.media-amazon.com/images/I/61i6msVdsSL._SY466_.jpg",
+        coverImage: "/beyond-service-cover.png",
         backCoverImage: "https://m.media-amazon.com/images/I/51nrofcUhiL._SY466_.jpg",
         retailers: [
             {
