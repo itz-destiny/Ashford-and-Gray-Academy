@@ -13,9 +13,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { ArrowRight, CheckCircle2, Loader2, Eye, EyeOff, Mail } from "lucide-react";
+import { ArrowRight, CheckCircle2, Loader2, Mail } from "lucide-react";
 import { AuthForm } from "./auth-form";
-import { signUpWithEmail } from "@/firebase/auth";
+import { signInWithToken } from "@/firebase/auth";
 import { useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 
@@ -56,15 +56,12 @@ type Form = {
     highestQualification: string;
     professionalBackground: string;
     applicationStatement: string;
-    password: string;
-    confirmPassword: string;
 };
 
 const INITIAL: Form = {
     name: "", email: "", phone: "", country: "", dateOfBirth: "",
     programmeOfInterest: "", highestQualification: "",
     professionalBackground: "", applicationStatement: "",
-    password: "", confirmPassword: "",
 };
 
 const inputClass =
@@ -74,12 +71,8 @@ const labelClass =
     "text-[10px] font-black uppercase tracking-[0.3em] text-[#0B1F3A]";
 
 export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
-    const role = "student" as const;
     const [form, setForm] = useState<Form>(INITIAL);
     const [isLoading, setIsLoading] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [passwordError, setPasswordError] = useState("");
     const [submittedEmail, setSubmittedEmail] = useState<string | null>(null);
     const searchParams = useSearchParams();
     const { toast } = useToast();
@@ -91,16 +84,7 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
 
     const handleSignUp = async (e: React.FormEvent) => {
         e.preventDefault();
-        setPasswordError("");
 
-        if (form.password !== form.confirmPassword) {
-            setPasswordError("Passwords do not match");
-            return;
-        }
-        if (form.password.length < 6) {
-            setPasswordError("Password must be at least 6 characters");
-            return;
-        }
         if (form.applicationStatement.trim().length < 20) {
             toast({
                 variant: "destructive",
@@ -112,40 +96,34 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
 
         setIsLoading(true);
 
-        const { error, user } = await signUpWithEmail(form.email, form.password, { name: form.name });
-
-        if (error || !user) {
-            setIsLoading(false);
-            toast({ variant: "destructive", title: "Application could not be submitted", description: error || "Please try again." });
-            return;
-        }
-
         try {
-            const idToken = await user.getIdToken();
-            const profileRes = await fetch("/api/users", {
+            const res = await fetch("/api/applications", {
                 method: "POST",
-                headers: { "Content-Type": "application/json", Authorization: `Bearer ${idToken}` },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    uid: user.uid, email: user.email, displayName: form.name, role,
-                    phone: form.phone, country: form.country, dateOfBirth: form.dateOfBirth,
+                    name: form.name,
+                    email: form.email,
+                    phone: form.phone,
+                    country: form.country,
+                    dateOfBirth: form.dateOfBirth,
                     programmeOfInterest: form.programmeOfInterest,
                     highestQualification: form.highestQualification,
                     professionalBackground: form.professionalBackground,
                     applicationStatement: form.applicationStatement,
                 }),
             });
-            if (!profileRes.ok) throw new Error("Profile sync failed");
+            const body = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(body.error || "Application could not be submitted");
 
-            // No email verification step — the account is ready immediately and
-            // a welcome email is dispatched server-side by /api/users.
+            // Sign in silently via a custom token — no password was ever chosen
+            // or shown. A real, usable password is only issued by email once
+            // payment for a course succeeds.
+            const { error } = await signInWithToken(body.customToken);
+            if (error) throw new Error(error);
+
             setSubmittedEmail(form.email);
-        } catch (err) {
-            console.error("Error syncing applicant profile:", err);
-            toast({
-                variant: "destructive",
-                title: "Account created — profile sync failed",
-                description: "Please contact admissions so we can complete your record.",
-            });
+        } catch (err: any) {
+            toast({ variant: "destructive", title: "Application could not be submitted", description: err.message || "Please try again." });
         } finally {
             setIsLoading(false);
         }
@@ -173,17 +151,17 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
                     <div className="border border-slate-200 p-5 flex items-start gap-3 bg-slate-50">
                         <Mail className="w-5 h-5 text-[#0B1F3A] shrink-0 mt-0.5" />
                         <div className="text-sm">
-                            <p className="font-bold text-[#0B1F3A]">A welcome email is on its way</p>
+                            <p className="font-bold text-[#0B1F3A]">One step left — enroll in a programme</p>
                             <p className="text-slate-500 mt-1 leading-relaxed">
-                                We've sent a welcome note to <span className="font-bold text-[#0B1F3A]">{submittedEmail}</span>. Your account is ready — you can continue straight to your dashboard.
+                                Choose your programme and complete payment to activate your enrollment. Once payment is confirmed, we'll email <span className="font-bold text-[#0B1F3A]">{submittedEmail}</span> your login password.
                             </p>
                         </div>
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-3 pt-2">
                         <Button asChild className="flex-1 h-12 rounded-none bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black text-[10px] uppercase tracking-[0.3em] shadow-none border-none transition-colors">
-                            <Link href={searchParams.get('redirectUrl') || '/dashboard'}>
-                                Continue to Dashboard <ArrowRight className="ml-3 h-4 w-4" />
+                            <Link href={searchParams.get('redirectUrl') || '/courses'}>
+                                Choose a Programme <ArrowRight className="ml-3 h-4 w-4" />
                             </Link>
                         </Button>
                         <Button asChild variant="outline" className="flex-1 h-12 rounded-none border border-slate-200 hover:border-[#0B1F3A] hover:bg-white text-[#0B1F3A] font-black text-[10px] uppercase tracking-[0.3em] shadow-none">
@@ -287,32 +265,6 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
                         placeholder="Share your motivation, goals, and what you hope to gain from the programme."
                         className="rounded-none border border-slate-200 bg-white p-4 font-medium text-[#0B1F3A] placeholder:text-slate-400 shadow-none focus-visible:ring-0 focus-visible:border-[#0B1F3A] resize-none transition-colors"
                     />
-                </div>
-
-                {/* Credentials block */}
-                <div className="border-t border-slate-100 pt-6 space-y-4">
-                    <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#C8A96A]">Account Credentials</p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="password-signup" className={labelClass}>Password</Label>
-                            <div className="relative">
-                                <Input id="password-signup" name="password-signup" type={showPassword ? "text" : "password"} required placeholder="••••••••" disabled={isLoading} value={form.password} onChange={set("password")} className={`${inputClass} pr-12`} />
-                                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#0B1F3A] transition-colors" tabIndex={-1}>
-                                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                </button>
-                            </div>
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="confirm-password" className={labelClass}>Confirm Password</Label>
-                            <div className="relative">
-                                <Input id="confirm-password" type={showConfirmPassword ? "text" : "password"} required placeholder="••••••••" disabled={isLoading} value={form.confirmPassword} onChange={set("confirmPassword")} className={`${inputClass} pr-12`} />
-                                <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#0B1F3A] transition-colors" tabIndex={-1}>
-                                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    {passwordError && <p className="text-[10px] font-black uppercase tracking-widest text-red-500">{passwordError}</p>}
                 </div>
 
                 <Button

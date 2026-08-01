@@ -4,6 +4,7 @@ import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signInWithCustomToken,
   GoogleAuthProvider,
   signInWithPopup,
   signOut as firebaseSignOut,
@@ -39,6 +40,17 @@ export const signUpWithEmail = async (
 export const signInWithEmail = async (email: string, password: string) => {
   try {
     const { user } = await signInWithEmailAndPassword(auth, email, password);
+    return { user };
+  } catch (error: any) {
+    return { error: error?.message ?? "Sign-in failed." };
+  }
+};
+
+// Sign in with a server-issued custom token — used right after applying, so
+// the applicant never sees or types a password before they've paid.
+export const signInWithToken = async (token: string) => {
+  try {
+    const { user } = await signInWithCustomToken(auth, token);
     return { user };
   } catch (error: any) {
     return { error: error?.message ?? "Sign-in failed." };

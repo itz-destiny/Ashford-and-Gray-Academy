@@ -2,8 +2,9 @@ import mongoose from 'mongoose';
 
 const notificationSchema = new mongoose.Schema({
     userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        // Firebase UID, not a Mongo ObjectId — matches how every caller
+        // (auth.uid, Transaction.userId, etc.) actually identifies a user.
+        type: String,
         required: true,
         index: true
     },
@@ -33,10 +34,12 @@ const notificationSchema = new mongoose.Schema({
         default: false
     },
     metadata: {
-        courseId: mongoose.Schema.Types.ObjectId,
-        transactionId: mongoose.Schema.Types.ObjectId,
-        senderId: mongoose.Schema.Types.ObjectId,
-        conversationId: mongoose.Schema.Types.ObjectId,
+        // These all arrive as .toString()'d ids or Firebase UIDs from callers
+        // (see src/lib/notifications.ts) — never real Mongo ObjectId values.
+        courseId: String,
+        transactionId: String,
+        senderId: String,
+        conversationId: String,
         additionalData: mongoose.Schema.Types.Mixed
     },
     readAt: {

@@ -3,11 +3,20 @@ import { z } from 'zod';
 import dbConnect from '@/lib/mongodb';
 import Transaction from '@/models/Transaction';
 import Enrollment from '@/models/Enrollment';
+import User from '@/models/User';
 import { withAuth } from '@/lib/auth-server';
 import { PaystackError, verifyTransaction } from '@/lib/paystack';
 import { createNotification } from '@/lib/notifications';
 import { sendEmail, emailTemplates } from '@/lib/email';
 import { adminAuth } from '@/lib/firebase-admin';
+import { getAppUrl } from '@/lib/app-url';
+
+/** `AGFA-<First>-<Last>-2026` — same simple, typeable scheme used for staff accounts. */
+function generateStudentPassword(name: string): string {
+    const parts = name.split(/\s+/).filter(Boolean).map((p) => p.replace(/[^a-zA-Z]/g, ''));
+    const tag = parts.length > 1 ? `${parts[0]}-${parts[parts.length - 1]}` : (parts[0] || 'Student');
+    return `AGFA-${tag}-2026`;
+}
 
 const querySchema = z.object({
     reference: z.string().min(1),
@@ -94,12 +103,39 @@ export async function finalizeSuccessfulPayment(params: {
     if (!tx.courseId) return;
 
     const courseId = tx.courseId;
+    // This is the user's very first enrollment iff none existed before this
+    // payment — that's exactly when their account (created passwordless by
+    // /api/applications) needs a real password issued for the first time.
+    const isFirstEverEnrollment = (await Enrollment.countDocuments({ userId: tx.userId })) === 0;
+
     // Idempotent enrollment.
     await Enrollment.findOneAndUpdate(
         { userId: tx.userId, courseId },
         { $setOnInsert: { userId: tx.userId, courseId, enrolledAt: new Date() } },
         { upsert: true, new: true }
     );
+
+    // First-ever enrollment: activate the account with a real, usable
+    // password (the applicant never chose or saw one) and require them to
+    // change it on first login. Best-effort — must not block the enrollment.
+    if (isFirstEverEnrollment) {
+        try {
+            const password = generateStudentPassword(tx.userName || 'Student');
+            await adminAuth().updateUser(tx.userId, { password });
+            await User.findOneAndUpdate({ uid: tx.userId }, { $set: { mustChangePassword: true } });
+            if (tx.userEmail) {
+                const tpl = emailTemplates.enrollmentWelcome({
+                    recipientName: tx.userName || 'Student',
+                    email: tx.userEmail,
+                    password,
+                    loginUrl: `${getAppUrl()}/login`,
+                });
+                await sendEmail({ to: tx.userEmail, subject: tpl.subject, html: tpl.html });
+            }
+        } catch (err) {
+            console.error('finalizeSuccessfulPayment: password activation failed:', err);
+        }
+    }
 
     // Side-effects: in-app notification + receipt email. Best-effort; failures
     // here must NOT roll back the enrollment.

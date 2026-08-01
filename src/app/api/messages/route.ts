@@ -2,8 +2,10 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import dbConnect from '@/lib/mongodb';
 import { Message, Conversation } from '@/models/Supports';
+import User from '@/models/User';
 import { withAuth, type AuthContext } from '@/lib/auth-server';
 import { publishMessage } from '@/lib/realtime-events';
+import { canStudentMessageInstructor } from '@/lib/messaging-access';
 
 const ELEVATED_ROLES = ['admin'] as const;
 
@@ -88,6 +90,29 @@ export const POST = withAuth(async (req: NextRequest, { auth }) => {
                     { error: 'You are not a participant in this conversation.' },
                     { status: 403 }
                 );
+            }
+        }
+
+        // A student may only message an instructor while actively enrolled in
+        // one of their courses, and only until that course's stated duration
+        // has elapsed — this applies in both directions.
+        if (auth.role === 'student' || auth.role === 'instructor') {
+            const receiver = await User.findOne({ uid: receiverId }).select('role').lean<{ role: string } | null>();
+            const otherRole = receiver?.role;
+            const isStudentInstructorPair =
+                (auth.role === 'student' && otherRole === 'instructor') ||
+                (auth.role === 'instructor' && otherRole === 'student');
+
+            if (isStudentInstructorPair) {
+                const studentUid = auth.role === 'student' ? auth.uid : receiverId;
+                const instructorUid = auth.role === 'instructor' ? auth.uid : receiverId;
+                const allowed = await canStudentMessageInstructor(studentUid, instructorUid);
+                if (!allowed) {
+                    return NextResponse.json(
+                        { error: 'This conversation is closed — messaging is only available while actively enrolled in the course.' },
+                        { status: 403 }
+                    );
+                }
             }
         }
 

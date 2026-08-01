@@ -14,6 +14,7 @@ import Link from 'next/link';
 import EmojiPicker from 'emoji-picker-react';
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { useToast } from "@/hooks/use-toast";
 
 const OFFICE_ROLES = ['admin', 'registrar', 'course_registrar', 'finance'];
 
@@ -27,6 +28,7 @@ const ROLE_BADGE: Record<string, { label: string; className: string }> = {
 
 export function Communications() {
     const { user } = useUser();
+    const { toast } = useToast();
     const [conversations, setConversations] = useState<any[]>([]);
     const [officesDirectory, setOfficesDirectory] = useState<any[]>([]);
     const [lecturersDirectory, setLecturersDirectory] = useState<any[]>([]);
@@ -62,20 +64,32 @@ export function Communications() {
                     return;
                 }
 
-                // Student: only the instructors of their enrolled courses.
+                // Student: only the instructors of courses they're currently,
+                // actively enrolled in — access ends once the course's stated
+                // duration has elapsed from the enrollment date.
                 const enRes = await apiFetch('/api/enrollments');
                 const enrollments = await enRes.json();
 
                 if (Array.isArray(enrollments)) {
-                    const instructorNames = Array.from(new Set(enrollments.map(en => en.course?.instructor?.name)));
+                    const now = Date.now();
+                    const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+                    const activeInstructorUids = new Set(
+                        enrollments
+                            .filter((en: any) => {
+                                const uid = en.course?.instructorUid;
+                                if (!uid) return false;
+                                const enrolledAt = new Date(en.enrolledAt).getTime();
+                                const durationWeeks = en.course?.duration || 0;
+                                return now <= enrolledAt + durationWeeks * WEEK_MS;
+                            })
+                            .map((en: any) => en.course.instructorUid)
+                    );
 
                     const res = await apiFetch('/api/users?role=instructor');
                     const data = await res.json();
 
                     if (Array.isArray(data)) {
-                        const instructors = data.filter((u: any) =>
-                            u.role === 'instructor' && instructorNames.includes(u.displayName)
-                        );
+                        const instructors = data.filter((u: any) => activeInstructorUids.has(u.uid));
                         setLecturersDirectory(instructors);
                     }
                 }
@@ -228,6 +242,13 @@ export function Communications() {
             if (res.ok) {
                 setNewMessage("");
                 // Firestore listener will surface the new message to both sides.
+            } else {
+                const body = await res.json().catch(() => ({}));
+                toast({
+                    variant: "destructive",
+                    title: "Message not sent",
+                    description: body.error || "This conversation is no longer available.",
+                });
             }
         } catch (error) {
             console.error(error);

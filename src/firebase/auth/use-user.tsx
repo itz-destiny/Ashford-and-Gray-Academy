@@ -9,6 +9,7 @@ import { useAuth } from "@/firebase/provider";
 
 export interface AppUser extends User {
   role?: string;
+  mustChangePassword?: boolean;
   // You can add any other custom user properties here
 }
 

@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { RoleGuard } from "@/components/auth/RoleGuard";
+import { EnrollmentGate } from "@/components/dashboard/EnrollmentGate";
 import "../globals.css";
 
 
@@ -92,7 +93,7 @@ export default function DashboardLayout({
 
         {/* Page Content Container */}
         <main className="flex-1 animate-in fade-in duration-700">
-          {children}
+          <EnrollmentGate>{children}</EnrollmentGate>
         </main>
       </div>
     </div>

@@ -22,6 +22,7 @@ export interface IUser extends Document {
     emailVerified?: boolean;
     emailVerifiedAt?: Date;
     welcomeEmailSentAt?: Date;
+    mustChangePassword?: boolean;
 }
 
 const UserSchema: Schema = new Schema({
@@ -45,6 +46,7 @@ const UserSchema: Schema = new Schema({
     emailVerified: { type: Boolean, default: false, index: true },
     emailVerifiedAt: { type: Date },
     welcomeEmailSentAt: { type: Date },
+    mustChangePassword: { type: Boolean, default: false },
 }, { timestamps: true });
 
 export default mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
