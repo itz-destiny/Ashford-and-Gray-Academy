@@ -62,6 +62,9 @@ export default async function CourseDetailPage({ params }: RouteProps) {
     const hasCertification = Array.isArray(course.certificationDetails) && course.certificationDetails.length > 0;
     const hasCareer = Array.isArray(course.careerOpportunities) && course.careerOpportunities.length > 0;
     const curriculum = Array.isArray(course.curriculum) ? course.curriculum : [];
+    const hasPhilosophy = Array.isArray(course.programmePhilosophy) && course.programmePhilosophy.length > 0;
+    const hasObjectives = Array.isArray(course.programmeObjectives) && course.programmeObjectives.length > 0;
+    const hasProgrammeOutcomes = Array.isArray(course.programmeLearningOutcomes) && course.programmeLearningOutcomes.length > 0;
 
     return (
         <div className="bg-[#FAF9F6] min-h-screen text-[#0B1F3A]">
@@ -183,6 +186,44 @@ export default async function CourseDetailPage({ params }: RouteProps) {
                     </div>
                 </section>
 
+                {/* 1b. Programme Philosophy & Objectives */}
+                {(hasPhilosophy || hasObjectives) && (
+                    <section className="grid lg:grid-cols-2 gap-12 pt-4">
+                        {hasPhilosophy && (
+                            <div className="space-y-6">
+                                <div className="inline-flex items-center gap-3">
+                                    <span className="text-[#C8A96A] font-black text-xs uppercase tracking-[0.3em]">Programme Philosophy</span>
+                                </div>
+                                <h3 className="text-2xl font-serif text-[#0B1F3A] leading-tight">Built on These Principles.</h3>
+                                <ul className="space-y-4">
+                                    {course.programmePhilosophy.map((item: string, i: number) => (
+                                        <li key={i} className="flex items-start gap-3 border-b border-slate-100 pb-4 last:border-0">
+                                            <span className="text-[#C8A96A] font-serif text-lg leading-none shrink-0">0{i + 1}</span>
+                                            <span className="text-sm text-[#0B1F3A]/75 font-medium leading-relaxed">{item}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                        {hasObjectives && (
+                            <div className="space-y-6">
+                                <div className="inline-flex items-center gap-3">
+                                    <span className="text-[#C8A96A] font-black text-xs uppercase tracking-[0.3em]">Programme Objectives</span>
+                                </div>
+                                <h3 className="text-2xl font-serif text-[#0B1F3A] leading-tight">What This Programme Will Do.</h3>
+                                <ul className="space-y-3 bg-white border border-slate-100 p-6 shadow-sm">
+                                    {course.programmeObjectives.map((item: string, i: number) => (
+                                        <li key={i} className="flex items-start gap-3">
+                                            <CheckCircle2 className="w-4 h-4 text-[#1F7A5A] shrink-0 mt-0.5" />
+                                            <span className="text-sm text-[#0B1F3A]/80 font-medium leading-snug">{item}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                    </section>
+                )}
+
                 {/* 2. Core Experience Grid (HBS Style Rectangular Cards) */}
                 <section id="experience" className="scroll-mt-36 space-y-16">
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -280,6 +321,26 @@ export default async function CourseDetailPage({ params }: RouteProps) {
                                 </ul>
                             </div>
                         </div>
+                    </section>
+                )}
+
+                {/* 3b. Programme Learning Outcomes (flat competency checklist) */}
+                {hasProgrammeOutcomes && (
+                    <section className="py-12 border-t border-slate-200">
+                        <div className="max-w-3xl mb-10 space-y-4">
+                            <div className="inline-flex items-center gap-3">
+                                <span className="text-[#C8A96A] font-black text-xs uppercase tracking-[0.3em]">Learning Outcomes</span>
+                            </div>
+                            <h3 className="text-2xl md:text-3xl font-serif text-[#0B1F3A] leading-tight">By the End of This Programme, You Will Be Able To:</h3>
+                        </div>
+                        <ul className="grid sm:grid-cols-2 gap-x-8 gap-y-4">
+                            {course.programmeLearningOutcomes.map((item: string, i: number) => (
+                                <li key={i} className="flex items-start gap-3">
+                                    <CheckCircle2 className="w-5 h-5 text-[#1F7A5A] shrink-0 mt-0.5" />
+                                    <span className="text-sm text-[#0B1F3A]/80 font-medium leading-snug">{item}</span>
+                                </li>
+                            ))}
+                        </ul>
                     </section>
                 )}
 

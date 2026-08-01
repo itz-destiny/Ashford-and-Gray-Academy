@@ -1,4 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { ExpandableParagraphs } from "@/components/expandable-paragraphs";
 import { Goal, Eye, Heart, Lightbulb, ShieldCheck, Sparkles, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -67,20 +68,16 @@ export default function AboutPage() {
                         </div>
                     </ScrollAnimation>
                     <ScrollAnimation animation="fade-in-up" delay={150}>
-                        <div className="space-y-6 text-base md:text-lg text-slate-600 leading-relaxed font-medium">
-                            <p>
-                                Ashford and Gray Fusion Academy is more than an institution; it is a global ecosystem where professional mastery meets academic authority. As a specialised academy dedicated to hospitality management, business innovation, and executive leadership, we are committed to developing high-level professionals equipped to thrive in a rapidly evolving global landscape.
-                            </p>
-                            <p>
-                                Founded on the principle that excellence is never accidental, the Academy was built on a culture of structure, intentionality, discipline, and consistent delivery. We believe true leadership and service distinction are cultivated through a deliberate blend of knowledge, character, innovation, and practical execution.
-                            </p>
-                            <p>
-                                Our educational philosophy combines the rigour of traditional scholarship with the agility of modern industry practices, creating a dynamic learning environment that is both intellectually grounded and professionally relevant. Through carefully designed programmes, executive-focused training, and industry-aligned learning models, we prepare individuals not only to succeed in their careers, but to lead with confidence, precision, and global relevance.
-                            </p>
-                            <p>
-                                At Ashford and Gray Fusion Academy, we are shaping a new generation of professionals who understand that luxury, leadership, business, and service excellence are interconnected pillars of sustainable impact. Our commitment extends beyond certification; we are building a legacy-driven institution where competence meets class, innovation meets integrity, and education becomes a catalyst for transformation.
-                            </p>
-                        </div>
+                        <ExpandableParagraphs
+                            className="space-y-6 text-base md:text-lg text-slate-600 leading-relaxed font-medium"
+                            previewCount={1}
+                            paragraphs={[
+                                "Ashford and Gray Fusion Academy is more than an institution; it is a global ecosystem where professional mastery meets academic authority. As a specialised academy dedicated to hospitality management, business innovation, and executive leadership, we are committed to developing high-level professionals equipped to thrive in a rapidly evolving global landscape.",
+                                "Founded on the principle that excellence is never accidental, the Academy was built on a culture of structure, intentionality, discipline, and consistent delivery. We believe true leadership and service distinction are cultivated through a deliberate blend of knowledge, character, innovation, and practical execution.",
+                                "Our educational philosophy combines the rigour of traditional scholarship with the agility of modern industry practices, creating a dynamic learning environment that is both intellectually grounded and professionally relevant. Through carefully designed programmes, executive-focused training, and industry-aligned learning models, we prepare individuals not only to succeed in their careers, but to lead with confidence, precision, and global relevance.",
+                                "At Ashford and Gray Fusion Academy, we are shaping a new generation of professionals who understand that luxury, leadership, business, and service excellence are interconnected pillars of sustainable impact. Our commitment extends beyond certification; we are building a legacy-driven institution where competence meets class, innovation meets integrity, and education becomes a catalyst for transformation.",
+                            ]}
+                        />
                     </ScrollAnimation>
                 </div>
             </section>
