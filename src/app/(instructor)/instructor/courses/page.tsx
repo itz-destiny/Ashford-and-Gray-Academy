@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { useUser } from "@/firebase";
 import { apiFetch } from "@/lib/api-client";
-import { BookOpen, MoreVertical, Plus, Search, Users, Star, Clock, Filter, Layers, Video } from "lucide-react";
+import { BookOpen, MoreVertical, Search, Users, Star, Clock, Filter, Layers, Video } from "lucide-react";
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -50,17 +50,9 @@ export default function InstructorCoursesPage() {
                 <div className="space-y-1">
                     <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
                         <BookOpen className="w-8 h-8 text-indigo-600" />
-                        Curriculum Management
+                        My Teaching
                     </h1>
-                    <p className="text-slate-500 font-medium tracking-tight">Oversee your educational offerings and track academic engagement.</p>
-                </div>
-                <div className="flex gap-3">
-                    <Button asChild className="bg-indigo-600 hover:bg-indigo-700 text-white font-black h-12 px-8 rounded-2xl shadow-none gap-2 transition-all hover:scale-105 active:scale-95">
-                        <Link href="/instructor/courses/new">
-                            <Plus className="w-5 h-5" />
-                            Develop New Course
-                        </Link>
-                    </Button>
+                    <p className="text-slate-500 font-medium tracking-tight">Your assigned classes — manage content, track engagement, and run live sessions.</p>
                 </div>
             </div>
 

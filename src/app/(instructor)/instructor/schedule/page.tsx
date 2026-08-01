@@ -4,10 +4,9 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { CalendarClock, Video, Loader2, CheckCircle2 } from "lucide-react";
+import { CalendarClock, Video, Hourglass, CheckCircle2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiFetch } from "@/lib/api-client";
-import { useToast } from "@/hooks/use-toast";
 
 type TimetableSession = {
     _id: string;
@@ -34,8 +33,6 @@ function fmtTimeRange(startIso: string, endIso: string) {
 export default function InstructorSchedulePage() {
     const [sessions, setSessions] = useState<TimetableSession[]>([]);
     const [loading, setLoading] = useState(true);
-    const [schedulingId, setSchedulingId] = useState<string | null>(null);
-    const { toast } = useToast();
 
     const fetchSessions = async () => {
         try {
@@ -61,23 +58,6 @@ export default function InstructorSchedulePage() {
         [sessions]
     );
 
-    const handleStartZoom = async (session: TimetableSession) => {
-        setSchedulingId(session._id);
-        try {
-            const res = await apiFetch(`/api/timetable/${session._id}/schedule-zoom`, { method: 'POST' });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.error || 'Failed to create Zoom class');
-            setSessions(prev => prev.map(s => s._id === session._id
-                ? { ...s, status: 'scheduled', zoomJoinUrl: data.session.zoomJoinUrl, zoomStartUrl: data.session.zoomStartUrl }
-                : s));
-            toast({ title: 'Zoom class created', description: 'Your session is live and ready to start.' });
-        } catch (e: any) {
-            toast({ variant: 'destructive', title: 'Could not create Zoom class', description: e.message });
-        } finally {
-            setSchedulingId(null);
-        }
-    };
-
     return (
         <div className="mx-auto px-6 md:px-10 py-8 space-y-10 max-w-[1200px] animate-in fade-in duration-700">
             <div className="space-y-1">
@@ -85,7 +65,7 @@ export default function InstructorSchedulePage() {
                     <CalendarClock className="w-8 h-8 text-[#C8A96A]" /> My Schedule
                 </h1>
                 <p className="text-slate-500 font-medium italic">
-                    Your teaching sessions, as assigned on the academy timetable. Times and modules are set by the Registry — start your Zoom class when it's your turn.
+                    Your teaching sessions, as assigned on the academy timetable. The Registry sets up each Zoom class — start it when it's your turn.
                 </p>
             </div>
 
@@ -119,7 +99,7 @@ export default function InstructorSchedulePage() {
                                                 ? "bg-emerald-50 text-emerald-700 border-none text-[9px] font-black uppercase tracking-wider"
                                                 : "bg-amber-50 text-amber-700 border-none text-[9px] font-black uppercase tracking-wider"
                                         }>
-                                            {session.status === 'scheduled' ? 'Zoom Ready' : 'Not Started'}
+                                            {session.status === 'scheduled' ? 'Zoom Ready' : 'Awaiting Zoom Setup'}
                                         </Badge>
                                     </div>
                                     <h3 className="font-black text-[#0B1F3A] text-lg truncate">{session.module}</h3>
@@ -134,14 +114,9 @@ export default function InstructorSchedulePage() {
                                             </a>
                                         </Button>
                                     ) : (
-                                        <Button
-                                            onClick={() => handleStartZoom(session)}
-                                            disabled={schedulingId === session._id}
-                                            className="h-12 px-6 rounded-xl bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black text-[10px] uppercase tracking-widest gap-2"
-                                        >
-                                            {schedulingId === session._id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Video className="w-4 h-4" />}
-                                            Create Zoom Class
-                                        </Button>
+                                        <div className="h-12 px-6 rounded-xl bg-slate-50 text-slate-400 font-black text-[10px] uppercase tracking-widest gap-2 flex items-center">
+                                            <Hourglass className="w-4 h-4" /> Awaiting Zoom Setup
+                                        </div>
                                     )}
                                 </div>
                             </CardContent>

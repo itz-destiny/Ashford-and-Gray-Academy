@@ -20,7 +20,7 @@ const limiter = rateLimit({
     uniqueTokenPerInterval: 500,
 });
 
-const ELEVATED_ROLES: readonly Role[] = ['admin', 'instructor', 'registrar', 'course_registrar'];
+const ELEVATED_ROLES: readonly Role[] = ['admin', 'instructor', 'registrar', 'course_registrar', 'finance'];
 
 function isElevated(auth: AuthContext): boolean {
     return ELEVATED_ROLES.includes(auth.role);

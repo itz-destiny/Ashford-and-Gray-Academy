@@ -43,6 +43,7 @@ export type AppEvent = {
   title: string;
   category: 'Conference' | 'Workshop' | 'Webinar' | 'Networking' | 'Seminar';
   date: string;
+  time?: string;
   location: string;
   price?: number;
   imageUrl: string;

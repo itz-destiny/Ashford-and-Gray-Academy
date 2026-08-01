@@ -37,6 +37,7 @@ const createSchema = z.object({
     title: z.string().min(1).max(300),
     category: z.string().min(1).max(120),
     date: z.string().min(1),
+    time: z.string().max(50).optional(),
     location: z.string().min(1).max(300),
     price: z.number().min(0).optional(),
     imageUrl: z.string().min(1).max(500),

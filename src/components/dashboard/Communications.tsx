@@ -8,61 +8,95 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useUser, useUserConversations, useConversationMessages } from "@/firebase";
 import { apiFetch } from "@/lib/api-client";
-import { Paperclip, Search, Send, Smile, MoreVertical, Phone, Video, Loader2, ArrowLeft } from "lucide-react";
+import { Paperclip, Search, Send, Smile, MoreVertical, Phone, Video, Loader2, ArrowLeft, History, Landmark, GraduationCap, X } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
 import Link from 'next/link';
 import EmojiPicker from 'emoji-picker-react';
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 
+const OFFICE_ROLES = ['admin', 'registrar', 'course_registrar', 'finance'];
+
+const ROLE_BADGE: Record<string, { label: string; className: string }> = {
+    admin: { label: 'Admin', className: 'bg-indigo-50 text-indigo-700' },
+    registrar: { label: 'Registrar', className: 'bg-blue-50 text-blue-700' },
+    course_registrar: { label: 'Course Registrar', className: 'bg-purple-50 text-purple-700' },
+    finance: { label: 'Finance', className: 'bg-emerald-50 text-emerald-700' },
+    instructor: { label: 'Lecturer', className: 'bg-amber-50 text-amber-700' },
+};
+
 export function Communications() {
     const { user } = useUser();
     const [conversations, setConversations] = useState<any[]>([]);
-    const [staffDirectory, setStaffDirectory] = useState<any[]>([]);
+    const [officesDirectory, setOfficesDirectory] = useState<any[]>([]);
+    const [lecturersDirectory, setLecturersDirectory] = useState<any[]>([]);
     const [selectedConversation, setSelectedConversation] = useState<any>(null);
     const [messages, setMessages] = useState<any[]>([]);
     const [newMessage, setNewMessage] = useState("");
-    const [activeTab, setActiveTab] = useState<'conversations' | 'instructors'>('conversations');
+    const [activeTab, setActiveTab] = useState<'conversations' | 'offices' | 'lecturers'>('conversations');
+    const [searchQuery, setSearchQuery] = useState("");
     const scrollRef = useRef<HTMLDivElement>(null);
     const [loading, setLoading] = useState(true);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [showMobileChat, setShowMobileChat] = useState(false);
 
-    // Fetch instructor directory based on enrollments
+    // Staff (admin, instructor, registrar, course_registrar, finance) get two
+    // directories — Offices and Lecturers — so they can reach any colleague
+    // directly, without waiting for the other side to message first. Students
+    // only see the instructors of the courses they're actually enrolled in.
+    const isStaff = !!user?.role && user.role !== 'student';
+
     useEffect(() => {
         if (!user) return;
 
-        const fetchInstructorDirectory = async () => {
+        const fetchDirectory = async () => {
             try {
-                // 1. Get user enrollments
+                if (isStaff) {
+                    const res = await apiFetch('/api/users?role=staff');
+                    const data = await res.json();
+                    if (Array.isArray(data)) {
+                        const others = data.filter((u: any) => u.uid !== user.uid);
+                        setOfficesDirectory(others.filter((u: any) => OFFICE_ROLES.includes(u.role)));
+                        setLecturersDirectory(others.filter((u: any) => u.role === 'instructor'));
+                    }
+                    return;
+                }
+
+                // Student: only the instructors of their enrolled courses.
                 const enRes = await apiFetch('/api/enrollments');
                 const enrollments = await enRes.json();
-                
+
                 if (Array.isArray(enrollments)) {
-                    // 2. Extract unique instructor names/uids from courses
-                    // In a more robust system, courses would have an instructorUid
-                    // For now, we fetch users with the role 'instructor' who match the names
                     const instructorNames = Array.from(new Set(enrollments.map(en => en.course?.instructor?.name)));
-                    
+
                     const res = await apiFetch('/api/users?role=instructor');
                     const data = await res.json();
 
                     if (Array.isArray(data)) {
-                        // STRICT FILTER: Only 'instructor' role AND must be one of the course instructors
-                        const instructors = data.filter((u: any) => 
+                        const instructors = data.filter((u: any) =>
                             u.role === 'instructor' && instructorNames.includes(u.displayName)
                         );
-                        console.log('Filtered Instructors:', instructors.map(i => i.displayName));
-                        setStaffDirectory(instructors);
+                        setLecturersDirectory(instructors);
                     }
                 }
             } catch (error) {
-                console.error('Error fetching instructor directory:', error);
+                console.error('Error fetching directory:', error);
             }
         };
 
-        fetchInstructorDirectory();
-    }, [user]);
+        fetchDirectory();
+    }, [user, isStaff]);
+
+    const query = searchQuery.trim().toLowerCase();
+    const filteredConversations = conversations.filter((c) =>
+        !query || c.otherUser.name.toLowerCase().includes(query) || (c.lastMessage || '').toLowerCase().includes(query)
+    );
+    const filteredOffices = officesDirectory.filter((s) =>
+        !query || s.displayName?.toLowerCase().includes(query) || (ROLE_BADGE[s.role]?.label ?? s.role ?? '').toLowerCase().includes(query)
+    );
+    const filteredLecturers = lecturersDirectory.filter((s) =>
+        !query || s.displayName?.toLowerCase().includes(query)
+    );
 
     const startConversationWithStaff = async (staffMember: any) => {
         if (!user) return;
@@ -137,8 +171,6 @@ export function Communications() {
                         }
                     }
                     if (!info) return null;
-                    // Hide conversations with elevated staff in this widget.
-                    if (info.role === 'admin' || info.role === 'registrar' || info.role === 'finance') return null;
                     return {
                         _id: conv.id,
                         participants: conv.participants,
@@ -248,33 +280,54 @@ export function Communications() {
                             variant={activeTab === 'conversations' ? 'default' : 'ghost'}
                             size="sm"
                             onClick={() => setActiveTab('conversations')}
-                            className={cn("flex-1 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all", activeTab === 'conversations' ? "bg-[#0B1F3A] text-white shadow-lg" : "text-slate-400")}
+                            className={cn("flex-1 gap-1.5 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all", activeTab === 'conversations' ? "bg-[#0B1F3A] text-white shadow-lg" : "text-slate-400")}
                         >
-                            Recent
+                            <History className="h-3.5 w-3.5" /> Recent
                         </Button>
+                        {isStaff && (
+                            <Button
+                                variant={activeTab === 'offices' ? 'default' : 'ghost'}
+                                size="sm"
+                                onClick={() => setActiveTab('offices')}
+                                className={cn("flex-1 gap-1.5 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all", activeTab === 'offices' ? "bg-[#0B1F3A] text-white shadow-lg" : "text-slate-400")}
+                            >
+                                <Landmark className="h-3.5 w-3.5" /> Offices
+                            </Button>
+                        )}
                         <Button
-                            variant={activeTab === 'instructors' ? 'default' : 'ghost'}
+                            variant={activeTab === 'lecturers' ? 'default' : 'ghost'}
                             size="sm"
-                            onClick={() => setActiveTab('instructors')}
-                            className={cn("flex-1 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all", activeTab === 'instructors' ? "bg-[#0B1F3A] text-white shadow-lg" : "text-slate-400")}
+                            onClick={() => setActiveTab('lecturers')}
+                            className={cn("flex-1 gap-1.5 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all", activeTab === 'lecturers' ? "bg-[#0B1F3A] text-white shadow-lg" : "text-slate-400")}
                         >
-                            Instructors
+                            <GraduationCap className="h-3.5 w-3.5" /> {isStaff ? 'Lecturers' : 'Instructors'}
                         </Button>
                     </div>
 
                     <div className="relative group">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-[#1F7A5A] transition-colors" />
                         <Input
-                            placeholder={activeTab === 'conversations' ? "Search..." : "Find instructor..."}
-                            className="pl-12 bg-white border-slate-100 rounded-2xl focus-visible:ring-1 focus-visible:ring-[#1F7A5A] placeholder:text-slate-300 font-medium h-12 shadow-sm"
+                            placeholder={activeTab === 'conversations' ? "Search conversations..." : activeTab === 'offices' ? "Find an office..." : isStaff ? "Find a lecturer..." : "Find instructor..."}
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="pl-12 pr-10 bg-white border-slate-100 rounded-2xl focus-visible:ring-1 focus-visible:ring-[#1F7A5A] placeholder:text-slate-300 font-medium h-12 shadow-sm"
                         />
+                        {searchQuery && (
+                            <button
+                                type="button"
+                                onClick={() => setSearchQuery("")}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-500 transition-colors"
+                            >
+                                <X className="h-4 w-4" />
+                            </button>
+                        )}
                     </div>
                 </div>
                 <div className="flex-1 min-h-0 overflow-y-auto">
                     <div className="p-4 space-y-2">
                         {activeTab === 'conversations' ? (
                             <>
-                                {conversations.map(conv => (
+                                {filteredConversations.map(conv => (
                                     <div
                                         key={conv._id}
                                         className={cn(
@@ -311,39 +364,46 @@ export function Communications() {
                                     </div>
                                 ))}
 
-                                {conversations.length === 0 && (
-                                    <div className="p-12 text-center text-slate-300 font-serif italic">
-                                        No established dialogue.
+                                {filteredConversations.length === 0 && (
+                                    <div className="p-12 text-center space-y-4">
+                                        <div className="w-16 h-16 mx-auto bg-white rounded-2xl shadow-sm flex items-center justify-center border border-slate-50">
+                                            <History className="w-7 h-7 text-slate-200" />
+                                        </div>
+                                        <p className="text-slate-300 font-serif italic">
+                                            {query ? 'No matching conversations.' : 'No established dialogue.'}
+                                        </p>
                                     </div>
                                 )}
                             </>
-                        ) : (
+                        ) : activeTab === 'offices' ? (
                             <>
-                                {staffDirectory.map(staff => (
+                                {filteredOffices.map(staff => (
                                     <div
                                         key={staff.uid}
-                                        className="p-5 flex gap-4 cursor-pointer rounded-[2rem] transition-all duration-500 hover:bg-white shadow-none hover:shadow-xl"
+                                        className="p-5 flex gap-4 cursor-pointer rounded-[2rem] transition-all duration-500 hover:bg-white shadow-none hover:shadow-xl group"
                                         onClick={() => startConversationWithStaff(staff)}
                                     >
                                         <div className="relative">
                                             <Avatar className="h-14 w-14 border-4 border-white shadow-md">
                                                 <AvatarImage src={staff.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${staff.uid}`} />
-                                                <AvatarFallback className="bg-slate-100 text-slate-600 font-serif">{getInitials(staff.displayName)}</AvatarFallback>
+                                                <AvatarFallback className="bg-indigo-50 text-indigo-700 font-serif">{getInitials(staff.displayName)}</AvatarFallback>
                                             </Avatar>
-                                            <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full shadow-sm" />
+                                            <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-50">
+                                                <Landmark className="w-3 h-3 text-[#0B1F3A]/40" />
+                                            </div>
                                         </div>
-                                        <div className="flex-1 min-w-0">
-                                            <h3 className="font-serif text-[#0B1F3A] truncate mb-1">
+                                        <div className="flex-1 min-w-0 py-1">
+                                            <h3 className="font-serif text-[#0B1F3A] truncate mb-1.5">
                                                 {staff.displayName}
                                             </h3>
-                                            <p className="text-[9px] font-black uppercase text-[#1F7A5A] tracking-widest">
-                                                {staff.role}
-                                            </p>
+                                            <span className={cn("inline-flex text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full", ROLE_BADGE[staff.role]?.className ?? 'bg-slate-50 text-slate-600')}>
+                                                {ROLE_BADGE[staff.role]?.label ?? staff.role}
+                                            </span>
                                         </div>
                                         <Button
                                             size="icon"
                                             variant="ghost"
-                                            className="shrink-0 rounded-full hover:bg-slate-50"
+                                            className="shrink-0 rounded-full hover:bg-slate-50 opacity-0 group-hover:opacity-100 transition-opacity"
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 startConversationWithStaff(staff);
@@ -353,9 +413,63 @@ export function Communications() {
                                         </Button>
                                     </div>
                                 ))}
-                                {staffDirectory.length === 0 && (
-                                    <div className="p-12 text-center text-slate-300 font-serif italic">
-                                        No authorized instructors available.
+                                {filteredOffices.length === 0 && (
+                                    <div className="p-12 text-center space-y-4">
+                                        <div className="w-16 h-16 mx-auto bg-white rounded-2xl shadow-sm flex items-center justify-center border border-slate-50">
+                                            <Landmark className="w-7 h-7 text-slate-200" />
+                                        </div>
+                                        <p className="text-slate-300 font-serif italic">
+                                            {query ? 'No matching offices.' : 'No offices available.'}
+                                        </p>
+                                    </div>
+                                )}
+                            </>
+                        ) : (
+                            <>
+                                {filteredLecturers.map(staff => (
+                                    <div
+                                        key={staff.uid}
+                                        className="p-5 flex gap-4 cursor-pointer rounded-[2rem] transition-all duration-500 hover:bg-white shadow-none hover:shadow-xl group"
+                                        onClick={() => startConversationWithStaff(staff)}
+                                    >
+                                        <div className="relative">
+                                            <Avatar className="h-14 w-14 border-4 border-white shadow-md">
+                                                <AvatarImage src={staff.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${staff.uid}`} />
+                                                <AvatarFallback className="bg-amber-50 text-amber-700 font-serif">{getInitials(staff.displayName)}</AvatarFallback>
+                                            </Avatar>
+                                            <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-50">
+                                                <GraduationCap className="w-3 h-3 text-[#0B1F3A]/40" />
+                                            </div>
+                                        </div>
+                                        <div className="flex-1 min-w-0 py-1">
+                                            <h3 className="font-serif text-[#0B1F3A] truncate mb-1.5">
+                                                {staff.displayName}
+                                            </h3>
+                                            <span className="inline-flex text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full bg-amber-50 text-amber-700">
+                                                Lecturer
+                                            </span>
+                                        </div>
+                                        <Button
+                                            size="icon"
+                                            variant="ghost"
+                                            className="shrink-0 rounded-full hover:bg-slate-50 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                startConversationWithStaff(staff);
+                                            }}
+                                        >
+                                            <Video className="h-4 w-4 text-slate-300" />
+                                        </Button>
+                                    </div>
+                                ))}
+                                {filteredLecturers.length === 0 && (
+                                    <div className="p-12 text-center space-y-4">
+                                        <div className="w-16 h-16 mx-auto bg-white rounded-2xl shadow-sm flex items-center justify-center border border-slate-50">
+                                            <GraduationCap className="w-7 h-7 text-slate-200" />
+                                        </div>
+                                        <p className="text-slate-300 font-serif italic">
+                                            {query ? 'No matching lecturers.' : isStaff ? 'No lecturers available.' : 'No authorized instructors available.'}
+                                        </p>
                                     </div>
                                 )}
                             </>

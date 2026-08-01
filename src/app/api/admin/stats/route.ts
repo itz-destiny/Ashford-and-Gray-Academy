@@ -84,6 +84,10 @@ export const GET = withAuth(async (_req: NextRequest, { auth }) => {
             (sum, en) => sum + (priceMap[en.courseId.toString()] || 0),
             0
         );
+        const completedCount = allEnrollments.filter(en => en.progress >= 100).length;
+        const completionRate = allEnrollments.length === 0
+            ? 0
+            : Math.round((completedCount / allEnrollments.length) * 100);
 
         const needsAttention: { id: string; title: string; description: string; type: string }[] = [];
         if (unreadMessages > 0) {
@@ -151,7 +155,7 @@ export const GET = withAuth(async (_req: NextRequest, { auth }) => {
                 courses: courseCount,
                 events: eventCount,
                 revenue: totalRevenue,
-                completionRate: 87,
+                completionRate,
                 thirtyDayEnrollments: curr30,
                 enrollmentGrowth,
                 topPerformingCourses,

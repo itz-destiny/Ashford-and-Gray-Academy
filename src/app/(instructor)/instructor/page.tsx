@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
     Users, BookOpen, MessageSquare, ChevronRight,
-    Plus, Video, Clock, Calendar, ArrowUpRight,
+    Video, Clock, Calendar, ArrowUpRight,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -139,11 +139,6 @@ export default function InstructorDashboard() {
                     <Badge className="bg-[#1F7A5A] text-white px-5 py-2 rounded-none font-black text-[10px] uppercase tracking-widest border-none">
                         ✓ Connection Ready
                     </Badge>
-                    <Button asChild className="h-12 px-6 rounded-none bg-[#0B1F3A] hover:bg-[#C8A96A] text-white hover:text-[#0B1F3A] font-black text-[10px] uppercase tracking-widest shadow-none border-none transition-colors">
-                        <Link href="/instructor/courses/new">
-                            <Plus className="h-4 w-4 mr-2" /> New Course
-                        </Link>
-                    </Button>
                 </div>
             </div>
 
@@ -236,12 +231,9 @@ export default function InstructorDashboard() {
                                     <BookOpen className="w-8 h-8" />
                                 </div>
                                 <h3 className="text-2xl font-serif text-[#0B1F3A] mb-3">No courses yet</h3>
-                                <p className="text-slate-400 font-medium max-w-sm mx-auto mb-10 leading-relaxed font-serif">
-                                    Create your first course to start teaching students.
+                                <p className="text-slate-400 font-medium max-w-sm mx-auto leading-relaxed font-serif">
+                                    You haven't been assigned to teach any courses yet. Contact the Registry if you believe this is a mistake.
                                 </p>
-                                <Button asChild className="h-14 px-12 rounded-none bg-[#0B1F3A] hover:bg-[#C8A96A] hover:text-[#0B1F3A] text-white font-black text-[10px] uppercase tracking-widest shadow-none transition-colors">
-                                    <Link href="/instructor/courses/new"><Plus className="w-4 h-4 mr-2" /> Create Course</Link>
-                                </Button>
                             </div>
                         )}
                     </div>

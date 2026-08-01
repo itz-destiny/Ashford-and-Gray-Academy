@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Search, Trash2, Pencil, CalendarClock } from 'lucide-react';
+import { Search, Trash2, Pencil, CalendarClock, Video, Loader2 } from 'lucide-react';
 import {
     Dialog,
     DialogContent,
@@ -77,6 +77,7 @@ export default function AdminTimetablePage() {
     const [editEndTime, setEditEndTime] = useState('');
     const [editStatus, setEditStatus] = useState('assigned');
     const [saving, setSaving] = useState(false);
+    const [creatingZoomId, setCreatingZoomId] = useState<string | null>(null);
 
     const { toast } = useToast();
 
@@ -165,6 +166,23 @@ export default function AdminTimetablePage() {
         }
     };
 
+    const handleCreateZoom = async (session: TimetableSession) => {
+        setCreatingZoomId(session._id);
+        try {
+            const res = await apiFetch(`/api/timetable/${session._id}/schedule-zoom`, { method: 'POST' });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to create Zoom class');
+            setSessions(prev => prev.map(s => s._id === session._id
+                ? { ...s, status: 'scheduled', zoomJoinUrl: data.session.zoomJoinUrl }
+                : s));
+            toast({ title: 'Zoom class created', description: 'The lecturer can now start this session.' });
+        } catch (e: any) {
+            toast({ variant: 'destructive', title: 'Could not create Zoom class', description: e.message });
+        } finally {
+            setCreatingZoomId(null);
+        }
+    };
+
     const handleDelete = async (id: string) => {
         if (!confirm('Remove this session from the timetable? This cannot be undone.')) return;
         try {
@@ -241,6 +259,19 @@ export default function AdminTimetablePage() {
                                     </TableCell>
                                     <TableCell className="text-right pr-6">
                                         <div className="flex justify-end gap-1">
+                                            {s.status !== 'scheduled' && s.status !== 'completed' && s.status !== 'cancelled' && (
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    title="Create Zoom class"
+                                                    disabled={creatingZoomId === s._id}
+                                                    onClick={() => handleCreateZoom(s)}
+                                                >
+                                                    {creatingZoomId === s._id
+                                                        ? <Loader2 className="w-4 h-4 text-[#1F7A5A] animate-spin" />
+                                                        : <Video className="w-4 h-4 text-[#1F7A5A]" />}
+                                                </Button>
+                                            )}
                                             <Button variant="ghost" size="icon" onClick={() => openEdit(s)}>
                                                 <Pencil className="w-4 h-4 text-slate-500" />
                                             </Button>
