@@ -46,6 +46,9 @@ export function LoginForm({ onSwitchToSignUp }: LoginFormProps) {
   React.useEffect(() => {
     if (!userLoading && user) {
       const role = (user as any).role as string | undefined;
+      // A system-issued password (set when a student's first payment
+      // activates their account) must be replaced before anything else.
+      if (user.mustChangePassword) { router.push('/account/change-password'); return; }
       // Staff portals always take priority — never follow a redirectUrl that would
       // land a staff member on the wrong portal (e.g. a stale ?redirectUrl=/dashboard).
       if (role === 'admin') { router.push('/admin'); return; }

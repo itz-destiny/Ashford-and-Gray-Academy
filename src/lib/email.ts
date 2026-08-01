@@ -307,6 +307,33 @@ export const emailTemplates = {
         }),
     }),
 
+    enrollmentWelcome: (data: {
+        recipientName: string;
+        email: string;
+        password: string;
+        loginUrl: string;
+    }) => ({
+        subject: 'Your Ashford & Gray Fusion Academy login',
+        html: brandedShell({
+            preheader: `Your enrollment is confirmed. Here is your login for ${data.email}.`,
+            title: 'Your login is ready',
+            body: `
+                <p style="font-size:16px;line-height:1.6;color:#334155;margin:0 0 24px">Dear ${escapeHtml(data.recipientName)},</p>
+                <p style="font-size:16px;line-height:1.6;color:#334155;margin:0 0 24px">Your enrollment is confirmed and your student dashboard is now active. Use the credentials below to sign in — you'll be asked to set your own password the first time you log in.</p>
+                <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:0 0 24px">
+                    <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#94a3b8;margin:0 0 4px">Email</p>
+                    <p style="font-size:16px;font-weight:700;color:#0B1F3A;margin:0 0 16px">${escapeHtml(data.email)}</p>
+                    <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#94a3b8;margin:0 0 4px">Temporary Password</p>
+                    <p style="font-size:16px;font-weight:700;color:#0B1F3A;margin:0;font-family:monospace">${escapeHtml(data.password)}</p>
+                </div>
+                <div style="text-align:center;margin:32px 0">
+                    <a href="${data.loginUrl}" style="display:inline-block;background:#0B1F3A;color:#ffffff;text-decoration:none;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;font-size:11px;padding:16px 36px;border-radius:9999px">Sign In</a>
+                </div>
+                <p style="font-size:13px;color:#64748b;margin:0">For your security, please keep this password private and change it as soon as you log in.</p>
+            `,
+        }),
+    }),
+
     newsletterConfirm: (data: {
         email: string;
         confirmUrl: string;

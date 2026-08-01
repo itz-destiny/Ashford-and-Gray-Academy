@@ -54,12 +54,16 @@ export function RoleGuard({ allowed, children }: RoleGuardProps) {
             router.replace("/login/complete-profile");
             return;
         }
+        if (user.mustChangePassword && pathname !== "/account/change-password") {
+            router.replace("/account/change-password");
+            return;
+        }
         if (!isAuthorized) {
             router.replace(PORTAL_BY_ROLE[userRole] ?? "/dashboard");
         }
     }, [loading, user, userRole, isAuthorized, pathname, router]);
 
-    if (loading || !user || !isAuthorized) {
+    if (loading || !user || !isAuthorized || user.mustChangePassword) {
         return <RoleGuardSplash />;
     }
 
