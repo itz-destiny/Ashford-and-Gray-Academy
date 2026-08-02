@@ -47,7 +47,7 @@ export function BrandPanel() {
                 </div>
 
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30">
-                    &copy; {new Date().getFullYear()} Ashford &amp; Gray Academy
+                    &copy; {new Date().getFullYear()} Ashford &amp; Gray Fusion Academy
                 </p>
             </div>
         </aside>

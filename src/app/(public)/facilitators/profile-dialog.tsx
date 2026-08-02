@@ -105,9 +105,6 @@ export function ProfileDialog({
                         <DialogTitle asChild>
                             <h2 className="text-2xl sm:text-3xl font-serif text-white leading-tight">{facilitator.name}</h2>
                         </DialogTitle>
-                        {facilitator.postNominals && (
-                            <p className="text-xs text-white/60 italic font-semibold mt-1.5">{facilitator.postNominals}</p>
-                        )}
                     </div>
                 </div>
 

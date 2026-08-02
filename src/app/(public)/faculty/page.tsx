@@ -128,9 +128,6 @@ function LeadershipRow({ member }: { member: LeadershipMember }) {
                 <h3 className="text-2xl font-serif text-[#0B1F3A] leading-tight">
                     {member.name} {member.title ? `– ${member.title}` : ''}
                 </h3>
-                {member.postNominals && (
-                    <p className="text-xs text-slate-500 italic font-semibold mt-1">{member.postNominals}</p>
-                )}
                 <div className="mt-4">
                     <ProfileDialog member={member} />
                 </div>

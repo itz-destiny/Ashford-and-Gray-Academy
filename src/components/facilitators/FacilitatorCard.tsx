@@ -57,10 +57,6 @@ export function FacilitatorCard({ facilitator, index = 0 }: { facilitator: Facil
                 <h3 className="text-lg sm:text-xl font-serif font-bold text-white leading-tight">
                     {facilitator.name}
                 </h3>
-                {facilitator.postNominals && (
-                    <p className="text-[10px] text-white/50 italic mt-1 line-clamp-1">{facilitator.postNominals}</p>
-                )}
-
                 <div className="mt-3 opacity-100 max-h-12 md:opacity-0 md:max-h-0 overflow-hidden transition-all duration-500 ease-out md:group-hover:max-h-12 md:group-hover:opacity-100">
                     <ProfileDialog facilitator={facilitator} variant="onDark" />
                 </div>
