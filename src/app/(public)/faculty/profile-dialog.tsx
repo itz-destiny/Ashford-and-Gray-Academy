@@ -56,9 +56,6 @@ export function ProfileDialog({
                     <DialogTitle asChild>
                         <h2 className="text-3xl md:text-4xl font-serif text-white leading-tight">{member.name}</h2>
                     </DialogTitle>
-                    {member.postNominals && (
-                        <p className="text-sm text-white/70 italic font-semibold mt-2">{member.postNominals}</p>
-                    )}
                 </div>
 
                 {/* Body — scrollable, two-column on desktop */}
