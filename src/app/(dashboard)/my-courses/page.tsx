@@ -6,10 +6,9 @@ import { apiFetch } from '@/lib/api-client';
 import type { Enrollment } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { BookOpen, Clock, Award, Play, ChevronRight, Search, Calendar, Sparkles, MessagesSquare } from 'lucide-react';
+import { BookOpen, Clock, Award, Search, Sparkles, MessagesSquare } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -84,54 +83,6 @@ export default function MyCoursesPage() {
           </div>
         </div>
       </div>
-
-      {/* Featured Resume Course */}
-      {inProgress.length > 0 && (
-        <Card className="border-none rounded-[40px] overflow-hidden relative group shadow-2xl ring-1 ring-slate-900/5 bg-gradient-to-r from-[#041423] to-[#07293b]">
-          <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-[#C8A96A]/10 to-transparent z-0" />
-          <CardContent className="p-10 relative z-10 flex flex-col md:flex-row gap-10 items-center">
-            <div className="relative w-full md:w-64 h-40 rounded-3xl overflow-hidden shadow-lg">
-              <Image
-                src={inProgress[0].course?.imageUrl || ""}
-                alt="Continue Learning"
-                fill
-                className="object-cover group-hover:scale-110 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center text-slate-900 scale-90 group-hover:scale-100 transition-transform">
-                  <Play className="w-5 h-5 fill-current" />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex-1 space-y-6 text-center md:text-left">
-              <div className="space-y-2">
-                <Badge className="bg-[#C8A96A]/20 text-[#C8A96A] border-none px-3 py-1 font-black text-[10px] tracking-widest">LIVE CLASS TRACKER</Badge>
-                <h2 className="text-3xl font-black text-white leading-tight font-serif">{inProgress[0].course?.title}</h2>
-                <div className="flex items-center justify-center md:justify-start gap-4 text-slate-300 text-sm font-medium">
-                  <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4" /> Your next class time will appear in your timetable</span>
-                  <span>•</span>
-                  <span>{inProgress[0].course?.category}</span>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex justify-between items-end text-xs font-black text-[#E6D6B8] uppercase tracking-widest">
-                  <span>Current Progress</span>
-                  <span>{inProgress[0].course?.progress}%</span>
-                </div>
-                <Progress value={inProgress[0].course?.progress} className="h-2 bg-white/10" />
-              </div>
-
-              <Button asChild className="h-12 px-10 rounded-2xl group/btn bg-gradient-to-r from-[#F5E0B3] to-[#C8A96A] text-slate-900 font-semibold shadow-md hover:opacity-95">
-                <Link href={`/my-courses/${inProgress[0].id}`}>
-                  Open Live Class Desk <ChevronRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Main Filterable Section */}
       <Tabs defaultValue="all" className="space-y-8">
@@ -217,7 +168,7 @@ function CourseGrid({ items }: { items: Enrollment[] }) {
             </div>
 
             <Button asChild variant="outline" className="w-full h-11 rounded-xl border-slate-100 bg-gradient-to-r from-white to-slate-50 hover:from-[#F5E0B3] hover:to-[#EFD9A3] text-slate-700 font-semibold transition-all group-hover:text-white group-hover:border-[#0B1F3A] shadow-sm">
-              <Link href={`/my-courses/${en.id}`}>
+              <Link href={`/my-courses/${en.courseId}`}>
                 {en.course?.progress === 100 ? 'View Resources' : 'Open Course Desk'}
               </Link>
             </Button>

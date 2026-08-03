@@ -6,13 +6,12 @@ import xlsx from 'xlsx';
 const DRY_RUN = process.argv.includes('--dry-run');
 const WORKBOOK_PATH = 'public/AGFA FLAGSHIP COHORT 2026.xlsx';
 
-// Programmes held back pending a real instructor assignment (per explicit
-// instruction — do not register these in this batch).
-const HELD_BACK_PROGRAMMES = new Set([
-    'Hospitality Labour Management',
-    'The Silent Standard',
-    'Executive Assistant Management',
-]);
+// Previously held back pending a real instructor assignment for these 3
+// programmes (their instructor was listed as an admin-only account with no
+// instructor login). Per explicit instruction, register them anyway — the
+// course's instructor field stays as-is and gets linked to a real instructor
+// account later; don't block student registration on that.
+const HELD_BACK_PROGRAMMES = new Set<string>([]);
 
 // Sheet programme name -> real DB course title.
 const PROGRAMME_TO_COURSE_TITLE: Record<string, string> = {
@@ -23,6 +22,9 @@ const PROGRAMME_TO_COURSE_TITLE: Record<string, string> = {
     'Business Innovation and Entrepreneurship': 'Certificate in Business Innovation & Entrepreneurship',
     'Food and Beverage Management': 'Certificate in Food & Beverage Management',
     'Restaurant and Bar Service': 'Certificate in Restaurant & Bar Service',
+    'Executive Assistant Management': 'Executive Assistant Management',
+    'Hospitality Labour Management': 'Certificate in Hospitality Labour Management',
+    'The Silent Standard': 'The Silent Standard Certification Programme',
 };
 
 type Row = {
@@ -53,8 +55,15 @@ function genPassword(fullName: string): string {
     return `AGFA-${tag}-2026`;
 }
 
+function cleanEmail(raw: string): string {
+    return String(raw || '')
+        .trim()
+        .replace(/^[:;]+\s*/, '')  // stray leading colon/semicolon from copy-paste
+        .replace(/\s+/g, '');      // internal spaces (e.g. "name @gmail. com")
+}
+
 function isValidEmail(email: string): boolean {
-    return !!email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+    return !!email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 async function main() {
@@ -86,7 +95,7 @@ async function main() {
             heldBack.push(row);
             continue;
         }
-        if (!isValidEmail(String(row['EMAIL ADDRESS'] || ''))) {
+        if (!isValidEmail(cleanEmail(row['EMAIL ADDRESS']))) {
             missingEmail.push(row);
             continue;
         }
@@ -109,7 +118,7 @@ async function main() {
     for (const row of toRegister) {
         const rawName = String(row.NAMES || '').trim();
         const name = toTitleCase(rawName);
-        const email = String(row['EMAIL ADDRESS']).trim().toLowerCase();
+        const email = cleanEmail(row['EMAIL ADDRESS']).toLowerCase();
         const programme = String(row.PROGRAMME).trim();
         const courseTitle = PROGRAMME_TO_COURSE_TITLE[programme];
         const courseId = courseByTitle.get(courseTitle);
@@ -172,6 +181,7 @@ async function main() {
                     email,
                     password,
                     loginUrl: `${getEmailUrl()}/login`,
+                    courseName: courseTitle,
                 });
                 await sendEmail({ to: email, subject: tpl.subject, html: tpl.html });
             }

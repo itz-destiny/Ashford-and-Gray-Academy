@@ -201,7 +201,7 @@ export default function DashboardPage() {
                   category={en.course?.category}
                   progress={en.course?.progress || 0}
                   imageUrl={en.course?.imageUrl}
-                  href={`/my-courses/${en.id}`}
+                  href={`/my-courses/${en.courseId}`}
                 />
               ))
             ) : (
