@@ -30,7 +30,7 @@ interface SendResult {
     error?: unknown;
 }
 
-const DEFAULT_FROM = 'Ashford & Gray Academy <onboarding@resend.dev>';
+const DEFAULT_FROM = 'Ashford & Gray Fusion Academy <onboarding@resend.dev>';
 
 let cachedClient: Resend | null = null;
 
@@ -313,24 +313,71 @@ export const emailTemplates = {
         email: string;
         password: string;
         loginUrl: string;
+        courseName?: string;
     }) => ({
         subject: 'Your Ashford & Gray Fusion Academy login',
         html: brandedShell({
             preheader: `Your enrollment is confirmed. Here is your login for ${data.email}.`,
-            title: 'Your login is ready',
+            title: 'Welcome to the Academy',
             body: `
-                <p style="font-size:16px;line-height:1.6;color:#334155;margin:0 0 24px">Dear ${escapeHtml(data.recipientName)},</p>
-                <p style="font-size:16px;line-height:1.6;color:#334155;margin:0 0 24px">Your enrollment is confirmed and your student dashboard is now active. Use the credentials below to sign in — you'll be asked to set your own password the first time you log in.</p>
-                <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:0 0 24px">
-                    <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#94a3b8;margin:0 0 4px">Email</p>
-                    <p style="font-size:16px;font-weight:700;color:#0B1F3A;margin:0 0 16px">${escapeHtml(data.email)}</p>
-                    <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#94a3b8;margin:0 0 4px">Temporary Password</p>
-                    <p style="font-size:16px;font-weight:700;color:#0B1F3A;margin:0;font-family:monospace">${escapeHtml(data.password)}</p>
+                <p style="font-size:16px;line-height:1.6;color:#334155;margin:0 0 22px">Dear ${escapeHtml(data.recipientName)},</p>
+                <p style="font-size:16px;line-height:1.6;color:#334155;margin:0 0 28px">Congratulations — your enrollment is confirmed${data.courseName ? ` for <strong style="color:#0B1F3A">${escapeHtml(data.courseName)}</strong>` : ''}, and your student dashboard is now active. Your credentials are below.</p>
+
+                <div style="background:linear-gradient(180deg,#0B1F3A 0%,#132C4F 100%);border-radius:20px;padding:2px;margin:0 0 28px">
+                    <div style="background:#ffffff;border-radius:18px;padding:28px 28px 24px">
+                        <p style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.25em;color:#C8A96A;margin:0 0 18px;text-align:center">Your Login Credentials</p>
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td style="padding-bottom:16px">
+                                    <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#94a3b8;margin:0 0 5px">Email Address</p>
+                                    <p style="font-size:16px;font-weight:700;color:#0B1F3A;margin:0;word-break:break-all">${escapeHtml(data.email)}</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border-top:1px dashed #e2e8f0;padding-top:16px">
+                                    <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#94a3b8;margin:0 0 5px">Temporary Password</p>
+                                    <p style="font-size:18px;font-weight:700;color:#0B1F3A;margin:0;font-family:'Courier New',monospace;letter-spacing:0.03em">${escapeHtml(data.password)}</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
-                <div style="text-align:center;margin:32px 0">
-                    <a href="${data.loginUrl}" style="display:inline-block;background:#0B1F3A;color:#ffffff;text-decoration:none;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;font-size:11px;padding:16px 36px;border-radius:9999px">Sign In</a>
+
+                <div style="text-align:center;margin:0 0 32px">
+                    <a href="${data.loginUrl}" style="display:inline-block;background:#0B1F3A;color:#ffffff;text-decoration:none;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;font-size:11px;padding:17px 44px;border-radius:9999px;box-shadow:0 8px 20px rgba(11,31,58,0.25)">Sign In to Your Dashboard</a>
                 </div>
-                <p style="font-size:13px;color:#64748b;margin:0">For your security, please keep this password private and change it as soon as you log in.</p>
+
+                <p style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.25em;color:#C8A96A;margin:0 0 16px">What Happens Next</p>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 28px">
+                    <tr>
+                        <td width="32" valign="top" style="padding-bottom:16px">
+                            <span style="display:inline-block;width:22px;height:22px;border-radius:50%;background:#0B1F3A;color:#ffffff;font-size:11px;font-weight:700;text-align:center;line-height:22px">1</span>
+                        </td>
+                        <td valign="top" style="padding-bottom:16px;padding-left:8px">
+                            <p style="font-size:14px;line-height:1.6;color:#334155;margin:0">Sign in with the temporary password above.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="32" valign="top" style="padding-bottom:16px">
+                            <span style="display:inline-block;width:22px;height:22px;border-radius:50%;background:#0B1F3A;color:#ffffff;font-size:11px;font-weight:700;text-align:center;line-height:22px">2</span>
+                        </td>
+                        <td valign="top" style="padding-bottom:16px;padding-left:8px">
+                            <p style="font-size:14px;line-height:1.6;color:#334155;margin:0">You'll be asked to set your own password before doing anything else — this is required and keeps your account confidential.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="32" valign="top">
+                            <span style="display:inline-block;width:22px;height:22px;border-radius:50%;background:#0B1F3A;color:#ffffff;font-size:11px;font-weight:700;text-align:center;line-height:22px">3</span>
+                        </td>
+                        <td valign="top" style="padding-left:8px">
+                            <p style="font-size:14px;line-height:1.6;color:#334155;margin:0">Head to <strong>My Courses</strong> to view your full curriculum, class schedule, and course materials.</p>
+                        </td>
+                    </tr>
+                </table>
+
+                <div style="background:#FBF8F0;border-left:3px solid #C8A96A;border-radius:8px;padding:16px 20px;margin:0">
+                    <p style="font-size:13px;line-height:1.6;color:#64748b;margin:0"><strong style="color:#0B1F3A">For your security:</strong> keep this password private and change it as soon as you log in. It will not be valid after your first sign-in.</p>
+                </div>
             `,
         }),
     }),
@@ -428,9 +475,8 @@ function brandedShell(args: { preheader: string; title: string; body: string }):
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#FCFCFE;padding:32px 16px">
     <tr><td align="center">
         <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:560px;background:#ffffff;border-radius:32px;overflow:hidden;box-shadow:0 6px 30px rgba(11,31,58,0.06)">
-            <tr><td style="background:#0B1F3A;padding:36px 32px 30px;text-align:center">
-                <img src="${getEmailUrl()}/A%20%26%20G2.png" alt="Ashford &amp; Gray Fusion Academy" width="180" style="display:block;margin:0 auto 14px;max-width:180px;height:auto" />
-                <p style="margin:0;color:#C8A96A;font-weight:900;letter-spacing:0.3em;text-transform:uppercase;font-size:9px">Institute of Hospitality &amp; Business Innovation</p>
+            <tr><td style="background:#ffffff;padding:36px 32px 26px;text-align:center;border-bottom:3px solid #C8A96A">
+                <img src="${getEmailUrl()}/A%20%26%20G1.png" alt="Ashford &amp; Gray Fusion Academy" width="220" style="display:block;margin:0 auto 4px;max-width:220px;height:auto" />
             </td></tr>
             <tr><td style="padding:40px 36px 32px">
                 <h1 style="font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:28px;color:#0B1F3A;margin:0 0 16px">${escapeHtml(args.title)}</h1>

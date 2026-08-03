@@ -1,9 +1,13 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Course from '@/models/Course';
+import Enrollment from '@/models/Enrollment';
+import { STATIC_COURSES } from '@/lib/courses-data';
 import { AuthError, requireRole, withAuth, type AuthContext } from '@/lib/auth-server';
 
 type RouteParams = { params: Promise<{ id: string }> };
+
+const ELEVATED_READ = ['admin', 'course_registrar', 'registrar'];
 
 /**
  * Ownership: prefer instructorUid (set on new courses); fall back to
@@ -23,6 +27,22 @@ async function assertCanEditCourse(courseId: string, auth: AuthContext) {
     }
 }
 
+async function assertCanReadCourse(courseId: string, auth: AuthContext) {
+    if (ELEVATED_READ.includes(auth.role)) return;
+    if (auth.role === 'instructor') {
+        const course = await Course.findById(courseId).select('instructorUid instructor');
+        if (course) {
+            const ownsByUid = course.instructorUid && course.instructorUid === auth.uid;
+            const ownsByName = !course.instructorUid && course.instructor?.name === auth.displayName;
+            if (ownsByUid || ownsByName) return;
+        }
+    }
+    const enrolled = await Enrollment.findOne({ courseId, userId: auth.uid }).select('_id');
+    if (!enrolled) {
+        throw new AuthError(403, 'You must enroll in this course to view it.');
+    }
+}
+
 function handleError(err: unknown): Response {
     if (err instanceof AuthError) {
         return NextResponse.json({ error: err.message }, { status: err.status });
@@ -30,6 +50,29 @@ function handleError(err: unknown): Response {
     console.error('courses/[id] route error:', err);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
 }
+
+// =============================================================================
+// GET /api/courses/[id] — a single course for the enrolled student's course
+// viewer. DB-backed courses first, falling back to the static catalogue for
+// courses that were only ever authored there.
+// =============================================================================
+export const GET = withAuth<RouteParams>(async (_request: NextRequest, { auth, params }) => {
+    try {
+        const { id } = await params;
+        await dbConnect();
+        await assertCanReadCourse(id, auth);
+
+        const dbCourse = await Course.findById(id);
+        if (dbCourse) return NextResponse.json(dbCourse);
+
+        const staticCourse = STATIC_COURSES.find((c) => c.id === id);
+        if (staticCourse) return NextResponse.json(staticCourse);
+
+        return NextResponse.json({ error: 'Course not found' }, { status: 404 });
+    } catch (err) {
+        return handleError(err);
+    }
+});
 
 export const PATCH = withAuth<RouteParams>(async (request: NextRequest, { auth, params }) => {
     try {

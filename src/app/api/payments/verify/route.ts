@@ -129,6 +129,7 @@ export async function finalizeSuccessfulPayment(params: {
                     email: tx.userEmail,
                     password,
                     loginUrl: `${getEmailUrl()}/login`,
+                    courseName: tx.courseName,
                 });
                 await sendEmail({ to: tx.userEmail, subject: tpl.subject, html: tpl.html });
             }
