@@ -75,24 +75,20 @@ export async function GET(req: NextRequest): Promise<Response> {
                     );
                 }
             }
-            let dbOk = false;
-            let user = null;
             try {
                 await dbConnect();
-                dbOk = true;
-                user = await User.findOne({ uid });
             } catch (dbErr) {
-                console.warn('GET Users DB connection failed. Falling back to fail-safe profile:', dbErr);
+                console.error('GET Users DB connection failed:', dbErr);
+                return NextResponse.json({ error: 'Database unavailable' }, { status: 503 });
             }
 
-            if (!dbOk || !user) {
-                return NextResponse.json({
-                    uid: uid,
-                    email: identity.email || 'student@academy.com',
-                    displayName: identity.email?.split('@')[0] || 'Student',
-                    role: 'student',
-                    createdAt: new Date().toISOString(),
-                });
+            const user = await User.findOne({ uid });
+            if (!user) {
+                // Genuinely no profile yet — the signup/complete-profile flow
+                // handles this. Never fabricate a role here: a real account
+                // whose profile lookup fails for any other reason must surface
+                // as a clear error, not get silently treated as a new student.
+                return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
             }
             return NextResponse.json(user);
         }
