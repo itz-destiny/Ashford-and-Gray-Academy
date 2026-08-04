@@ -9,11 +9,11 @@ export const metadata = {
     description:
         "Meet the Executive Management Council of Ashford & Gray Fusion Academy — Nigeria's foremost hospitality educators and practitioners, led by Founder and President Myne Wilfred.",
     keywords: ["Myne Wilfred", "Ashford Gray faculty", "hospitality educators Nigeria", "executive management council"],
-    alternates: { canonical: "https://www.ashfordandgrayfusionacademy.com/faculty" },
+    alternates: { canonical: "https://www.ashfordandgrayfusionacademy.com/emc" },
     openGraph: {
         title: "Executive Leadership Team — Ashford & Gray Fusion Academy",
         description: "Meet the founding faculty and executive council shaping Nigeria's premier hospitality academy.",
-        url: "https://www.ashfordandgrayfusionacademy.com/faculty",
+        url: "https://www.ashfordandgrayfusionacademy.com/emc",
     },
 };
 
@@ -22,7 +22,7 @@ export default function ExecutiveManagementCouncilPage() {
         <div className="bg-white">
             {/* Hero */}
             <header className="border-b border-slate-100">
-                <div className="container px-6 lg:px-12 py-20 md:py-28">
+                <div className="container px-6 lg:px-12 py-14 md:py-16">
                     <div className="flex items-center gap-3 mb-6">
                         <div className="w-10 h-[1px] bg-[#C8A96A]" />
                         <span className="text-[#C8A96A] font-black text-[10px] uppercase tracking-[0.4em]">The Institution</span>
@@ -34,7 +34,7 @@ export default function ExecutiveManagementCouncilPage() {
             </header>
 
             {/* Introduction & Vision */}
-            <section className="container px-6 lg:px-12 py-20 md:py-28 max-w-4xl mx-auto">
+            <section className="container px-6 lg:px-12 pt-12 pb-12 md:pt-14 md:pb-16 max-w-4xl mx-auto">
                 <div className="space-y-8 text-base md:text-lg text-slate-700 leading-relaxed font-medium">
                     <h2 className="text-2xl font-serif text-[#0B1F3A] uppercase tracking-wider mb-4">THE EXECUTIVE MANAGEMENT COUNCIL</h2>
                     <p>
@@ -76,7 +76,7 @@ export default function ExecutiveManagementCouncilPage() {
 
             {/* Council Members List */}
             <section className="bg-[#FAF9F6] border-y border-slate-100">
-                <div className="container px-6 lg:px-12 py-20 md:py-28 max-w-4xl mx-auto">
+                <div className="container px-6 lg:px-12 py-14 md:py-16 max-w-4xl mx-auto">
                     <div className="mb-14">
                         <h2 className="text-2xl md:text-3xl font-serif text-[#0B1F3A] leading-tight uppercase tracking-wider">
                             ASHFORD AND GRAY FUSION ACADEMY EXECUTIVE MANAGEMENT COUNCIL (EMC)

@@ -4,7 +4,7 @@ dotenv.config({ path: '.env.local' });
 import xlsx from 'xlsx';
 
 const DRY_RUN = process.argv.includes('--dry-run');
-const WORKBOOK_PATH = 'public/AGFA FLAGSHIP COHORT 2026.xlsx';
+const WORKBOOK_PATH = 'public/AGFA FLAGSHIP COHORT 2026 (1).xlsx';
 
 // Previously held back pending a real instructor assignment for these 3
 // programmes (their instructor was listed as an admin-only account with no
@@ -59,7 +59,9 @@ function cleanEmail(raw: string): string {
     return String(raw || '')
         .trim()
         .replace(/^[:;]+\s*/, '')  // stray leading colon/semicolon from copy-paste
-        .replace(/\s+/g, '');      // internal spaces (e.g. "name @gmail. com")
+        .replace(/\s+/g, '')       // internal spaces (e.g. "name @gmail. com")
+        .replace(/[.,]+$/, '')     // stray trailing period/comma
+        .replace(/@gamil\.com$/i, '@gmail.com'); // common typo, not a real provider
 }
 
 function isValidEmail(email: string): boolean {

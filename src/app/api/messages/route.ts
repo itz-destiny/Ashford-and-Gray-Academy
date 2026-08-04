@@ -83,9 +83,10 @@ export const POST = withAuth(async (req: NextRequest, { auth }) => {
         await dbConnect();
         const { receiverId, content, conversationId, courseId } = parsed.data;
 
+        let conversation: { participants: string[]; type?: string } | null = null;
         if (conversationId) {
-            const allowed = await userIsConversationParticipant(auth.uid, conversationId);
-            if (!allowed) {
+            conversation = await Conversation.findById(conversationId).select('participants type').lean<{ participants: string[]; type?: string } | null>();
+            if (!conversation || !conversation.participants.includes(auth.uid)) {
                 return NextResponse.json(
                     { error: 'You are not a participant in this conversation.' },
                     { status: 403 }
@@ -95,8 +96,9 @@ export const POST = withAuth(async (req: NextRequest, { auth }) => {
 
         // A student may only message an instructor while actively enrolled in
         // one of their courses, and only until that course's stated duration
-        // has elapsed — this applies in both directions.
-        if (auth.role === 'student' || auth.role === 'instructor') {
+        // has elapsed — this applies in both directions. Group (class)
+        // conversations are gated purely by conversation membership above.
+        if (conversation?.type !== 'group' && (auth.role === 'student' || auth.role === 'instructor')) {
             const receiver = await User.findOne({ uid: receiverId }).select('role').lean<{ role: string } | null>();
             const otherRole = receiver?.role;
             const isStudentInstructorPair =
@@ -144,6 +146,7 @@ export const POST = withAuth(async (req: NextRequest, { auth }) => {
             content,
             courseId,
             createdAt: message.createdAt instanceof Date ? message.createdAt : new Date(),
+            participants: conversation?.participants,
         });
 
         return NextResponse.json(message, { status: 201 });

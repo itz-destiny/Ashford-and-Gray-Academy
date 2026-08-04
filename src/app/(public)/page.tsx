@@ -35,7 +35,10 @@ import { STATIC_COURSES } from "@/lib/courses-data";
 import { ARTICLES } from "@/lib/insights-data";
 
 export default function Home() {
-  const [trendingCourses, setTrendingCourses] = React.useState<Course[]>(STATIC_COURSES.slice(0, 3));
+  const isCertificateProgramme = (title: string) => !title.trim().toLowerCase().startsWith('diploma');
+  const [trendingCourses, setTrendingCourses] = React.useState<Course[]>(
+    STATIC_COURSES.filter((c) => isCertificateProgramme(c.title)).slice(0, 10)
+  );
   const [coursesLoading, setCoursesLoading] = React.useState(false);
 
   React.useEffect(() => {
@@ -56,7 +59,7 @@ export default function Home() {
               merged.push(dc);
             }
           });
-          setTrendingCourses(merged.slice(0, 3));
+          setTrendingCourses(merged.filter((c) => isCertificateProgramme(c.title)).slice(0, 10));
         }
       } catch (error) {
         console.warn('Silent fallback on dynamic courses fetch:', error);
@@ -303,17 +306,6 @@ export default function Home() {
                 </ScrollAnimation>
               ))
             )}
-          </div>
-
-          {/* Section footer CTA */}
-          <div className="mt-12 text-center">
-            <Button 
-              size="lg" 
-              className="h-12 px-8 rounded-none bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-extrabold text-xs uppercase tracking-widest transition-all border-none"
-              asChild
-            >
-              <Link href="/courses">View All Academic Programs</Link>
-            </Button>
           </div>
         </div>
       </section>
