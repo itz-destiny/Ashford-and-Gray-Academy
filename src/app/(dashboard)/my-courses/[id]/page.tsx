@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { useUser, useDirectMessages } from '@/firebase';
+import { useUser, useDirectMessages, useConversationMessages } from '@/firebase';
 import { apiFetch } from '@/lib/api-client';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -11,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
-import { PlayCircle, CheckCircle2, MessageSquare, Send, Calendar, Video, BookOpen, ChevronDown } from 'lucide-react';
+import { PlayCircle, CheckCircle2, MessageSquare, Send, Calendar, Video, BookOpen, ChevronDown, Users } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { RecordingsList } from '@/components/meeting/RecordingsList';
@@ -32,9 +32,14 @@ export default function CourseViewerPage() {
     const [timetable, setTimetable] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
-    // Chat State
+    // Chat State (1:1 with instructor)
     const [messages, setMessages] = useState<any[]>([]);
     const [newMessage, setNewMessage] = useState('');
+
+    // Class group chat — every student enrolled in this course shares one
+    // conversation. The conversation is auto-provisioned server-side.
+    const [classChatId, setClassChatId] = useState<string | null>(null);
+    const [classMessage, setClassMessage] = useState('');
 
     useEffect(() => {
         if (!courseId) return;
@@ -71,6 +76,39 @@ export default function CourseViewerPage() {
 
         fetchData();
     }, [courseId]);
+
+    useEffect(() => {
+        if (!courseId || !user) return;
+        let active = true;
+        apiFetch(`/api/courses/${courseId}/class-chat`)
+            .then((res) => (res.ok ? res.json() : null))
+            .then((data) => { if (active && data?.conversationId) setClassChatId(data.conversationId); })
+            .catch((error) => console.error('Error provisioning class chat:', error));
+        return () => { active = false; };
+    }, [courseId, user]);
+
+    const { messages: classMessages } = useConversationMessages(classChatId);
+
+    const handleSendClassMessage = async () => {
+        if (!classMessage.trim() || !user || !classChatId) return;
+        try {
+            const res = await apiFetch('/api/messages', {
+                method: 'POST',
+                body: JSON.stringify({
+                    receiverId: String(courseId),
+                    conversationId: classChatId,
+                    courseId,
+                    content: classMessage,
+                }),
+            });
+            if (res.ok) {
+                setClassMessage('');
+                // Firestore listener delivers the sent message in real time.
+            }
+        } catch (error) {
+            toast({ variant: "destructive", title: "Chat Error", description: "Failed to send message." });
+        }
+    };
 
     // Realtime DMs with the course instructor — replaces 5s polling.
     const instructorUid = course?.instructorUid as string | undefined;
@@ -172,7 +210,8 @@ export default function CourseViewerPage() {
                                 <TabsTrigger value="recordings" className={tabsTriggerClass}><Video className="w-3 h-3" />Recordings</TabsTrigger>
                                 <TabsTrigger value="resources" className={tabsTriggerClass}>Resources</TabsTrigger>
                                 <TabsTrigger value="assignments" className={tabsTriggerClass}>Assignments</TabsTrigger>
-                                <TabsTrigger value="chat" className={tabsTriggerClass}>Chat</TabsTrigger>
+                                <TabsTrigger value="classmates" className={tabsTriggerClass}><Users className="w-3 h-3" />Classmates</TabsTrigger>
+                                <TabsTrigger value="chat" className={tabsTriggerClass}>Ask Instructor</TabsTrigger>
                             </TabsList>
 
                             <TabsContent value="curriculum" className="pt-8">
@@ -291,6 +330,53 @@ export default function CourseViewerPage() {
                                         <p className="mt-3 text-sm text-slate-500 font-medium max-w-md mx-auto">No assignments have been published yet. Check back once your instructor's schedule is live.</p>
                                     </CardContent>
                                 </Card>
+                            </TabsContent>
+
+                            <TabsContent value="classmates" className="pt-8">
+                                <div className="flex flex-col h-[500px] bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-sm">
+                                    <div className="px-6 py-4 border-b border-slate-100 flex items-center gap-3">
+                                        <div className="w-9 h-9 rounded-xl bg-[#0B1F3A]/5 flex items-center justify-center shrink-0">
+                                            <Users className="w-4 h-4 text-[#0B1F3A]" />
+                                        </div>
+                                        <div className="min-w-0">
+                                            <p className="text-sm font-bold text-[#0B1F3A] truncate">Class Group</p>
+                                            <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Everyone enrolled in {course.title}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex-1 p-6 overflow-y-auto space-y-4">
+                                        {classMessages.map((msg) => {
+                                            const isMine = msg.senderId === user?.uid;
+                                            return (
+                                                <div key={msg.id} className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}>
+                                                    <div className={`max-w-[80%] px-4 py-3 rounded-2xl text-sm font-medium shadow-sm ${isMine ? 'bg-[#0B1F3A] text-white' : 'bg-slate-50 text-slate-700 border border-slate-100'}`}>
+                                                        {!isMine && msg.senderName && (
+                                                            <p className="text-[10px] font-black uppercase tracking-wider text-[#C8A96A] mb-1">{msg.senderName}</p>
+                                                        )}
+                                                        {msg.content}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                        {classMessages.length === 0 && (
+                                            <div className="text-center py-16">
+                                                <Users className="w-10 h-10 text-slate-200 mx-auto mb-3" />
+                                                <p className="text-slate-400 text-sm font-medium">Say hello to your classmates!</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="p-4 bg-white border-t border-slate-100 flex gap-2">
+                                        <Input
+                                            placeholder="Message the class..."
+                                            value={classMessage}
+                                            onChange={(e) => setClassMessage(e.target.value)}
+                                            onKeyDown={(e) => e.key === 'Enter' && handleSendClassMessage()}
+                                            className="h-11 rounded-xl border-slate-200 focus-visible:ring-[#0B1F3A]/10"
+                                        />
+                                        <Button size="icon" onClick={handleSendClassMessage} className="h-11 w-11 rounded-xl bg-[#0B1F3A] hover:bg-[#1F7A5A] shrink-0">
+                                            <Send className="w-4 h-4" />
+                                        </Button>
+                                    </div>
+                                </div>
                             </TabsContent>
 
                             <TabsContent value="chat" className="pt-8">

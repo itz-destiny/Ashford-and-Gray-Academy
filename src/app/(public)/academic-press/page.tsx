@@ -544,7 +544,7 @@ export default function AcademicPressPage() {
                 Contact the Press Office
               </Link>
               <Link
-                href="/faculty"
+                href="/emc"
                 className="inline-flex items-center justify-center gap-3 border border-[#0B1F3A]/10 bg-[#FAF9F6] hover:border-[#0B1F3A] text-[#0B1F3A] px-8 py-4 font-black text-[10px] uppercase tracking-widest transition-all duration-300"
               >
                 Meet Our Faculty

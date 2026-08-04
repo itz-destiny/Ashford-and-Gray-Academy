@@ -51,7 +51,7 @@ export default function PublicLayout({
               <ul className="space-y-4 text-sm font-medium">
                 <li><Link href="/about" className="text-slate-300 hover:text-white transition-colors">About</Link></li>
                 <li><Link href="/courses" className="text-slate-300 hover:text-white transition-colors">Academic Programs</Link></li>
-                <li><Link href="/faculty" className="text-slate-300 hover:text-white transition-colors">Executive Leadership Team</Link></li>
+                <li><Link href="/emc" className="text-slate-300 hover:text-white transition-colors">Executive Leadership Team</Link></li>
                 <li><Link href="/facilitators" className="text-slate-300 hover:text-white transition-colors">Facilitators</Link></li>
                 <li><Link href="/academic-press" className="text-slate-300 hover:text-white transition-colors">Academic Press</Link></li>
                 <li><Link href="/partners" className="text-slate-300 hover:text-white transition-colors">Impact &amp; Partners</Link></li>
@@ -61,7 +61,7 @@ export default function PublicLayout({
               <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-[#C8A96A] mb-8">Admissions</h3>
               <ul className="space-y-4 text-sm font-medium">
                 <li><Link href="/login?view=signup" className="text-slate-300 hover:text-white transition-colors">Apply Now</Link></li>
-                <li><Link href="/faculty" className="text-slate-300 hover:text-white transition-colors">Executive Leadership Team</Link></li>
+                <li><Link href="/emc" className="text-slate-300 hover:text-white transition-colors">Executive Leadership Team</Link></li>
                 <li><Link href="/contact" className="text-slate-300 hover:text-white transition-colors">Contact</Link></li>
                 <li><Link href="/unsubscribe" className="text-slate-300 hover:text-white transition-colors">Newsletter Preferences</Link></li>
               </ul>

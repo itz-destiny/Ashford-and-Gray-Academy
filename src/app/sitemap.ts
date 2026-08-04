@@ -13,7 +13,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         { url: `${BASE}/certifications`,           lastModified: now, changeFrequency: "monthly", priority: 0.9 },
         { url: `${BASE}/executive`,                lastModified: now, changeFrequency: "monthly", priority: 0.8 },
         { url: `${BASE}/courses`,                  lastModified: now, changeFrequency: "weekly",  priority: 0.9 },
-        { url: `${BASE}/faculty`,                  lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+        { url: `${BASE}/emc`,                       lastModified: now, changeFrequency: "monthly", priority: 0.7 },
         { url: `${BASE}/academic-press`,           lastModified: now, changeFrequency: "monthly", priority: 0.7 },
         { url: `${BASE}/press`,                    lastModified: now, changeFrequency: "monthly", priority: 0.6 },
         { url: `${BASE}/partners`,                 lastModified: now, changeFrequency: "monthly", priority: 0.7 },

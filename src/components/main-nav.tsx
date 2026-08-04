@@ -47,7 +47,7 @@ export function MainNav() {
         { label: "Executive Master Class", href: "/executive", desc: "The Silent Standard — our signature executive-level leadership and operational excellence programme." }
       ]
     },
-    { href: "/faculty", label: "Executive Leadership Team" },
+    { href: "/emc", label: "Executive Leadership Team" },
     { href: "/facilitators", label: "Facilitators" },
     { href: "/academic-press", label: "Academic Press" },
     { href: "/partners", label: "Impact & Partners" },
@@ -156,7 +156,7 @@ export function MainNav() {
                     {/* Mobile Utility list */}
                     <div className="space-y-4 pt-6 border-t border-white/5">
                       <Link href="/about" onClick={() => setIsOpen(false)} className="block text-xs text-white/60 hover:text-white transition-colors">Our Legacy</Link>
-                      <Link href="/faculty" onClick={() => setIsOpen(false)} className="block text-xs text-white/60 hover:text-white transition-colors">Research & Ideas</Link>
+                      <Link href="/emc" onClick={() => setIsOpen(false)} className="block text-xs text-white/60 hover:text-white transition-colors">Research & Ideas</Link>
                       <Link href="/events" onClick={() => setIsOpen(false)} className="block text-xs text-white/60 hover:text-white transition-colors">Global Forums</Link>
                       <Link href="/newsletter" onClick={() => setIsOpen(false)} className="block text-xs text-white/60 hover:text-white transition-colors">Newsletter Insights</Link>
                     </div>

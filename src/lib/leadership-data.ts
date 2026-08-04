@@ -1,6 +1,6 @@
 /**
  * Executive Leadership Team — Ashford & Gray Fusion Academy.
- * Surfaced at /faculty (renamed in UI to "Executive Leadership Team").
+ * Surfaced at /emc (renamed in UI to "Executive Leadership Team").
  */
 
 export type LeadershipMember = {
@@ -41,6 +41,49 @@ export const LEADERSHIP: LeadershipMember[] = [
     },
 
     {
+        slug: 'walnshak-solomon-guteng',
+        name: 'Walnshak Solomon Guteng',
+        title: 'Registrar (Acting)',
+        photo: '/Guteng.jpeg',
+        bio: [
+            'Guteng Walnshak Solomon is a communications and knowledge management professional with over seven years of experience leading strategic communications, brand positioning, and stakeholder engagement across complex, donor-funded development and resilience programmes in Nigeria. He specialises in translating technical and evidence-based programme outcomes into clear, compelling narratives that inform decision-making and enhance institutional credibility. He has extensive experience working with senior leadership, technical teams, donors, government stakeholders, and communities to document impact, support learning, and deliver high-quality internal and external communications. His work spans executive reporting, media engagement, digital communications, and the production of knowledge products that strengthen visibility, accountability, and influence.',
+            'Guteng has played a critical role in designing and strengthening organisational knowledge management systems, facilitating structured learning and reflection processes, and ensuring compliance with knowledge standards. He is highly skilled in aligning communication and knowledge functions to support adaptive management, programme performance, and strategic growth. In addition to his development sector expertise, Guteng brings experience and passion in facilitating learning and promoting tourism and hospitality through tailored communication approaches that connect people, culture, and opportunities.',
+            'Over the course of his career, Guteng has held progressively responsible communication and knowledge management roles across leading international NGOs and development programmes, including Palladium, Mercy Corps (now Prosper Global), CCDRN, and The Ake Collective. His experience spans FCDO, USAID, BMZ, WFP, UN Women, and GIZ-funded initiatives implemented across Nigeria’s North Central, Northeast, and Northwest regions. In these roles, he has led strategic communications, supported large-scale resilience and market systems programmes, strengthened organisational knowledge systems, and embedded learning and visibility into programme delivery within complex and conflict-affected contexts. Known for his collaborative leadership style, strong work ethic, and commitment to continuous improvement, Guteng is driven by the belief that well-executed communication is a strategic asset that advances organisational missions, reinforces trust, and amplifies impact at scale.',
+        ],
+    },
+
+    {
+        slug: 'christopher-etete-sobere',
+        name: 'Christopher Etete Sobere',
+        title: 'Director, Quality Assurance and Quality Control',
+        photo: '/Christopher Etete Sobere.jpeg',
+        bio: [
+            'Comrade Christopher Etete Sobere is an accomplished public sector finance and governance professional with a distinguished record of service in accounting, institutional administration, compliance, and quality assurance. His career reflects a deep commitment to accountability, organizational excellence, and public service.',
+            'He currently serves as Chief Accountant with the Ahoada West Local Government Council, following progressive appointments as Payroll Accountant and Senior Council Accountant. Beyond his primary responsibilities, he serves as Secretary of the Accountants’ Forum for the 23 Local Government Councils of Rivers State, where he contributes to professional collaboration and the advancement of financial management practices across the local government system.',
+            'A respected labour leader, Christopher is the State Publicity Secretary of the Nigeria Union of Local Government Employees (NULGE), Rivers State Council, and a member of the State Executive Council (SEC). His leadership journey is marked by several pioneering milestones, including becoming the first Young Workers’ Representative from the South-South region to serve at both the State and Regional levels of NULGE. He also previously represented NULGE at the Nigeria Labour Congress (NLC) as the State School Representative, demonstrating his longstanding commitment to advocacy, leadership, and workforce development.',
+            'His public service experience extends to strategic governance through his appointment as a Board Member of the Rivers State Waste Management Agency (RIWAMA), where he contributed to policy formulation, institutional oversight, and strategic decision-making. He also serves as a Member of the State Decommissioning Board (SDB), providing oversight and collaborating with stakeholders to ensure the effective implementation of the Board’s objectives.',
+            'Christopher holds a Bachelor of Education (B.Ed.) in Education and Accounting and is a trained Health, Safety and Environment (HSE) Professional, with additional certification in Safety at Sea. He is currently pursuing professional qualifications with ICAD and ILGA, reflecting his commitment to continuous learning and professional growth.',
+            'His professional interests span quality assurance, institutional governance, compliance, human capacity development, research, information and communication technology, and organizational transformation. He is passionate about building systems that promote efficiency, accountability, and sustainable institutional excellence.',
+            'In recognition of his wealth of experience and unwavering commitment to high standards, he serves as the Director of Quality Control & Assurance at Ashford & Gray Fusion Academy (AGFA), where he provides strategic leadership in strengthening institutional quality systems, promoting continuous improvement, and ensuring that the Academy consistently delivers on its commitment to excellence.',
+        ],
+    },
+
+    {
+        slug: 'tamunodiepiriye-gift-ajubo',
+        name: 'Tamunodiepiriye Gift Ajubo',
+        title: 'Director, Academic Affairs',
+        photo: '/Tamunodiepiriye Ajubo.jpeg',
+        bio: [
+            'Educator · Strategic Leader · Engineer · EQ Practitioner',
+            'Some academic leaders are built in lecture halls. Tamunodiepiriye Gift Ajubo was built in both — forged equally by the precision of engineering and the purposeful science of education. Holding dual Master’s degrees from Cranfield University and Coventry University in the United Kingdom, alongside a Postgraduate Diploma in Education, he brings to academic leadership something rare: the analytical rigour of an engineer and the transformative instinct of a true educator.',
+            'His story is one of institutions reimagined. As Founder and Executive Director of Gesemville International Academy, he tore up a conventional curriculum and rebuilt it around the future — introducing STEM, Robotics, Programming, and Coding at a time when few dared. The results spoke for themselves: enrolment grew by 160%, driven entirely by academic reputation. He built governance frameworks, performance systems, and strategic community partnerships that turned a small school into a model of institutional excellence.',
+            'For a decade, he simultaneously shaped human beings at their core — serving as an Emotional Intelligence Consultant with Kallsgate Limited, designing EQ programmes for schools and corporations that measurably improved how people communicate, collaborate, and lead. He understands, deeply, that no curriculum succeeds where human development fails.',
+            'Today, as a Data Engineer supporting TotalEnergies field operations, he builds the real-time intelligence systems that drive critical production decisions — proof that his systems thinking and evidence-led rigour are not classroom theory, but lived operational competencies. This is the lens through which he leads: structured, precise, and always focused on outcomes that matter.',
+            'Tamunodiepiriye Gift Ajubo does not manage academic affairs. He architects them — with the mind of an engineer, the vision of a strategist, and an unshakeable belief in what education, done right, can do.',
+        ],
+    },
+
+    {
         slug: 'karibi-t-george',
         name: 'Karibi T. George, Esq.',
         postNominals: 'fnipr, rpa, CT, MICMC, DDF, DHCD (Honoris Causa)',
@@ -73,33 +116,6 @@ export const LEADERSHIP: LeadershipMember[] = [
     },
 
     {
-        slug: 'tamunodiepiriye-gift-ajubo',
-        name: 'Tamunodiepiriye Gift Ajubo',
-        title: 'Director, Academic Affairs',
-        photo: '/Tamunodiepiriye Ajubo.jpeg',
-        bio: [
-            'Educator · Strategic Leader · Engineer · EQ Practitioner',
-            'Some academic leaders are built in lecture halls. Tamunodiepiriye Gift Ajubo was built in both — forged equally by the precision of engineering and the purposeful science of education. Holding dual Master’s degrees from Cranfield University and Coventry University in the United Kingdom, alongside a Postgraduate Diploma in Education, he brings to academic leadership something rare: the analytical rigour of an engineer and the transformative instinct of a true educator.',
-            'His story is one of institutions reimagined. As Founder and Executive Director of Gesemville International Academy, he tore up a conventional curriculum and rebuilt it around the future — introducing STEM, Robotics, Programming, and Coding at a time when few dared. The results spoke for themselves: enrolment grew by 160%, driven entirely by academic reputation. He built governance frameworks, performance systems, and strategic community partnerships that turned a small school into a model of institutional excellence.',
-            'For a decade, he simultaneously shaped human beings at their core — serving as an Emotional Intelligence Consultant with Kallsgate Limited, designing EQ programmes for schools and corporations that measurably improved how people communicate, collaborate, and lead. He understands, deeply, that no curriculum succeeds where human development fails.',
-            'Today, as a Data Engineer supporting TotalEnergies field operations, he builds the real-time intelligence systems that drive critical production decisions — proof that his systems thinking and evidence-led rigour are not classroom theory, but lived operational competencies. This is the lens through which he leads: structured, precise, and always focused on outcomes that matter.',
-            'Tamunodiepiriye Gift Ajubo does not manage academic affairs. He architects them — with the mind of an engineer, the vision of a strategist, and an unshakeable belief in what education, done right, can do.',
-        ],
-    },
-
-    {
-        slug: 'walnshak-solomon-guteng',
-        name: 'Walnshak Solomon Guteng',
-        title: 'Registrar (Acting)',
-        photo: '/Guteng.jpeg',
-        bio: [
-            'Guteng Walnshak Solomon is a communications and knowledge management professional with over seven years of experience leading strategic communications, brand positioning, and stakeholder engagement across complex, donor-funded development and resilience programmes in Nigeria. He specialises in translating technical and evidence-based programme outcomes into clear, compelling narratives that inform decision-making and enhance institutional credibility. He has extensive experience working with senior leadership, technical teams, donors, government stakeholders, and communities to document impact, support learning, and deliver high-quality internal and external communications. His work spans executive reporting, media engagement, digital communications, and the production of knowledge products that strengthen visibility, accountability, and influence.',
-            'Guteng has played a critical role in designing and strengthening organisational knowledge management systems, facilitating structured learning and reflection processes, and ensuring compliance with knowledge standards. He is highly skilled in aligning communication and knowledge functions to support adaptive management, programme performance, and strategic growth. In addition to his development sector expertise, Guteng brings experience and passion in facilitating learning and promoting tourism and hospitality through tailored communication approaches that connect people, culture, and opportunities.',
-            'Over the course of his career, Guteng has held progressively responsible communication and knowledge management roles across leading international NGOs and development programmes, including Palladium, Mercy Corps (now Prosper Global), CCDRN, and The Ake Collective. His experience spans FCDO, USAID, BMZ, WFP, UN Women, and GIZ-funded initiatives implemented across Nigeria’s North Central, Northeast, and Northwest regions. In these roles, he has led strategic communications, supported large-scale resilience and market systems programmes, strengthened organisational knowledge systems, and embedded learning and visibility into programme delivery within complex and conflict-affected contexts. Known for his collaborative leadership style, strong work ethic, and commitment to continuous improvement, Guteng is driven by the belief that well-executed communication is a strategic asset that advances organisational missions, reinforces trust, and amplifies impact at scale.',
-        ],
-    },
-
-    {
         slug: 'dr-sunday-odum',
         name: 'Dr. Sunday Edum',
         title: 'Director, Academic Partnership',
@@ -114,6 +130,7 @@ export const LEADERSHIP: LeadershipMember[] = [
             'Beyond academia, Dr. Edum is a talented drummer, an active footballer, and a dedicated rights activist who is passionate about justice, equity, and the advancement of society.',
         ],
     },
+
     {
         slug: 'iminabo-vivian-yellowe-sekibo',
         name: 'Iminabo Vivian Yellowe Sekibo',
@@ -138,22 +155,6 @@ export const LEADERSHIP: LeadershipMember[] = [
             'As a trained theatre practitioner, Mr. Joseph has directed, performed in and coordinated numerous stage productions while mentoring emerging theatre artists and creative professionals. His professional expertise spans theatre directing, performance studies, production management, script interpretation, arts administration and strategic communication.',
             'His work reflects a strong commitment to harnessing the performing arts, digital media and creative storytelling as instruments for education, cultural preservation, institutional development and national advancement.',
             'At Ashford & Gray Fusion Academy, he brings this unique combination of artistic creativity, communication expertise and digital innovation to strengthen the Academy’s public image and institutional visibility.',
-        ],
-    },
-
-    {
-        slug: 'christopher-etete-sobere',
-        name: 'Christopher Etete Sobere',
-        title: 'Director, Quality Assurance and Quality Control',
-        photo: '/Christopher Etete Sobere.jpeg',
-        bio: [
-            'Comrade Christopher Etete Sobere is an accomplished public sector finance and governance professional with a distinguished record of service in accounting, institutional administration, compliance, and quality assurance. His career reflects a deep commitment to accountability, organizational excellence, and public service.',
-            'He currently serves as Chief Accountant with the Ahoada West Local Government Council, following progressive appointments as Payroll Accountant and Senior Council Accountant. Beyond his primary responsibilities, he serves as Secretary of the Accountants’ Forum for the 23 Local Government Councils of Rivers State, where he contributes to professional collaboration and the advancement of financial management practices across the local government system.',
-            'A respected labour leader, Christopher is the State Publicity Secretary of the Nigeria Union of Local Government Employees (NULGE), Rivers State Council, and a member of the State Executive Council (SEC). His leadership journey is marked by several pioneering milestones, including becoming the first Young Workers’ Representative from the South-South region to serve at both the State and Regional levels of NULGE. He also previously represented NULGE at the Nigeria Labour Congress (NLC) as the State School Representative, demonstrating his longstanding commitment to advocacy, leadership, and workforce development.',
-            'His public service experience extends to strategic governance through his appointment as a Board Member of the Rivers State Waste Management Agency (RIWAMA), where he contributed to policy formulation, institutional oversight, and strategic decision-making. He also serves as a Member of the State Decommissioning Board (SDB), providing oversight and collaborating with stakeholders to ensure the effective implementation of the Board’s objectives.',
-            'Christopher holds a Bachelor of Education (B.Ed.) in Education and Accounting and is a trained Health, Safety and Environment (HSE) Professional, with additional certification in Safety at Sea. He is currently pursuing professional qualifications with ICAD and ILGA, reflecting his commitment to continuous learning and professional growth.',
-            'His professional interests span quality assurance, institutional governance, compliance, human capacity development, research, information and communication technology, and organizational transformation. He is passionate about building systems that promote efficiency, accountability, and sustainable institutional excellence.',
-            'In recognition of his wealth of experience and unwavering commitment to high standards, he serves as the Director of Quality Control & Assurance at Ashford & Gray Fusion Academy (AGFA), where he provides strategic leadership in strengthening institutional quality systems, promoting continuous improvement, and ensuring that the Academy consistently delivers on its commitment to excellence.',
         ],
     },
 ];

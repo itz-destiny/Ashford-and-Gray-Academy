@@ -111,12 +111,18 @@ export interface IConversation extends Document {
     participants: string[]; // Array of User UIDs
     lastMessage?: string;
     lastMessageAt?: Date;
+    type: 'direct' | 'group';
+    courseId?: mongoose.Types.ObjectId; // set for a course's class-group conversation
+    title?: string;
 }
 
 const ConversationSchema: Schema = new Schema({
     participants: [{ type: String, required: true }],
     lastMessage: { type: String },
     lastMessageAt: { type: Date, default: Date.now },
+    type: { type: String, enum: ['direct', 'group'], default: 'direct' },
+    courseId: { type: Schema.Types.ObjectId, ref: 'Course', index: true },
+    title: { type: String },
 }, { timestamps: true });
 
 export const Conversation = mongoose.models.Conversation || mongoose.model<IConversation>('Conversation', ConversationSchema);

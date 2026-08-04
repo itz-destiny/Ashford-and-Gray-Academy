@@ -31,7 +31,6 @@ const PARTNERS = [
 ];
 
 const IMPACT_STATS = [
-    { value: 10, label: "Founder's Sponsored Beneficiaries" },
     { value: 258, label: "Total Sponsored Beneficiaries" },
     { value: 4, label: "Confirmed Impact Partners" },
     { value: 23, label: "Local Government Areas Covered" },
@@ -233,7 +232,7 @@ export default function PartnersPage() {
                         </h2>
                     </Reveal>
 
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 lg:gap-8">
                         {IMPACT_STATS.map((s, idx) => (
                             <ImpactStat key={s.label} value={s.value} label={s.label} delay={idx * 0.15} />
                         ))}
@@ -364,13 +363,6 @@ export default function PartnersPage() {
 
                 {/* ── PARTNER PROFILES: PRESS RELEASES ──────── */}
                 <section className="space-y-16">
-                    <Reveal className="flex items-center gap-4 border-b border-[#0B1F3A]/10 pb-6">
-                        <Heart className="w-5 h-5 text-[#C8A96A]" />
-                        <h2 className="text-sm font-black text-[#0B1F3A] uppercase tracking-[0.3em]">
-                            Partner Profiles
-                        </h2>
-                    </Reveal>
-
                     {/* ── Hon. Linda Somiari Stewart ──────────── */}
                     <div id="linda-somiari-stewart" className="scroll-mt-24 space-y-6">
                         <Reveal className="bg-[#0B1F3A] border-t-4 border-t-[#C8A96A] p-6 lg:p-10">
@@ -479,26 +471,10 @@ export default function PartnersPage() {
                         </Reveal>
                     </div>
 
-                    <Reveal className="border border-[#C8A96A]/20 bg-[#0B1F3A] p-10 lg:p-14 max-w-3xl border-l-4 border-l-[#C8A96A]">
-                        <p className="text-base font-serif italic text-white/80 leading-relaxed">
-                            &ldquo;To our sponsors and partners, thank you for believing in our vision.&rdquo;
-                        </p>
-                        <div className="mt-6 flex items-center gap-3">
-                            <div className="w-8 h-px bg-[#C8A96A]" />
-                            <span className="text-[9px] font-black uppercase tracking-[0.35em] text-[#C8A96A]">Myne Wilfred — Founder/President</span>
-                        </div>
-                    </Reveal>
                 </section>
 
                 {/* ── IMPACT ───────────────────────────────── */}
                 <section id="chukwudi-dimkpa-foundation" className="scroll-mt-24 space-y-6">
-                    <Reveal className="flex items-center gap-4 border-b border-[#0B1F3A]/10 pb-6">
-                        <Star className="w-5 h-5 text-[#C8A96A]" />
-                        <h2 className="text-sm font-black text-[#0B1F3A] uppercase tracking-[0.3em]">
-                            Impact &amp; Achievements
-                        </h2>
-                    </Reveal>
-
                     {/* ── FEATURE: Chukwudi Dimkpa Foundation Partnership ─── */}
                     <Reveal delay={0.05} className="bg-[#0B1F3A] border-t-4 border-t-[#C8A96A] p-6 lg:p-10 mb-4">
                         <p className="text-[9px] font-black uppercase tracking-[0.4em] text-[#C8A96A] mb-2">Featured Impact Story</p>
@@ -551,6 +527,15 @@ export default function PartnersPage() {
                         </div>
                     </Reveal>
 
+                    <Reveal className="border border-[#C8A96A]/20 bg-[#0B1F3A] p-10 lg:p-14 max-w-3xl border-l-4 border-l-[#C8A96A]">
+                        <p className="text-base font-serif italic text-white/80 leading-relaxed">
+                            &ldquo;To our sponsors and partners, thank you for believing in our vision.&rdquo;
+                        </p>
+                        <div className="mt-6 flex items-center gap-3">
+                            <div className="w-8 h-px bg-[#C8A96A]" />
+                            <span className="text-[9px] font-black uppercase tracking-[0.35em] text-[#C8A96A]">Myne Wilfred — Founder/President</span>
+                        </div>
+                    </Reveal>
                 </section>
 
                 {/* ── CLOSING STATEMENT ────────────────────── */}

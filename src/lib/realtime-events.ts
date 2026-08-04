@@ -23,6 +23,10 @@ export type RealtimeMessage = {
     content: string;
     courseId?: string;
     createdAt: Date;
+    // Full participant list for group conversations (a class chat has more
+    // than two members). Omit for 1:1 DMs — defaults to [senderId, receiverId].
+    participants?: string[];
+    title?: string;
 };
 
 export async function publishMessage(msg: RealtimeMessage): Promise<void> {
@@ -39,11 +43,14 @@ export async function publishMessage(msg: RealtimeMessage): Promise<void> {
         };
         await db.collection('messages').doc(msg.messageId).set(data);
 
-        // Update both participants' conversation summary so the conversations
-        // list updates instantly. Use the smaller-uid::larger-uid as a stable
-        // doc id when conversationId is missing.
+        // Update the conversation summary so the conversations list updates
+        // instantly. Use the smaller-uid::larger-uid as a stable doc id when
+        // conversationId is missing (ad-hoc 1:1 DMs with no Mongo Conversation
+        // row). Group conversations always pass a real conversationId plus
+        // their full participants list — never derive it from sender/receiver
+        // alone, or every other class member would drop out of the summary.
         const convId = msg.conversationId || [msg.senderId, msg.receiverId].sort().join('::');
-        const participants = [msg.senderId, msg.receiverId];
+        const participants = msg.participants ?? [msg.senderId, msg.receiverId];
 
         await db.collection('conversations').doc(convId).set(
             {
@@ -51,11 +58,34 @@ export async function publishMessage(msg: RealtimeMessage): Promise<void> {
                 lastMessage: msg.content,
                 lastMessageAt: Timestamp.fromDate(msg.createdAt),
                 lastSenderId: msg.senderId,
+                ...(msg.title ? { title: msg.title } : {}),
             },
             { merge: true }
         );
     } catch (err) {
         console.warn('publishMessage: Firestore mirror failed (non-fatal):', err);
+    }
+}
+
+/**
+ * Mirror (or re-sync) a group conversation's participant list into Firestore
+ * without sending a message — used right after creating/updating a course's
+ * class-group Conversation so it shows up in every member's inbox immediately,
+ * even before anyone has sent a first message.
+ */
+export async function syncGroupConversation(args: {
+    conversationId: string;
+    participants: string[];
+    title: string;
+}): Promise<void> {
+    try {
+        const db = adminFirestore();
+        await db.collection('conversations').doc(args.conversationId).set(
+            { participants: args.participants, title: args.title },
+            { merge: true }
+        );
+    } catch (err) {
+        console.warn('syncGroupConversation: Firestore mirror failed (non-fatal):', err);
     }
 }
 
