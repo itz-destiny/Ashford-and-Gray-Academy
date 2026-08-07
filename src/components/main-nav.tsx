@@ -7,7 +7,7 @@ import { Logo } from "@/components/logo";
 import { cn } from "@/lib/utils";
 import { useUser } from "@/firebase";
 import { UserNav } from "@/components/user-nav";
-import { Menu, ChevronRight, ArrowUpRight } from "lucide-react";
+import { Menu, ChevronRight, ArrowUpRight, LogIn } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 interface DropdownItem {
@@ -26,6 +26,13 @@ export function MainNav() {
   const { user, loading } = useUser();
   const [isOpen, setIsOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
+  const [loginMenuOpen, setLoginMenuOpen] = useState(false);
+
+  const loginPortals = [
+    { label: "Student Login", href: "/login?portal=student", desc: "Continue your programme and track your academic progress." },
+    { label: "Facilitator Login", href: "/login?portal=facilitator", desc: "Manage your courses, classes, and students." },
+    { label: "Executive Leadership (EMC) Login", href: "/login?portal=emc", desc: "Administrative workspace for Executive Leadership and office staff." },
+  ];
 
   const primaryLinks: PrimaryLink[] = [
     {
@@ -112,13 +119,61 @@ export function MainNav() {
           </nav>
 
           <div className="flex items-center gap-4">
-            <div className="hidden md:flex items-center gap-4">
+            <div className="hidden md:flex items-center gap-3">
               {loading ? (
-                <div className="h-10 w-24 bg-slate-50 animate-pulse" />
-              ) : (
-                <Button size="sm" className="h-10 px-8 rounded-none bg-[#C8A96A] hover:bg-[#B69759] text-[#0B1F3A] font-extrabold text-[10px] uppercase tracking-widest transition-all duration-300 border-none shadow-none" asChild>
-                  <Link href="/login?view=signup">Apply</Link>
+                <>
+                  <div className="h-10 w-24 bg-slate-50 animate-pulse" />
+                  <div className="h-10 w-24 bg-slate-50 animate-pulse" />
+                </>
+              ) : user ? (
+                <Button size="sm" className="h-10 px-8 rounded-none bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-extrabold text-[10px] uppercase tracking-widest transition-all duration-300 border-none shadow-none" asChild>
+                  <Link href="/dashboard">Dashboard</Link>
                 </Button>
+              ) : (
+                <>
+                  <div
+                    className="relative"
+                    onMouseEnter={() => setLoginMenuOpen(true)}
+                    onMouseLeave={() => setLoginMenuOpen(false)}
+                  >
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-10 px-6 rounded-none border-[#0B1F3A]/15 text-[#0B1F3A] hover:bg-[#0B1F3A]/5 font-extrabold text-[10px] uppercase tracking-widest transition-all duration-300 shadow-none gap-1.5"
+                    >
+                      <LogIn className="w-3.5 h-3.5" />
+                      Log In
+                    </Button>
+
+                    {loginMenuOpen && (
+                      <div className="absolute top-[100%] right-0 w-[320px] bg-white border border-slate-100 border-t-4 border-t-[#C8A96A] shadow-xl p-6 space-y-4 animate-fade-in-up z-10">
+                        <div className="text-[9px] font-black tracking-widest text-[#C8A96A] border-b border-slate-100 pb-2 mb-2">
+                          SIGN IN AS
+                        </div>
+                        {loginPortals.map((item) => (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            className="block group/item space-y-1 text-left"
+                            onClick={() => setLoginMenuOpen(false)}
+                          >
+                            <div className="text-[#0B1F3A] font-bold text-xs uppercase tracking-wider group-hover/item:text-[#1F7A5A] transition-colors flex items-center gap-1">
+                              <span>{item.label}</span>
+                              <ArrowUpRight className="w-3 h-3 text-[#C8A96A] opacity-0 group-hover/item:opacity-100 group-hover/item:translate-x-0.5 transition-all" />
+                            </div>
+                            <p className="text-[10px] text-[#0B1F3A]/60 font-medium leading-relaxed">
+                              {item.desc}
+                            </p>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <Button size="sm" className="h-10 px-8 rounded-none bg-[#C8A96A] hover:bg-[#B69759] text-[#0B1F3A] font-extrabold text-[10px] uppercase tracking-widest transition-all duration-300 border-none shadow-none" asChild>
+                    <Link href="/login?view=signup">Apply</Link>
+                  </Button>
+                </>
               )}
             </div>
 
@@ -169,13 +224,17 @@ export function MainNav() {
                         <Link href="/dashboard">Access Dashboard</Link>
                       </Button>
                     ) : (
-                      <div className="grid grid-cols-2 gap-4">
-                        <Button className="h-12 border border-white/20 bg-transparent text-white hover:bg-white/5 font-extrabold text-[10px] uppercase tracking-widest rounded-none shadow-none" asChild onClick={() => setIsOpen(false)}>
-                          <Link href="/login">Log In</Link>
+                      <div className="space-y-4">
+                        <Button className="w-full h-12 bg-white text-[#0B1F3A] hover:bg-slate-100 font-extrabold text-[10px] uppercase tracking-widest rounded-none" asChild onClick={() => setIsOpen(false)}>
+                          <Link href="/login?view=signup">Apply for Admission</Link>
                         </Button>
-                        <Button className="h-12 bg-white text-[#0B1F3A] hover:bg-slate-100 font-extrabold text-[10px] uppercase tracking-widest rounded-none" asChild onClick={() => setIsOpen(false)}>
-                          <Link href="/login?view=signup">Apply</Link>
-                        </Button>
+                        <div className="grid grid-cols-3 gap-2">
+                          {loginPortals.map((item) => (
+                            <Button key={item.href} className="h-12 px-1 border border-white/20 bg-transparent text-white hover:bg-white/5 font-extrabold text-[8px] uppercase tracking-wider rounded-none shadow-none leading-tight" asChild onClick={() => setIsOpen(false)}>
+                              <Link href={item.href}>{item.label.replace(' Login', '').replace(' (EMC)', '')}</Link>
+                            </Button>
+                          ))}
+                        </div>
                       </div>
                     )}
                     <p className="text-center text-white/40 text-[9px] font-black uppercase tracking-[0.2em]">Ashford & Gray Academy • Ivy Standard</p>

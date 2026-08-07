@@ -13,9 +13,10 @@ type AuthFormProps = {
     footerText?: string;
     footerLinkText?: string;
     onFooterLinkClick?: () => void;
+    showGoogleSignIn?: boolean;
 };
 
-export function AuthForm({ title, description, children, footerText, footerLinkText, onFooterLinkClick }: AuthFormProps) {
+export function AuthForm({ title, description, children, footerText, footerLinkText, onFooterLinkClick, showGoogleSignIn = true }: AuthFormProps) {
     const router = useRouter();
     const { toast } = useToast();
 
@@ -73,22 +74,26 @@ export function AuthForm({ title, description, children, footerText, footerLinkT
                 <p className="text-slate-500 font-medium text-base leading-relaxed max-w-md">{description}</p>
             </div>
 
-            <Button
-                variant="outline"
-                onClick={handleGoogleSignIn}
-                className="h-12 w-full rounded-none border border-slate-200 hover:border-[#0B1F3A] hover:bg-white font-black text-[10px] uppercase tracking-[0.3em] text-[#0B1F3A] shadow-none transition-colors"
-            >
-                <FaGoogle className="mr-3 h-4 w-4 text-[#EA4335]" /> Continue with Google
-            </Button>
+            {showGoogleSignIn && (
+                <>
+                    <Button
+                        variant="outline"
+                        onClick={handleGoogleSignIn}
+                        className="h-12 w-full rounded-none border border-slate-200 hover:border-[#0B1F3A] hover:bg-white font-black text-[10px] uppercase tracking-[0.3em] text-[#0B1F3A] shadow-none transition-colors"
+                    >
+                        <FaGoogle className="mr-3 h-4 w-4 text-[#EA4335]" /> Continue with Google
+                    </Button>
 
-            <div className="relative my-8">
-                <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-slate-100" />
-                </div>
-                <div className="relative flex justify-center text-[10px] uppercase font-black tracking-[0.3em] text-slate-400">
-                    <span className="bg-white px-5">Or with credentials</span>
-                </div>
-            </div>
+                    <div className="relative my-8">
+                        <div className="absolute inset-0 flex items-center">
+                            <span className="w-full border-t border-slate-100" />
+                        </div>
+                        <div className="relative flex justify-center text-[10px] uppercase font-black tracking-[0.3em] text-slate-400">
+                            <span className="bg-white px-5">Or with credentials</span>
+                        </div>
+                    </div>
+                </>
+            )}
 
             {children}
 

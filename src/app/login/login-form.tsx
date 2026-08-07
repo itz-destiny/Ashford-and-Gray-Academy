@@ -19,12 +19,36 @@ type LoginFormProps = {
 const inputClass =
   "h-12 rounded-none border border-slate-200 bg-white px-5 font-medium text-[#0B1F3A] placeholder:text-slate-400 shadow-none focus-visible:ring-0 focus-visible:border-[#0B1F3A] transition-colors";
 
+// Purely presentational — the actual portal a signed-in user lands on is
+// always decided by their real role below, never by which door they walked
+// through. This just makes the right door obvious up front and gives a
+// friendly heads-up if someone picks the wrong one.
+const PORTAL_COPY: Record<string, { title: string; description: string; roles: string[] }> = {
+  student: {
+    title: "Student Portal",
+    description: "Sign in to your student dashboard to continue your programme and track your progress.",
+    roles: ["student"],
+  },
+  facilitator: {
+    title: "Facilitator Portal",
+    description: "Sign in to manage your courses, classes, and students.",
+    roles: ["instructor"],
+  },
+  emc: {
+    title: "Executive Leadership Portal",
+    description: "Sign in to the administrative workspace for Executive Leadership and office staff.",
+    roles: ["admin", "registrar", "course_registrar", "finance"],
+  },
+};
+
 export function LoginForm({ onSwitchToSignUp }: LoginFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get('redirectUrl');
+  const portal = searchParams.get('portal');
+  const portalCopy = portal ? PORTAL_COPY[portal] : undefined;
   const { toast } = useToast();
   const { user, loading: userLoading } = useUser();
 
@@ -46,6 +70,18 @@ export function LoginForm({ onSwitchToSignUp }: LoginFormProps) {
   React.useEffect(() => {
     if (!userLoading && user) {
       const role = (user as any).role as string | undefined;
+
+      // Portal doors are presentational only — a real role always wins. If
+      // someone picked the wrong door (e.g. a student on the Facilitator
+      // login), let them know where they're actually headed instead of
+      // silently redirecting somewhere they didn't expect.
+      if (portalCopy && role && !portalCopy.roles.includes(role)) {
+        toast({
+          title: "Different portal",
+          description: `This account is registered as ${role === 'student' ? 'a Student' : role.replace('_', ' ')}. Taking you to the right dashboard.`,
+        });
+      }
+
       // Staff portals always take priority — never follow a redirectUrl that would
       // land a staff member on the wrong portal (e.g. a stale ?redirectUrl=/dashboard).
       // A forced password change (system-issued password) is handled by a
@@ -65,15 +101,16 @@ export function LoginForm({ onSwitchToSignUp }: LoginFormProps) {
       });
       router.push(`/login/complete-profile?${params.toString()}`);
     }
-  }, [user, userLoading, router, redirectUrl]);
+  }, [user, userLoading, router, redirectUrl, portalCopy, toast]);
 
   return (
     <AuthForm
-      title="Institutional Access"
-      description="Sign in to your academy dashboard to continue your programmes and track academic progress."
+      title={portalCopy?.title || "Institutional Access"}
+      description={portalCopy?.description || "Sign in to your academy dashboard to continue your programmes and track academic progress."}
       footerText="New to the Academy?"
       footerLinkText="Apply for Admission"
       onFooterLinkClick={onSwitchToSignUp}
+      showGoogleSignIn={portal !== 'facilitator' && portal !== 'emc'}
     >
       <form className="space-y-6" onSubmit={handleLogin}>
         <div className="space-y-2">
