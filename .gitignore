@@ -43,3 +43,7 @@ next-env.d.ts
 # firebase
 firebase-debug.log
 firestore-debug.log
+
+# student PII — cohort roster spreadsheets stay local-only, never in git
+/public/AGFA FLAGSHIP COHORT*.xlsx
+/public/~$*.xlsx
