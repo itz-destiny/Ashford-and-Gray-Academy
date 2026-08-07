@@ -29,7 +29,7 @@ const PROGRAMMES = [
     "Diploma in Business Innovation & Entrepreneurship",
     "Diploma in Professional Development & Global Relations",
     "Diploma in Event & Protocol Management",
-    "The Silent Standard (Executive Master Class)",
+    "Professional Excellence & The Silent Standard (Executive Master Class)",
     "Undecided — advise me",
 ];
 

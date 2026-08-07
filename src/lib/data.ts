@@ -39,11 +39,12 @@ const IMG = {
     diplomaLeadership: '/course5.jpeg',
     diplomaBusiness: '/course6.jpeg',
     diplomaEvents: '/course7.jpeg',
-    silentStandard: '/graduate-diploma.jpg',
+    silentStandard: '/professional-excellence-silent-standard.png',
+    serviceExcellence: '/service-excellence.png',
     // New programmes 2026
     businessCert:   '/imagefx-1.png',
-    foodBevCert:    '/imagefx-2.png',
-    labourCert:     '/imagefx-3.png',
+    foodBevCert:    '/food-beverage-management.png',
+    labourCert:     '/hospitality-workforce-management.png',
     restaurantBar:  '/imagefx-4.png',
     foodBevDip:     '/imagefx-5.png',
     labourDip:      '/imagefx-6.png',
@@ -826,7 +827,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     },
 
     {
-        title: 'Certificate in Hospitality Labour Management',
+        title: 'Hospitality Workforce Management',
         category: 'Certification',
         instructor: faculty.wilfred,
         rating: 4.8,
@@ -839,9 +840,9 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
         imageHint: 'Hospitality team leader in a briefing with staff',
         status: 'published',
         description:
-            'The Certificate in Hospitality Labour Management is designed to equip participants with practical knowledge and essential skills required for effective workforce supervision, employee relations, labour coordination, and people management within hospitality and service organizations. The program provides participants with foundational competencies in labour management, workforce planning, staff development, workplace ethics, employee welfare, and organizational culture.',
+            'The Hospitality Workforce Management Certificate is designed to equip participants with practical knowledge and essential skills required for effective workforce supervision, employee relations, workforce coordination, and people management within hospitality and service organizations. The program provides participants with foundational competencies in workforce management, workforce planning, staff development, workplace ethics, employee welfare, and organizational culture.',
         curriculum: [
-            'Module 1: Introduction to Hospitality Labour Management',
+            'Module 1: Introduction to Hospitality Workforce Management',
             'Module 2: Recruitment, Selection & Staff Placement',
             'Module 3: Training, Coaching & Staff Development',
             'Module 4: Human Resource Fundamentals',
@@ -862,7 +863,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
         ],
         learningOutcomes: [
             {
-                module: 'Module 1: Introduction to Hospitality Labour Management',
+                module: 'Module 1: Introduction to Hospitality Workforce Management',
                 topics: [
                     'Understanding Labour in Hospitality',
                     'Nature of Hospitality Labour',
@@ -933,7 +934,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
             },
         ],
         certificationDetails: [
-            'Certificate in Hospitality Labour Management',
+            'Hospitality Workforce Management Certificate',
             'Completion of all coursework',
             'Successful completion of assessments',
             'Meeting attendance requirements',
@@ -1957,7 +1958,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     // EXECUTIVE MASTERCLASS — 4 weeks · ₦150,000
     // ===================================================================
     {
-        title: 'The Silent Standard Certification Programme',
+        title: 'Professional Excellence & The Silent Standard',
         category: 'Executive Master Class',
         instructor: faculty.wilfred,
         rating: 5.0,
@@ -1970,7 +1971,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
         imageHint: 'Minimalist luxury interior signalling discipline and order',
         status: 'published',
         description:
-            'The Silent Standard Certification Programme is a premium executive-level professional development experience designed to cultivate disciplined leaders, operational strategists, hospitality professionals, executive managers, and institutional thinkers capable of delivering excellence with precision, structure, and authority. Built on the philosophy that true excellence is intentional, structured, and consistently sustained, this programme focuses on developing professionals who understand the power of systems, discipline, operational intelligence, discretion, leadership, and institutional order. The programme combines executive management principles, hospitality excellence, estate operations, leadership psychology, protocol systems, organisational governance, and strategic positioning into a transformational learning experience tailored for individuals operating within high-performance environments. Unlike conventional professional training, The Silent Standard goes beyond skills acquisition; it develops mindset, structure, operational philosophy, and long-term leadership capacity designed for modern executive, hospitality, corporate, and institutional environments.',
+            'Professional Excellence & The Silent Standard is a premium executive-level professional development experience designed to cultivate disciplined leaders, operational strategists, hospitality professionals, executive managers, and institutional thinkers capable of delivering excellence with precision, structure, and authority. Built on the philosophy that true excellence is intentional, structured, and consistently sustained, this programme focuses on developing professionals who understand the power of systems, discipline, operational intelligence, discretion, leadership, and institutional order. The programme combines executive management principles, hospitality excellence, estate operations, leadership psychology, protocol systems, organisational governance, and strategic positioning into a transformational learning experience tailored for individuals operating within high-performance environments. Unlike conventional professional training, The Silent Standard goes beyond skills acquisition; it develops mindset, structure, operational philosophy, and long-term leadership capacity designed for modern executive, hospitality, corporate, and institutional environments.',
         curriculum: [
             'Module 1: The Foundation of The Silent Standard',
             'Module 2: Leadership & Emotional Discipline',
@@ -2108,7 +2109,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
             },
         ],
         certificationDetails: [
-            'Certified Silent Standard Professional Certification',
+            'Certified Professional Excellence & The Silent Standard Certification',
             'Executive Leadership & Operational Excellence Recognition',
             'Professional Competency Assessment Report',
             'Ashford & Gray Fusion Academy Certification of Completion',

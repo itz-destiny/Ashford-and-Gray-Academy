@@ -1082,8 +1082,8 @@ export const STATIC_COURSES: Course[] = [
     duration: 12,
     level: "Intermediate",
     price: 150000,
-    imageUrl: "/food-beverage-management-certificate.png",
-    imageHint: "Elegant restaurant table service and beverage presentation",
+    imageUrl: "/food-beverage-management.png",
+    imageHint: "Wok-tossed ingredients over a luxury culinary presentation",
     description: "The Certificate in Food & Beverage Management is designed to provide participants with foundational knowledge and practical skills in food service operations, restaurant management, customer service, food safety, and beverage operations. The program equips learners with the essential competencies required to work effectively in restaurants, hotels, catering organizations, lounges, event operations, and hospitality establishments.",
     whoFor: [
       "Aspiring food and beverage professionals",
@@ -1141,7 +1141,7 @@ export const STATIC_COURSES: Course[] = [
   },
   {
     id: "664f3a8b2d1c9e8a7f0e0013",
-    title: "Certificate in Hospitality Labour Management",
+    title: "Hospitality Workforce Management",
     category: "Certification",
     instructor: {
       name: "Myne Wilfred",
@@ -1153,9 +1153,9 @@ export const STATIC_COURSES: Course[] = [
     duration: 12,
     level: "Intermediate",
     price: 150000,
-    imageUrl: "/hospitality-labour-management-certificate.png",
+    imageUrl: "/hospitality-workforce-management.png",
     imageHint: "Hospitality team leader in a briefing with staff",
-    description: "The Certificate in Hospitality Labour Management is designed to equip participants with practical knowledge and essential skills required for effective workforce supervision, employee relations, labour coordination, and people management within hospitality and service organizations. The program provides participants with foundational competencies in labour management, workforce planning, staff development, workplace ethics, employee welfare, and organizational culture.",
+    description: "The Hospitality Workforce Management Certificate is designed to equip participants with practical knowledge and essential skills required for effective workforce supervision, employee relations, workforce coordination, and people management within hospitality and service organizations. The program provides participants with foundational competencies in workforce management, workforce planning, staff development, workplace ethics, employee welfare, and organizational culture.",
     whoFor: [
       "Hotel supervisors",
       "House managers",
@@ -1170,7 +1170,7 @@ export const STATIC_COURSES: Course[] = [
     ],
     learningOutcomes: [
       {
-        module: "Module 1: Introduction to Hospitality Labour Management",
+        module: "Module 1: Introduction to Hospitality Workforce Management",
         topics: ["Understanding Labour in Hospitality", "Nature of Hospitality Labour", "Characteristics of Hospitality Employees", "Labour Challenges in Hospitality", "Workforce Expectations in Modern Hospitality", "The Role of Supervisors and Managers"]
       },
       {
@@ -1195,7 +1195,7 @@ export const STATIC_COURSES: Course[] = [
       }
     ],
     certificationDetails: [
-      "Certificate in Hospitality Labour Management",
+      "Hospitality Workforce Management Certificate",
       "Completion of all coursework",
       "Successful completion of assessments",
       "Meeting attendance requirements",
@@ -1479,7 +1479,7 @@ export const STATIC_COURSES: Course[] = [
 
   {
     id: "664f3a8b2d1c9e8a7f0e0010",
-    title: "The Silent Standard Certification Program",
+    title: "Professional Excellence & The Silent Standard",
     category: "Master Class",
     brochurePath: "silent-standard-certification.pdf",
     instructor: {
@@ -1492,9 +1492,9 @@ export const STATIC_COURSES: Course[] = [
     duration: 4,
     level: "Executive",
     price: 150000,
-    imageUrl: "/silent-standard-certificate.png",
+    imageUrl: "/professional-excellence-silent-standard.png",
     imageHint: "Executive leadership and operational excellence.",
-    description: "The Silent Standard Certification Programme is designed to develop professionals whose competence, discipline, judgement and authority are evident in the quality and consistency of their work, rather than in noise, self-promotion, intimidation or the constant demand for recognition.\n\nThe programme teaches participants that sustainable excellence is not an occasional performance. It is the outcome of systems, habits, clarity, restraint, responsibility and dependable professional conduct.\n\nThe Silent Standard is not about becoming invisible, passive or voiceless. It is about developing such depth of competence and consistency that one's work carries credibility before explanation becomes necessary. It teaches professionals how to remain effective under pressure, exercise authority without unnecessary aggression, convert experience into recognised expertise, build influence through value and contribute to the growth of institutions.\n\nParticipants will examine their personal discipline, professional identity, decision-making habits, response to pressure, relationship with authority, use of experience and responsibility towards organisational growth.\n\nThe programme culminates in a personal and institutional application project through which each participant must demonstrate how the Silent Standard can be translated into measurable professional behaviour and operational improvement.",
+    description: "Professional Excellence & The Silent Standard is designed to develop professionals whose competence, discipline, judgement and authority are evident in the quality and consistency of their work, rather than in noise, self-promotion, intimidation or the constant demand for recognition.\n\nThe programme teaches participants that sustainable excellence is not an occasional performance. It is the outcome of systems, habits, clarity, restraint, responsibility and dependable professional conduct.\n\nThe Silent Standard is not about becoming invisible, passive or voiceless. It is about developing such depth of competence and consistency that one's work carries credibility before explanation becomes necessary. It teaches professionals how to remain effective under pressure, exercise authority without unnecessary aggression, convert experience into recognised expertise, build influence through value and contribute to the growth of institutions.\n\nParticipants will examine their personal discipline, professional identity, decision-making habits, response to pressure, relationship with authority, use of experience and responsibility towards organisational growth.\n\nThe programme culminates in a personal and institutional application project through which each participant must demonstrate how the Silent Standard can be translated into measurable professional behaviour and operational improvement.",
     programmePhilosophy: [
       "Discipline must be designed into systems rather than left to mood.",
       "Excellence must be sustained beyond ceremonial performance.",
@@ -1665,7 +1665,7 @@ export const STATIC_COURSES: Course[] = [
       }
     ],
     certificationDetails: [
-      "Certified Silent Standard Professional Certification",
+      "Certified Professional Excellence & The Silent Standard Certification",
       "Executive Leadership & Operational Excellence Recognition",
       "Professional Competency Assessment Report",
       "Ashford and Gray Fusion Academy Certification of Completion",

@@ -35,9 +35,11 @@ import { STATIC_COURSES } from "@/lib/courses-data";
 import { ARTICLES } from "@/lib/insights-data";
 
 export default function Home() {
-  const isCertificateProgramme = (title: string) => !title.trim().toLowerCase().startsWith('diploma');
+  // All flagship courses, including the Executive Master Class — Diplomas
+  // stay hidden for now (see the commented-out pathway on /academic-programs).
+  const isCertificateProgramme = (c: Course) => !c.title.trim().toLowerCase().startsWith('diploma');
   const [trendingCourses, setTrendingCourses] = React.useState<Course[]>(
-    STATIC_COURSES.filter((c) => isCertificateProgramme(c.title)).slice(0, 10)
+    STATIC_COURSES.filter(isCertificateProgramme).slice(0, 11)
   );
   const [coursesLoading, setCoursesLoading] = React.useState(false);
 
@@ -52,14 +54,18 @@ export default function Home() {
         }
         const data = await res.json();
         if (active && Array.isArray(data) && data.length > 0) {
-          // Merge dynamic database courses while keeping static courses first
+          // Merge dynamic database courses while keeping static courses first.
+          // Normalize titles before comparing — several static entries carry a
+          // "(Certificate)" suffix their DB counterpart doesn't, which would
+          // otherwise dodge the dedupe check and show the same course twice.
+          const normalizeTitle = (t: string) => t.trim().toLowerCase().replace(/\s*\(certificate\)\s*$/, '');
           const merged = [...STATIC_COURSES];
           data.forEach(dc => {
-            if (!merged.some(mc => mc.id === dc.id || mc.title.toLowerCase() === dc.title.toLowerCase())) {
+            if (!merged.some(mc => mc.id === dc.id || normalizeTitle(mc.title) === normalizeTitle(dc.title))) {
               merged.push(dc);
             }
           });
-          setTrendingCourses(merged.filter((c) => isCertificateProgramme(c.title)).slice(0, 10));
+          setTrendingCourses(merged.filter(isCertificateProgramme).slice(0, 11));
         }
       } catch (error) {
         console.warn('Silent fallback on dynamic courses fetch:', error);

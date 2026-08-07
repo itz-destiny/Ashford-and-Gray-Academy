@@ -81,7 +81,7 @@ export const organizationSchema = {
                 "@type": "Offer",
                 itemOffered: {
                     "@type": "Course",
-                    name: "The Silent Standard Executive Master Class",
+                    name: "Professional Excellence & The Silent Standard Executive Master Class",
                     description:
                         "Signature executive-level leadership and operational excellence programme for senior hospitality and business professionals.",
                     provider: { "@type": "Organization", name: "Ashford & Gray Fusion Academy" },

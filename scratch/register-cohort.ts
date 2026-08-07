@@ -23,8 +23,8 @@ const PROGRAMME_TO_COURSE_TITLE: Record<string, string> = {
     'Food and Beverage Management': 'Certificate in Food & Beverage Management',
     'Restaurant and Bar Service': 'Certificate in Restaurant & Bar Service',
     'Executive Assistant Management': 'Executive Assistant Management',
-    'Hospitality Labour Management': 'Certificate in Hospitality Labour Management',
-    'The Silent Standard': 'The Silent Standard Certification Programme',
+    'Hospitality Labour Management': 'Hospitality Workforce Management',
+    'The Silent Standard': 'Professional Excellence & The Silent Standard',
 };
 
 type Row = {
