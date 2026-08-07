@@ -6,6 +6,7 @@ import { FirebaseClientProvider } from "@/firebase/client-provider";
 import { JsonLd, organizationSchema } from "@/components/seo/JsonLd";
 import { ScrollToTop } from "@/components/scroll-to-top";
 import { ForcePasswordChangeModal } from "@/components/auth/ForcePasswordChangeModal";
+import { Analytics } from "@vercel/analytics/next";
 import React from "react";
 
 export const metadata: Metadata = {
@@ -125,6 +126,7 @@ export default function RootLayout({
         </FirebaseClientProvider>
         <Toaster />
         <ScrollToTop />
+        <Analytics />
       </body>
     </html>
   );
