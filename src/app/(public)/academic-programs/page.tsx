@@ -9,7 +9,7 @@ export default function AcademicProgramsOverview() {
   const pathways = [
     {
       title: "Professional Certifications",
-      description: "Internationally recognised credentials covering hospitality, food & beverage, events & protocol, executive assistance, restaurant & bar service, labour management, business innovation, and global relationship management.",
+      description: "Internationally recognised credentials covering hospitality, food & beverage, events & protocol, executive assistance, restaurant & bar service, workforce management, business innovation, and global relationship management.",
       href: "/certifications",
       badge: "Professional Certifications",
       programs: [
@@ -20,9 +20,9 @@ export default function AcademicProgramsOverview() {
         "Hospitality and Global Relationship Management",
         "Business Innovation & Entrepreneurship",
         "Food & Beverage Management",
-        "Hospitality Labour Management",
+        "Hospitality Workforce Management",
         "Restaurant & Bar Service",
-        "The Silent Standard",
+        "Service Excellence",
       ],
     },
     // Diploma Programs hidden for now — restore by uncommenting this pathway.
@@ -42,11 +42,11 @@ export default function AcademicProgramsOverview() {
     // },
     {
       title: "Executive Master Class",
-      description: "Our signature executive-level programme — The Silent Standard — designed to cultivate disciplined leaders, operational strategists, and institutional authorities.",
+      description: "Our signature executive-level programme — Professional Excellence & The Silent Standard — designed to cultivate disciplined leaders, operational strategists, and institutional authorities.",
       href: "/executive",
       badge: "Executive Master Class",
       programs: [
-        "The Silent Standard",
+        "Professional Excellence & The Silent Standard",
       ],
     },
   ];

@@ -36,7 +36,7 @@ export default function TermsPage() {
                 <p>You must be at least 16 years of age (or the age of majority in your jurisdiction, whichever is higher) to create an account. You are responsible for keeping your sign-in credentials confidential and for all activity that occurs under your account. Notify us immediately at <Link href="mailto:info@ashfordgrayacademy.com">info@ashfordgrayacademy.com</Link> if you suspect unauthorised access.</p>
 
                 <h2>2. Programmes &amp; Certification</h2>
-                <p>The Academy offers structured programmes including certificate courses, diplomas, executive masterclasses, and the Silent Standard Certification. Award of certification is contingent on completion of all stipulated assessments, attendance requirements, and adherence to academic integrity standards. Certificates are non-transferable and do not constitute employment or licensure of any kind.</p>
+                <p>The Academy offers structured programmes including certificate courses, diplomas, and the Professional Excellence &amp; The Silent Standard executive masterclass. Award of certification is contingent on completion of all stipulated assessments, attendance requirements, and adherence to academic integrity standards. Certificates are non-transferable and do not constitute employment or licensure of any kind.</p>
 
                 <h2>3. Acceptable Use</h2>
                 <p>You agree not to:</p>

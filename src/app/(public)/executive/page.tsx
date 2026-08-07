@@ -2,7 +2,7 @@ import { CurriculumCatalog } from "@/components/curriculum-catalog";
 
 export default function ExecutiveEducationPage() {
   const executiveCourseIds = [
-    "664f3a8b2d1c9e8a7f0e0010", // The Silent Standard
+    "664f3a8b2d1c9e8a7f0e0010", // Professional Excellence & The Silent Standard
   ];
 
   return (

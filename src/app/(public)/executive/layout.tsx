@@ -1,9 +1,10 @@
 export const metadata = {
-    title: "Executive Master Class — The Silent Standard | Ashford & Gray",
+    title: "Executive Master Class — Professional Excellence & The Silent Standard | Ashford & Gray",
     description:
-        "The Silent Standard — Ashford & Gray Fusion Academy's signature executive masterclass for senior hospitality and business professionals. Advanced leadership, operational excellence, and luxury service strategy. Nigeria and global.",
+        "Professional Excellence & The Silent Standard — Ashford & Gray Fusion Academy's signature executive masterclass for senior hospitality and business professionals. Advanced leadership, operational excellence, and luxury service strategy. Nigeria and global.",
     keywords: [
         "executive hospitality masterclass Nigeria",
+        "Professional Excellence masterclass",
         "Silent Standard masterclass",
         "hospitality leadership training",
         "executive management course Nigeria",
@@ -13,8 +14,8 @@ export const metadata = {
     ],
     alternates: { canonical: "https://www.ashfordandgrayfusionacademy.com/executive" },
     openGraph: {
-        title: "Executive Master Class — The Silent Standard | Ashford & Gray",
-        description: "The Silent Standard — our signature executive masterclass in luxury hospitality leadership and operational excellence.",
+        title: "Executive Master Class — Professional Excellence & The Silent Standard | Ashford & Gray",
+        description: "Professional Excellence & The Silent Standard — our signature executive masterclass in luxury hospitality leadership and operational excellence.",
         url: "https://www.ashfordandgrayfusionacademy.com/executive",
     },
 };
