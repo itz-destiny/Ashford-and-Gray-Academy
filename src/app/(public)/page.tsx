@@ -35,13 +35,18 @@ import { STATIC_COURSES } from "@/lib/courses-data";
 import { ARTICLES } from "@/lib/insights-data";
 
 export default function Home() {
-  // All flagship courses, including the Executive Master Class — Diplomas
-  // stay hidden for now (see the commented-out pathway on /academic-programs).
-  const isCertificateProgramme = (c: Course) => !c.title.trim().toLowerCase().startsWith('diploma');
+  // The 10 flagship certificate-track courses — Diplomas stay hidden for now
+  // (see the commented-out pathway on /academic-programs), and the Executive
+  // Master Class gets its own dedicated section below, not mixed into this grid.
+  const isCertificateProgramme = (c: Course) =>
+    !c.title.trim().toLowerCase().startsWith('diploma') && c.category !== 'Master Class' && c.category !== 'Executive Master Class';
   const [trendingCourses, setTrendingCourses] = React.useState<Course[]>(
-    STATIC_COURSES.filter(isCertificateProgramme).slice(0, 11)
+    STATIC_COURSES.filter(isCertificateProgramme).slice(0, 10)
   );
   const [coursesLoading, setCoursesLoading] = React.useState(false);
+  const [masterClass, setMasterClass] = React.useState<Course | undefined>(
+    STATIC_COURSES.find((c) => c.category === 'Master Class' || c.category === 'Executive Master Class')
+  );
 
   React.useEffect(() => {
     let active = true;
@@ -65,7 +70,8 @@ export default function Home() {
               merged.push(dc);
             }
           });
-          setTrendingCourses(merged.filter(isCertificateProgramme).slice(0, 11));
+          setTrendingCourses(merged.filter(isCertificateProgramme).slice(0, 10));
+          setMasterClass(merged.find((c) => c.category === 'Master Class' || c.category === 'Executive Master Class'));
         }
       } catch (error) {
         console.warn('Silent fallback on dynamic courses fetch:', error);
@@ -315,6 +321,49 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* 3B. EXECUTIVE MASTER CLASS — its own dedicated, standalone feature */}
+      {masterClass && (
+        <section className="py-20 md:py-28 bg-[#0B1F3A] text-white overflow-hidden">
+          <div className="container mx-auto px-6 lg:px-12">
+            <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+              <ScrollAnimation animation="fade-in">
+                <div className="relative aspect-[4/5] w-full max-w-md mx-auto lg:mx-0 overflow-hidden shadow-2xl border-[10px] border-white/5">
+                  <Image
+                    src={masterClass.imageUrl}
+                    alt={masterClass.title}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              </ScrollAnimation>
+
+              <ScrollAnimation animation="fade-in-up" delay={100}>
+                <div className="inline-flex items-center gap-2 mb-6">
+                  <span className="text-[#C8A96A] font-black text-xs uppercase tracking-[0.3em]">Executive Master Class</span>
+                  <span className="w-1.5 h-1.5 bg-[#C8A96A] rounded-full"></span>
+                </div>
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-headline font-bold tracking-tighter leading-none mb-6">
+                  {masterClass.title}
+                </h2>
+                <p className="text-white/70 text-base md:text-lg font-medium leading-relaxed max-w-xl mb-8 line-clamp-5">
+                  {masterClass.description || "Our signature executive-level programme designed to cultivate disciplined leaders, operational strategists, and institutional authorities."}
+                </p>
+                <div className="flex flex-wrap items-center gap-6 mb-10 text-[10px] font-black uppercase tracking-wider text-white/60">
+                  <span className="text-[#C8A96A] font-extrabold">{masterClass.duration || "4"} Weeks Duration</span>
+                  <span className="w-1 h-1 bg-white/20 rounded-full" />
+                  <span>{masterClass.level || "Executive"} Level</span>
+                </div>
+                <Button asChild size="lg" className="h-14 px-10 rounded-none bg-[#C8A96A] hover:bg-[#B69759] text-[#0B1F3A] font-extrabold text-[10px] uppercase tracking-widest transition-all duration-300 border-none shadow-none">
+                  <Link href="/executive">
+                    Explore the Master Class <ArrowRight className="ml-3 w-4 h-4" />
+                  </Link>
+                </Button>
+              </ScrollAnimation>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* 4. INSTITUTIONAL PILLARS (THE HBS STANDARD) */}
       <section className="py-20 md:py-28 bg-white border-b border-slate-200">

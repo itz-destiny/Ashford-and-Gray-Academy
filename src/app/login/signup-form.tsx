@@ -177,9 +177,6 @@ export function SignUpForm({ onSwitchToLogin }: SignUpFormProps) {
         <AuthForm
             title="Candidate Application"
             description="Tell us about yourself. Our admissions team reviews every application personally."
-            footerText="Already have an account?"
-            footerLinkText="Sign In"
-            onFooterLinkClick={onSwitchToLogin}
         >
             <form className="space-y-5" onSubmit={handleSignUp}>
                 <div className="space-y-2">
