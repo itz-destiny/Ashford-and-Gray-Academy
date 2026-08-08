@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
@@ -27,11 +27,27 @@ export function MainNav() {
   const [isOpen, setIsOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
   const [loginMenuOpen, setLoginMenuOpen] = useState(false);
+  const loginMenuRef = useRef<HTMLDivElement>(null);
+
+  // Hover works on desktop, but touch devices (tablets, phones in the
+  // desktop-layout width range) never fire mouseenter/mouseleave — so the
+  // button must also work as a plain tap-to-toggle, closed by tapping
+  // anywhere outside it.
+  useEffect(() => {
+    if (!loginMenuOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (loginMenuRef.current && !loginMenuRef.current.contains(e.target as Node)) {
+        setLoginMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [loginMenuOpen]);
 
   const loginPortals = [
-    { label: "Student Login", href: "/login?portal=student", desc: "Continue your programme and track your academic progress." },
-    { label: "Facilitator Login", href: "/login?portal=facilitator", desc: "Manage your courses, classes, and students." },
-    { label: "Executive Leadership (EMC) Login", href: "/login?portal=emc", desc: "Administrative workspace for Executive Leadership and office staff." },
+    { label: "Student Login", shortLabel: "Student", href: "/login?portal=student", desc: "Continue your programme and track your academic progress." },
+    { label: "Facilitator Login", shortLabel: "Facilitator", href: "/login?portal=facilitator", desc: "Manage your courses, classes, and students." },
+    { label: "EMC Login", shortLabel: "EMC / Admin", href: "/login?portal=emc", desc: "Administrative workspace for Executive Leadership and office staff." },
   ];
 
   const primaryLinks: PrimaryLink[] = [
@@ -132,6 +148,7 @@ export function MainNav() {
               ) : (
                 <>
                   <div
+                    ref={loginMenuRef}
                     className="relative"
                     onMouseEnter={() => setLoginMenuOpen(true)}
                     onMouseLeave={() => setLoginMenuOpen(false)}
@@ -139,10 +156,11 @@ export function MainNav() {
                     <Button
                       size="sm"
                       variant="outline"
+                      onClick={() => setLoginMenuOpen((v) => !v)}
                       className="h-10 px-6 rounded-none border-[#0B1F3A]/15 text-[#0B1F3A] hover:bg-[#0B1F3A]/5 font-extrabold text-[10px] uppercase tracking-widest transition-all duration-300 shadow-none gap-1.5"
                     >
                       <LogIn className="w-3.5 h-3.5" />
-                      Log In
+                      AGFA Login
                     </Button>
 
                     {loginMenuOpen && (
@@ -224,14 +242,18 @@ export function MainNav() {
                         <Link href="/dashboard">Access Dashboard</Link>
                       </Button>
                     ) : (
-                      <div className="space-y-4">
+                      <div className="space-y-5">
                         <Button className="w-full h-12 bg-white text-[#0B1F3A] hover:bg-slate-100 font-extrabold text-[10px] uppercase tracking-widest rounded-none" asChild onClick={() => setIsOpen(false)}>
                           <Link href="/login?view=signup">Apply for Admission</Link>
                         </Button>
-                        <div className="grid grid-cols-3 gap-2">
+                        <div className="space-y-2.5">
+                          <p className="text-white/40 text-[9px] font-black uppercase tracking-[0.25em]">AGFA Login</p>
                           {loginPortals.map((item) => (
-                            <Button key={item.href} className="h-12 px-1 border border-white/20 bg-transparent text-white hover:bg-white/5 font-extrabold text-[8px] uppercase tracking-wider rounded-none shadow-none leading-tight" asChild onClick={() => setIsOpen(false)}>
-                              <Link href={item.href}>{item.label.replace(' Login', '').replace(' (EMC)', '')}</Link>
+                            <Button key={item.href} className="w-full h-12 justify-between px-5 border border-white/20 bg-transparent text-white hover:bg-white/5 font-extrabold text-[10px] uppercase tracking-widest rounded-none shadow-none" asChild onClick={() => setIsOpen(false)}>
+                              <Link href={item.href}>
+                                {item.shortLabel}
+                                <ChevronRight className="w-4 h-4 text-white/40" />
+                              </Link>
                             </Button>
                           ))}
                         </div>
