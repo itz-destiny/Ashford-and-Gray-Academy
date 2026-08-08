@@ -47,9 +47,12 @@ export default function AboutPage() {
                             <div className="w-8 md:w-12 h-[1px] bg-[#C8A96A]" />
                         </div>
                         <h1 className="text-5xl md:text-7xl font-serif text-[#0B1F3A] tracking-tight leading-tight max-w-4xl mx-auto">
-                            About Ashford &amp; Gray <br />
+                            Ashford &amp; Gray <br />
                             <span className="text-[#C8A96A]">Fusion Academy.</span>
                         </h1>
+                        <p className="mt-5 text-[#0B1F3A]/60 font-black text-xs md:text-sm uppercase tracking-[0.25em]">
+                            Institute of Hospitality Management and Business Innovation
+                        </p>
                     </ScrollAnimation>
                 </div>
             </header>
