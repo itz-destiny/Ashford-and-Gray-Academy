@@ -31,7 +31,7 @@ const PARTNERS = [
 ];
 
 const IMPACT_STATS = [
-    { value: 258, label: "Total Sponsored Beneficiaries" },
+    { value: 270, label: "Total Sponsored Beneficiaries" },
     { value: 4, label: "Confirmed Impact Partners" },
     { value: 23, label: "Local Government Areas Covered" },
 ];
@@ -41,7 +41,7 @@ const IMPACT_PARTNERS = [
         id: "founder-summary",
         name: "Founder's Commitment",
         title: "Myne Wilfred · Founder & President",
-        beneficiaries: 10,
+        beneficiaries: 20,
         quote: "Leading by example through a personal investment in human capital development.",
         href: "#founders-commitment",
     },
@@ -49,7 +49,7 @@ const IMPACT_PARTNERS = [
         id: "cecilia-summary",
         name: "Cecilia Iniperitiari Dikibo",
         title: "Vice President & Director of Brand Strategy",
-        beneficiaries: 8,
+        beneficiaries: 10,
         quote: "Investing in people, in potential, and in the future of our communities.",
         href: "#cecilia-dikibo",
     },
@@ -82,7 +82,7 @@ const IMPACT_PARTNERS = [
 const FOUNDER_LETTER = [
     "Every meaningful institution is built on a decision to serve before asking others to believe.",
     "As Founder and President of Ashford & Gray Fusion Academy, I have always believed that true leadership begins with personal responsibility. Before inviting organizations, public leaders, foundations, and individuals to invest in human capital development, I considered it both a privilege and a duty to make the first investment myself.",
-    "In line with this commitment, I am pleased to personally sponsor 10 beneficiaries into the Academy's Executive Operations Flagship Programme—a three-month online professional development programme designed to equip participants with globally relevant knowledge, leadership competencies, operational excellence, and practical workplace skills.",
+    "In line with this commitment, I am pleased to personally sponsor 20 beneficiaries into the Academy's Executive Operations Flagship Programme—a three-month online professional development programme designed to equip participants with globally relevant knowledge, leadership competencies, operational excellence, and practical workplace skills.",
     "This initiative is more than a scholarship. It is a declaration of what Ashford & Gray Fusion Academy stands for.",
     "We believe that education should create opportunity, that leadership should inspire transformation, and that every individual deserves access to learning that unlocks potential and prepares them for meaningful contribution to society.",
     "As these first beneficiaries begin their journey, I hope they will become ambassadors of excellence, integrity, professionalism, and service within their communities and workplaces.",
@@ -93,18 +93,18 @@ const FOUNDER_LETTER = [
 ];
 
 const CECILIA_PRESS_RELEASE = {
-    headline: "Ashford & Gray Fusion Academy Celebrates Cecilia Iniperitiari Dikibo's Sponsorship of Eight Candidates Through the Impact & Partnerships Development Initiative",
+    headline: "Ashford & Gray Fusion Academy Celebrates Cecilia Iniperitiari Dikibo's Sponsorship of Ten Candidates Through the Impact & Partnerships Development Initiative",
     intro: [
-        "Ashford & Gray Fusion Academy is delighted to recognize and celebrate Cecilia Iniperitiari Dikibo, Vice President and Director of Brand Strategy, for her generous commitment to sponsor eight (8) deserving candidates across Rivers State under the Academy's Impact & Partnerships Development Initiative.",
+        "Ashford & Gray Fusion Academy is delighted to recognize and celebrate Cecilia Iniperitiari Dikibo, Vice President and Director of Brand Strategy, for her generous commitment to sponsor ten (10) deserving candidates across Rivers State under the Academy's Impact & Partnerships Development Initiative.",
         "This remarkable gesture reflects Cecilia's unwavering belief in the transformative power of education and her commitment to empowering individuals with the knowledge, skills, and opportunities needed to excel personally and professionally.",
-        "Through her sponsorship, eight beneficiaries will gain access to the Academy's Executive Certificate Programmes, where they will receive industry-relevant training delivered by experienced facilitators across key areas of hospitality, business innovation, executive management, and professional development.",
+        "Through her sponsorship, ten beneficiaries will gain access to the Academy's Executive Certificate Programmes, where they will receive industry-relevant training delivered by experienced facilitators across key areas of hospitality, business innovation, executive management, and professional development.",
         "Speaking on the initiative, Myne Wilfred, Founder and President of Ashford & Gray Fusion Academy, expressed profound appreciation for Cecilia's continued support of the Academy's vision.",
     ],
     quote: "Cecilia's sponsorship is more than an investment in education; it is an investment in people, in potential, and in the future of our communities. Her generosity embodies the spirit of servant leadership and demonstrates how meaningful partnerships can transform lives.",
     outro: [
         "The sponsored candidates will join the Academy's 2026 Executive Certificate Cohort, with classes scheduled to commence on 4 September 2026 and conclude on 30 November 2026.",
         "This sponsorship forms part of the Academy's broader mission to expand access to quality professional education through strategic partnerships with individuals, organizations, foundations, and public leaders who share a passion for developing human capacity.",
-        "To date, the generosity of the Academy's distinguished Impact Partners has provided sponsorship opportunities for 258 beneficiaries, creating pathways for learning, career advancement, and sustainable community development.",
+        "To date, the generosity of the Academy's distinguished Impact Partners has provided sponsorship opportunities for 270 beneficiaries, creating pathways for learning, career advancement, and sustainable community development.",
         "Ashford & Gray Fusion Academy sincerely appreciates Cecilia Iniperitiari Dikibo for her outstanding generosity and steadfast commitment to empowering others through education. Her contribution will undoubtedly leave a lasting legacy in the lives of the beneficiaries and the communities they will go on to serve.",
         "The Academy welcomes individuals, corporate organizations, foundations, and public institutions who wish to join the Impact & Partnerships Development Initiative and become part of a growing movement dedicated to transforming lives through education.",
     ],
@@ -316,7 +316,7 @@ export default function PartnersPage() {
                 {/* ── Cecilia Iniperitiari Dikibo: FULL STORY ──────── */}
                 <section id="cecilia-dikibo" className="scroll-mt-24 space-y-6">
                     <Reveal className="bg-[#0B1F3A] border-t-4 border-t-[#C8A96A] p-6 lg:p-10">
-                        <p className="text-[9px] font-black uppercase tracking-[0.4em] text-[#C8A96A] mb-2">Press Release · 8 Beneficiaries Sponsored</p>
+                        <p className="text-[9px] font-black uppercase tracking-[0.4em] text-[#C8A96A] mb-2">Press Release · 10 Beneficiaries Sponsored</p>
                         <h3 className="text-xl lg:text-2xl font-serif text-white leading-tight">
                             {CECILIA_PRESS_RELEASE.headline}
                         </h3>
