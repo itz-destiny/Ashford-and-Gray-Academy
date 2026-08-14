@@ -6,6 +6,8 @@ import User from '@/models/User';
 import { withAuth, type AuthContext } from '@/lib/auth-server';
 import { publishMessage } from '@/lib/realtime-events';
 import { canStudentMessageInstructor } from '@/lib/messaging-access';
+import { createNotification } from '@/lib/notifications';
+import { getEmailUrl } from '@/lib/app-url';
 
 const ELEVATED_ROLES = ['admin'] as const;
 
@@ -83,9 +85,9 @@ export const POST = withAuth(async (req: NextRequest, { auth }) => {
         await dbConnect();
         const { receiverId, content, conversationId, courseId } = parsed.data;
 
-        let conversation: { participants: string[]; type?: string } | null = null;
+        let conversation: { participants: string[]; type?: string; kind?: string } | null = null;
         if (conversationId) {
-            conversation = await Conversation.findById(conversationId).select('participants type').lean<{ participants: string[]; type?: string } | null>();
+            conversation = await Conversation.findById(conversationId).select('participants type kind').lean<{ participants: string[]; type?: string; kind?: string } | null>();
             if (!conversation || !conversation.participants.includes(auth.uid)) {
                 return NextResponse.json(
                     { error: 'You are not a participant in this conversation.' },
@@ -148,6 +150,30 @@ export const POST = withAuth(async (req: NextRequest, { auth }) => {
             createdAt: message.createdAt instanceof Date ? message.createdAt : new Date(),
             participants: conversation?.participants,
         });
+
+        // Support-request thread: when the advisor (anyone other than the
+        // student) replies, email the student so they know to check back —
+        // they have no reason to be polling the dashboard otherwise.
+        if (conversation?.kind === 'support' && auth.role !== 'student') {
+            const student = await User.findOne({ uid: receiverId }).select('uid email displayName').lean<{ uid: string; email: string; displayName: string } | null>();
+            if (student) {
+                void createNotification({
+                    userId: student.uid,
+                    type: 'message',
+                    title: 'Your Support Request Has a Reply',
+                    message: `${auth.displayName} replied to your request.`,
+                    actionUrl: '/communications',
+                    sendEmail: true,
+                    userEmail: student.email,
+                    emailData: {
+                        recipientName: student.displayName,
+                        senderName: auth.displayName,
+                        messagePreview: content.length > 200 ? `${content.slice(0, 200)}…` : content,
+                        conversationUrl: `${getEmailUrl()}/communications`,
+                    },
+                });
+            }
+        }
 
         return NextResponse.json(message, { status: 201 });
     } catch (error: any) {

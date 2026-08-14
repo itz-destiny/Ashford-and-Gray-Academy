@@ -5,13 +5,21 @@ import React from "react";
 import { Card, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
-interface ActivityHeatmapProps {
-    data?: number[];
+export interface ActivityCell {
+    date: string;
+    total: number;
+    level: number;
 }
 
-export function ActivityHeatmap({ data }: ActivityHeatmapProps) {
+interface ActivityHeatmapProps {
+    cells?: ActivityCell[];
+}
+
+export function ActivityHeatmap({ cells }: ActivityHeatmapProps) {
     // Generate base grid (7x8 = 56 slots)
-    const activityData = data && data.length >= 56 ? data.slice(0, 56) : Array.from({ length: 56 }, () => 0);
+    const activityData: ActivityCell[] = cells && cells.length >= 56
+        ? cells.slice(-56)
+        : Array.from({ length: 56 }, (_, i) => ({ date: '', total: 0, level: 0 }));
 
     const getColor = (level: number) => {
         switch (level) {
@@ -21,6 +29,13 @@ export function ActivityHeatmap({ data }: ActivityHeatmapProps) {
             case 4: return "bg-[#0B1F3A]";
             default: return "bg-[#0B1F3A]/5";
         }
+    };
+
+    const formatTooltip = (cell: ActivityCell) => {
+        if (!cell.date) return "No activity recorded";
+        const dateLabel = new Date(`${cell.date}T00:00:00Z`).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+        if (cell.total === 0) return `No activity on ${dateLabel}`;
+        return `${cell.total} activit${cell.total === 1 ? 'y' : 'ies'} on ${dateLabel}`;
     };
 
     return (
@@ -34,12 +49,13 @@ export function ActivityHeatmap({ data }: ActivityHeatmapProps) {
             </div>
 
             <div className="grid grid-cols-8 gap-2.5 mb-10">
-                {activityData.map((level, i) => (
+                {activityData.map((cell, i) => (
                     <div
-                        key={i}
+                        key={cell.date || i}
+                        title={formatTooltip(cell)}
                         className={cn(
                             "w-full aspect-square rounded-none transition-all duration-500 hover:scale-110 cursor-pointer",
-                            getColor(level)
+                            getColor(cell.level)
                         )}
                     />
                 ))}
