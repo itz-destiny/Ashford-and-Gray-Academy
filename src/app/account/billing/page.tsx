@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,10 +12,33 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { useUser } from "@/firebase";
 import { apiFetch } from "@/lib/api-client";
-import { Loader2, Building2, Copy, CheckCircle2, Upload, FileText, AlertCircle } from "lucide-react";
+import { Loader2, Building2, Copy, CheckCircle2, Upload, FileText, AlertCircle, Receipt, Clock, XCircle, GraduationCap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
+
+type PaymentRecord = {
+  id: string;
+  courseId?: string;
+  courseName?: string;
+  amount: number;
+  currency: string;
+  status: 'pending' | 'completed' | 'failed' | 'cancelled';
+  paymentMethod?: string;
+  transactionId?: string;
+  processedAt?: string;
+  createdAt: string;
+  failureReason?: string;
+};
+
+const STATUS_META: Record<PaymentRecord['status'], { label: string; className: string; icon: any }> = {
+  completed: { label: 'Paid', className: 'bg-emerald-50 text-emerald-700 border border-emerald-200', icon: CheckCircle2 },
+  pending: { label: 'Awaiting Confirmation', className: 'bg-[#C8A96A]/10 text-[#0B1F3A] border border-[#C8A96A]/30', icon: Clock },
+  failed: { label: 'Failed', className: 'bg-red-50 text-red-600 border border-red-200', icon: XCircle },
+  cancelled: { label: 'Cancelled', className: 'bg-slate-100 text-slate-500 border border-slate-200', icon: XCircle },
+};
 
 const BANK_DETAILS = {
   bankName: "Zenith Bank",
@@ -34,6 +57,25 @@ export default function BillingPage() {
   const [paymentNote, setPaymentNote] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const [payments, setPayments] = useState<PaymentRecord[]>([]);
+  const [paymentsLoading, setPaymentsLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user) return;
+    const fetchPayments = async () => {
+      try {
+        const res = await apiFetch('/api/payments/history');
+        const data = await res.json();
+        setPayments(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error('Error fetching payment history:', error);
+      } finally {
+        setPaymentsLoading(false);
+      }
+    };
+    fetchPayments();
+  }, [user]);
 
   const copyToClipboard = (text: string, field: string) => {
     navigator.clipboard.writeText(text);
@@ -105,8 +147,67 @@ export default function BillingPage() {
     <div className="p-6 md:p-12 max-w-5xl mx-auto space-y-12 pb-32">
       <div className="space-y-2">
         <h1 className="text-3xl md:text-5xl font-serif text-[#0B1F3A]">Billing & Payments</h1>
-        <p className="text-slate-400 font-medium">Make your tuition payment via direct bank transfer and upload your receipt for confirmation.</p>
+        <p className="text-slate-400 font-medium">The courses you've paid for, and how to make a new payment.</p>
       </div>
+
+      {/* Your Payments */}
+      <Card className="rounded-[40px] border-none shadow-sm overflow-hidden">
+        <CardHeader className="p-10 pb-0">
+          <div className="flex items-center gap-4 mb-2">
+            <div className="w-10 h-10 rounded-2xl bg-[#0B1F3A] flex items-center justify-center text-[#C8A96A]">
+              <Receipt className="w-5 h-5" />
+            </div>
+            <CardTitle className="text-2xl font-serif text-[#0B1F3A]">Your Payments</CardTitle>
+          </div>
+          <CardDescription className="text-slate-400 pl-14">
+            Every course payment you've made or submitted, and its current status.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-10 pt-8">
+          {paymentsLoading ? (
+            <div className="flex justify-center py-12"><Loader2 className="animate-spin h-8 w-8 text-[#1F7A5A]" /></div>
+          ) : payments.length === 0 ? (
+            <div className="py-16 flex flex-col items-center justify-center text-center bg-slate-50 rounded-[3rem] border-2 border-dashed border-slate-200">
+              <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center text-slate-300 mb-4">
+                <GraduationCap size={32} />
+              </div>
+              <h4 className="text-lg font-serif text-[#0B1F3A] mb-2">No payments yet</h4>
+              <p className="text-xs text-slate-400 max-w-xs">Once you pay for a course — by card or bank transfer — it will appear here.</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {payments.map((tx) => {
+                const meta = STATUS_META[tx.status] ?? STATUS_META.pending;
+                const StatusIcon = meta.icon;
+                return (
+                  <div key={tx.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50 rounded-3xl p-6 border border-slate-100">
+                    <div className="flex items-center gap-4 min-w-0">
+                      <div className="w-11 h-11 rounded-2xl bg-white shadow-sm flex items-center justify-center text-[#0B1F3A] shrink-0">
+                        <GraduationCap className="w-5 h-5" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-serif text-[#0B1F3A] text-base truncate">{tx.courseName || 'Course payment'}</p>
+                        <p className="text-xs text-slate-400 mt-1">
+                          {new Date(tx.createdAt).toLocaleDateString([], { day: 'numeric', month: 'short', year: 'numeric' })}
+                          {tx.paymentMethod ? ` · ${tx.paymentMethod === 'bank_transfer' ? 'Bank Transfer' : tx.paymentMethod}` : ''}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 shrink-0 pl-15 sm:pl-0">
+                      <p className="text-lg font-black text-[#0B1F3A]">
+                        {tx.currency === 'NGN' ? '₦' : tx.currency === 'USD' ? '$' : `${tx.currency} `}{tx.amount.toLocaleString()}
+                      </p>
+                      <Badge className={cn("gap-1.5 rounded-full font-black text-[9px] uppercase tracking-widest px-3 py-1.5", meta.className)}>
+                        <StatusIcon className="w-3 h-3" /> {meta.label}
+                      </Badge>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Step 1: Bank Transfer Details */}
       <Card className="rounded-[40px] border-none shadow-sm overflow-hidden">

@@ -3,10 +3,10 @@
 import React, { useState, useEffect } from "react";
 import { useUser } from "@/firebase";
 import { apiFetch } from "@/lib/api-client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar as CalendarIcon, MapPin, Clock, Search, Filter, Ticket, UserCheck, ChevronRight } from "lucide-react";
+import { Calendar as CalendarIcon, MapPin, Clock, Search, Ticket, UserCheck, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
@@ -53,41 +53,50 @@ export default function StudentEventsPage() {
 
     if (userLoading || loading) {
         return (
-            <div className="p-8 space-y-8 animate-pulse">
-                <div className="h-20 bg-slate-50 rounded-2xl w-1/3" />
+            <div className="p-12 space-y-8 animate-pulse bg-[#FAF9F6] min-h-screen">
+                <div className="h-20 bg-slate-200/50 w-1/3" />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {[1, 2].map(i => <div key={i} className="h-64 bg-slate-50 rounded-3xl" />)}
+                    {[1, 2].map(i => <div key={i} className="h-64 bg-slate-200/50" />)}
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="mx-auto px-6 md:px-10 py-8 space-y-10 max-w-[1600px] animate-in fade-in duration-700">
+        <div className="mx-auto px-6 md:px-12 py-12 space-y-16 pb-32 max-w-[1800px] bg-[#FAF9F6] animate-in fade-in duration-700">
 
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                <div>
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tight">Academic Events</h1>
-                    <p className="text-slate-500 font-medium">Manage your registrations and explore upcoming workshops.</p>
+            {/* Header */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+                <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                        <div className="w-2 h-8 bg-[#C8A96A]" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#0B1F3A]/60">Academy Events</span>
+                    </div>
+                    <h1 className="text-4xl md:text-5xl font-serif text-[#0B1F3A] tracking-tight leading-tight">
+                        My <span className="text-[#C8A96A]">Events.</span>
+                    </h1>
+                    <p className="text-slate-500 font-medium text-lg max-w-xl leading-relaxed font-serif">
+                        Manage your registrations and explore upcoming workshops and symposiums.
+                    </p>
                 </div>
                 <div className="relative w-full md:w-80 group">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-indigo-600 transition-colors" />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-[#C8A96A] transition-colors" />
                     <Input
                         placeholder="Find an event..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="pl-12 h-12 bg-white border-slate-100 rounded-2xl text-sm font-medium"
+                        className="pl-12 h-12 bg-white border border-[#0B1F3A]/10 rounded-none text-sm font-medium shadow-sm"
                     />
                 </div>
             </div>
 
-            <Tabs defaultValue="my-events" className="space-y-8">
-                <TabsList className="bg-slate-100/50 p-1.5 rounded-2xl h-auto border border-slate-200/50">
-                    <TabsTrigger value="my-events" className="px-6 py-2.5 rounded-xl data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-none font-black text-xs uppercase tracking-tight gap-2">
+            <Tabs defaultValue="my-events" className="space-y-10">
+                <TabsList className="bg-white border border-[#0B1F3A]/10 p-1.5 rounded-none h-auto shadow-sm">
+                    <TabsTrigger value="my-events" className="px-6 py-2.5 rounded-none data-[state=active]:bg-[#0B1F3A] data-[state=active]:text-white data-[state=active]:shadow-none font-black text-[10px] uppercase tracking-widest gap-2">
                         <Ticket className="w-4 h-4" /> My Registrations ({myEvents.length})
                     </TabsTrigger>
-                    <TabsTrigger value="explore" className="px-6 py-2.5 rounded-xl data-[state=active]:bg-white data-[state=active]:text-indigo-600 data-[state=active]:shadow-none font-black text-xs uppercase tracking-tight gap-2">
-                        <CalendarIcon className="w-4 h-4" /> Explore new ({suggestedEvents.length})
+                    <TabsTrigger value="explore" className="px-6 py-2.5 rounded-none data-[state=active]:bg-[#0B1F3A] data-[state=active]:text-white data-[state=active]:shadow-none font-black text-[10px] uppercase tracking-widest gap-2">
+                        <CalendarIcon className="w-4 h-4" /> Explore New ({suggestedEvents.length})
                     </TabsTrigger>
                 </TabsList>
 
@@ -121,17 +130,17 @@ export default function StudentEventsPage() {
 
 function EventCard({ event, isRegistered }: { event: any, isRegistered?: boolean }) {
     return (
-        <Card className="border-none bg-white rounded-[32px] overflow-hidden flex flex-col sm:flex-row group transition-all duration-500 hover:-translate-y-1">
-            <div className="relative w-full sm:w-56 h-48 sm:h-auto overflow-hidden">
+        <Card className="border border-[#0B1F3A]/10 rounded-none shadow-sm hover:shadow-md hover:border-[#C8A96A] bg-white overflow-hidden flex flex-col sm:flex-row group transition-all duration-300">
+            <div className="relative w-full sm:w-56 h-48 sm:h-auto overflow-hidden shrink-0">
                 <Image
                     src={event.imageUrl || ""}
                     alt={event.title}
                     fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
                 {isRegistered && (
                     <div className="absolute top-4 left-4">
-                        <Badge className="bg-emerald-500 text-white border-none px-3 py-1 font-black text-[9px] uppercase tracking-widest gap-1 shadow-none">
+                        <Badge className="bg-[#0B1F3A] text-white border-none px-3 py-1 font-black text-[9px] uppercase tracking-widest gap-1 rounded-none shadow-sm">
                             <UserCheck className="w-3 h-3" /> Registered
                         </Badge>
                     </div>
@@ -141,26 +150,26 @@ function EventCard({ event, isRegistered }: { event: any, isRegistered?: boolean
             <div className="p-8 flex-1 flex flex-col justify-between space-y-6">
                 <div className="space-y-3">
                     <div className="flex justify-between items-start">
-                        <Badge variant="outline" className="text-[10px] font-black uppercase text-indigo-600 border-indigo-100 bg-indigo-50/50">
+                        <Badge variant="outline" className="text-[10px] font-black uppercase text-[#0B1F3A] border-[#0B1F3A]/10 bg-[#F6F4F2] rounded-none">
                             {event.category}
                         </Badge>
-                        <span className="text-xl font-black text-slate-900">${event.price || 0}</span>
+                        <span className="text-xl font-serif text-[#0B1F3A]">${event.price || 0}</span>
                     </div>
-                    <h3 className="text-xl font-black text-slate-900 group-hover:text-indigo-600 transition-colors leading-tight">{event.title}</h3>
+                    <h3 className="text-xl font-serif text-[#0B1F3A] group-hover:text-[#C8A96A] transition-colors leading-tight">{event.title}</h3>
 
-                    <div className="space-y-1 text-sm font-medium text-slate-400">
+                    <div className="space-y-1.5 text-sm font-medium text-slate-400">
                         <div className="flex items-center gap-2">
-                            <Clock className="w-4 h-4" /> {new Date(event.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                            <Clock className="w-4 h-4 text-[#C8A96A]" /> {new Date(event.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                         </div>
                         <div className="flex items-center gap-2">
-                            <MapPin className="w-4 h-4" /> {event.location || "Main Auditorium"}
+                            <MapPin className="w-4 h-4 text-[#C8A96A]" /> {event.location || "Main Auditorium"}
                         </div>
                     </div>
                 </div>
 
                 <Button asChild className={cn(
-                    "w-full h-12 rounded-2xl font-black transition-all",
-                    isRegistered ? "bg-slate-100 text-slate-600 hover:bg-slate-200" : "bg-indigo-600 text-white hover:bg-indigo-700"
+                    "w-full h-12 rounded-none font-black text-[10px] uppercase tracking-widest transition-all",
+                    isRegistered ? "bg-[#F6F4F2] text-[#0B1F3A] hover:bg-slate-200" : "bg-[#0B1F3A] text-white hover:bg-[#C8A96A]"
                 )}>
                     <Link href={`/events/${event.id || event._id}`}>
                         {isRegistered ? "Manage Registration" : "Reserve Spot"} <ChevronRight className="ml-2 w-4 h-4" />
@@ -173,13 +182,13 @@ function EventCard({ event, isRegistered }: { event: any, isRegistered?: boolean
 
 function EmptyState({ message }: { message: string }) {
     return (
-        <div className="col-span-full py-24 text-center bg-slate-50/50 rounded-[40px] border-2 border-dashed border-slate-200">
-            <div className="max-w-xs mx-auto space-y-4">
-                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto text-slate-400 border border-slate-100">
-                    <CalendarIcon className="w-8 h-8" />
+        <div className="col-span-full py-24 text-center bg-white border border-[#0B1F3A]/10 rounded-none border-t-4 border-t-[#C8A96A] shadow-md">
+            <div className="max-w-xs mx-auto space-y-5">
+                <div className="w-20 h-20 bg-[#F6F4F2] border border-[#0B1F3A]/10 rounded-none shadow-sm flex items-center justify-center mx-auto text-slate-300">
+                    <CalendarIcon className="w-10 h-10" />
                 </div>
-                <p className="text-slate-400 font-bold text-sm tracking-tight">{message}</p>
-                <Button asChild variant="link" className="text-indigo-600 font-black uppercase text-xs">
+                <p className="text-slate-500 font-medium font-serif">{message}</p>
+                <Button asChild variant="ghost" className="text-[#0B1F3A] hover:text-[#C8A96A] hover:bg-[#F6F4F2] font-black uppercase text-[10px] tracking-widest">
                     <Link href="/events">View Public Calendar</Link>
                 </Button>
             </div>

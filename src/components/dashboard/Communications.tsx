@@ -19,11 +19,11 @@ import { useToast } from "@/hooks/use-toast";
 const OFFICE_ROLES = ['admin', 'registrar', 'course_registrar', 'finance'];
 
 const ROLE_BADGE: Record<string, { label: string; className: string }> = {
-    admin: { label: 'Admin', className: 'bg-indigo-50 text-indigo-700' },
-    registrar: { label: 'Registrar', className: 'bg-blue-50 text-blue-700' },
-    course_registrar: { label: 'Course Registrar', className: 'bg-purple-50 text-purple-700' },
-    finance: { label: 'Finance', className: 'bg-emerald-50 text-emerald-700' },
-    instructor: { label: 'Lecturer', className: 'bg-amber-50 text-amber-700' },
+    admin: { label: 'Admin', className: 'bg-[#F6F4F2] text-[#0B1F3A] border border-[#0B1F3A]/10' },
+    registrar: { label: 'Registrar', className: 'bg-[#F6F4F2] text-[#0B1F3A] border border-[#0B1F3A]/10' },
+    course_registrar: { label: 'Course Registrar', className: 'bg-[#F6F4F2] text-[#0B1F3A] border border-[#0B1F3A]/10' },
+    finance: { label: 'Finance', className: 'bg-[#1F7A5A]/10 text-[#1F7A5A] border border-[#1F7A5A]/20' },
+    instructor: { label: 'Lecturer', className: 'bg-[#C8A96A]/10 text-[#0B1F3A] border border-[#C8A96A]/30' },
 };
 
 export function Communications() {
@@ -287,7 +287,7 @@ export function Communications() {
     }
 
     return (
-        <Card className="h-[calc(100vh-12rem)] w-full flex flex-col md:grid md:grid-cols-3 lg:grid-cols-4 border-none shadow-sm rounded-[3rem] overflow-hidden bg-white relative">
+        <Card className="h-[calc(100vh-12rem)] w-full flex flex-col md:grid md:grid-cols-3 lg:grid-cols-4 border border-[#0B1F3A]/10 shadow-md rounded-none overflow-hidden bg-white relative">
             {/* Sidebar: Contacts */}
             <div className={cn(
                 "md:col-span-1 lg:col-span-1 border-r border-slate-50 flex flex-col bg-slate-50/50 transition-all duration-300",
@@ -296,12 +296,12 @@ export function Communications() {
                 <div className="p-8 border-b border-slate-50 space-y-6">
                     <h2 className="text-2xl font-serif text-[#0B1F3A]">Academic Dialogue</h2>
 
-                    <div className="flex gap-2 p-1 bg-white rounded-2xl shadow-sm border border-slate-100">
+                    <div className="flex gap-2 p-1 bg-white rounded-none shadow-sm border border-[#0B1F3A]/10">
                         <Button
                             variant={activeTab === 'conversations' ? 'default' : 'ghost'}
                             size="sm"
                             onClick={() => setActiveTab('conversations')}
-                            className={cn("flex-1 gap-1.5 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all", activeTab === 'conversations' ? "bg-[#0B1F3A] text-white shadow-lg" : "text-slate-400")}
+                            className={cn("flex-1 gap-1.5 rounded-none font-black text-[9px] uppercase tracking-widest transition-all", activeTab === 'conversations' ? "bg-[#0B1F3A] text-white shadow-none" : "text-slate-400")}
                         >
                             <History className="h-3.5 w-3.5" /> Recent
                         </Button>
@@ -310,7 +310,7 @@ export function Communications() {
                                 variant={activeTab === 'offices' ? 'default' : 'ghost'}
                                 size="sm"
                                 onClick={() => setActiveTab('offices')}
-                                className={cn("flex-1 gap-1.5 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all", activeTab === 'offices' ? "bg-[#0B1F3A] text-white shadow-lg" : "text-slate-400")}
+                                className={cn("flex-1 gap-1.5 rounded-none font-black text-[9px] uppercase tracking-widest transition-all", activeTab === 'offices' ? "bg-[#0B1F3A] text-white shadow-none" : "text-slate-400")}
                             >
                                 <Landmark className="h-3.5 w-3.5" /> Offices
                             </Button>
@@ -319,19 +319,19 @@ export function Communications() {
                             variant={activeTab === 'lecturers' ? 'default' : 'ghost'}
                             size="sm"
                             onClick={() => setActiveTab('lecturers')}
-                            className={cn("flex-1 gap-1.5 rounded-xl font-black text-[9px] uppercase tracking-widest transition-all", activeTab === 'lecturers' ? "bg-[#0B1F3A] text-white shadow-lg" : "text-slate-400")}
+                            className={cn("flex-1 gap-1.5 rounded-none font-black text-[9px] uppercase tracking-widest transition-all", activeTab === 'lecturers' ? "bg-[#0B1F3A] text-white shadow-none" : "text-slate-400")}
                         >
                             <GraduationCap className="h-3.5 w-3.5" /> {isStaff ? 'Lecturers' : 'Instructors'}
                         </Button>
                     </div>
 
                     <div className="relative group">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-[#1F7A5A] transition-colors" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-[#C8A96A] transition-colors" />
                         <Input
                             placeholder={activeTab === 'conversations' ? "Search conversations..." : activeTab === 'offices' ? "Find an office..." : isStaff ? "Find a lecturer..." : "Find instructor..."}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-12 pr-10 bg-white border-slate-100 rounded-2xl focus-visible:ring-1 focus-visible:ring-[#1F7A5A] placeholder:text-slate-300 font-medium h-12 shadow-sm"
+                            className="pl-12 pr-10 bg-white border-[#0B1F3A]/10 rounded-none focus-visible:ring-1 focus-visible:ring-[#C8A96A] placeholder:text-slate-300 font-medium h-12 shadow-sm"
                         />
                         {searchQuery && (
                             <button
@@ -352,9 +352,9 @@ export function Communications() {
                                     <div
                                         key={conv._id}
                                         className={cn(
-                                            "p-5 flex gap-4 cursor-pointer rounded-[2rem] transition-all duration-500",
+                                            "p-5 flex gap-4 cursor-pointer rounded-none transition-all duration-300",
                                             selectedConversation?._id === conv._id
-                                                ? "bg-white shadow-xl border border-slate-100"
+                                                ? "bg-white shadow-sm border border-[#0B1F3A]/10"
                                                 : "hover:bg-white/60"
                                         )}
                                         onClick={() => {
@@ -387,7 +387,7 @@ export function Communications() {
 
                                 {filteredConversations.length === 0 && (
                                     <div className="p-12 text-center space-y-4">
-                                        <div className="w-16 h-16 mx-auto bg-white rounded-2xl shadow-sm flex items-center justify-center border border-slate-50">
+                                        <div className="w-16 h-16 mx-auto bg-white rounded-none shadow-sm flex items-center justify-center border border-[#0B1F3A]/10">
                                             <History className="w-7 h-7 text-slate-200" />
                                         </div>
                                         <p className="text-slate-300 font-serif italic">
@@ -401,13 +401,13 @@ export function Communications() {
                                 {filteredOffices.map(staff => (
                                     <div
                                         key={staff.uid}
-                                        className="p-5 flex gap-4 cursor-pointer rounded-[2rem] transition-all duration-500 hover:bg-white shadow-none hover:shadow-xl group"
+                                        className="p-5 flex gap-4 cursor-pointer rounded-none transition-all duration-300 hover:bg-white shadow-none hover:shadow-md group"
                                         onClick={() => startConversationWithStaff(staff)}
                                     >
                                         <div className="relative">
                                             <Avatar className="h-14 w-14 border-4 border-white shadow-md">
                                                 <AvatarImage src={staff.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${staff.uid}`} />
-                                                <AvatarFallback className="bg-indigo-50 text-indigo-700 font-serif">{getInitials(staff.displayName)}</AvatarFallback>
+                                                <AvatarFallback className="bg-[#F6F4F2] text-[#0B1F3A] font-serif">{getInitials(staff.displayName)}</AvatarFallback>
                                             </Avatar>
                                             <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-50">
                                                 <Landmark className="w-3 h-3 text-[#0B1F3A]/40" />
@@ -417,7 +417,7 @@ export function Communications() {
                                             <h3 className="font-serif text-[#0B1F3A] truncate mb-1.5">
                                                 {staff.displayName}
                                             </h3>
-                                            <span className={cn("inline-flex text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full", ROLE_BADGE[staff.role]?.className ?? 'bg-slate-50 text-slate-600')}>
+                                            <span className={cn("inline-flex text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-none", ROLE_BADGE[staff.role]?.className ?? 'bg-slate-50 text-slate-600')}>
                                                 {ROLE_BADGE[staff.role]?.label ?? staff.role}
                                             </span>
                                         </div>
@@ -436,7 +436,7 @@ export function Communications() {
                                 ))}
                                 {filteredOffices.length === 0 && (
                                     <div className="p-12 text-center space-y-4">
-                                        <div className="w-16 h-16 mx-auto bg-white rounded-2xl shadow-sm flex items-center justify-center border border-slate-50">
+                                        <div className="w-16 h-16 mx-auto bg-white rounded-none shadow-sm flex items-center justify-center border border-[#0B1F3A]/10">
                                             <Landmark className="w-7 h-7 text-slate-200" />
                                         </div>
                                         <p className="text-slate-300 font-serif italic">
@@ -450,13 +450,13 @@ export function Communications() {
                                 {filteredLecturers.map(staff => (
                                     <div
                                         key={staff.uid}
-                                        className="p-5 flex gap-4 cursor-pointer rounded-[2rem] transition-all duration-500 hover:bg-white shadow-none hover:shadow-xl group"
+                                        className="p-5 flex gap-4 cursor-pointer rounded-none transition-all duration-300 hover:bg-white shadow-none hover:shadow-md group"
                                         onClick={() => startConversationWithStaff(staff)}
                                     >
                                         <div className="relative">
                                             <Avatar className="h-14 w-14 border-4 border-white shadow-md">
                                                 <AvatarImage src={staff.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${staff.uid}`} />
-                                                <AvatarFallback className="bg-amber-50 text-amber-700 font-serif">{getInitials(staff.displayName)}</AvatarFallback>
+                                                <AvatarFallback className="bg-[#C8A96A]/10 text-[#0B1F3A] font-serif">{getInitials(staff.displayName)}</AvatarFallback>
                                             </Avatar>
                                             <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-50">
                                                 <GraduationCap className="w-3 h-3 text-[#0B1F3A]/40" />
@@ -466,7 +466,7 @@ export function Communications() {
                                             <h3 className="font-serif text-[#0B1F3A] truncate mb-1.5">
                                                 {staff.displayName}
                                             </h3>
-                                            <span className="inline-flex text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full bg-amber-50 text-amber-700">
+                                            <span className="inline-flex text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-none bg-[#C8A96A]/10 text-[#0B1F3A] border border-[#C8A96A]/30">
                                                 Lecturer
                                             </span>
                                         </div>
@@ -485,7 +485,7 @@ export function Communications() {
                                 ))}
                                 {filteredLecturers.length === 0 && (
                                     <div className="p-12 text-center space-y-4">
-                                        <div className="w-16 h-16 mx-auto bg-white rounded-2xl shadow-sm flex items-center justify-center border border-slate-50">
+                                        <div className="w-16 h-16 mx-auto bg-white rounded-none shadow-sm flex items-center justify-center border border-[#0B1F3A]/10">
                                             <GraduationCap className="w-7 h-7 text-slate-200" />
                                         </div>
                                         <p className="text-slate-300 font-serif italic">
@@ -572,7 +572,7 @@ export function Communications() {
                                                            <p className="text-[10px] font-black uppercase tracking-widest text-[#C8A96A]">Invitation Received</p>
                                                         </div>
                                                         <Link href={msg.content.split(' ').find((w: string) => w.includes('/meeting/')) || '#'} target="_blank">
-                                                            <Button size="lg" className="w-full bg-[#1F7A5A] hover:bg-emerald-600 text-white font-black text-[9px] md:text-[10px] uppercase tracking-widest rounded-xl border-none h-12">
+                                                            <Button size="lg" className="w-full bg-[#1F7A5A] hover:bg-emerald-600 text-white font-black text-[9px] md:text-[10px] uppercase tracking-widest rounded-none border-none h-12">
                                                                 Commence Meeting
                                                             </Button>
                                                         </Link>
@@ -628,12 +628,12 @@ export function Communications() {
                                         value={newMessage}
                                         onChange={(e) => setNewMessage(e.target.value)}
                                         onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                                        className="pr-16 md:pr-20 bg-slate-50 border-none h-14 md:h-16 rounded-[1.5rem] md:rounded-[2rem] focus-visible:ring-1 focus-visible:ring-[#1F7A5A] font-medium px-6 md:px-8 text-base md:text-lg"
+                                        className="pr-16 md:pr-20 bg-slate-50 border-none h-14 md:h-16 rounded-none focus-visible:ring-1 focus-visible:ring-[#1F7A5A] font-medium px-6 md:px-8 text-base md:text-lg"
                                     />
                                     <Button
                                         size="icon"
                                         onClick={handleSendMessage}
-                                        className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white h-10 w-10 md:h-11 md:w-11 rounded-xl md:rounded-2xl shadow-xl transition-all"
+                                        className="absolute right-2 md:right-3 top-1/2 -translate-y-1/2 bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white h-10 w-10 md:h-11 md:w-11 rounded-none shadow-none transition-all"
                                     >
                                         <Send className="h-4 w-4 md:h-5 md:w-5" />
                                     </Button>
@@ -643,7 +643,7 @@ export function Communications() {
                     </>
                 ) : (
                     <div className="flex-1 flex flex-col items-center justify-center p-12 text-center select-none bg-slate-50/20">
-                        <div className="w-32 h-32 bg-white rounded-[3rem] shadow-sm flex items-center justify-center mb-10 border border-slate-50">
+                        <div className="w-32 h-32 bg-white rounded-none shadow-sm flex items-center justify-center mb-10 border border-[#0B1F3A]/10">
                             <Send className="w-12 h-12 text-slate-100 -rotate-45" />
                         </div>
                         <h2 className="text-3xl font-serif text-[#0B1F3A] mb-4">Secure Academic Network</h2>
