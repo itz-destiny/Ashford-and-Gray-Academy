@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CircularProgress } from "@/components/dashboard/circular-progress";
-import { ActivityHeatmap } from "@/components/dashboard/activity-heatmap";
+import { ActivityHeatmap, type ActivityCell } from "@/components/dashboard/activity-heatmap";
 import { LiveNowCard } from "@/components/dashboard/live-now-card";
 import { CoursePathCard } from "@/components/dashboard/course-path-card";
 import { ScheduleWidget } from "@/components/dashboard/schedule-widget";
@@ -23,6 +23,7 @@ export default function DashboardPage() {
   const [enrollments, setEnrollments] = useState<any[]>([]);
   const [events, setEvents] = useState<any[]>([]);
   const [assignments, setAssignments] = useState<any[]>([]);
+  const [activityCells, setActivityCells] = useState<ActivityCell[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -31,19 +32,22 @@ export default function DashboardPage() {
 
     const fetchData = async () => {
       try {
-        const [enrollmentsRes, eventsRes, assignmentsRes] = await Promise.all([
+        const [enrollmentsRes, eventsRes, assignmentsRes, heatmapRes] = await Promise.all([
           apiFetch('/api/enrollments'),
           fetch('/api/events'),
-          apiFetch(`/api/assignments?userId=${user.uid}`)
+          apiFetch(`/api/assignments?userId=${user.uid}`),
+          apiFetch('/api/activity/heatmap'),
         ]);
 
         const enrollmentsData = await enrollmentsRes.json();
         const eventsData = await eventsRes.json();
         const assignmentsData = await assignmentsRes.json();
+        const heatmapData = await heatmapRes.json().catch(() => null);
 
         setEnrollments(Array.isArray(enrollmentsData) ? enrollmentsData : []);
         setEvents(Array.isArray(eventsData) ? eventsData : []);
         setAssignments(Array.isArray(assignmentsData) ? assignmentsData : []);
+        setActivityCells(Array.isArray(heatmapData?.cells) ? heatmapData.cells : []);
       } catch (error) {
         console.error("Error fetching dashboard data:", error);
         toast({
@@ -57,6 +61,8 @@ export default function DashboardPage() {
     };
 
     fetchData();
+    // Records this visit for the engagement heatmap — best-effort, fire-and-forget.
+    void apiFetch('/api/activity/ping', { method: 'POST', body: JSON.stringify({ type: 'dashboard' }) }).catch(() => {});
   }, [user, userLoading, toast]);
 
   if (userLoading || (loading && !enrollments.length)) {
@@ -107,19 +113,6 @@ export default function DashboardPage() {
 
   const displayDeadlines = deadlines;
   const liveEvent = events.find(ev => ev.isLive);
-
-  // Heatmap reflects real signal
-  const heatmapData = (() => {
-    const buckets: Record<string, number> = {};
-    for (const a of assignments) {
-      if (!a.dueDate) continue;
-      const d = new Date(a.dueDate);
-      if (Number.isNaN(d.getTime())) continue;
-      const key = format(d, 'yyyy-MM-dd');
-      buckets[key] = (buckets[key] || 0) + 1;
-    }
-    return Object.values(buckets).slice(0, 84).map(n => Math.min(4, n));
-  })();
 
   return (
     <div className="mx-auto px-6 md:px-12 py-12 space-y-16 pb-32 max-w-[1800px] bg-[#FAF9F6]">
@@ -173,7 +166,7 @@ export default function DashboardPage() {
         </Card>
 
         <div className="h-full">
-          <ActivityHeatmap data={heatmapData} />
+          <ActivityHeatmap cells={activityCells} />
         </div>
       </div>
 

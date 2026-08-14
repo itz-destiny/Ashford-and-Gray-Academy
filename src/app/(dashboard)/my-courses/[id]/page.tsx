@@ -41,6 +41,13 @@ export default function CourseViewerPage() {
     const [classChatId, setClassChatId] = useState<string | null>(null);
     const [classMessage, setClassMessage] = useState('');
 
+    // Records this course visit for the student's engagement heatmap on
+    // /dashboard — best-effort, fire-and-forget, once per page load.
+    useEffect(() => {
+        if (!courseId || !user) return;
+        void apiFetch('/api/activity/ping', { method: 'POST', body: JSON.stringify({ type: 'course' }) }).catch(() => {});
+    }, [courseId, user]);
+
     useEffect(() => {
         if (!courseId) return;
 

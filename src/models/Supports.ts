@@ -114,6 +114,7 @@ export interface IConversation extends Document {
     type: 'direct' | 'group';
     courseId?: mongoose.Types.ObjectId; // set for a course's class-group conversation
     title?: string;
+    kind?: 'support'; // set for a Help-page support request thread
 }
 
 const ConversationSchema: Schema = new Schema({
@@ -123,6 +124,7 @@ const ConversationSchema: Schema = new Schema({
     type: { type: String, enum: ['direct', 'group'], default: 'direct' },
     courseId: { type: Schema.Types.ObjectId, ref: 'Course', index: true },
     title: { type: String },
+    kind: { type: String, enum: ['support'] },
 }, { timestamps: true });
 
 export const Conversation = mongoose.models.Conversation || mongoose.model<IConversation>('Conversation', ConversationSchema);
