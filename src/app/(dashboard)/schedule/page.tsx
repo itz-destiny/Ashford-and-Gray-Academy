@@ -1,9 +1,8 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { CalendarCheck, FileText, Video, Clock, MapPin, ChevronRight, Bell } from "lucide-react";
 import React, { useState, useEffect } from "react";
@@ -36,16 +35,16 @@ export default function SchedulePage() {
   }, [user]);
 
   const getEventTypeProps = (type: string) => {
-    const BASE = "mt-1 flex h-12 w-12 items-center justify-center rounded-2xl text-white shadow-xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-3";
+    const BASE = "mt-1 flex h-12 w-12 items-center justify-center rounded-none border transition-all duration-300";
     switch (type) {
       case 'Live Class':
-        return { icon: Video, color: 'bg-gradient-to-br from-indigo-500 to-violet-600 shadow-none', className: BASE };
+        return { icon: Video, className: cn(BASE, "bg-[#0B1F3A] border-[#0B1F3A] text-white") };
       case 'Quiz Due':
-        return { icon: CalendarCheck, color: 'bg-gradient-to-br from-rose-500 to-pink-600 shadow-none', className: BASE };
+        return { icon: CalendarCheck, className: cn(BASE, "bg-[#C8A96A]/10 border-[#C8A96A]/30 text-[#C8A96A]") };
       case 'Assignment':
-        return { icon: FileText, color: 'bg-gradient-to-br from-amber-500 to-orange-600 shadow-none', className: BASE };
+        return { icon: FileText, className: cn(BASE, "bg-[#F6F4F2] border-[#0B1F3A]/10 text-[#0B1F3A]") };
       default:
-        return { icon: Video, color: 'bg-gradient-to-br from-slate-500 to-slate-700 shadow-none', className: BASE };
+        return { icon: Video, className: cn(BASE, "bg-[#F6F4F2] border-[#0B1F3A]/10 text-[#0B1F3A]") };
     }
   }
 
@@ -59,50 +58,48 @@ export default function SchedulePage() {
   });
 
   return (
-    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-      {/* Header Section */}
+    <div className="mx-auto px-6 md:px-12 py-12 space-y-16 pb-32 max-w-[1800px] bg-[#FAF9F6] animate-in fade-in duration-700">
+
+      {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
-        <div className="space-y-2">
+        <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-indigo-600 rounded-2xl shadow-none">
-              <CalendarCheck className="w-8 h-8 text-white" />
-            </div>
-            <h1 className="text-4xl font-extrabold text-slate-900 tracking-tightest">
-              Academic <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#C8A96A] to-amber-400">Agenda</span>
-            </h1>
+            <div className="w-2 h-8 bg-[#C8A96A]" />
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#0B1F3A]/60">My Schedule</span>
           </div>
-          <p className="text-slate-500 font-medium text-lg leading-relaxed max-w-2xl">
-            Symphonize your educational odyssey with precision, punctuality, and a touch of professional elegance.
+          <h1 className="text-4xl md:text-5xl font-serif text-[#0B1F3A] tracking-tight leading-tight">
+            Academic <span className="text-[#C8A96A]">Calendar.</span>
+          </h1>
+          <p className="text-slate-500 font-medium text-lg max-w-xl leading-relaxed font-serif">
+            Your live classes, deadlines, and registered events in one place.
           </p>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="px-5 py-2.5 bg-white/80 backdrop-blur-xl border border-slate-100 rounded-2xl shadow-none flex items-center gap-3">
-            <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse shadow-none" />
-            <span className="text-sm font-black text-slate-700 uppercase tracking-widest">Real-time Sync</span>
-          </div>
+        <div className="flex items-center gap-4 px-5 py-3 bg-white border border-[#0B1F3A]/10 rounded-none shadow-sm">
+          <div className="w-2 h-2 bg-[#1F7A5A] rounded-full animate-pulse" />
+          <span className="text-[10px] font-black text-[#0B1F3A] uppercase tracking-widest">Real-time Sync</span>
         </div>
       </div>
 
-      <div className="grid gap-10 lg:grid-cols-12 items-start">
-        {/* Main Calendar Section */}
+      <div className="grid gap-12 lg:grid-cols-12 items-start">
+        {/* Calendar */}
         <div className="lg:col-span-8 space-y-8">
-          <Card className="border-none shadow-none rounded-[2.5rem] overflow-hidden bg-white/40 backdrop-blur-2xl border border-white/40">
-            <CardHeader className="bg-gradient-to-r from-white/90 to-white/50 p-8 border-b border-slate-100/50">
-              <div className="flex justify-between items-center">
+          <Card className="border border-[#0B1F3A]/10 rounded-none shadow-md bg-white border-t-4 border-t-[#C8A96A] overflow-hidden">
+            <div className="p-8 border-b border-[#0B1F3A]/10">
+              <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                 <div>
-                  <CardTitle className="text-2xl font-black text-slate-900 tracking-tighter uppercase leading-none">Event Matrix</CardTitle>
-                  <p className="text-slate-400 font-bold text-[10px] uppercase tracking-[0.2em] mt-2">Nodal Chronological Mapping</p>
+                  <h2 className="text-2xl font-serif text-[#0B1F3A]">Calendar</h2>
+                  <p className="text-slate-400 font-medium text-sm mt-1">Select a date to view its activity.</p>
                 </div>
-                <div className="flex items-center gap-4 bg-slate-50/50 p-2 rounded-2xl border border-slate-100/50">
-                  <div className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase px-2 py-1">
-                    <div className="w-2 h-2 bg-indigo-500 rounded-full ring-4 ring-indigo-50" /> Live Class
+                <div className="flex items-center gap-5 bg-[#F6F4F2] px-4 py-2.5 border border-[#0B1F3A]/5">
+                  <div className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase tracking-wider">
+                    <div className="w-2 h-2 bg-[#0B1F3A]" /> Live Class
                   </div>
-                  <div className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase px-2 py-1">
-                    <div className="w-2 h-2 bg-rose-500 rounded-full ring-4 ring-rose-50" /> Deadline
+                  <div className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase tracking-wider">
+                    <div className="w-2 h-2 bg-[#C8A96A]" /> Deadline
                   </div>
                 </div>
               </div>
-            </CardHeader>
+            </div>
             <CardContent className="p-4 md:p-10">
               <Calendar
                 mode="single"
@@ -112,101 +109,91 @@ export default function SchedulePage() {
                 classNames={{
                   months: "flex flex-col space-y-12",
                   month: "space-y-6 w-full",
-                  caption: "flex justify-center pt-2 relative items-center mb-8",
-                  caption_label: "text-3xl font-black text-slate-950 uppercase tracking-tighter px-6 drop-shadow-sm",
-                  nav: "flex items-center gap-3",
-                  nav_button: "h-12 w-12 bg-white hover:bg-slate-50 border border-slate-100 text-slate-600 transition-all rounded-2xl flex items-center justify-center p-0 shadow-none hover:bg-slate-100 active:scale-95",
-                  nav_button_previous: "absolute left-2",
-                  nav_button_next: "absolute right-2",
-                  table: "w-full border-collapse",
-                  head_row: "flex w-full mb-6",
-                  head_cell: "text-slate-400 rounded-md w-full font-black text-xs uppercase tracking-[0.2em]",
-                  row: "flex w-full mt-3",
-                  cell: cn(
-                    "h-24 w-full text-center text-sm p-0 relative transition-all duration-300",
-                    "[&:has([aria-selected])]:bg-indigo-50/30 first:[&:has([aria-selected])]:rounded-l-[2rem] last:[&:has([aria-selected])]:rounded-r-[2rem]"
-                  ),
+                  month_caption: "flex justify-center pt-2 relative items-center mb-8",
+                  caption_label: "text-2xl font-serif text-[#0B1F3A] px-6",
+                  nav: "flex items-center justify-between absolute inset-x-0 top-2",
+                  button_previous: "h-11 w-11 bg-white hover:bg-[#F6F4F2] border border-[#0B1F3A]/10 text-[#0B1F3A] transition-all rounded-none flex items-center justify-center p-0 shadow-sm active:scale-95",
+                  button_next: "h-11 w-11 bg-white hover:bg-[#F6F4F2] border border-[#0B1F3A]/10 text-[#0B1F3A] transition-all rounded-none flex items-center justify-center p-0 shadow-sm active:scale-95",
+                  month_grid: "w-full border-collapse table-fixed",
+                  weekdays: "",
+                  weekday: "text-[#0B1F3A]/40 font-black text-[10px] uppercase tracking-[0.2em] h-10 align-middle text-center",
+                  week: "",
                   day: cn(
-                    "h-full w-full p-4 font-bold text-slate-600 transition-all hover:bg-white rounded-[1.5rem] flex flex-col items-center justify-center gap-1 shadow-none",
-                    "aria-selected:opacity-100"
+                    "h-24 text-center text-sm p-1 relative align-middle transition-all duration-300",
+                    "[&:has([aria-selected])]:bg-[#C8A96A]/5"
                   ),
-                  day_selected: "bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white focus:bg-indigo-600 focus:text-white shadow-none border-none scale-105 z-10",
-                  day_today: "bg-indigo-50/50 text-indigo-700 border-2 border-indigo-100 ring-4 ring-white",
-                  day_outside: "text-slate-200 opacity-40",
-                  day_disabled: "text-slate-200 opacity-40 hover:bg-transparent",
-                  day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
-                  day_hidden: "invisible",
+                  day_button: cn(
+                    "h-full w-full p-4 font-bold text-slate-600 transition-all hover:bg-[#F6F4F2] rounded-none flex flex-col items-center justify-center gap-1"
+                  ),
+                  selected: "[&>button]:bg-[#0B1F3A] [&>button]:text-white [&>button]:hover:bg-[#0B1F3A] [&>button]:hover:text-white [&>button]:focus:bg-[#0B1F3A] [&>button]:focus:text-white z-10",
+                  today: "[&>button]:bg-[#C8A96A]/10 [&>button]:text-[#0B1F3A] [&>button]:border-2 [&>button]:border-[#C8A96A]/30",
+                  outside: "[&>button]:text-slate-200 [&>button]:opacity-40",
+                  disabled: "[&>button]:text-slate-200 [&>button]:opacity-40 [&>button]:hover:bg-transparent",
+                  range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
+                  hidden: "invisible",
                 }}
               />
             </CardContent>
           </Card>
         </div>
 
-        {/* Sidebar Sections */}
-        <div className="lg:col-span-4 space-y-10 animate-in slide-in-from-right-8 duration-1000 delay-300">
-          <Card className="border-none shadow-none rounded-[2.5rem] overflow-hidden bg-white/90 backdrop-blur-xl border border-white">
-            <CardHeader className="p-8 pb-4">
+        {/* Sidebar */}
+        <div className="lg:col-span-4 space-y-10">
+          <Card className="border border-[#0B1F3A]/10 rounded-none shadow-md bg-white border-t-4 border-t-[#C8A96A] overflow-hidden">
+            <div className="p-8 pb-4">
               <div className="flex justify-between items-start">
                 <div className="space-y-1">
-                  <CardTitle className="text-2xl font-black text-slate-900 uppercase tracking-tighter flex items-center gap-3">
-                    <div className="p-2 bg-amber-50 rounded-xl">
-                      <Bell className="w-5 h-5 text-amber-500" />
+                  <h2 className="text-xl font-serif text-[#0B1F3A] flex items-center gap-3">
+                    <div className="w-10 h-10 bg-[#F6F4F2] border border-[#0B1F3A]/5 rounded-none flex items-center justify-center text-[#C8A96A]">
+                      <Bell className="w-5 h-5" />
                     </div>
                     Today's Agenda
-                  </CardTitle>
-                  <CardDescription className="text-slate-400 font-bold text-[10px] uppercase tracking-[0.2em] px-1">Institutional Commitments</CardDescription>
+                  </h2>
                 </div>
-                <div className="px-4 py-1.5 bg-slate-900 text-white rounded-xl text-xs font-black shadow-none">
+                <div className="px-4 py-1.5 bg-[#0B1F3A] text-white text-[10px] font-black uppercase tracking-widest">
                   {selectedDate?.toLocaleDateString([], { day: 'numeric', month: 'short' })}
                 </div>
               </div>
-            </CardHeader>
-            <CardContent className="p-8 pt-2">
+            </div>
+            <CardContent className="p-8 pt-4">
               <div className="space-y-6">
                 {eventsOnSelectedDate.length > 0 ? (
                   eventsOnSelectedDate.map((reg) => {
-                    const { icon: Icon, color, className } = getEventTypeProps(reg.event?.type || 'Live Class');
+                    const { icon: Icon, className } = getEventTypeProps(reg.event?.type || 'Live Class');
                     return (
-                      <div key={reg._id} className="group flex items-start gap-6 p-5 rounded-[2rem] hover:bg-indigo-50/50 transition-all duration-500 border border-transparent hover:border-indigo-100/50">
-                        <div className={cn(className, color)}>
-                          <Icon className="h-6 w-6 text-white drop-shadow-md" />
+                      <div key={reg._id} className="group flex items-start gap-5 p-5 rounded-none hover:bg-[#F6F4F2]/60 transition-all duration-300 border border-transparent hover:border-[#0B1F3A]/5">
+                        <div className={className}>
+                          <Icon className="h-5 w-5" />
                         </div>
                         <div className="flex-1 min-w-0 py-1">
-                          <p className="font-black text-slate-900 text-lg leading-tight group-hover:text-indigo-600 transition-colors truncate tracking-tight">
+                          <p className="font-serif text-[#0B1F3A] text-lg leading-tight group-hover:text-[#C8A96A] transition-colors truncate">
                             {reg.event?.title}
                           </p>
                           <div className="flex flex-col gap-2 mt-3 text-slate-500">
                             <div className="flex items-center gap-2.5">
-                              <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
-                              <Clock className="w-3.5 h-3.5" />
-                              <span className="text-[11px] font-black uppercase tracking-widest">{reg.event?.time || 'Pending'}</span>
+                              <Clock className="w-3.5 h-3.5 text-[#C8A96A]" />
+                              <span className="text-[10px] font-black uppercase tracking-widest">{reg.event?.time || 'Pending'}</span>
                             </div>
                             <div className="flex items-center gap-2.5">
-                              <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
-                              <MapPin className="w-3.5 h-3.5" />
-                              <span className="text-[11px] font-black uppercase tracking-widest truncate">{reg.event?.location || 'Digital Auditorium'}</span>
+                              <MapPin className="w-3.5 h-3.5 text-[#C8A96A]" />
+                              <span className="text-[10px] font-black uppercase tracking-widest truncate">{reg.event?.location || 'Online'}</span>
                             </div>
                           </div>
                         </div>
-                        <div className="self-center">
-                          <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-slate-300 group-hover:text-indigo-600 group-hover:bg-indigo-100 transition-all">
-                            <ChevronRight className="h-6 w-6" />
-                          </Button>
-                        </div>
+                        <Button variant="ghost" size="icon" className="h-9 w-9 rounded-none text-slate-300 group-hover:text-[#C8A96A] group-hover:bg-[#F6F4F2] transition-all shrink-0">
+                          <ChevronRight className="h-5 w-5" />
+                        </Button>
                       </div>
                     )
                   })
                 ) : (
-                  <div className="text-center py-24 px-8 flex flex-col items-center gap-8 group/empty transition-all">
-                    <div className="relative">
-                      <div className="absolute inset-0 bg-indigo-100 rounded-full blur-2xl opacity-0 group-hover/empty:opacity-60 transition-opacity" />
-                      <div className="relative p-8 bg-slate-50 text-slate-200 rounded-[2.5rem] border border-slate-100 group-hover/empty:scale-110 group-hover/empty:text-indigo-200 group-hover/empty:bg-white transition-all duration-700">
-                        <CalendarCheck className="w-16 h-16" />
-                      </div>
+                  <div className="text-center py-20 px-8 flex flex-col items-center gap-6">
+                    <div className="w-20 h-20 bg-[#F6F4F2] border border-[#0B1F3A]/10 rounded-none shadow-sm flex items-center justify-center text-slate-300">
+                      <CalendarCheck className="w-10 h-10" />
                     </div>
                     <div className="space-y-2">
-                      <p className="text-xl font-black text-slate-950 uppercase tracking-tighter">Serene Registry</p>
-                      <p className="text-sm font-medium text-slate-400 max-w-[200px] leading-relaxed">No institutional activities recorded for this chronological marker.</p>
+                      <p className="text-xl font-serif text-[#0B1F3A]">Nothing Scheduled</p>
+                      <p className="text-sm font-medium text-slate-400 max-w-[220px] leading-relaxed">No activity recorded for this date.</p>
                     </div>
                   </div>
                 )}
@@ -214,24 +201,19 @@ export default function SchedulePage() {
             </CardContent>
           </Card>
 
-          {/* Call to Action Card */}
-          <Card className="border-none shadow-2xl rounded-[2.5rem] bg-[#0B1F3A] text-white overflow-hidden relative group cursor-pointer active:scale-95 transition-all hover:shadow-indigo-900/30">
-            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay" />
-            <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#C8A96A] rounded-full blur-[80px] opacity-20 group-hover:opacity-40 transition-opacity duration-1000" />
-            <div className="absolute top-0 right-0 p-10 transform group-hover:scale-110 group-hover:-rotate-6 transition-all duration-1000 opacity-20">
-              <Video className="w-40 h-40 text-[#C8A96A]" />
-            </div>
-
+          {/* CTA */}
+          <Card className="border border-[#0B1F3A] border-t-4 border-t-[#C8A96A] rounded-none shadow-xl bg-[#0B1F3A] text-white overflow-hidden relative group">
+            <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#C8A96A]/10 rounded-full blur-[80px] opacity-40 group-hover:opacity-70 transition-opacity duration-1000" />
             <CardContent className="p-10 relative z-10 flex flex-col gap-8">
-              <div className="p-4 bg-white/5 backdrop-blur-2xl rounded-[1.5rem] w-fit border border-white/10 shadow-lg">
-                <Video className="w-8 h-8 text-[#C8A96A]" />
+              <div className="w-14 h-14 bg-white/5 border border-white/10 rounded-none flex items-center justify-center">
+                <Video className="w-7 h-7 text-[#C8A96A]" />
               </div>
               <div className="space-y-3">
-                <h3 className="text-4xl font-serif leading-none tracking-tight text-white">Virtual Symposium</h3>
-                <p className="text-[#C8A96A] font-black text-[10px] uppercase tracking-[0.3em]">Advanced Scholastic Methods • Ongoing</p>
+                <h3 className="text-3xl font-serif leading-tight text-white">Live Classes</h3>
+                <p className="text-[#C8A96A] font-black text-[10px] uppercase tracking-[0.3em]">Join your next session on time</p>
               </div>
-              <Button className="w-full bg-[#C8A96A] text-white hover:bg-[#B69759] hover:scale-[1.02] font-black h-14 rounded-2xl shadow-xl shadow-amber-900/20 transition-all uppercase tracking-widest text-xs border-none" asChild>
-                <Link href="/live-classes/demo-room">Enter Symposium Hall</Link>
+              <Button className="w-full bg-[#C8A96A] text-[#0B1F3A] hover:bg-[#B69759] font-black h-14 rounded-none shadow-none transition-all uppercase tracking-widest text-[10px] border-none" asChild>
+                <Link href="/my-courses">Go to My Courses</Link>
               </Button>
             </CardContent>
           </Card>
