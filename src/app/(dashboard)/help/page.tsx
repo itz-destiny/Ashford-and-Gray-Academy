@@ -7,17 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { HelpCircle, MessageCircle, FileText, Phone, ArrowLeft, Send, Loader2, CheckCircle2, Mail } from "lucide-react";
+import { ArrowLeft, Send, Loader2, CheckCircle2, Mail } from "lucide-react";
 import Link from "next/link";
 import { apiFetch } from "@/lib/api-client";
 import { useToast } from "@/hooks/use-toast";
-
-const HELP_TOPICS = [
-    { icon: MessageCircle, title: "Live Consultation", desc: "Connect with our support registrars in real-time for urgent inquiries." },
-    { icon: FileText, title: "Documentation", desc: "Comprehensive guides on using the platform and academic policies." },
-    { icon: HelpCircle, title: "FAQ", desc: "Quick answers to frequently asked questions about enrollment and billing." },
-    { icon: Phone, title: "Direct Contact", desc: "Reach our administrative office via telephone for executive support." },
-];
 
 export default function HelpPage() {
     const { toast } = useToast();
@@ -80,18 +73,6 @@ export default function HelpPage() {
                         How can we assist your academic journey today?
                     </p>
                 </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                {HELP_TOPICS.map((topic) => (
-                    <Card key={topic.title} className="p-8 rounded-none border border-[#0B1F3A]/10 shadow-sm hover:shadow-md hover:border-[#C8A96A] transition-all duration-300 group cursor-pointer bg-white">
-                        <div className="w-14 h-14 bg-[#F6F4F2] border border-[#0B1F3A]/5 rounded-none flex items-center justify-center text-[#0B1F3A] mb-6 group-hover:text-[#C8A96A] transition-colors">
-                            <topic.icon className="w-7 h-7" />
-                        </div>
-                        <h3 className="text-xl font-serif text-[#0B1F3A] mb-2">{topic.title}</h3>
-                        <p className="text-sm text-slate-400 leading-relaxed">{topic.desc}</p>
-                    </Card>
-                ))}
             </div>
 
             {/* Ask an Academic Advisor */}
