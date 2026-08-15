@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import LiveClass from '@/models/LiveClass';
 import { createZoomMeeting } from '@/lib/zoom';
+import { findAvailableZoomHost } from '@/lib/zoom-scheduler';
 import { withAuth } from '@/lib/auth-server';
 import { z } from 'zod';
 
@@ -27,12 +28,23 @@ export const POST = withAuth(async (req, { auth }) => {
         // Optional: verify instructor manages this course
         // if (auth.role === 'instructor') { ... }
 
-        // Create Zoom meeting via API
+        const startTime = new Date(parsed.startTime);
+        const assignment = await findAvailableZoomHost(startTime, parsed.durationMinutes);
+        if (!assignment) {
+            return NextResponse.json(
+                { error: 'Every licensed Zoom host is already booked for this time. Please choose a different time, or add another Zoom license.' },
+                { status: 409 }
+            );
+        }
+
+        // Create Zoom meeting via API, under whichever host is free
         const zoomResponse = await createZoomMeeting({
             topic: parsed.topic,
             agenda: parsed.description,
             startTime: parsed.startTime,
-            durationMinutes: parsed.durationMinutes
+            durationMinutes: parsed.durationMinutes,
+            hostEmail: assignment.hostEmail,
+            account: assignment.account,
         });
 
         // Save to Database
@@ -41,11 +53,13 @@ export const POST = withAuth(async (req, { auth }) => {
             instructorId: auth.uid,
             topic: parsed.topic,
             description: parsed.description,
-            startTime: new Date(parsed.startTime),
+            startTime,
             durationMinutes: parsed.durationMinutes,
             zoomMeetingId: zoomResponse.id.toString(),
             zoomJoinUrl: zoomResponse.join_url,
             zoomStartUrl: zoomResponse.start_url,
+            zoomHostEmail: assignment.hostEmail,
+            zoomAccountKey: assignment.account.key,
             status: 'scheduled'
         });
 
