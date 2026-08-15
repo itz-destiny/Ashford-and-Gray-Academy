@@ -424,7 +424,7 @@ export function Communications() {
                                         <Button
                                             size="icon"
                                             variant="ghost"
-                                            className="shrink-0 rounded-full hover:bg-slate-50 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            className="shrink-0 rounded-none hover:bg-[#F6F4F2] opacity-0 group-hover:opacity-100 transition-opacity"
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 startConversationWithStaff(staff);
@@ -473,7 +473,7 @@ export function Communications() {
                                         <Button
                                             size="icon"
                                             variant="ghost"
-                                            className="shrink-0 rounded-full hover:bg-slate-50 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            className="shrink-0 rounded-none hover:bg-[#F6F4F2] opacity-0 group-hover:opacity-100 transition-opacity"
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 startConversationWithStaff(staff);
@@ -508,13 +508,13 @@ export function Communications() {
                     <>
                         <div className="p-6 md:p-8 border-b border-slate-50 flex items-center justify-between bg-white shadow-sm relative z-10">
                             <div className="flex items-center gap-4 md:gap-6">
-                                <Button 
-                                    variant="ghost" 
-                                    size="icon" 
-                                    className="md:hidden rounded-full"
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="md:hidden rounded-none border border-[#0B1F3A]/10 bg-white hover:bg-[#F6F4F2]"
                                     onClick={() => setShowMobileChat(false)}
                                 >
-                                    <ArrowLeft className="h-6 w-6 text-[#0B1F3A]" />
+                                    <ArrowLeft className="h-5 w-5 text-[#0B1F3A]" />
                                 </Button>
                                 <Avatar className="h-12 w-12 md:h-16 md:w-16 border-4 border-slate-50 shadow-sm">
                                     <AvatarImage src={selectedConversation.otherUser.avatar} />
@@ -528,21 +528,21 @@ export function Communications() {
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-1 md:gap-3">
-                                <Button variant="ghost" size="icon" className="rounded-full hover:bg-slate-50 text-slate-300 hidden sm:flex">
-                                    <Phone className="h-5 w-5" />
+                            <div className="flex items-center gap-2 md:gap-3">
+                                <Button variant="ghost" size="icon" className="rounded-none border border-[#0B1F3A]/10 bg-white hover:bg-[#F6F4F2] text-[#0B1F3A]/50 hidden sm:flex">
+                                    <Phone className="h-4 w-4" />
                                 </Button>
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="rounded-full hover:bg-[#1F7A5A]/5 text-[#1F7A5A]"
+                                    className="rounded-none border border-[#1F7A5A]/20 bg-[#1F7A5A]/5 hover:bg-[#1F7A5A]/10 text-[#1F7A5A]"
                                     onClick={handleStartVideoCall}
-                                    title="Authorize Video Link"
+                                    title="Start Video Call"
                                 >
-                                    <Video className="h-6 w-6" />
+                                    <Video className="h-5 w-5" />
                                 </Button>
-                                <Button variant="ghost" size="icon" className="rounded-full hover:bg-slate-50 text-slate-300">
-                                    <MoreVertical className="h-5 w-5" />
+                                <Button variant="ghost" size="icon" className="rounded-none border border-[#0B1F3A]/10 bg-white hover:bg-[#F6F4F2] text-[#0B1F3A]/50">
+                                    <MoreVertical className="h-4 w-4" />
                                 </Button>
                             </div>
                         </div>
@@ -554,17 +554,19 @@ export function Communications() {
                                     const isMeetingLink = msg.content.includes('/meeting/');
 
                                     return (
-                                        <div key={msg._id || i} className={`flex items-end gap-3 md:gap-5 ${isMe ? "justify-end" : "justify-start"} animate-in slide-in-from-bottom-4 duration-700`}>
+                                        <div key={msg._id || i} className={`flex items-end gap-3 md:gap-4 ${isMe ? "justify-end" : "justify-start"} animate-in slide-in-from-bottom-4 duration-700`}>
                                             {!isMe && (
-                                                <Avatar className="h-8 w-8 md:h-10 md:w-10 mb-1 shadow-sm border-2 border-white">
+                                                <Avatar className="h-8 w-8 md:h-10 md:w-10 mb-1 shadow-sm border-2 border-white shrink-0">
                                                     <AvatarImage src={selectedConversation.otherUser.avatar} />
                                                     <AvatarFallback className="bg-slate-100 text-[10px] font-serif">{getInitials(selectedConversation.otherUser.name)}</AvatarFallback>
                                                 </Avatar>
                                             )}
-                                            <div className={`relative max-w-[85%] md:max-w-[75%] p-4 md:p-6 rounded-[2rem] md:rounded-[2.5rem] shadow-sm transition-all ${isMe
-                                                ? "bg-[#0B1F3A] text-white rounded-br-none"
-                                                : "bg-white text-slate-800 rounded-bl-none border border-slate-50"
-                                                }`}>
+                                            <div className={cn(
+                                                "flex flex-col max-w-[85%] md:max-w-[70%] p-4 md:p-5 rounded-none shadow-sm transition-all border-l-2",
+                                                isMe
+                                                    ? "bg-[#0B1F3A] text-white border-l-[#C8A96A]"
+                                                    : "bg-white text-slate-800 border border-[#0B1F3A]/8 border-l-2 border-l-[#0B1F3A]/20"
+                                            )}>
                                                 {isMeetingLink ? (
                                                     <div className="space-y-4 min-w-[200px] md:min-w-[240px]">
                                                         <div className="flex items-center gap-3 border-b border-white/10 pb-4">
@@ -578,9 +580,9 @@ export function Communications() {
                                                         </Link>
                                                     </div>
                                                 ) : (
-                                                    <p className="text-sm md:text-base font-medium leading-relaxed">{msg.content}</p>
+                                                    <p className="text-sm md:text-base font-medium leading-relaxed whitespace-pre-wrap">{msg.content}</p>
                                                 )}
-                                                <p className={cn("text-[8px] md:text-[9px] font-black uppercase tracking-widest mt-4 float-right opacity-40", isMe ? "text-white" : "text-slate-400")}>
+                                                <p className={cn("text-[8px] md:text-[9px] font-black uppercase tracking-widest mt-2 self-end opacity-40", isMe ? "text-white" : "text-slate-400")}>
                                                     {format(new Date(msg.createdAt), "hh:mm a")}
                                                 </p>
                                             </div>
@@ -593,18 +595,18 @@ export function Communications() {
 
                         <div className="p-6 md:p-10 border-t border-slate-50 bg-white">
                             <div className="max-w-5xl mx-auto relative flex items-center gap-3 md:gap-6">
-                                <div className="flex gap-1 md:gap-2 shrink-0">
+                                <div className="flex gap-2 shrink-0">
                                     <div className="relative">
                                         <Button
                                             variant="ghost"
                                             size="icon"
-                                            className="text-slate-300 hover:text-[#1F7A5A] rounded-full"
+                                            className="rounded-none border border-[#0B1F3A]/10 bg-white hover:bg-[#F6F4F2] text-[#0B1F3A]/40 hover:text-[#C8A96A] h-11 w-11 md:h-12 md:w-12"
                                             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                                         >
-                                            <Smile className="h-5 w-5 md:h-6 md:w-6" />
+                                            <Smile className="h-5 w-5" />
                                         </Button>
                                         {showEmojiPicker && (
-                                            <div className="absolute bottom-16 left-0 z-50 shadow-2xl rounded-3xl overflow-hidden border border-slate-100 max-w-[300px] md:max-w-none">
+                                            <div className="absolute bottom-16 left-0 z-50 shadow-2xl rounded-none overflow-hidden border border-[#0B1F3A]/10 max-w-[300px] md:max-w-none">
                                                 <EmojiPicker
                                                     onEmojiClick={(emojiData) => {
                                                         setNewMessage((prev) => prev + emojiData.emoji);
@@ -617,9 +619,9 @@ export function Communications() {
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="text-slate-300 hover:text-[#1F7A5A] rounded-full hidden sm:flex"
+                                        className="rounded-none border border-[#0B1F3A]/10 bg-white hover:bg-[#F6F4F2] text-[#0B1F3A]/40 hover:text-[#C8A96A] h-11 w-11 md:h-12 md:w-12 hidden sm:flex"
                                     >
-                                        <Paperclip className="h-6 w-6" />
+                                        <Paperclip className="h-5 w-5" />
                                     </Button>
                                 </div>
                                 <div className="relative flex-1">
