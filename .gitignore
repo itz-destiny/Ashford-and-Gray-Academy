@@ -47,3 +47,8 @@ firestore-debug.log
 # student PII — cohort roster spreadsheets stay local-only, never in git
 /public/AGFA FLAGSHIP COHORT*.xlsx
 /public/~$*.xlsx
+
+# source timetable workbooks — imported into TimetableSession via a one-off
+# script, the data lives in Mongo from here; the spreadsheet itself doesn't
+# need to be in git (large binary, gets superseded by "Updated (N)" files).
+/public/Ashford_Gray_Fusion_Academy_Timetable*.xlsx

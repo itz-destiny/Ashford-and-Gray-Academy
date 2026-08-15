@@ -3,6 +3,7 @@ import dbConnect from '@/lib/mongodb';
 import TimetableSession from '@/models/TimetableSession';
 import LiveClass from '@/models/LiveClass';
 import { createZoomMeeting } from '@/lib/zoom';
+import { findAvailableZoomHost } from '@/lib/zoom-scheduler';
 import { withAuth } from '@/lib/auth-server';
 
 type RouteParams = { params: Promise<{ id: string }> };
@@ -40,11 +41,21 @@ export const POST = withAuth<RouteParams>(async (_req, { auth, params }) => {
         const durationMinutes = Math.max(15, Math.round((session.endTime.getTime() - session.startTime.getTime()) / 60000));
         const topic = `${session.courseTitle || session.programmeName}: ${session.module}`;
 
+        const assignment = await findAvailableZoomHost(session.startTime, durationMinutes);
+        if (!assignment) {
+            return NextResponse.json(
+                { error: 'Every licensed Zoom host is already booked for this time slot. Reschedule this session, or add another Zoom license.' },
+                { status: 409 }
+            );
+        }
+
         const zoomResponse = await createZoomMeeting({
             topic,
             agenda: session.programmeName,
             startTime: session.startTime.toISOString(),
             durationMinutes,
+            hostEmail: assignment.hostEmail,
+            account: assignment.account,
         });
 
         const liveClass = await LiveClass.create({
@@ -57,6 +68,8 @@ export const POST = withAuth<RouteParams>(async (_req, { auth, params }) => {
             zoomMeetingId: zoomResponse.id.toString(),
             zoomJoinUrl: zoomResponse.join_url,
             zoomStartUrl: zoomResponse.start_url,
+            zoomHostEmail: assignment.hostEmail,
+            zoomAccountKey: assignment.account.key,
             status: 'scheduled',
         });
 

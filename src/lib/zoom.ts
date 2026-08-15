@@ -1,15 +1,24 @@
-export async function getZoomAccessToken(): Promise<string> {
-    const accountId = process.env.ZOOM_ACCOUNT_ID;
-    const clientId = process.env.ZOOM_CLIENT_ID;
-    const clientSecret = process.env.ZOOM_CLIENT_SECRET;
+export interface ZoomAccountCredentials {
+    accountId: string;
+    clientId: string;
+    clientSecret: string;
+}
 
-    if (!accountId || !clientId || !clientSecret) {
+const tokenCache = new Map<string, { token: string; expiresAt: number }>();
+
+export async function getZoomAccessToken(account: ZoomAccountCredentials): Promise<string> {
+    if (!account?.accountId || !account?.clientId || !account?.clientSecret) {
         throw new Error('Zoom credentials are not fully configured in environment variables.');
     }
 
-    const authHeader = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+    const cached = tokenCache.get(account.accountId);
+    if (cached && cached.expiresAt > Date.now()) {
+        return cached.token;
+    }
 
-    const res = await fetch(`https://zoom.us/oauth/token?grant_type=account_credentials&account_id=${accountId}`, {
+    const authHeader = Buffer.from(`${account.clientId}:${account.clientSecret}`).toString('base64');
+
+    const res = await fetch(`https://zoom.us/oauth/token?grant_type=account_credentials&account_id=${account.accountId}`, {
         method: 'POST',
         headers: {
             'Authorization': `Basic ${authHeader}`,
@@ -23,6 +32,10 @@ export async function getZoomAccessToken(): Promise<string> {
     }
 
     const data = await res.json();
+    // Cache a little under the real TTL so we never hand out a token that
+    // expires mid-request.
+    const ttlMs = Math.max(0, ((data.expires_in ?? 3600) - 60)) * 1000;
+    tokenCache.set(account.accountId, { token: data.access_token, expiresAt: Date.now() + ttlMs });
     return data.access_token;
 }
 
@@ -31,13 +44,17 @@ export interface CreateZoomMeetingParams {
     agenda?: string;
     startTime: string; // ISO-8601 UTC format
     durationMinutes: number;
+    // Which licensed user this meeting is created under. Defaults to the
+    // Zoom account owner ("me") if not given.
+    hostEmail?: string;
+    account: ZoomAccountCredentials;
 }
 
 export async function createZoomMeeting(params: CreateZoomMeetingParams) {
-    const token = await getZoomAccessToken();
-    const zoomEmail = process.env.ZOOM_ACCOUNT_EMAIL || 'me';
+    const token = await getZoomAccessToken(params.account);
+    const hostEmail = params.hostEmail?.trim() || 'me';
 
-    const res = await fetch(`https://api.zoom.us/v2/users/${zoomEmail}/meetings`, {
+    const res = await fetch(`https://api.zoom.us/v2/users/${encodeURIComponent(hostEmail)}/meetings`, {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`,

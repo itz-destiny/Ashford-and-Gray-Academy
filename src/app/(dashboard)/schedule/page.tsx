@@ -4,15 +4,38 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
-import { CalendarCheck, FileText, Video, Clock, MapPin, ChevronRight, Bell } from "lucide-react";
-import React, { useState, useEffect } from "react";
+import { CalendarCheck, FileText, Video, Clock, MapPin, ChevronRight, Bell, GraduationCap } from "lucide-react";
+import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useUser } from "@/firebase";
 import { apiFetch } from "@/lib/api-client";
+import { format, isSameDay } from "date-fns";
+
+type LectureSession = {
+  _id: string;
+  startTime: string;
+  endTime: string;
+  programmeName: string;
+  courseTitle?: string;
+  module: string;
+  lecturerName: string;
+  status: string;
+  zoomJoinUrl?: string;
+};
+
+type AgendaItem = {
+  key: string;
+  kind: "lecture" | "event";
+  title: string;
+  time: string;
+  location: string;
+  href?: string;
+};
 
 export default function SchedulePage() {
   const { user } = useUser();
   const [registrations, setRegistrations] = useState<any[]>([]);
+  const [lectureSessions, setLectureSessions] = useState<LectureSession[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [loading, setLoading] = useState(true);
 
@@ -20,11 +43,14 @@ export default function SchedulePage() {
     if (!user) return;
     const fetchSchedule = async () => {
       try {
-        const res = await apiFetch('/api/registrations');
-        const data = await res.json();
-        if (Array.isArray(data)) {
-          setRegistrations(data);
-        }
+        const [regRes, sessionsRes] = await Promise.all([
+          apiFetch('/api/registrations'),
+          apiFetch('/api/timetable/my-sessions'),
+        ]);
+        const regData = await regRes.json();
+        const sessionsData = await sessionsRes.json().catch(() => null);
+        if (Array.isArray(regData)) setRegistrations(regData);
+        if (sessionsData?.success && Array.isArray(sessionsData.sessions)) setLectureSessions(sessionsData.sessions);
       } catch (error) {
         console.error(error);
       } finally {
@@ -34,28 +60,54 @@ export default function SchedulePage() {
     fetchSchedule();
   }, [user]);
 
-  const getEventTypeProps = (type: string) => {
-    const BASE = "mt-1 flex h-12 w-12 items-center justify-center rounded-none border transition-all duration-300";
-    switch (type) {
-      case 'Live Class':
-        return { icon: Video, className: cn(BASE, "bg-[#0B1F3A] border-[#0B1F3A] text-white") };
-      case 'Quiz Due':
-        return { icon: CalendarCheck, className: cn(BASE, "bg-[#C8A96A]/10 border-[#C8A96A]/30 text-[#C8A96A]") };
-      case 'Assignment':
-        return { icon: FileText, className: cn(BASE, "bg-[#F6F4F2] border-[#0B1F3A]/10 text-[#0B1F3A]") };
-      default:
-        return { icon: Video, className: cn(BASE, "bg-[#F6F4F2] border-[#0B1F3A]/10 text-[#0B1F3A]") };
-    }
-  }
+  // Every calendar day that has a lecture or a registered event — drives the
+  // small dot indicator on the calendar grid.
+  const activityDates = useMemo(() => {
+    const dates: Date[] = [];
+    for (const s of lectureSessions) dates.push(new Date(s.startTime));
+    for (const r of registrations) if (r.event?.date) dates.push(new Date(r.event.date));
+    return dates;
+  }, [lectureSessions, registrations]);
 
-  const eventsOnSelectedDate = registrations.filter(reg => {
-    if (!reg.event?.date) return false;
-    const eventDate = new Date(reg.event.date);
-    return selectedDate &&
-      eventDate.getDate() === selectedDate.getDate() &&
-      eventDate.getMonth() === selectedDate.getMonth() &&
-      eventDate.getFullYear() === selectedDate.getFullYear();
-  });
+  const agendaForSelectedDate = useMemo<AgendaItem[]>(() => {
+    if (!selectedDate) return [];
+    const items: AgendaItem[] = [];
+
+    for (const s of lectureSessions) {
+      const start = new Date(s.startTime);
+      if (!isSameDay(start, selectedDate)) continue;
+      items.push({
+        key: `lecture-${s._id}`,
+        kind: 'lecture',
+        title: `${s.courseTitle || s.programmeName}: ${s.module}`,
+        time: `${format(start, 'hh:mm a')} – ${format(new Date(s.endTime), 'hh:mm a')}`,
+        location: s.lecturerName ? `Lecturer: ${s.lecturerName}` : 'Live Class',
+        href: s.zoomJoinUrl && s.status === 'scheduled' ? s.zoomJoinUrl : undefined,
+      });
+    }
+
+    for (const reg of registrations) {
+      if (!reg.event?.date) continue;
+      const eventDate = new Date(reg.event.date);
+      if (!isSameDay(eventDate, selectedDate)) continue;
+      items.push({
+        key: `event-${reg._id}`,
+        kind: 'event',
+        title: reg.event.title,
+        time: reg.event.time || 'Pending',
+        location: reg.event.location || 'Online',
+      });
+    }
+
+    return items.sort((a, b) => a.time.localeCompare(b.time));
+  }, [lectureSessions, registrations, selectedDate]);
+
+  const getAgendaProps = (kind: AgendaItem['kind']) => {
+    const BASE = "mt-1 flex h-12 w-12 items-center justify-center rounded-none border transition-all duration-300";
+    return kind === 'lecture'
+      ? { icon: GraduationCap, className: cn(BASE, "bg-[#0B1F3A] border-[#0B1F3A] text-white") }
+      : { icon: CalendarCheck, className: cn(BASE, "bg-[#C8A96A]/10 border-[#C8A96A]/30 text-[#C8A96A]") };
+  };
 
   return (
     <div className="mx-auto px-6 md:px-12 py-12 space-y-16 pb-32 max-w-[1800px] bg-[#FAF9F6] animate-in fade-in duration-700">
@@ -71,7 +123,7 @@ export default function SchedulePage() {
             Academic <span className="text-[#C8A96A]">Calendar.</span>
           </h1>
           <p className="text-slate-500 font-medium text-lg max-w-xl leading-relaxed font-serif">
-            Your live classes, deadlines, and registered events in one place.
+            Your lecture timetable and registered events in one place.
           </p>
         </div>
         <div className="flex items-center gap-4 px-5 py-3 bg-white border border-[#0B1F3A]/10 rounded-none shadow-sm">
@@ -88,14 +140,14 @@ export default function SchedulePage() {
               <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                 <div>
                   <h2 className="text-2xl font-serif text-[#0B1F3A]">Calendar</h2>
-                  <p className="text-slate-400 font-medium text-sm mt-1">Select a date to view its activity.</p>
+                  <p className="text-slate-400 font-medium text-sm mt-1">Days with a dot have a lecture or event — select one to view it.</p>
                 </div>
                 <div className="flex items-center gap-5 bg-[#F6F4F2] px-4 py-2.5 border border-[#0B1F3A]/5">
                   <div className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase tracking-wider">
-                    <div className="w-2 h-2 bg-[#0B1F3A]" /> Live Class
+                    <div className="w-2 h-2 bg-[#0B1F3A]" /> Lecture
                   </div>
                   <div className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase tracking-wider">
-                    <div className="w-2 h-2 bg-[#C8A96A]" /> Deadline
+                    <div className="w-2 h-2 bg-[#C8A96A]" /> Event
                   </div>
                 </div>
               </div>
@@ -105,6 +157,7 @@ export default function SchedulePage() {
                 mode="single"
                 selected={selectedDate}
                 onSelect={setSelectedDate}
+                modifiers={{ hasActivity: activityDates }}
                 className="w-full"
                 classNames={{
                   months: "flex flex-col space-y-12",
@@ -132,6 +185,9 @@ export default function SchedulePage() {
                   range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
                   hidden: "invisible",
                 }}
+                modifiersClassNames={{
+                  hasActivity: "[&>button]:after:content-[''] [&>button]:after:absolute [&>button]:after:bottom-2 [&>button]:after:w-1.5 [&>button]:after:h-1.5 [&>button]:after:bg-[#C8A96A] [&>button]:relative",
+                }}
               />
             </CardContent>
           </Card>
@@ -157,26 +213,28 @@ export default function SchedulePage() {
             </div>
             <CardContent className="p-8 pt-4">
               <div className="space-y-6">
-                {eventsOnSelectedDate.length > 0 ? (
-                  eventsOnSelectedDate.map((reg) => {
-                    const { icon: Icon, className } = getEventTypeProps(reg.event?.type || 'Live Class');
-                    return (
-                      <div key={reg._id} className="group flex items-start gap-5 p-5 rounded-none hover:bg-[#F6F4F2]/60 transition-all duration-300 border border-transparent hover:border-[#0B1F3A]/5">
+                {loading ? (
+                  <div className="text-center py-20 text-slate-300 font-serif italic">Loading your schedule…</div>
+                ) : agendaForSelectedDate.length > 0 ? (
+                  agendaForSelectedDate.map((item) => {
+                    const { icon: Icon, className } = getAgendaProps(item.kind);
+                    const content = (
+                      <div className="group flex items-start gap-5 p-5 rounded-none hover:bg-[#F6F4F2]/60 transition-all duration-300 border border-transparent hover:border-[#0B1F3A]/5">
                         <div className={className}>
                           <Icon className="h-5 w-5" />
                         </div>
                         <div className="flex-1 min-w-0 py-1">
-                          <p className="font-serif text-[#0B1F3A] text-lg leading-tight group-hover:text-[#C8A96A] transition-colors truncate">
-                            {reg.event?.title}
+                          <p className="font-serif text-[#0B1F3A] text-lg leading-tight group-hover:text-[#C8A96A] transition-colors">
+                            {item.title}
                           </p>
                           <div className="flex flex-col gap-2 mt-3 text-slate-500">
                             <div className="flex items-center gap-2.5">
                               <Clock className="w-3.5 h-3.5 text-[#C8A96A]" />
-                              <span className="text-[10px] font-black uppercase tracking-widest">{reg.event?.time || 'Pending'}</span>
+                              <span className="text-[10px] font-black uppercase tracking-widest">{item.time}</span>
                             </div>
                             <div className="flex items-center gap-2.5">
                               <MapPin className="w-3.5 h-3.5 text-[#C8A96A]" />
-                              <span className="text-[10px] font-black uppercase tracking-widest truncate">{reg.event?.location || 'Online'}</span>
+                              <span className="text-[10px] font-black uppercase tracking-widest truncate">{item.location}</span>
                             </div>
                           </div>
                         </div>
@@ -184,7 +242,12 @@ export default function SchedulePage() {
                           <ChevronRight className="h-5 w-5" />
                         </Button>
                       </div>
-                    )
+                    );
+                    return item.href ? (
+                      <Link key={item.key} href={item.href} target="_blank">{content}</Link>
+                    ) : (
+                      <div key={item.key}>{content}</div>
+                    );
                   })
                 ) : (
                   <div className="text-center py-20 px-8 flex flex-col items-center gap-6">
