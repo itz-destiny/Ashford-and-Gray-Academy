@@ -46,6 +46,7 @@ firestore-debug.log
 
 # student PII — cohort roster spreadsheets stay local-only, never in git
 /public/AGFA FLAGSHIP COHORT*.xlsx
+/public/AGFA Flagship Cohort*.xlsx
 /public/~$*.xlsx
 
 # source timetable workbooks — imported into TimetableSession via a one-off
