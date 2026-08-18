@@ -382,6 +382,31 @@ export const emailTemplates = {
         }),
     }),
 
+    courseChanged: (data: {
+        recipientName: string;
+        previousCourseName: string;
+        newCourseName: string;
+        loginUrl: string;
+    }) => ({
+        subject: `Your Programme Has Changed — ${data.newCourseName}`,
+        html: brandedShell({
+            preheader: `You've been moved to ${data.newCourseName}. Please disregard your earlier welcome email.`,
+            title: 'Your Programme Has Changed',
+            body: `
+                <p style="font-size:16px;line-height:1.6;color:#334155;margin:0 0 22px">Dear ${escapeHtml(data.recipientName)},</p>
+                <p style="font-size:16px;line-height:1.6;color:#334155;margin:0 0 28px">Your enrollment has been updated. You have been moved from <strong style="color:#0B1F3A">${escapeHtml(data.previousCourseName)}</strong> to <strong style="color:#0B1F3A">${escapeHtml(data.newCourseName)}</strong>.</p>
+
+                <div style="background:#FBF8F0;border-left:3px solid #C8A96A;border-radius:8px;padding:16px 20px;margin:0 0 28px">
+                    <p style="font-size:13px;line-height:1.6;color:#64748b;margin:0"><strong style="color:#0B1F3A">Please disregard</strong> any earlier welcome email referencing ${escapeHtml(data.previousCourseName)} — your account, login, and password are unchanged, only your programme has been updated.</p>
+                </div>
+
+                <div style="text-align:center;margin:0 0 8px">
+                    <a href="${data.loginUrl}" style="display:inline-block;background:#0B1F3A;color:#ffffff;text-decoration:none;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;font-size:11px;padding:17px 44px;border-radius:9999px;box-shadow:0 8px 20px rgba(11,31,58,0.25)">Sign In to Your Dashboard</a>
+                </div>
+            `,
+        }),
+    }),
+
     newsletterConfirm: (data: {
         email: string;
         confirmUrl: string;
