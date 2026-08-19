@@ -197,6 +197,54 @@ const PUBLICATIONS: Publication[] = [
       },
     ],
   },
+  {
+    id: "the-silent-standard",
+    title: "The Silent Standard",
+    subtitle: "Leadership. Culture. Legacy.",
+    author: "Myne Wilfred",
+    authorTitle: "Founder/President, Ashford & Gray Academy",
+    coverImage: "/books/the-silent-standard.png",
+    featured: true,
+    description:
+      "What separates ordinary professionals from exceptional ones is rarely talent.\n" +
+      "It is discipline.\n\n" +
+      "It is the unseen commitment to excellence when no one is watching. It is the ability to maintain order under pressure, protect reputation through discretion, lead with emotional discipline, and build systems that continue to perform without constant supervision.\n\n" +
+      "The Silent Standard is not a motivational book. It is a practical doctrine for professionals, leaders, entrepreneurs, hospitality practitioners, executive assistants, estate managers, event professionals, and institutional builders who understand that lasting excellence is never accidental.\n\n" +
+      "Drawing from over two decades of executive service, hospitality leadership, estate management, protocol, and operational excellence, Myne Wilfred presents a powerful framework for building systems that inspire confidence, sustain quality, and protect dignity across every level of an organization.\n\n" +
+      "Inside this book, you will discover:\n" +
+      "• The architecture of disciplined leadership\n" +
+      "• How to build systems that function beyond personal supervision\n" +
+      "• Emotional discipline and decision-making under pressure\n" +
+      "• Estate and executive management at global standards\n" +
+      "• Hospitality systems that consistently deliver exceptional experiences\n" +
+      "• High-profile event management and operational command\n" +
+      "• Corporate governance, institutional excellence, and accountability\n" +
+      "• The transition from professional practice to thought leadership\n" +
+      "• How to build institutions that outlive their founders\n" +
+      "• Why true authority is built quietly through consistency rather than visibility\n\n" +
+      "Whether you are leading an organization, managing a hospitality business, overseeing executive operations, building an institution, or pursuing personal excellence, The Silent Standard provides a timeless framework for operating with clarity, structure, and integrity.\n\n" +
+      "This is more than a book.\n" +
+      "It is a philosophy.\n" +
+      "It is a leadership framework.\n" +
+      "It is a professional standard.\n\n" +
+      "If you aspire to become the kind of leader whose presence brings order, whose systems inspire confidence, and whose excellence speaks without noise, then this book was written for you.\n\n" +
+      "Because true excellence is not announced.\n\n" +
+      "It is quietly demonstrated—every single day.",
+    purchaseLinks: [
+      {
+        platform: "Selar",
+        url: "https://selar.com/51757z1c1k",
+        label: "Buy on Selar",
+        icon: "cart",
+      },
+      {
+        platform: "Ko-fi",
+        url: "https://ko-fi.com/s/710e1c6f03",
+        label: "Buy on Ko-fi",
+        icon: "heart",
+      },
+    ],
+  },
   // Future publications go here — copy the structure above
 ];
 
