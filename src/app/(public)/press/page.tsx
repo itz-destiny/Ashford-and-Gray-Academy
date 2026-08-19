@@ -9,7 +9,7 @@ import { ExpandableBlurb } from "./expandable-blurb";
 export const metadata = {
     title: "Academic Press — Books by Myne Wilfred on Hospitality & Leadership",
     description:
-        "Published works from Ashford & Gray Fusion Academy. Books by Myne Wilfred on hospitality management, domestic service, event planning, and leadership — including Beyond Service, Beyond Labour, Hospitality with Authority, and Events with Precision. Available on Amazon.",
+        "Published works from Ashford & Gray Fusion Academy. Books by Myne Wilfred on hospitality management, domestic service, event planning, and leadership — including Beyond Service, Beyond Labour, Hospitality with Authority, Events with Precision, and The Silent Standard.",
     keywords: [
         "hospitality books Nigeria",
         "Myne Wilfred books",
@@ -17,6 +17,7 @@ export const metadata = {
         "Beyond Service Myne Wilfred",
         "Events with Precision",
         "Hospitality with Authority",
+        "The Silent Standard Myne Wilfred",
         "domestic service book Nigeria",
         "event management book",
         "hospitality leadership book Africa",
@@ -24,7 +25,7 @@ export const metadata = {
     alternates: { canonical: "https://www.ashfordandgrayfusionacademy.com/press" },
     openGraph: {
         title: "Academic Press — Books by Myne Wilfred | Ashford & Gray",
-        description: "Hospitality management, domestic service, and leadership books by Myne Wilfred. Available on Amazon Kindle and Paperback.",
+        description: "Hospitality management, domestic service, and leadership books by Myne Wilfred.",
         url: "https://www.ashfordandgrayfusionacademy.com/press",
     },
 };
@@ -188,6 +189,53 @@ const BOOKS: Book[] = [
             {
                 label: "Buy on Ko-fi",
                 href: "https://ko-fi.com/s/42f9a63cfb",
+                icon: Bookmark,
+                note: "Direct from author",
+            },
+        ],
+    },
+    {
+        id: "the-silent-standard",
+        title: "The Silent Standard",
+        subtitle: "Leadership. Culture. Legacy.",
+        author: "Myne Wilfred",
+        publisher: "Ashford & Gray Academic Press",
+        blurb:
+            "What separates ordinary professionals from exceptional ones is rarely talent.\n" +
+            "It is discipline.\n\n" +
+            "It is the unseen commitment to excellence when no one is watching. It is the ability to maintain order under pressure, protect reputation through discretion, lead with emotional discipline, and build systems that continue to perform without constant supervision.\n\n" +
+            "The Silent Standard is not a motivational book. It is a practical doctrine for professionals, leaders, entrepreneurs, hospitality practitioners, executive assistants, estate managers, event professionals, and institutional builders who understand that lasting excellence is never accidental.\n\n" +
+            "Drawing from over two decades of executive service, hospitality leadership, estate management, protocol, and operational excellence, Myne Wilfred presents a powerful framework for building systems that inspire confidence, sustain quality, and protect dignity across every level of an organization.\n\n" +
+            "Inside this book, you will discover:\n" +
+            "• The architecture of disciplined leadership\n" +
+            "• How to build systems that function beyond personal supervision\n" +
+            "• Emotional discipline and decision-making under pressure\n" +
+            "• Estate and executive management at global standards\n" +
+            "• Hospitality systems that consistently deliver exceptional experiences\n" +
+            "• High-profile event management and operational command\n" +
+            "• Corporate governance, institutional excellence, and accountability\n" +
+            "• The transition from professional practice to thought leadership\n" +
+            "• How to build institutions that outlive their founders\n" +
+            "• Why true authority is built quietly through consistency rather than visibility\n\n" +
+            "Whether you are leading an organization, managing a hospitality business, overseeing executive operations, building an institution, or pursuing personal excellence, The Silent Standard provides a timeless framework for operating with clarity, structure, and integrity.\n\n" +
+            "This is more than a book.\n" +
+            "It is a philosophy.\n" +
+            "It is a leadership framework.\n" +
+            "It is a professional standard.\n\n" +
+            "If you aspire to become the kind of leader whose presence brings order, whose systems inspire confidence, and whose excellence speaks without noise, then this book was written for you.\n\n" +
+            "Because true excellence is not announced.\n\n" +
+            "It is quietly demonstrated—every single day.",
+        coverImage: "/books/the-silent-standard.png",
+        retailers: [
+            {
+                label: "Buy on Selar",
+                href: "https://selar.com/51757z1c1k",
+                icon: ShoppingBag,
+                note: "Direct from author",
+            },
+            {
+                label: "Buy on Ko-fi",
+                href: "https://ko-fi.com/s/710e1c6f03",
                 icon: Bookmark,
                 note: "Direct from author",
             },
