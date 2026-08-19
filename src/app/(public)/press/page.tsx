@@ -121,6 +121,12 @@ const BOOKS: Book[] = [
         backCoverImage: "/books/back%20of%20beyond%20the%20labour.jpg",
         retailers: [
             {
+                label: "Buy on Selar",
+                href: "https://selar.com/5714f724a1",
+                icon: ShoppingBag,
+                note: "Direct from author",
+            },
+            {
                 label: "Buy on Ko-fi",
                 href: "https://ko-fi.com/s/fc2d7f9456",
                 icon: Bookmark,
