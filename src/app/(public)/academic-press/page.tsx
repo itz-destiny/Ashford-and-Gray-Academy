@@ -123,6 +123,12 @@ const PUBLICATIONS: Publication[] = [
       "Because service should never mean invisibility. And labour should never exist without dignity.",
     purchaseLinks: [
       {
+        platform: "Selar",
+        url: "https://selar.com/5714f724a1",
+        label: "Buy on Selar",
+        icon: "cart",
+      },
+      {
         platform: "Ko-fi",
         url: "https://ko-fi.com/s/fc2d7f9456",
         label: "Buy on Ko-fi",
