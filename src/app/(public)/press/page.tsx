@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollAnimation } from "@/components/ui/scroll-animation";
-import { BookOpen, ShoppingBag, ExternalLink, Tablet, Bookmark } from "lucide-react";
+import { ShoppingBag, ExternalLink, Bookmark } from "lucide-react";
 import { ExpandableBlurb } from "./expandable-blurb";
 
 export const metadata = {
@@ -71,16 +71,10 @@ const BOOKS: Book[] = [
                 note: "Direct from author",
             },
             {
-                label: "Paperback on Amazon",
-                href: "https://www.amazon.com/Beyond-Service-Hospitality-Management-Sustainability/dp/9786841328",
-                icon: BookOpen,
-                note: "ISBN 978-978-684-132-8",
-            },
-            {
-                label: "Kindle Edition",
-                href: "https://www.amazon.com/Beyond-Service-Hospitality-Management-Sustainability-ebook/dp/B0H2JZC9NV",
-                icon: Tablet,
-                note: "eBook",
+                label: "Buy on Ko-fi",
+                href: "https://ko-fi.com/s/8dbf0b2301",
+                icon: Bookmark,
+                note: "Direct from author",
             },
         ],
     },
@@ -126,16 +120,10 @@ const BOOKS: Book[] = [
         backCoverImage: "/books/back%20of%20beyond%20the%20labour.jpg",
         retailers: [
             {
-                label: "Paperback on Amazon",
-                href: "https://www.amazon.com/dp/9786287126",
-                icon: BookOpen,
-                note: "Paperback",
-            },
-            {
-                label: "Kindle Edition",
-                href: "https://www.amazon.com/dp/B0H3ML3GZ1",
-                icon: Tablet,
-                note: "eBook",
+                label: "Buy on Ko-fi",
+                href: "https://ko-fi.com/s/fc2d7f9456",
+                icon: Bookmark,
+                note: "Direct from author",
             },
         ],
     },
@@ -166,16 +154,10 @@ const BOOKS: Book[] = [
         backCoverImage: "/books/hospitality-with-authority-back.png",
         retailers: [
             {
-                label: "Kindle Edition",
-                href: "https://www.amazon.com/dp/B0GX2Z6J6X",
-                icon: Tablet,
-                note: "eBook",
-            },
-            {
-                label: "Paperback on Amazon",
-                href: "https://www.amazon.com/dp/9786872576",
-                icon: BookOpen,
-                note: "ISBN 978-9786872576",
+                label: "Buy on Ko-fi",
+                href: "https://ko-fi.com/s/31e0213bd8",
+                icon: Bookmark,
+                note: "Direct from author",
             },
         ],
     },
@@ -204,16 +186,10 @@ const BOOKS: Book[] = [
         coverImage: "/books/events-with-precision.png",
         retailers: [
             {
-                label: "Kindle Edition",
-                href: "https://www.amazon.com/dp/B0H6LQ5YPG",
-                icon: Tablet,
-                note: "eBook",
-            },
-            {
-                label: "Paperback on Amazon",
-                href: "https://www.amazon.com/dp/978628710X",
-                icon: BookOpen,
-                note: "Paperback",
+                label: "Buy on Ko-fi",
+                href: "https://ko-fi.com/s/42f9a63cfb",
+                icon: Bookmark,
+                note: "Direct from author",
             },
         ],
     },

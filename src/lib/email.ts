@@ -407,6 +407,39 @@ export const emailTemplates = {
         }),
     }),
 
+    whatsappGroups: (data: {
+        recipientName: string;
+        communityUrl: string;
+        courseGroupUrl?: string;
+        courseName?: string;
+        alreadyInGroup?: boolean;
+    }) => ({
+        subject: 'Join Your AGFA Flagship Cohort WhatsApp Community',
+        html: brandedShell({
+            preheader: 'Join the AGFA Flagship Cohort community and your course group on WhatsApp.',
+            title: 'Join Us on WhatsApp',
+            body: `
+                <p style="font-size:16px;line-height:1.6;color:#334155;margin:0 0 22px">Dear ${escapeHtml(data.recipientName)},</p>
+                <p style="font-size:16px;line-height:1.6;color:#334155;margin:0 0 28px">Please join the AGFA Flagship Cohort community on WhatsApp for announcements and updates.</p>
+
+                <div style="text-align:center;margin:0 0 28px">
+                    <a href="${data.communityUrl}" style="display:inline-block;background:#0B1F3A;color:#ffffff;text-decoration:none;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;font-size:11px;padding:17px 44px;border-radius:9999px;box-shadow:0 8px 20px rgba(11,31,58,0.25)">Join the Community</a>
+                </div>
+
+                ${data.alreadyInGroup ? `
+                <div style="background:#FBF8F0;border-left:3px solid #C8A96A;border-radius:8px;padding:16px 20px;margin:0">
+                    <p style="font-size:13px;line-height:1.6;color:#64748b;margin:0">You're already a member of your course's WhatsApp group — no further action needed there.</p>
+                </div>
+                ` : data.courseGroupUrl ? `
+                <p style="font-size:16px;line-height:1.6;color:#334155;margin:0 0 20px">Then join your course group — <strong style="color:#0B1F3A">${escapeHtml(data.courseName || '')}</strong>:</p>
+                <div style="text-align:center;margin:0 0 8px">
+                    <a href="${data.courseGroupUrl}" style="display:inline-block;background:#ffffff;color:#0B1F3A;text-decoration:none;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;font-size:11px;padding:16px 44px;border-radius:9999px;border:2px solid #0B1F3A">Join Your Course Group</a>
+                </div>
+                ` : ''}
+            `,
+        }),
+    }),
+
     newsletterConfirm: (data: {
         email: string;
         confirmUrl: string;
