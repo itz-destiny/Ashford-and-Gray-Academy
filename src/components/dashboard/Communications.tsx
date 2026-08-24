@@ -258,12 +258,23 @@ export function Communications() {
     const handleStartVideoCall = async () => {
         if (!user || !selectedConversation) return;
 
-        const roomId = `meet-${user.uid.slice(0, 5)}-${Date.now()}`;
-        const meetingLink = `/meeting/${roomId}?conversationId=${selectedConversation._id}&hostId=${user.uid}`;
-        const messageContent = `I started a video meeting. Join here: ${window.location.origin}${meetingLink}`;
-
         try {
-            const res = await apiFetch('/api/messages', {
+            const zoomRes = await apiFetch('/api/messages/video-call', {
+                method: 'POST',
+                body: JSON.stringify({ conversationId: selectedConversation._id }),
+            });
+            const zoomBody = await zoomRes.json().catch(() => ({}));
+            if (!zoomRes.ok || !zoomBody.joinUrl) {
+                toast({
+                    variant: 'destructive',
+                    title: 'Could not start video call',
+                    description: zoomBody.error || 'Please try again.',
+                });
+                return;
+            }
+
+            const messageContent = `I started a video meeting. Join here: ${zoomBody.joinUrl}`;
+            await apiFetch('/api/messages', {
                 method: 'POST',
                 body: JSON.stringify({
                     receiverId: selectedConversation.otherUser.id,
@@ -272,12 +283,12 @@ export function Communications() {
                 })
             });
             // Firestore listener fans the meeting message out.
-            void res;
+
+            window.open(zoomBody.joinUrl, '_blank');
         } catch (error) {
             console.error(error);
+            toast({ variant: 'destructive', title: 'Could not start video call', description: 'Please try again.' });
         }
-
-        window.open(meetingLink, '_blank');
     };
 
     const getInitials = (name: string) => name ? name.split(' ').map(n => n[0]).join('').slice(0, 2) : '??';
@@ -551,7 +562,7 @@ export function Communications() {
                             <div className="space-y-12 max-w-5xl mx-auto">
                                 {messages.map((msg, i) => {
                                     const isMe = msg.senderId === user?.uid;
-                                    const isMeetingLink = msg.content.includes('/meeting/');
+                                    const isMeetingLink = msg.content.includes('zoom.us/');
 
                                     return (
                                         <div key={msg._id || i} className={`flex items-end gap-3 md:gap-4 ${isMe ? "justify-end" : "justify-start"} animate-in slide-in-from-bottom-4 duration-700`}>
@@ -573,9 +584,9 @@ export function Communications() {
                                                            <Video className="w-5 h-5 text-[#C8A96A]" />
                                                            <p className="text-[10px] font-black uppercase tracking-widest text-[#C8A96A]">Invitation Received</p>
                                                         </div>
-                                                        <Link href={msg.content.split(' ').find((w: string) => w.includes('/meeting/')) || '#'} target="_blank">
+                                                        <Link href={msg.content.split(' ').find((w: string) => w.includes('zoom.us/')) || '#'} target="_blank">
                                                             <Button size="lg" className="w-full bg-[#1F7A5A] hover:bg-emerald-600 text-white font-black text-[9px] md:text-[10px] uppercase tracking-widest rounded-none border-none h-12">
-                                                                Commence Meeting
+                                                                Join on Zoom
                                                             </Button>
                                                         </Link>
                                                     </div>
