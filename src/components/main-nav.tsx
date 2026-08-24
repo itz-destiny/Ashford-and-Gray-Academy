@@ -70,7 +70,7 @@ export function MainNav() {
         { label: "Executive Master Class", href: "/executive", desc: "Professional Excellence & The Silent Standard — our signature executive-level leadership and operational excellence programme." }
       ]
     },
-    { href: "/emc", label: "Executive Leadership Team" },
+    { href: "/emc", label: "Executive Management Council" },
     { href: "/facilitators", label: "Facilitators" },
     { href: "/academic-press", label: "Academic Press" },
     { href: "/partners", label: "Impact & Partners" },

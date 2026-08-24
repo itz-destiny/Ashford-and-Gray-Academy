@@ -112,7 +112,7 @@ export async function GET(req: NextRequest): Promise<Response> {
             }
             const users = await User.find(query).sort({ createdAt: -1 });
             return NextResponse.json(users);
-        })(req, {});
+        })(req, { params: Promise.resolve({}) });
     } catch (err) {
         return handleAuthError(err);
     }

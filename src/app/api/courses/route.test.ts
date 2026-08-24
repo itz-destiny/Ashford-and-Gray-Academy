@@ -116,7 +116,7 @@ describe('POST /api/courses', () => {
                 method: 'POST',
                 body: JSON.stringify(validBody),
             }),
-            {}
+            { params: Promise.resolve({}) }
         );
         expect(res.status).toBe(401);
     });
@@ -129,7 +129,7 @@ describe('POST /api/courses', () => {
                 method: 'POST',
                 body: JSON.stringify(validBody),
             }),
-            {}
+            { params: Promise.resolve({}) }
         );
         expect(res.status).toBe(403);
     });
@@ -144,7 +144,7 @@ describe('POST /api/courses', () => {
                 method: 'POST',
                 body: JSON.stringify({ ...validBody, status: 'published' }),
             }),
-            {}
+            { params: Promise.resolve({}) }
         );
         expect(res.status).toBe(201);
         // Status forced back to draft for non-admins.
@@ -163,7 +163,7 @@ describe('POST /api/courses', () => {
                 method: 'POST',
                 body: JSON.stringify({ ...validBody, status: 'published' }),
             }),
-            {}
+            { params: Promise.resolve({}) }
         );
         expect(courseCreateMock).toHaveBeenCalledWith(
             expect.objectContaining({ status: 'published' })
