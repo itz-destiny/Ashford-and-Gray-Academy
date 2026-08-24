@@ -126,7 +126,7 @@ describe('withAuth', () => {
     it('responds with 401 JSON when authentication fails', async () => {
         const handler = vi.fn();
         const wrapped = withAuth(async (_req, _ctx) => handler());
-        const res = await wrapped(makeRequest(), {});
+        const res = await wrapped(makeRequest(), { params: Promise.resolve({}) });
         expect(res.status).toBe(401);
         expect(handler).not.toHaveBeenCalled();
         const body = await res.json();
@@ -144,8 +144,8 @@ describe('withAuth', () => {
         const handler = vi.fn(async (_req: NextRequest, ctx: { auth: AuthContext }) => {
             return Response.json({ ok: true, role: ctx.auth.role });
         });
-        const wrapped = withAuth<{ params?: unknown }>(handler);
-        const res = await wrapped(makeRequest({ Authorization: 'Bearer t' }), { params: {} });
+        const wrapped = withAuth<{ params: Promise<any> }>(handler);
+        const res = await wrapped(makeRequest({ Authorization: 'Bearer t' }), { params: Promise.resolve({}) });
         expect(res.status).toBe(200);
         expect(handler).toHaveBeenCalledOnce();
         const body = await res.json();
@@ -163,7 +163,7 @@ describe('withAuth', () => {
         const wrapped = withAuth(async () => {
             throw new Error('boom');
         });
-        const res = await wrapped(makeRequest({ Authorization: 'Bearer t' }), {});
+        const res = await wrapped(makeRequest({ Authorization: 'Bearer t' }), { params: Promise.resolve({}) });
         expect(res.status).toBe(500);
     });
 });

@@ -32,7 +32,16 @@ const LiveClassSchema: Schema = new Schema({
     // overlapping meetings a given license already has at a given time.
     zoomHostEmail: { type: String },
     zoomAccountKey: { type: String },
-    status: { type: String, enum: ['scheduled', 'completed', 'cancelled'], default: 'scheduled' }
+    status: { type: String, enum: ['scheduled', 'completed', 'cancelled'], default: 'scheduled' },
+    // Attendee records written when a user clicks the class Join button.
+    attendees: [
+        {
+            userId: { type: String },
+            email: { type: String },
+            role: { type: String },
+            joinedAt: { type: Date },
+        },
+    ],
 }, { timestamps: true });
 
 LiveClassSchema.index({ status: 1, startTime: 1 });

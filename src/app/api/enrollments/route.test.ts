@@ -30,9 +30,7 @@ vi.mock('@/models/User', () => ({
 vi.mock('@/models/Enrollment', () => ({
     default: {
         find: (..._args: unknown[]) => ({
-            populate: () => ({
-                exec: () => enrollmentFindMock(),
-            }),
+            lean: () => enrollmentFindMock(),
         }),
         findOne: (..._args: unknown[]) => enrollmentFindOneMock(),
         create: (...args: unknown[]) => enrollmentCreateMock(...args),
@@ -67,7 +65,7 @@ describe('GET /api/enrollments', () => {
         userFindOneMock.mockResolvedValue(userProfile('student-1', 'student'));
         enrollmentFindMock.mockResolvedValue([]);
 
-        const res = await GET(request('http://localhost/api/enrollments'), {});
+            const res = await GET(request('http://localhost/api/enrollments'), { params: Promise.resolve({}) });
         expect(res.status).toBe(200);
     });
 
@@ -75,10 +73,10 @@ describe('GET /api/enrollments', () => {
         verifyIdTokenMock.mockResolvedValue({ uid: 'student-1' });
         userFindOneMock.mockResolvedValue(userProfile('student-1', 'student'));
 
-        const res = await GET(
-            request('http://localhost/api/enrollments?userId=student-2'),
-            {}
-        );
+            const res = await GET(
+                request('http://localhost/api/enrollments?userId=student-2'),
+                { params: Promise.resolve({}) }
+            );
         expect(res.status).toBe(403);
         expect(enrollmentFindMock).not.toHaveBeenCalled();
     });
@@ -88,10 +86,10 @@ describe('GET /api/enrollments', () => {
         userFindOneMock.mockResolvedValue(userProfile('instructor-1', 'instructor'));
         enrollmentFindMock.mockResolvedValue([]);
 
-        const res = await GET(
-            request('http://localhost/api/enrollments?userId=student-2'),
-            {}
-        );
+            const res = await GET(
+                request('http://localhost/api/enrollments?userId=student-2'),
+                { params: Promise.resolve({}) }
+            );
         expect(res.status).toBe(200);
         expect(enrollmentFindMock).toHaveBeenCalled();
     });
@@ -102,17 +100,17 @@ describe('GET /api/enrollments', () => {
             userFindOneMock.mockResolvedValue(userProfile('staff', role));
             enrollmentFindMock.mockResolvedValue([]);
 
-            const res = await GET(
-                request('http://localhost/api/enrollments?userId=somebody-else'),
-                {}
-            );
+                const res = await GET(
+                    request('http://localhost/api/enrollments?userId=somebody-else'),
+                    { params: Promise.resolve({}) }
+                );
             expect(res.status, `role=${role}`).toBe(200);
         }
     });
 
     it('returns 401 when no Authorization header is present', async () => {
         const req = new NextRequest('http://localhost/api/enrollments');
-        const res = await GET(req, {});
+            const res = await GET(req, { params: Promise.resolve({}) });
         expect(res.status).toBe(401);
     });
 });
@@ -128,7 +126,7 @@ describe('POST /api/enrollments', () => {
             method: 'POST',
             body: JSON.stringify({ userId: 'IMPERSONATED', courseId: 'course-9' }),
         });
-        const res = await POST(req, {});
+            const res = await POST(req, { params: Promise.resolve({}) });
         expect(res.status).toBe(201);
         expect(enrollmentCreateMock).toHaveBeenCalledWith({
             userId: 'student-1',
@@ -144,7 +142,7 @@ describe('POST /api/enrollments', () => {
             method: 'POST',
             body: JSON.stringify({ courseId: '' }),
         });
-        const res = await POST(req, {});
+            const res = await POST(req, { params: Promise.resolve({}) });
         expect(res.status).toBe(400);
     });
 
@@ -157,7 +155,7 @@ describe('POST /api/enrollments', () => {
             method: 'POST',
             body: JSON.stringify({ courseId: 'course-9' }),
         });
-        const res = await POST(req, {});
+            const res = await POST(req, { params: Promise.resolve({}) });
         expect(res.status).toBe(200);
         expect(enrollmentCreateMock).not.toHaveBeenCalled();
     });

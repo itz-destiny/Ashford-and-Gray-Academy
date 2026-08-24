@@ -56,12 +56,7 @@ export async function authenticate(req: NextRequest): Promise<AuthContext> {
     }
 
     if (!dbOk || !user) {
-        return {
-            uid: decoded.uid,
-            email: decoded.email || 'student@academy.com',
-            role: 'student', // Fallback role for local testing
-            displayName: decoded.name || decoded.email?.split('@')[0] || 'Student',
-        };
+        throw new AuthError(403, 'Profile not found');
     }
 
     return {
@@ -118,8 +113,12 @@ export function requireRole(auth: AuthContext, roles: readonly Role[]): void {
     }
 }
 
-type RouteContext = Record<string, unknown>;
-type AuthedHandler<Ctx extends RouteContext> = (
+type RouteContext = {
+    params: Promise<any>;
+    [key: string]: unknown;
+};
+
+type AuthedHandler<Ctx extends RouteContext = RouteContext> = (
     req: NextRequest,
     ctx: Ctx & { auth: AuthContext }
 ) => Promise<Response> | Response;

@@ -185,7 +185,7 @@ export default function CourseRegistrarAnalyticsPage() {
                                             dataKey="value"
                                         >
                                             {stats.categoryDistribution.map((entry: any, index: number) => (
-                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} cornerRadius={8} />
+                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                             ))}
                                         </Pie>
                                         <Tooltip
