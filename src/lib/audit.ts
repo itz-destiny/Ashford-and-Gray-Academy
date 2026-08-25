@@ -49,6 +49,9 @@ export const AUDIT_ACTIONS = {
     LOGOUT: 'logout',
     PERMISSION_CHANGED: 'permission_changed',
 
+    ENROLLMENT_TRANSFERRED: 'enrollment_transferred',
+    STUDENT_ADMITTED: 'student_admitted',
+
     CONTENT_UPLOADED: 'content_uploaded',
     CONTENT_DELETED: 'content_deleted',
 

@@ -2,15 +2,15 @@ import { CurriculumCatalog } from "@/components/curriculum-catalog";
 
 export default function CertificationsPage() {
   const certificationCourseIds = [
-    "664f3a8b2d1c9e8a7f0e0001", // Housekeeping & Domestic Management
-    "664f3a8b2d1c9e8a7f0e0002", // Hospitality Management
-    "664f3a8b2d1c9e8a7f0e0003", // Events & Protocol Management
-    "664f3a8b2d1c9e8a7f0e0004", // Executive Assistant Management
-    "664f3a8b2d1c9e8a7f0e0005", // Hospitality & Global Relationship Management
-    "664f3a8b2d1c9e8a7f0e0011", // Certificate in Business Innovation & Entrepreneurship
-    "664f3a8b2d1c9e8a7f0e0012", // Certificate in Food & Beverage Management
-    "664f3a8b2d1c9e8a7f0e0013", // Hospitality Workforce Management (formerly Hospitality Labour Management)
-    "664f3a8b2d1c9e8a7f0e0014", // Certificate in Restaurant & Bar Service
+    "6a44e9f2bae728bb84e67624", // Housekeeping & Domestic Management
+    "6a44e9f2bae728bb84e67629", // Hospitality Management
+    "6a44e9f2bae728bb84e6762e", // Events & Protocol Management
+    "6a44e9f2bae728bb84e67633", // Executive Assistant Management
+    "6a44e9f2bae728bb84e67638", // Hospitality & Global Relationship Management
+    "6a44e9f2bae728bb84e6763d", // Certificate in Business Innovation & Entrepreneurship
+    "6a44e9f2bae728bb84e67644", // Certificate in Food & Beverage Management
+    "6a44e9f2bae728bb84e6764b", // Hospitality Workforce Management (formerly Hospitality Labour Management)
+    "6a44e9f2bae728bb84e67652", // Certificate in Restaurant & Bar Service
     "6a75aaad7cc19b6ca1a85f95", // Service Excellence (formerly The Silent Standard, split from the Executive Master Class)
   ];
 

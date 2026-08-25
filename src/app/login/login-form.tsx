@@ -37,7 +37,7 @@ const PORTAL_COPY: Record<string, { title: string; description: string; roles: s
   emc: {
     title: "Executive Leadership Portal",
     description: "Sign in to the administrative workspace for Executive Leadership and office staff.",
-    roles: ["admin", "registrar", "course_registrar", "finance"],
+    roles: ["admin", "registrar", "course_registrar", "finance", "admissions_officer"],
   },
 };
 
@@ -91,6 +91,7 @@ export function LoginForm({ onSwitchToSignUp }: LoginFormProps) {
       if (role === 'registrar') { router.push('/registrar'); return; }
       if (role === 'course_registrar') { router.push('/course-registrar'); return; }
       if (role === 'finance') { router.push('/finance'); return; }
+      if (role === 'admissions_officer') { router.push('/admissions'); return; }
       // Students may follow the redirectUrl (e.g. back to a course page they tried to visit).
       if (role === 'student') { router.push(redirectUrl || '/dashboard'); return; }
       // No role yet — route to profile completion.

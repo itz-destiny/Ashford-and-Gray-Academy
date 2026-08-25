@@ -16,6 +16,7 @@ const PORTAL_BY_ROLE: Record<string, string> = {
     finance: "/finance",
     instructor: "/instructor",
     student: "/dashboard",
+    admissions_officer: "/admissions",
 };
 
 type RoleGuardProps = {

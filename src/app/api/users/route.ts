@@ -20,7 +20,7 @@ const limiter = rateLimit({
     uniqueTokenPerInterval: 500,
 });
 
-const ELEVATED_ROLES: readonly Role[] = ['admin', 'instructor', 'registrar', 'course_registrar', 'finance'];
+const ELEVATED_ROLES: readonly Role[] = ['admin', 'instructor', 'registrar', 'course_registrar', 'finance', 'admissions_officer'];
 
 function isElevated(auth: AuthContext): boolean {
     return ELEVATED_ROLES.includes(auth.role);
@@ -105,7 +105,7 @@ export async function GET(req: NextRequest): Promise<Response> {
             const query: Record<string, unknown> = {};
             if (roleParam === 'staff') {
                 query.role = {
-                    $in: ['registrar', 'course_registrar', 'finance', 'admin', 'instructor'],
+                    $in: ['registrar', 'course_registrar', 'finance', 'admin', 'instructor', 'admissions_officer'],
                 };
             } else if (roleParam) {
                 query.role = roleParam;
@@ -129,7 +129,7 @@ const upsertSchema = z.object({
     displayName: z.string().min(1).max(120).optional(),
     photoURL: z.string().url().optional().or(z.literal('')),
     role: z
-        .enum(['student', 'instructor', 'admin', 'registrar', 'course_registrar', 'finance'])
+        .enum(['student', 'instructor', 'admin', 'registrar', 'course_registrar', 'finance', 'admissions_officer'])
         .optional(),
     bio: z.string().max(2000).optional(),
     title: z.string().max(200).optional(),
@@ -292,6 +292,7 @@ export async function POST(req: NextRequest): Promise<Response> {
                 const portalByRole: Record<string, string> = {
                     admin: '/admin', registrar: '/registrar', course_registrar: '/course-registrar',
                     finance: '/finance', instructor: '/instructor', student: '/dashboard',
+                    admissions_officer: '/admissions',
                 };
                 const portal = portalByRole[user.role] || '/dashboard';
                 const tpl = emailTemplates.welcome({

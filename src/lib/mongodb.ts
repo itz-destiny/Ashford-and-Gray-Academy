@@ -25,8 +25,8 @@ async function dbConnect() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
-      serverSelectionTimeoutMS: 1500,
-      connectTimeoutMS: 1500,
+      serverSelectionTimeoutMS: 10000,
+      connectTimeoutMS: 10000,
     };
 
     console.log('Connecting to MongoDB...');
