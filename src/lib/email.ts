@@ -382,6 +382,52 @@ export const emailTemplates = {
         }),
     }),
 
+    staffWelcome: (data: {
+        recipientName: string;
+        email: string;
+        password: string;
+        loginUrl: string;
+        roleTitle: string;
+    }) => ({
+        subject: `Your Ashford & Gray Fusion Academy staff login — ${data.roleTitle}`,
+        html: brandedShell({
+            preheader: `You've been added as ${data.roleTitle}. Here is your login for ${data.email}.`,
+            title: 'Welcome to the Team',
+            body: `
+                <p style="font-size:16px;line-height:1.6;color:#334155;margin:0 0 22px">Dear ${escapeHtml(data.recipientName)},</p>
+                <p style="font-size:16px;line-height:1.6;color:#334155;margin:0 0 28px">You've been added to the Ashford &amp; Gray Fusion Academy staff system as <strong style="color:#0B1F3A">${escapeHtml(data.roleTitle)}</strong>. Your credentials are below.</p>
+
+                <div style="background:linear-gradient(180deg,#0B1F3A 0%,#132C4F 100%);border-radius:20px;padding:2px;margin:0 0 28px">
+                    <div style="background:#ffffff;border-radius:18px;padding:28px 28px 24px">
+                        <p style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.25em;color:#C8A96A;margin:0 0 18px;text-align:center">Your Login Credentials</p>
+                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td style="padding-bottom:16px">
+                                    <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#94a3b8;margin:0 0 5px">Email Address</p>
+                                    <p style="font-size:16px;font-weight:700;color:#0B1F3A;margin:0;word-break:break-all">${escapeHtml(data.email)}</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border-top:1px dashed #e2e8f0;padding-top:16px">
+                                    <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#94a3b8;margin:0 0 5px">Temporary Password</p>
+                                    <p style="font-size:18px;font-weight:700;color:#0B1F3A;margin:0;font-family:'Courier New',monospace;letter-spacing:0.03em">${escapeHtml(data.password)}</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <div style="text-align:center;margin:0 0 32px">
+                    <a href="${data.loginUrl}" style="display:inline-block;background:#0B1F3A;color:#ffffff;text-decoration:none;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;font-size:11px;padding:17px 44px;border-radius:9999px;box-shadow:0 8px 20px rgba(11,31,58,0.25)">Sign In to Your Workspace</a>
+                </div>
+
+                <div style="background:#FBF8F0;border-left:3px solid #C8A96A;border-radius:8px;padding:16px 20px;margin:0">
+                    <p style="font-size:13px;line-height:1.6;color:#64748b;margin:0"><strong style="color:#0B1F3A">For your security:</strong> you'll be asked to set your own password the first time you sign in. Keep this temporary password private until then.</p>
+                </div>
+            `,
+        }),
+    }),
+
     courseChanged: (data: {
         recipientName: string;
         previousCourseName: string;

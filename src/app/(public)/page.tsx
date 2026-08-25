@@ -64,9 +64,16 @@ export default function Home() {
           // "(Certificate)" suffix their DB counterpart doesn't, which would
           // otherwise dodge the dedupe check and show the same course twice.
           const normalizeTitle = (t: string) => t.trim().toLowerCase().replace(/\s*\(certificate\)\s*$/, '');
-          const merged = [...STATIC_COURSES];
-          data.forEach(dc => {
-            if (!merged.some(mc => mc.id === dc.id || normalizeTitle(mc.title) === normalizeTitle(dc.title))) {
+          // Live database data always wins over the static placeholder —
+          // otherwise a course's cover image (and everything else) never
+          // updates here even after it changes in the DB, while the
+          // dashboard (which only ever reads the DB) moves on.
+          const merged = STATIC_COURSES.map(sc => {
+            const live = data.find((dc: Course) => dc.id === sc.id || normalizeTitle(dc.title) === normalizeTitle(sc.title));
+            return live || sc;
+          });
+          data.forEach((dc: Course) => {
+            if (!merged.some(mc => mc.id === dc.id)) {
               merged.push(dc);
             }
           });

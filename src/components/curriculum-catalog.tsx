@@ -51,10 +51,18 @@ export function CurriculumCatalog({ title, subtitle, badge, courseIds, accelerat
         }
         const data = await res.json();
         if (active) {
-          const apiCourses = Array.isArray(data) ? data : [];
-          const merged = [...STATIC_COURSES];
+          const apiCourses: Course[] = Array.isArray(data) ? data : [];
+          // Live database data always wins over the static placeholder —
+          // otherwise a course's cover image (and everything else) never
+          // updates on the public site even after it changes in the DB,
+          // while the dashboard (which only ever reads the DB) moves on.
+          const normalizeTitle = (t: string) => t.trim().toLowerCase().replace(/\s*\(certificate\)\s*$/, '');
+          const merged = STATIC_COURSES.map(sc => {
+            const live = apiCourses.find(ac => ac.id === sc.id || normalizeTitle(ac.title) === normalizeTitle(sc.title));
+            return live || sc;
+          });
           apiCourses.forEach(ac => {
-            if (!merged.some(mc => mc.id === ac.id || mc.title.toLowerCase() === ac.title.toLowerCase())) {
+            if (!merged.some(mc => mc.id === ac.id)) {
               merged.push(ac);
             }
           });

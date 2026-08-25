@@ -2,12 +2,12 @@ import { CurriculumCatalog } from "@/components/curriculum-catalog";
 
 export default function ProgramsPage() {
   const diplomaCourseIds = [
-    "664f3a8b2d1c9e8a7f0e0006", // Diploma in Hospitality Management
-    "664f3a8b2d1c9e8a7f0e0008", // Diploma in Business Innovation & Entrepreneurship
-    "664f3a8b2d1c9e8a7f0e0007", // Diploma in Professional Development & Global Relations
-    "664f3a8b2d1c9e8a7f0e0009", // Diploma in Event & Protocol Management
-    "664f3a8b2d1c9e8a7f0e0015", // Diploma in Food & Beverage Management
-    "664f3a8b2d1c9e8a7f0e0016", // Diploma in Hospitality Labour Management & Workforce Development
+    "6a44e9f2bae728bb84e6765b", // Diploma in Hospitality Management
+    "6a44e9f2bae728bb84e67665", // Diploma in Business Innovation & Entrepreneurship
+    "6a44e9f2bae728bb84e67660", // Diploma in Professional Development & Global Relations
+    "6a44e9f2bae728bb84e6766a", // Diploma in Event & Protocol Management
+    "6a44e9f2bae728bb84e6766f", // Diploma in Food & Beverage Management
+    "6a44e9f2bae728bb84e67676", // Diploma in Hospitality Labour Management & Workforce Development
   ];
 
   return (
