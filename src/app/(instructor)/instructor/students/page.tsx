@@ -54,15 +54,24 @@ export default function InstructorStudentsPage() {
         .filter(s => !search.trim() || s.name.toLowerCase().includes(search.trim().toLowerCase()));
 
     return (
-        <div className="space-y-6">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Student Management</h1>
-                    <p className="text-slate-500">Track progress and grade submissions across your courses.</p>
+        <div className="mx-auto px-4 sm:px-6 md:px-12 py-8 md:py-12 space-y-10 md:space-y-16 pb-32 max-w-[1600px] bg-[#FAF9F6]">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 md:gap-8">
+                <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                        <div className="w-2 h-8 bg-[#C8A96A]" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#0B1F3A]/60">Faculty Portal</span>
+                    </div>
+                    <h1 className="text-3xl md:text-5xl font-serif text-[#0B1F3A] tracking-tight leading-tight">
+                        My <span className="text-[#C8A96A]">Students.</span>
+                    </h1>
+                    <p className="text-slate-500 font-medium text-base md:text-lg max-w-lg leading-relaxed font-serif">
+                        Track progress across every course you teach.
+                    </p>
                 </div>
-                <div className="flex gap-2 w-full md:w-auto">
+                <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                     <Select value={selectedCourse} onValueChange={setSelectedCourse}>
-                        <SelectTrigger className="w-[200px] bg-white">
+                        <SelectTrigger className="w-full sm:w-[200px] h-12 bg-white rounded-none border-[#0B1F3A]/10">
                             <SelectValue placeholder="Filter by Course" />
                         </SelectTrigger>
                         <SelectContent>
@@ -73,82 +82,81 @@ export default function InstructorStudentsPage() {
                         </SelectContent>
                     </Select>
                     <div className="relative flex-1 md:w-64">
-                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
-                        <Input placeholder="Search students..." className="pl-9 bg-white" value={search} onChange={(e) => setSearch(e.target.value)} />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-[#0B1F3A]/30" />
+                        <Input placeholder="Search students..." className="pl-11 h-12 bg-white rounded-none border-[#0B1F3A]/10" value={search} onChange={(e) => setSearch(e.target.value)} />
                     </div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card className="border-none bg-indigo-50/50 shadow-none">
-                    <CardContent className="p-6 flex items-center gap-4">
-                        <div className="bg-indigo-600 p-3 rounded-xl text-white">
-                            <UserCheck className="w-6 h-6" />
-                        </div>
-                        <div>
-                            <h3 className="text-2xl font-bold text-slate-900">{new Set(students.map(s => s.uid)).size}</h3>
-                            <p className="text-xs text-indigo-700 font-medium">Total Active Students</p>
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card className="border-none bg-emerald-50/50 shadow-none">
-                    <CardContent className="p-6 flex items-center gap-4">
-                        <div className="bg-emerald-600 p-3 rounded-xl text-white">
-                            <Award className="w-6 h-6" />
-                        </div>
-                        <div>
-                            <h3 className="text-2xl font-bold text-slate-900">{students.filter(s => s.progress === 100).length}</h3>
-                            <p className="text-xs text-emerald-700 font-medium">Course Completions</p>
-                        </div>
-                    </CardContent>
-                </Card>
+            {/* KPI Strip */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="flex items-center gap-4 p-4 pr-6 bg-white border border-[#0B1F3A]/10 shadow-sm border-t-4 border-t-[#C8A96A]">
+                    <div className="w-14 h-14 bg-[#F6F4F2] border border-[#0B1F3A]/5 flex items-center justify-center flex-shrink-0">
+                        <UserCheck className="w-7 h-7 text-[#0B1F3A]" />
+                    </div>
+                    <div>
+                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Active Students</p>
+                        <p className="text-2xl font-black text-[#0B1F3A]">{new Set(students.map(s => s.uid)).size}</p>
+                    </div>
+                </div>
+                <div className="flex items-center gap-4 p-4 pr-6 bg-white border border-[#0B1F3A]/10 shadow-sm border-t-4 border-t-[#C8A96A]">
+                    <div className="w-14 h-14 bg-[#F6F4F2] border border-[#0B1F3A]/5 flex items-center justify-center flex-shrink-0">
+                        <Award className="w-7 h-7 text-[#1F7A5A]" />
+                    </div>
+                    <div>
+                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Course Completions</p>
+                        <p className="text-2xl font-black text-[#0B1F3A]">{students.filter(s => s.progress === 100).length}</p>
+                    </div>
+                </div>
             </div>
 
-            <Card className="border-none shadow-none overflow-hidden">
+            <Card className="border border-[#0B1F3A]/10 rounded-none shadow-sm bg-white border-t-4 border-t-[#C8A96A] overflow-hidden">
                 <CardContent className="p-0">
-                    <Table>
-                        <TableHeader className="bg-slate-50">
-                            <TableRow>
-                                <TableHead className="font-bold text-slate-900 pl-6">Student</TableHead>
-                                <TableHead className="font-bold text-slate-900">Enrolled Course</TableHead>
-                                <TableHead className="font-bold text-slate-900">Progress</TableHead>
-                                <TableHead className="text-right pr-6">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {filteredStudents.map((student) => (
-                                <TableRow key={student.id} className="hover:bg-slate-50/50 transition-colors">
-                                    <TableCell className="pl-6 py-4">
-                                        <div className="flex items-center gap-3">
-                                            <Avatar className="h-9 w-9 border">
-                                                <AvatarImage src={student.photoURL} />
-                                                <AvatarFallback className="bg-slate-100 text-slate-600 font-bold">{student.avatar}</AvatarFallback>
-                                            </Avatar>
-                                            <span className="font-bold text-slate-700">{student.name}</span>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell className="text-sm font-medium text-slate-600">{student.course}</TableCell>
-                                    <TableCell className="w-48">
-                                        <div className="space-y-1.5">
-                                            <div className="flex justify-between text-[10px] font-bold text-slate-400">
-                                                <span>{student.progress}%</span>
-                                            </div>
-                                            <Progress value={student.progress} className="h-1.5" />
-                                        </div>
-                                    </TableCell>
-                                    <TableCell className="text-right pr-6">
-                                        <Button asChild variant="ghost" size="sm" className="text-indigo-600 font-bold hover:bg-indigo-50">
-                                            <Link href="/instructor/communications">
-                                                Message <ChevronRight className="w-4 h-4 ml-1" />
-                                            </Link>
-                                        </Button>
-                                    </TableCell>
+                    <div className="overflow-x-auto">
+                        <Table>
+                            <TableHeader className="bg-[#F6F4F2]">
+                                <TableRow className="hover:bg-transparent border-[#0B1F3A]/10">
+                                    <TableHead className="font-black text-[#0B1F3A] uppercase text-[9px] tracking-widest pl-8">Student</TableHead>
+                                    <TableHead className="font-black text-[#0B1F3A] uppercase text-[9px] tracking-widest">Enrolled Course</TableHead>
+                                    <TableHead className="font-black text-[#0B1F3A] uppercase text-[9px] tracking-widest">Progress</TableHead>
+                                    <TableHead className="text-right pr-8 font-black text-[#0B1F3A] uppercase text-[9px] tracking-widest">Actions</TableHead>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
+                            </TableHeader>
+                            <TableBody>
+                                {filteredStudents.map((student) => (
+                                    <TableRow key={student.id} className="hover:bg-[#F6F4F2]/60 transition-colors border-[#0B1F3A]/5">
+                                        <TableCell className="pl-8 py-4">
+                                            <div className="flex items-center gap-3">
+                                                <Avatar className="h-9 w-9 rounded-none border border-[#0B1F3A]/10">
+                                                    <AvatarImage src={student.photoURL} />
+                                                    <AvatarFallback className="rounded-none bg-[#0B1F3A] text-white text-xs font-black">{student.avatar}</AvatarFallback>
+                                                </Avatar>
+                                                <span className="font-serif text-[#0B1F3A]">{student.name}</span>
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="text-sm font-medium text-slate-600">{student.course}</TableCell>
+                                        <TableCell className="w-48">
+                                            <div className="space-y-1.5">
+                                                <div className="flex justify-between text-[10px] font-black text-slate-400">
+                                                    <span>{student.progress}%</span>
+                                                </div>
+                                                <Progress value={student.progress} className="h-1.5 rounded-none" />
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="text-right pr-8">
+                                            <Button asChild variant="ghost" size="sm" className="text-[#C8A96A] hover:text-[#0B1F3A] hover:bg-[#F6F4F2] font-black text-[10px] uppercase tracking-widest rounded-none">
+                                                <Link href="/instructor/communications">
+                                                    Message <ChevronRight className="w-4 h-4 ml-1" />
+                                                </Link>
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </div>
                     {filteredStudents.length === 0 && (
-                        <div className="text-center py-12 text-slate-400 italic">No students found matching your criteria.</div>
+                        <div className="text-center py-16 md:py-20 text-slate-400 font-serif italic">No students found matching your criteria.</div>
                     )}
                 </CardContent>
             </Card>
