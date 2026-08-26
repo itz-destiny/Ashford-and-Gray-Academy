@@ -15,7 +15,8 @@ import {
   Clock,
   FileText,
   Video,
-  MonitorPlay
+  MonitorPlay,
+  ClipboardCheck
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -30,6 +31,7 @@ export function InstructorSidebar({ className }: { className?: string }) {
     { href: "/instructor/courses", label: "My Teaching", icon: Book },
     { href: "/instructor/schedule", label: "Class Schedule", icon: Clock },
     { href: "/instructor/students", label: "My Students", icon: Users },
+    { href: "/instructor/tests", label: "Tests & Exams", icon: ClipboardCheck },
     { href: "/instructor/communications", label: "My Messages", icon: MessageSquare },
     { href: "/meeting", label: "Live Room", icon: Video },
   ];

@@ -52,6 +52,11 @@ export const AUDIT_ACTIONS = {
     ENROLLMENT_TRANSFERRED: 'enrollment_transferred',
     STUDENT_ADMITTED: 'student_admitted',
 
+    ASSESSMENT_CREATED: 'assessment_created',
+    ASSESSMENT_PUBLISHED: 'assessment_published',
+    ASSESSMENT_DELETED: 'assessment_deleted',
+    ATTEMPT_GRADED: 'attempt_graded',
+
     CONTENT_UPLOADED: 'content_uploaded',
     CONTENT_DELETED: 'content_deleted',
 
@@ -63,6 +68,7 @@ export const AUDIT_RESOURCES = {
     USER: 'user',
     COURSE: 'course',
     ENROLLMENT: 'enrollment',
+    ASSESSMENT: 'assessment',
     TRANSACTION: 'transaction',
     CONTENT: 'content',
     SETTINGS: 'settings',
