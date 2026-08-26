@@ -50,10 +50,15 @@ export default function CertificationPage() {
         const data = await res.json();
         const apiCourses = Array.isArray(data) ? data : [];
         
-        // Merge so STATIC_COURSES are prioritized
-        const merged = [...STATIC_COURSES];
+        // Live database data always wins over the static placeholder —
+        // otherwise a course's cover image (and everything else) never
+        // updates on this page even after it changes in the DB.
+        const merged = STATIC_COURSES.map(sc => {
+          const live = apiCourses.find(ac => ac.id === sc.id || ac.title.toLowerCase() === sc.title.toLowerCase());
+          return live || sc;
+        });
         apiCourses.forEach(ac => {
-          if (!merged.some(mc => mc.id === ac.id || mc.title.toLowerCase() === ac.title.toLowerCase())) {
+          if (!merged.some(mc => mc.id === ac.id)) {
             merged.push(ac);
           }
         });
