@@ -40,19 +40,23 @@ export default function SchedulePage() {
   const [lectureSessions, setLectureSessions] = useState<LectureSession[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [loading, setLoading] = useState(true);
+  const [attendance, setAttendance] = useState<{ total: number; attended: number; missed: number } | null>(null);
 
   useEffect(() => {
     if (!user) return;
     const fetchSchedule = async () => {
       try {
-        const [regRes, sessionsRes] = await Promise.all([
+        const [regRes, sessionsRes, attendanceRes] = await Promise.all([
           apiFetch('/api/registrations'),
           apiFetch('/api/timetable/my-sessions'),
+          apiFetch('/api/live-classes/my-attendance'),
         ]);
         const regData = await regRes.json();
         const sessionsData = await sessionsRes.json().catch(() => null);
+        const attendanceData = await attendanceRes.json().catch(() => null);
         if (Array.isArray(regData)) setRegistrations(regData);
         if (sessionsData?.success && Array.isArray(sessionsData.sessions)) setLectureSessions(sessionsData.sessions);
+        if (attendanceData?.success) setAttendance(attendanceData.summary);
       } catch (error) {
         console.error(error);
       } finally {
@@ -129,10 +133,22 @@ export default function SchedulePage() {
             Your lecture timetable and registered events in one place.
           </p>
         </div>
-        <div className="flex items-center gap-4 px-5 py-3 bg-white border border-[#0B1F3A]/10 rounded-none shadow-sm">
-          <div className="w-2 h-2 bg-[#1F7A5A] rounded-full animate-pulse" />
-          <span className="text-[10px] font-black text-[#0B1F3A] uppercase tracking-widest">Real-time Sync</span>
-        </div>
+        {attendance && attendance.total > 0 && (
+          <div className="flex items-stretch divide-x divide-[#0B1F3A]/10 bg-white border border-[#0B1F3A]/10 rounded-none shadow-sm">
+            <div className="px-6 py-3 text-center">
+              <p className="text-2xl font-black text-[#0B1F3A]">{attendance.total}</p>
+              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Classes Held</p>
+            </div>
+            <div className="px-6 py-3 text-center">
+              <p className="text-2xl font-black text-[#1F7A5A]">{attendance.attended}</p>
+              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Attended</p>
+            </div>
+            <div className="px-6 py-3 text-center">
+              <p className={cn("text-2xl font-black", attendance.missed > 0 ? "text-rose-600" : "text-[#0B1F3A]")}>{attendance.missed}</p>
+              <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Missed</p>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="grid gap-12 lg:grid-cols-12 items-start">

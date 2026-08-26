@@ -23,6 +23,7 @@ export default function InstructorDashboard() {
     const [enrollments, setEnrollments] = useState<any[]>([]);
     const [messages, setMessages] = useState<any[]>([]);
     const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
+    const [sessions, setSessions] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -30,15 +31,17 @@ export default function InstructorDashboard() {
 
         const fetchData = async () => {
             try {
-                const [cRes, enRes, mRes, evRes] = await Promise.all([
+                const [cRes, enRes, mRes, evRes, sRes] = await Promise.all([
                     apiFetch('/api/courses'),
                     apiFetch('/api/enrollments'),
                     apiFetch('/api/messages'),
                     fetch('/api/events'),
+                    apiFetch('/api/timetable/my-sessions'),
                 ]);
-                const [allCourses, allEnrollments, allMessages, events] = await Promise.all([
-                    cRes.json(), enRes.json(), mRes.json(), evRes.json(),
+                const [allCourses, allEnrollments, allMessages, events, sessionsBody] = await Promise.all([
+                    cRes.json(), enRes.json(), mRes.json(), evRes.json(), sRes.json().catch(() => null),
                 ]);
+                if (sessionsBody?.success && Array.isArray(sessionsBody.sessions)) setSessions(sessionsBody.sessions);
 
                 const mine = Array.isArray(allCourses)
                     ? allCourses.filter((c: any) =>
@@ -72,6 +75,10 @@ export default function InstructorDashboard() {
     }, [user]);
 
     const unreadCount = messages.length;
+    const now = Date.now();
+    const nextSession = sessions
+        .filter((s: any) => s.status !== 'cancelled' && s.status !== 'completed' && new Date(s.endTime).getTime() >= now)
+        .sort((a: any, b: any) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())[0];
 
     const kpiCards = [
         {
@@ -134,11 +141,6 @@ export default function InstructorDashboard() {
                     <p className="text-slate-500 font-medium text-lg max-w-lg leading-relaxed font-serif">
                         You are teaching {courses.length} {courses.length === 1 ? 'programme' : 'programmes'} with {enrollments.length} students enrolled.
                     </p>
-                </div>
-                <div className="flex items-center gap-4">
-                    <Badge className="bg-[#1F7A5A] text-white px-5 py-2 rounded-none font-black text-[10px] uppercase tracking-widest border-none">
-                        ✓ Connection Ready
-                    </Badge>
                 </div>
             </div>
 
@@ -301,17 +303,33 @@ export default function InstructorDashboard() {
                                 <div className="p-6 bg-white/5 border border-white/10">
                                     <p className="text-[9px] font-black text-[#C8A96A] uppercase tracking-widest mb-1">Status</p>
                                     <div className="flex items-center gap-2 mt-2">
-                                        <div className="w-2 h-2 bg-[#1F7A5A] rounded-full animate-pulse" />
-                                        <p className="text-white font-black text-sm">Room Ready</p>
+                                        <div className={cn(
+                                            "w-2 h-2 rounded-full",
+                                            nextSession?.status === 'scheduled' ? "bg-[#1F7A5A] animate-pulse" : "bg-slate-500"
+                                        )} />
+                                        <p className="text-white font-black text-sm">
+                                            {!nextSession ? 'No Class Scheduled' : nextSession.status === 'scheduled' ? 'Room Ready' : 'Awaiting Zoom Setup'}
+                                        </p>
                                     </div>
+                                    {nextSession && (
+                                        <p className="text-white/50 text-xs font-medium mt-3 truncate">
+                                            {nextSession.module} · {format(new Date(nextSession.startTime), 'MMM dd, hh:mm a')}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                <Button asChild className="w-full h-14 bg-[#C8A96A] hover:bg-[#B69859] text-[#0B1F3A] font-black rounded-none shadow-xl text-[10px] uppercase tracking-widest">
-                                    <Link href={courses.length > 0 ? `/meeting/course-${courses[0]._id || courses[0].id}` : '/live-classes'}>
-                                        <Video className="w-4 h-4 mr-2" /> Start Live Class
-                                    </Link>
-                                </Button>
+                                {nextSession?.status === 'scheduled' && nextSession.zoomStartUrl ? (
+                                    <Button asChild className="w-full h-14 bg-[#C8A96A] hover:bg-[#B69859] text-[#0B1F3A] font-black rounded-none shadow-xl text-[10px] uppercase tracking-widest">
+                                        <a href={nextSession.zoomStartUrl} target="_blank" rel="noopener noreferrer">
+                                            <Video className="w-4 h-4 mr-2" /> Start Live Class
+                                        </a>
+                                    </Button>
+                                ) : (
+                                    <Button disabled className="w-full h-14 bg-white/10 text-white/40 font-black rounded-none shadow-none text-[10px] uppercase tracking-widest cursor-not-allowed">
+                                        <Video className="w-4 h-4 mr-2" /> {nextSession ? 'Awaiting Zoom Setup' : 'No Class Scheduled'}
+                                    </Button>
+                                )}
                                 <Button asChild variant="outline" className="w-full h-12 rounded-none border-white/20 bg-white/5 text-white hover:bg-white/10 font-black text-[10px] uppercase tracking-widest shadow-none">
                                     <Link href="/instructor/schedule">
                                         View Schedule <ArrowUpRight className="w-3 h-3 ml-2" />

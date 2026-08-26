@@ -1,3 +1,6 @@
+import { readFile } from 'fs/promises';
+import path from 'path';
+
 export interface ZoomAccountCredentials {
     accountId: string;
     clientId: string;
@@ -146,5 +149,34 @@ export async function enableZoomVirtualBackground(account: ZoomAccountCredential
     if (!res.ok) {
         const errorText = await res.text();
         console.warn(`Could not enable virtual backgrounds for ${hostEmail}: ${errorText}`);
+    }
+}
+
+// Zoom shows the host seat's own profile picture in-meeting whenever their
+// camera is off — for a shared seat that's a real person's real photo (e.g.
+// the license owner), not the instructor teaching. There's no API to remove
+// a profile picture outright, so this replaces it with the academy logo
+// instead, the same way renameZoomHost replaces the name.
+export async function setZoomHostPicture(account: ZoomAccountCredentials, hostEmail: string): Promise<void> {
+    if (!hostEmail || hostEmail === 'me') return;
+
+    try {
+        const token = await getZoomAccessToken(account);
+        const imageBuffer = await readFile(path.join(process.cwd(), 'public', 'icon.png'));
+        const form = new FormData();
+        form.append('pic_file', new Blob([imageBuffer], { type: 'image/png' }), 'academy-logo.png');
+
+        const res = await fetch(`https://api.zoom.us/v2/users/${encodeURIComponent(hostEmail)}/picture`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` },
+            body: form,
+        });
+
+        if (!res.ok) {
+            const errorText = await res.text();
+            console.warn(`Could not set Zoom host picture for ${hostEmail}: ${errorText}`);
+        }
+    } catch (err) {
+        console.warn(`Could not set Zoom host picture for ${hostEmail}:`, err);
     }
 }
