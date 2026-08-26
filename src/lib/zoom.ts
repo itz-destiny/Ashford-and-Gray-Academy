@@ -84,3 +84,38 @@ export async function createZoomMeeting(params: CreateZoomMeetingParams) {
 
     return await res.json();
 }
+
+// Every licensed Zoom host is a shared, generic seat rotated across whichever
+// instructor is teaching that time slot — never a per-instructor account. Left
+// alone, a class would open showing that seat's own registered name (e.g. the
+// school's Zoom account holder) as the host, not the instructor actually
+// teaching. Renaming the seat's profile to the instructor's name right before
+// each class is scheduled makes the in-meeting host name correct. Safe to
+// call repeatedly: `findAvailableZoomHost` never double-books a seat for
+// overlapping times, so a rename always belongs to whoever holds that seat
+// next, and the account owner's own real identity is never actually changed.
+export async function renameZoomHost(account: ZoomAccountCredentials, hostEmail: string, instructorName: string): Promise<void> {
+    if (!hostEmail || hostEmail === 'me') return;
+    const parts = instructorName.trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) return;
+    const first_name = parts[0];
+    const last_name = parts.slice(1).join(' ') || parts[0];
+
+    const token = await getZoomAccessToken(account);
+    const res = await fetch(`https://api.zoom.us/v2/users/${encodeURIComponent(hostEmail)}`, {
+        method: 'PATCH',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ first_name, last_name }),
+    });
+
+    if (!res.ok) {
+        const errorText = await res.text();
+        // Never block scheduling the class over a cosmetic rename failure —
+        // log it so an admin can fix the Zoom app's scope, but the class
+        // still needs to go out under whatever name the seat currently has.
+        console.warn(`Could not rename Zoom host ${hostEmail} to "${instructorName}": ${errorText}`);
+    }
+}

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import TimetableSession from '@/models/TimetableSession';
 import LiveClass from '@/models/LiveClass';
-import { createZoomMeeting } from '@/lib/zoom';
+import { createZoomMeeting, renameZoomHost } from '@/lib/zoom';
 import { findAvailableZoomHost } from '@/lib/zoom-scheduler';
 import { withAuth } from '@/lib/auth-server';
 
@@ -47,6 +47,10 @@ export const POST = withAuth<RouteParams>(async (_req, { auth, params }) => {
                 { error: 'Every licensed Zoom host is already booked for this time slot. Reschedule this session, or add another Zoom license.' },
                 { status: 409 }
             );
+        }
+
+        if (session.lecturerName) {
+            await renameZoomHost(assignment.account, assignment.hostEmail, session.lecturerName);
         }
 
         const zoomResponse = await createZoomMeeting({
