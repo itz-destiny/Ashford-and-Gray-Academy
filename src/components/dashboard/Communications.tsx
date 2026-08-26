@@ -10,8 +10,10 @@ import { useUser, useUserConversations, useConversationMessages } from "@/fireba
 import { apiFetch } from "@/lib/api-client";
 import { Paperclip, Search, Send, Smile, MoreVertical, Video, Loader2, ArrowLeft, History, Landmark, GraduationCap, X } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
+import { upload } from "@vercel/blob/client";
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useAuth } from "@/firebase/provider";
 import EmojiPicker from 'emoji-picker-react';
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
@@ -29,7 +31,10 @@ const ROLE_BADGE: Record<string, { label: string; className: string }> = {
 
 export function Communications() {
     const { user } = useUser();
+    const auth = useAuth();
     const { toast } = useToast();
+    const imageInputRef = useRef<HTMLInputElement>(null);
+    const [uploadingAttachment, setUploadingAttachment] = useState(false);
     const [conversations, setConversations] = useState<any[]>([]);
     const [officesDirectory, setOfficesDirectory] = useState<any[]>([]);
     const [lecturersDirectory, setLecturersDirectory] = useState<any[]>([]);
@@ -346,6 +351,54 @@ export function Communications() {
         }
     };
 
+    // The attachment button only ever sends images — no documents, video, or
+    // other file types. Uploaded images are only kept for 30 days (see
+    // /api/cron/delete-old-attachments); older ones are removed from storage
+    // and the message shows as expired.
+    const handleAttachmentPicked = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        e.target.value = '';
+        if (!file || !user || !selectedConversation) return;
+
+        if (!file.type.startsWith('image/')) {
+            toast({ variant: 'destructive', title: 'Images only', description: 'Only image attachments are supported.' });
+            return;
+        }
+        if (file.size > 10 * 1024 * 1024) {
+            toast({ variant: 'destructive', title: 'Image too large', description: 'Images must be 10 MB or smaller.' });
+            return;
+        }
+
+        const currentUser = auth?.currentUser;
+        if (!currentUser) return;
+
+        setUploadingAttachment(true);
+        try {
+            const idToken = await currentUser.getIdToken();
+            const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+            const blob = await upload(`uploads/image/${currentUser.uid}/${safeName}`, file, {
+                access: 'public',
+                handleUploadUrl: '/api/upload',
+                clientPayload: JSON.stringify({ category: 'image', contentType: file.type }),
+                headers: { Authorization: `Bearer ${idToken}` },
+            });
+
+            await apiFetch('/api/messages', {
+                method: 'POST',
+                body: JSON.stringify({
+                    receiverId: selectedConversation.otherUser.id,
+                    conversationId: selectedConversation._id,
+                    content: blob.url,
+                }),
+            });
+        } catch (err) {
+            console.error(err);
+            toast({ variant: 'destructive', title: 'Upload failed', description: 'Could not send that image.' });
+        } finally {
+            setUploadingAttachment(false);
+        }
+    };
+
     const getInitials = (name: string) => name ? name.split(' ').map(n => n[0]).join('').slice(0, 2) : '??';
 
     if (loading) {
@@ -619,6 +672,7 @@ export function Communications() {
                                 {[...messages, ...pendingMessages].map((msg, i) => {
                                     const isMe = msg.senderId === user?.uid;
                                     const isMeetingLink = msg.content.includes('zoom.us/');
+                                    const isImage = /^https?:\/\/\S+\.(jpg|jpeg|png|gif|webp)(\?\S*)?$/i.test(msg.content.trim());
 
                                     return (
                                         <div key={msg._id || i} className={`flex items-end gap-3 md:gap-4 ${isMe ? "justify-end" : "justify-start"} animate-in slide-in-from-bottom-4 duration-700 ${msg.pending ? 'opacity-50' : ''}`}>
@@ -646,6 +700,11 @@ export function Communications() {
                                                             </Button>
                                                         </Link>
                                                     </div>
+                                                ) : isImage ? (
+                                                    <a href={msg.content} target="_blank" rel="noopener noreferrer">
+                                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                        <img src={msg.content} alt="Shared image" className="max-w-[220px] md:max-w-[280px] max-h-72 object-cover" />
+                                                    </a>
                                                 ) : (
                                                     <p className="text-sm md:text-base font-medium leading-relaxed whitespace-pre-wrap">{msg.content}</p>
                                                 )}
@@ -687,9 +746,19 @@ export function Communications() {
                                         variant="ghost"
                                         size="icon"
                                         className="rounded-none border border-[#0B1F3A]/10 bg-white hover:bg-[#F6F4F2] text-[#0B1F3A]/40 hover:text-[#C8A96A] h-11 w-11 md:h-12 md:w-12 hidden sm:flex"
+                                        onClick={() => imageInputRef.current?.click()}
+                                        disabled={uploadingAttachment}
+                                        title="Send an image"
                                     >
-                                        <Paperclip className="h-5 w-5" />
+                                        {uploadingAttachment ? <Loader2 className="h-5 w-5 animate-spin" /> : <Paperclip className="h-5 w-5" />}
                                     </Button>
+                                    <input
+                                        ref={imageInputRef}
+                                        type="file"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={handleAttachmentPicked}
+                                    />
                                 </div>
                                 <div className="relative flex-1">
                                     <Input
