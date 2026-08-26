@@ -73,6 +73,11 @@ export async function createZoomMeeting(params: CreateZoomMeetingParams) {
                 mute_upon_entry: true,
                 waiting_room: true,
                 approval_type: 2, // No registration required
+                // Without this, whether a plain join link requires a Zoom
+                // sign-in/account depends on the host account's own default —
+                // which can be "authenticated users only." Students should
+                // never need a Zoom account just to join a class link.
+                meeting_authentication: false,
             }
         })
     });
@@ -117,5 +122,29 @@ export async function renameZoomHost(account: ZoomAccountCredentials, hostEmail:
         // log it so an admin can fix the Zoom app's scope, but the class
         // still needs to go out under whatever name the seat currently has.
         console.warn(`Could not rename Zoom host ${hostEmail} to "${instructorName}": ${errorText}`);
+    }
+}
+
+// Turns on the "Virtual Background" feature for a licensed host so they have
+// backgrounds to pick from in-meeting. Zoom has no API to force a specific
+// image into a specific meeting — the host still chooses one live from
+// Zoom's own gallery (Video Settings > Background & Effects) — this only
+// makes sure that gallery isn't greyed out/disabled for the seat.
+export async function enableZoomVirtualBackground(account: ZoomAccountCredentials, hostEmail: string): Promise<void> {
+    if (!hostEmail || hostEmail === 'me') return;
+
+    const token = await getZoomAccessToken(account);
+    const res = await fetch(`https://api.zoom.us/v2/users/${encodeURIComponent(hostEmail)}/settings`, {
+        method: 'PATCH',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ in_meeting: { virtual_background: true } }),
+    });
+
+    if (!res.ok) {
+        const errorText = await res.text();
+        console.warn(`Could not enable virtual backgrounds for ${hostEmail}: ${errorText}`);
     }
 }

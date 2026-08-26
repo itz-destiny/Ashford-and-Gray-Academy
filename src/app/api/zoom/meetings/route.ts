@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import LiveClass from '@/models/LiveClass';
-import { createZoomMeeting, renameZoomHost } from '@/lib/zoom';
+import { createZoomMeeting, renameZoomHost, enableZoomVirtualBackground } from '@/lib/zoom';
 import { findAvailableZoomHost } from '@/lib/zoom-scheduler';
 import { withAuth } from '@/lib/auth-server';
 import { z } from 'zod';
@@ -40,6 +40,7 @@ export const POST = withAuth(async (req, { auth }) => {
         if (auth.displayName) {
             await renameZoomHost(assignment.account, assignment.hostEmail, auth.displayName);
         }
+        await enableZoomVirtualBackground(assignment.account, assignment.hostEmail);
 
         // Create Zoom meeting via API, under whichever host is free
         const zoomResponse = await createZoomMeeting({
