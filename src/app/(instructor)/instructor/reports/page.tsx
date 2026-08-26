@@ -1,7 +1,7 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { BarChart3, TrendingUp, Award, DollarSign } from "lucide-react";
+import { BarChart3, TrendingUp, Award } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { apiFetch } from "@/lib/api-client";
 import { cn } from "@/lib/utils";
@@ -41,15 +41,14 @@ export default function InstructorReportsPage() {
         { label: 'Course Completion', value: fmt(kpis.courseCompletion, '%'), sub: 'Enrollments at 100% progress', icon: Award, accent: 'text-[#1F7A5A]' },
         { label: 'Student Engagement', value: fmt(kpis.studentEngagement, '%'), sub: 'Average live-class attendance', icon: TrendingUp, accent: 'text-[#0B1F3A]' },
         { label: 'Average Test Score', value: fmt(kpis.averageScore, '%'), sub: 'Across your graded tests', icon: BarChart3, accent: 'text-[#C8A96A]' },
-        { label: 'Total Revenue', value: kpis.totalRevenue ? `$${kpis.totalRevenue.toLocaleString()}` : '$0', sub: 'Completed enrollments', icon: DollarSign, accent: 'text-[#1F7A5A]' },
     ];
 
     if (loading) {
         return (
             <div className="p-6 md:p-12 space-y-10 animate-pulse bg-[#FAF9F6] min-h-screen">
                 <div className="h-20 bg-slate-200/50 rounded-none" />
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {[...Array(4)].map((_, i) => <div key={i} className="h-28 bg-slate-200/50 rounded-none" />)}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    {[...Array(3)].map((_, i) => <div key={i} className="h-28 bg-slate-200/50 rounded-none" />)}
                 </div>
                 <div className="h-96 bg-slate-200/50 rounded-none" />
             </div>
@@ -85,7 +84,7 @@ export default function InstructorReportsPage() {
             ) : (
                 <>
                     {/* KPI Strip */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                         {kpiCards.map((card, i) => (
                             <div key={i} className="flex items-center gap-4 p-4 pr-6 bg-white border border-[#0B1F3A]/10 shadow-sm border-t-4 border-t-[#C8A96A]">
                                 <div className="w-14 h-14 bg-[#F6F4F2] border border-[#0B1F3A]/5 flex items-center justify-center flex-shrink-0">

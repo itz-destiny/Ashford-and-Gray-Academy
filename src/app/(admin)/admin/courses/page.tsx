@@ -229,7 +229,7 @@ export default function AdminCoursesPage() {
                                             {course.category}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell className="font-bold text-slate-700">${course.price}</TableCell>
+                                    <TableCell className="font-bold text-slate-700">₦{course.price?.toLocaleString()}</TableCell>
                                     <TableCell className="text-slate-500 font-medium">{course.enrollmentCount} Student(s)</TableCell>
                                     <TableCell>
                                         <Badge className="bg-emerald-50 text-emerald-700 hover:bg-emerald-50 border-none px-2 py-0.5 text-[10px] font-bold">

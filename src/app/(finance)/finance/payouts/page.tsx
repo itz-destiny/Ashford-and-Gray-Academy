@@ -77,7 +77,7 @@ export default function FinancePayoutsPage() {
                         <div className="bg-blue-50 p-3 rounded-2xl"><Wallet className="h-5 w-5 text-blue-600" /></div>
                         <div>
                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pending Payouts</p>
-                            <p className="text-2xl font-black text-[#0B1F3A]">${summary.pendingAmount.toLocaleString()}</p>
+                            <p className="text-2xl font-black text-[#0B1F3A]">₦{summary.pendingAmount.toLocaleString()}</p>
                             <p className="text-[10px] text-slate-500 mt-1">{summary.pendingCount} pending requests</p>
                         </div>
                     </CardContent>
@@ -87,7 +87,7 @@ export default function FinancePayoutsPage() {
                         <div className="bg-emerald-50 p-3 rounded-2xl"><DollarSign className="h-5 w-5 text-emerald-600" /></div>
                         <div>
                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Paid This Month</p>
-                            <p className="text-2xl font-black text-[#0B1F3A]">${summary.paidThisMonth.toLocaleString()}</p>
+                            <p className="text-2xl font-black text-[#0B1F3A]">₦{summary.paidThisMonth.toLocaleString()}</p>
                         </div>
                     </CardContent>
                 </Card>
@@ -139,7 +139,7 @@ export default function FinancePayoutsPage() {
                                                 </td>
                                                 <td className="px-6 py-4 text-slate-500">{new Date(p.createdAt).toLocaleDateString()}</td>
                                                 <td className="px-6 py-4 text-slate-500">{p.processedAt ? new Date(p.processedAt).toLocaleDateString() : '—'}</td>
-                                                <td className="px-6 py-4 text-right font-black text-orange-600">-${p.amount.toLocaleString()} <span className="text-[10px] font-bold text-slate-400">{p.currency}</span></td>
+                                                <td className="px-6 py-4 text-right font-black text-orange-600">-₦{p.amount.toLocaleString()} <span className="text-[10px] font-bold text-slate-400">{p.currency}</span></td>
                                                 <td className="px-6 py-4 text-right">
                                                     <Badge className={cn("border-none font-bold text-[10px] uppercase tracking-widest px-2.5 py-0.5", variant.bg, variant.text)}>
                                                         {variant.label}

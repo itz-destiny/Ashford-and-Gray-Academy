@@ -89,10 +89,10 @@ export default function FinanceReportsPage() {
             </div>
 
             <div className="grid gap-6 md:grid-cols-4">
-                <KpiCard label="Net Profit" value={`$${stats.net.toLocaleString()}`} icon={TrendingUp} tint="emerald" />
-                <KpiCard label="Gross Revenue" value={`$${stats.revenue.toLocaleString()}`} icon={DollarSign} tint="blue" />
-                <KpiCard label="Refunds" value={`$${stats.refunds.toLocaleString()}`} icon={Receipt} tint="orange" />
-                <KpiCard label="Payouts" value={`$${stats.payouts.toLocaleString()}`} icon={Wallet} tint="indigo" />
+                <KpiCard label="Net Profit" value={`₦${stats.net.toLocaleString()}`} icon={TrendingUp} tint="emerald" />
+                <KpiCard label="Gross Revenue" value={`₦${stats.revenue.toLocaleString()}`} icon={DollarSign} tint="blue" />
+                <KpiCard label="Refunds" value={`₦${stats.refunds.toLocaleString()}`} icon={Receipt} tint="orange" />
+                <KpiCard label="Payouts" value={`₦${stats.payouts.toLocaleString()}`} icon={Wallet} tint="indigo" />
             </div>
 
             <Card className="border-none bg-white rounded-[2.5rem] shadow-sm">
@@ -104,8 +104,8 @@ export default function FinanceReportsPage() {
                         {stats.months.map(m => (
                             <div key={m.key} className="flex flex-col items-center gap-2 group">
                                 <div className="w-full flex gap-1 items-end h-44">
-                                    <div className="flex-1 bg-emerald-500/80 hover:bg-emerald-500 rounded-t-lg transition-all" style={{ height: `${(m.revenue / stats.peak) * 100}%` }} title={`Revenue: $${m.revenue.toLocaleString()}`} />
-                                    <div className="flex-1 bg-orange-400/80 hover:bg-orange-400 rounded-t-lg transition-all" style={{ height: `${(m.expenses / stats.peak) * 100}%` }} title={`Expenses: $${m.expenses.toLocaleString()}`} />
+                                    <div className="flex-1 bg-emerald-500/80 hover:bg-emerald-500 rounded-t-lg transition-all" style={{ height: `${(m.revenue / stats.peak) * 100}%` }} title={`Revenue: ₦${m.revenue.toLocaleString()}`} />
+                                    <div className="flex-1 bg-orange-400/80 hover:bg-orange-400 rounded-t-lg transition-all" style={{ height: `${(m.expenses / stats.peak) * 100}%` }} title={`Expenses: ₦${m.expenses.toLocaleString()}`} />
                                 </div>
                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{m.label}</p>
                             </div>
@@ -135,7 +135,7 @@ export default function FinanceReportsPage() {
                                         <div className="h-full bg-[#1F7A5A]" style={{ width: `${(amount / stats.topCourses[0][1]) * 100}%` }} />
                                     </div>
                                 </div>
-                                <p className="font-black text-[#0B1F3A]">${amount.toLocaleString()}</p>
+                                <p className="font-black text-[#0B1F3A]">₦{amount.toLocaleString()}</p>
                             </div>
                         ))}
                     </CardContent>
