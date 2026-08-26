@@ -14,7 +14,6 @@ import {
   LayoutDashboard,
   Clock,
   FileText,
-  Video,
   History,
   ClipboardCheck
 } from "lucide-react";
@@ -34,7 +33,6 @@ export function InstructorSidebar({ className }: { className?: string }) {
     { href: "/instructor/students", label: "My Students", icon: Users },
     { href: "/instructor/tests", label: "Tests & Exams", icon: ClipboardCheck },
     { href: "/instructor/communications", label: "My Messages", icon: MessageSquare },
-    { href: "/meeting", label: "Live Room", icon: Video },
   ];
 
   return (

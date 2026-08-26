@@ -134,7 +134,7 @@ export default function InstructorCoursesPage() {
                                 </div>
                                 <div className="text-right">
                                     <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Est. Revenue</p>
-                                    <p className="font-bold text-[#1F7A5A] text-sm">${((course.price || 0) * (course.enrollmentCount ?? 0)).toLocaleString()}</p>
+                                    <p className="font-bold text-[#1F7A5A] text-sm">₦{((course.price || 0) * (course.enrollmentCount ?? 0)).toLocaleString()}</p>
                                 </div>
                             </div>
                             {course.status && course.status !== 'published' && (

@@ -153,7 +153,7 @@ function EventCard({ event, isRegistered }: { event: any, isRegistered?: boolean
                         <Badge variant="outline" className="text-[10px] font-black uppercase text-[#0B1F3A] border-[#0B1F3A]/10 bg-[#F6F4F2] rounded-none">
                             {event.category}
                         </Badge>
-                        <span className="text-xl font-serif text-[#0B1F3A]">${event.price || 0}</span>
+                        <span className="text-xl font-serif text-[#0B1F3A]">₦{(event.price || 0).toLocaleString()}</span>
                     </div>
                     <h3 className="text-xl font-serif text-[#0B1F3A] group-hover:text-[#C8A96A] transition-colors leading-tight">{event.title}</h3>
 

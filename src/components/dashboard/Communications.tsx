@@ -8,9 +8,10 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useUser, useUserConversations, useConversationMessages } from "@/firebase";
 import { apiFetch } from "@/lib/api-client";
-import { Paperclip, Search, Send, Smile, MoreVertical, Phone, Video, Loader2, ArrowLeft, History, Landmark, GraduationCap, X } from "lucide-react";
+import { Paperclip, Search, Send, Smile, MoreVertical, Video, Loader2, ArrowLeft, History, Landmark, GraduationCap, X } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import EmojiPicker from 'emoji-picker-react';
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
@@ -41,6 +42,14 @@ export function Communications() {
     const [loading, setLoading] = useState(true);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [showMobileChat, setShowMobileChat] = useState(false);
+    const router = useRouter();
+    // A notification can deep-link straight into one conversation
+    // (?conversationId=...) instead of just landing on the inbox in general.
+    // Consumed once, then cleared from the URL so it doesn't keep overriding
+    // the user's own navigation afterward.
+    const deepLinkRef = useRef<string | null>(
+        typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('conversationId') : null
+    );
 
     // Office staff (admin, registrar, course_registrar, finance) get two
     // directories — Offices and Lecturers — so they can reach any colleague
@@ -216,7 +225,17 @@ export function Communications() {
             )).filter((c) => c !== null) as any[];
             if (cancelled) return;
             setConversations(enriched);
-            if (enriched.length > 0 && !selectedConversation && !showMobileChat) {
+
+            if (deepLinkRef.current) {
+                const target = enriched.find((c) => c._id === deepLinkRef.current);
+                if (target) {
+                    setSelectedConversation(target);
+                    setShowMobileChat(true);
+                    setActiveTab('conversations');
+                    deepLinkRef.current = null;
+                    router.replace(window.location.pathname);
+                }
+            } else if (enriched.length > 0 && !selectedConversation && !showMobileChat) {
                 if (typeof window !== 'undefined' && window.innerWidth >= 768) {
                     setSelectedConversation(enriched[0]);
                 }
@@ -580,9 +599,6 @@ export function Communications() {
                                 </div>
                             </div>
                             <div className="flex items-center gap-2 md:gap-3">
-                                <Button variant="ghost" size="icon" className="rounded-none border border-[#0B1F3A]/10 bg-white hover:bg-[#F6F4F2] text-[#0B1F3A]/50 hidden sm:flex">
-                                    <Phone className="h-4 w-4" />
-                                </Button>
                                 <Button
                                     variant="ghost"
                                     size="icon"

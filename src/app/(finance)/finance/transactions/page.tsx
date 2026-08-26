@@ -176,7 +176,7 @@ export default function FinanceTransactionsPage() {
                                                     "px-6 py-4 text-right font-black",
                                                     negative ? "text-orange-600" : "text-emerald-600"
                                                 )}>
-                                                    {negative ? '-' : '+'}${t.amount.toLocaleString()} <span className="text-[10px] font-bold text-slate-400">{t.currency}</span>
+                                                    {negative ? '-' : '+'}₦{t.amount.toLocaleString()} <span className="text-[10px] font-bold text-slate-400">{t.currency}</span>
                                                 </td>
                                                 <td className="px-6 py-4 text-right">
                                                     <Badge className={cn("border-none font-bold text-[10px] uppercase tracking-widest px-2.5 py-0.5", variant.bg, variant.text)}>

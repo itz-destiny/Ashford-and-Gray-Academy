@@ -271,7 +271,7 @@ export default function ManageCoursePage() {
                                 : "bg-slate-100 text-slate-600"
                             )}>{course.status}</Badge>
                         </div>
-                        <p className="text-slate-500 font-medium italic">{course.category} · {course.level} · ${course.price}</p>
+                        <p className="text-slate-500 font-medium italic">{course.category} · {course.level} · ₦{course.price?.toLocaleString()}</p>
                     </div>
                 </div>
                 <div className="flex flex-wrap gap-2">

@@ -168,15 +168,26 @@ export const POST = withAuth(async (req: NextRequest, { auth }) => {
         // Group (class) conversations skip this: everyone would get pinged
         // on every message in a whole-cohort thread.
         if (conversation?.type !== 'group') {
-            const receiverProfile = await User.findOne({ uid: receiverId }).select('uid email displayName').lean<{ uid: string; email: string; displayName: string } | null>();
+            const receiverProfile = await User.findOne({ uid: receiverId }).select('uid email displayName role').lean<{ uid: string; email: string; displayName: string; role: string } | null>();
             if (receiverProfile) {
                 const isSupportReply = conversation?.kind === 'support' && auth.role !== 'student';
+                const communicationsPathByRole: Record<string, string> = {
+                    admin: '/admin/communications',
+                    registrar: '/registrar/communications',
+                    course_registrar: '/course-registrar/communications',
+                    finance: '/finance/communications',
+                    instructor: '/instructor/communications',
+                };
+                const communicationsPath = communicationsPathByRole[receiverProfile.role] || '/communications';
                 void createNotification({
                     userId: receiverProfile.uid,
                     type: 'message',
                     title: isSupportReply ? 'Your Support Request Has a Reply' : `New message from ${auth.displayName}`,
                     message: isSupportReply ? `${auth.displayName} replied to your request.` : content.length > 140 ? `${content.slice(0, 140)}…` : content,
-                    actionUrl: '/communications',
+                    // Deep-link straight into this conversation, not just the
+                    // inbox in general — Communications.tsx reads ?conversationId
+                    // to auto-select it on load.
+                    actionUrl: conversationId ? `${communicationsPath}?conversationId=${conversationId}` : communicationsPath,
                     // Only email for support replies — a student has no reason
                     // to be polling the dashboard otherwise. Regular chat stays
                     // in-app only so every message doesn't also send an email.
