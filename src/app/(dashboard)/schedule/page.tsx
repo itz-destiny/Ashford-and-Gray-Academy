@@ -21,6 +21,7 @@ type LectureSession = {
   lecturerName: string;
   status: string;
   zoomJoinUrl?: string;
+  liveClassId?: string;
 };
 
 type AgendaItem = {
@@ -30,6 +31,7 @@ type AgendaItem = {
   time: string;
   location: string;
   href?: string;
+  liveClassId?: string;
 };
 
 export default function SchedulePage() {
@@ -83,6 +85,7 @@ export default function SchedulePage() {
         time: `${format(start, 'hh:mm a')} – ${format(new Date(s.endTime), 'hh:mm a')}`,
         location: s.lecturerName ? `Lecturer: ${s.lecturerName}` : 'Live Class',
         href: s.zoomJoinUrl && s.status === 'scheduled' ? s.zoomJoinUrl : undefined,
+        liveClassId: s.liveClassId,
       });
     }
 
@@ -243,8 +246,12 @@ export default function SchedulePage() {
                         </Button>
                       </div>
                     );
+                    const recordAttendance = () => {
+                      if (!item.liveClassId) return;
+                      apiFetch(`/api/live-classes/${item.liveClassId}/attendance`, { method: 'POST' }).catch(() => null);
+                    };
                     return item.href ? (
-                      <Link key={item.key} href={item.href} target="_blank">{content}</Link>
+                      <Link key={item.key} href={item.href} target="_blank" onClick={recordAttendance}>{content}</Link>
                     ) : (
                       <div key={item.key}>{content}</div>
                     );
