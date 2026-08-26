@@ -179,7 +179,7 @@ export default function RegistrarDashboardPage() {
                     <div className="bg-[#0B1F3A] border-t-4 border-t-[#C8A96A] p-8 space-y-3">
                         <h2 className="text-2xl font-serif text-white mb-6">Quick Tools</h2>
                         {[
-                            { href: "/registrar/staff/new", label: "Add New Staff", icon: UserPlus, color: "text-[#1F7A5A]" },
+                            { href: "/registrar/users", label: "Add New Staff", icon: UserPlus, color: "text-[#1F7A5A]" },
                             { href: "/registrar/users", label: "Manage Users", icon: Users, color: "text-[#C8A96A]" },
                             { href: "/registrar/settings", label: "Platform Settings", icon: ShieldCheck, color: "text-blue-400" },
                             { href: "/registrar/reports", label: "Get Reports", icon: TrendingUp, color: "text-purple-400" },

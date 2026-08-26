@@ -23,6 +23,12 @@ export interface IUser extends Document {
     emailVerifiedAt?: Date;
     welcomeEmailSentAt?: Date;
     mustChangePassword?: boolean;
+    notificationPreferences?: {
+        userManagement?: boolean;
+        courseApprovals?: boolean;
+        auditLogs?: boolean;
+        systemAlerts?: boolean;
+    };
 }
 
 const UserSchema: Schema = new Schema({
@@ -47,6 +53,12 @@ const UserSchema: Schema = new Schema({
     emailVerifiedAt: { type: Date },
     welcomeEmailSentAt: { type: Date },
     mustChangePassword: { type: Boolean, default: false },
+    notificationPreferences: {
+        userManagement: { type: Boolean, default: true },
+        courseApprovals: { type: Boolean, default: true },
+        auditLogs: { type: Boolean, default: false },
+        systemAlerts: { type: Boolean, default: true },
+    },
 }, { timestamps: true });
 
 export default mongoose.models.User || mongoose.model<IUser>('User', UserSchema);

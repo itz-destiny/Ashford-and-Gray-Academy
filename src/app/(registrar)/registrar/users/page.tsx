@@ -2,8 +2,10 @@
 
 import { cn } from "@/lib/utils";
 import { apiFetch } from "@/lib/api-client";
+import { logAudit, AUDIT_ACTIONS, AUDIT_RESOURCES } from "@/lib/audit";
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { useRouter } from "next/navigation";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -17,7 +19,8 @@ import {
     Trash2,
     Edit2,
     CheckCircle2,
-    XCircle
+    XCircle,
+    Loader2,
 } from "lucide-react";
 import {
     Table,
@@ -66,22 +69,29 @@ interface StaffMember {
     createdAt: string;
 }
 
+const ASSIGNABLE_ROLES = ['instructor', 'course_registrar', 'finance', 'registrar'] as const;
+
 export default function RegistrarUsersPage() {
     const [staff, setStaff] = useState<StaffMember[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [roleFilter, setRoleFilter] = useState('all');
     const { toast } = useToast();
+    const router = useRouter();
 
     // Add Staff Modal State
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [saving, setSaving] = useState(false);
     const [newStaff, setNewStaff] = useState({
         email: '',
         displayName: '',
-        role: 'instructor' as any,
+        role: 'instructor' as (typeof ASSIGNABLE_ROLES)[number],
         title: '',
-        uid: '' // In real app, this would be generated or handled by Firebase Admin
     });
+
+    // Edit Credentials Modal State
+    const [editTarget, setEditTarget] = useState<StaffMember | null>(null);
+    const [editForm, setEditForm] = useState({ displayName: '', email: '', role: 'instructor' as (typeof ASSIGNABLE_ROLES)[number], title: '' });
 
     useEffect(() => {
         fetchStaff();
@@ -106,42 +116,91 @@ export default function RegistrarUsersPage() {
     const handleAddStaff = async () => {
         if (!newStaff.email || !newStaff.displayName) return;
 
+        setSaving(true);
         try {
-            // Generative UID for mock/demo purposes if Firebase isn't handling it immediately
-            const mockUid = newStaff.uid || `staff-${Math.random().toString(36).substr(2, 9)}`;
-
-            const res = await apiFetch('/api/users', {
+            const res = await apiFetch('/api/registrar/staff', {
                 method: 'POST',
-                body: JSON.stringify({
-                    ...newStaff,
-                    uid: mockUid
-                })
+                body: JSON.stringify(newStaff),
             });
 
             if (res.ok) {
-                toast({ title: "Staff Added", description: `${newStaff.displayName} has been added as ${newStaff.role}.` });
+                toast({ title: "Staff Account Created", description: `${newStaff.displayName} can now log in — credentials were emailed to ${newStaff.email}.` });
+                await logAudit({
+                    action: AUDIT_ACTIONS.USER_CREATED,
+                    resource: AUDIT_RESOURCES.USER,
+                    metadata: { email: newStaff.email, role: newStaff.role },
+                });
                 setIsAddModalOpen(false);
-                setNewStaff({ email: '', displayName: '', role: 'instructor', title: '', uid: '' });
+                setNewStaff({ email: '', displayName: '', role: 'instructor', title: '' });
                 fetchStaff();
             } else {
-                throw new Error("Failed to create user");
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.error || "Failed to create account");
             }
-        } catch (error) {
-            toast({ variant: "destructive", title: "Error", description: "Failed to add staff member." });
+        } catch (error: any) {
+            toast({ variant: "destructive", title: "Error", description: error.message || "Failed to add staff member." });
+        } finally {
+            setSaving(false);
         }
     };
 
-    const handleDeleteStaff = async (uid: string) => {
-        if (!confirm("Are you sure you want to remove this staff member?")) return;
+    const handleDeleteStaff = async (uid: string, displayName: string) => {
+        if (!confirm(`Revoke access for ${displayName}? This permanently deletes their account.`)) return;
 
         try {
-            const res = await apiFetch(`/api/users?uid=${uid}`, { method: 'DELETE' });
+            const res = await apiFetch(`/api/registrar/staff/${uid}`, { method: 'DELETE' });
             if (res.ok) {
                 toast({ title: "Staff Removed" });
+                await logAudit({
+                    action: AUDIT_ACTIONS.USER_DELETED,
+                    resource: AUDIT_RESOURCES.USER,
+                    resourceId: uid,
+                });
                 fetchStaff();
+            } else {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.error || "Failed to remove staff");
             }
-        } catch (error) {
-            toast({ variant: "destructive", title: "Error", description: "Failed to remove staff." });
+        } catch (error: any) {
+            toast({ variant: "destructive", title: "Error", description: error.message || "Failed to remove staff." });
+        }
+    };
+
+    const openEdit = (member: StaffMember) => {
+        setEditTarget(member);
+        setEditForm({
+            displayName: member.displayName,
+            email: member.email,
+            role: (ASSIGNABLE_ROLES as readonly string[]).includes(member.role) ? (member.role as any) : 'instructor',
+            title: member.title || '',
+        });
+    };
+
+    const handleSaveEdit = async () => {
+        if (!editTarget) return;
+        setSaving(true);
+        try {
+            const res = await apiFetch(`/api/registrar/staff/${editTarget.uid}`, {
+                method: 'PATCH',
+                body: JSON.stringify(editForm),
+            });
+            if (res.ok) {
+                toast({ title: "Credentials Updated", description: `${editForm.displayName}'s profile has been updated.` });
+                await logAudit({
+                    action: AUDIT_ACTIONS.USER_UPDATED,
+                    resource: AUDIT_RESOURCES.USER,
+                    resourceId: editTarget.uid,
+                });
+                setEditTarget(null);
+                fetchStaff();
+            } else {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.error || "Failed to update staff member");
+            }
+        } catch (error: any) {
+            toast({ variant: "destructive", title: "Error", description: error.message || "Failed to update staff member." });
+        } finally {
+            setSaving(false);
         }
     };
 
@@ -185,7 +244,7 @@ export default function RegistrarUsersPage() {
                         <DialogHeader>
                             <DialogTitle className="text-2xl font-black">Add New Staff</DialogTitle>
                             <DialogDescription>
-                                Create a new staff account. They will be able to log in with their email.
+                                Creates a real login account. They'll receive an email with their address and a temporary password.
                             </DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-6 py-4">
@@ -204,7 +263,7 @@ export default function RegistrarUsersPage() {
                                 <Input
                                     id="email"
                                     type="email"
-                                    placeholder="jane@ashfordgray.com"
+                                    placeholder="jane@ashfordandgrayfusionacademy.com"
                                     value={newStaff.email}
                                     onChange={(e) => setNewStaff({ ...newStaff, email: e.target.value })}
                                     className="h-11 rounded-xl"
@@ -213,7 +272,7 @@ export default function RegistrarUsersPage() {
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label>System Role</Label>
-                                    <Select value={newStaff.role} onValueChange={(v) => setNewStaff({ ...newStaff, role: v })}>
+                                    <Select value={newStaff.role} onValueChange={(v) => setNewStaff({ ...newStaff, role: v as any })}>
                                         <SelectTrigger className="h-11 rounded-xl">
                                             <SelectValue placeholder="Select role" />
                                         </SelectTrigger>
@@ -239,7 +298,9 @@ export default function RegistrarUsersPage() {
                         </div>
                         <DialogFooter>
                             <Button variant="ghost" onClick={() => setIsAddModalOpen(false)} className="rounded-xl">Cancel</Button>
-                            <Button onClick={handleAddStaff} className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl px-8 h-11">Create Account</Button>
+                            <Button onClick={handleAddStaff} disabled={saving} className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl px-8 h-11">
+                                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Create Account'}
+                            </Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
@@ -338,11 +399,17 @@ export default function RegistrarUsersPage() {
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end" className="w-56 rounded-2xl p-2 shadow-xl border-slate-100">
                                                     <DropdownMenuLabel className="px-3 pb-2 text-[10px] uppercase font-black text-slate-400">Management Action</DropdownMenuLabel>
-                                                    <DropdownMenuItem className="rounded-xl flex items-center gap-3 p-3 cursor-pointer">
+                                                    <DropdownMenuItem
+                                                        onClick={() => router.push('/registrar/communications')}
+                                                        className="rounded-xl flex items-center gap-3 p-3 cursor-pointer"
+                                                    >
                                                         <Mail className="h-4 w-4 text-slate-400" />
                                                         <span className="font-bold text-sm">Send Message</span>
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem className="rounded-xl flex items-center gap-3 p-3 cursor-pointer">
+                                                    <DropdownMenuItem
+                                                        onClick={() => openEdit(member)}
+                                                        className="rounded-xl flex items-center gap-3 p-3 cursor-pointer"
+                                                    >
                                                         <Edit2 className="h-4 w-4 text-slate-400" />
                                                         <span className="font-bold text-sm">Edit Credentials</span>
                                                     </DropdownMenuItem>
@@ -353,7 +420,7 @@ export default function RegistrarUsersPage() {
                                                                 toast({ variant: "destructive", title: "Action Prohibited", description: "Super Admin accounts cannot be removed by institutional staff." });
                                                                 return;
                                                             }
-                                                            handleDeleteStaff(member.uid);
+                                                            handleDeleteStaff(member.uid, member.displayName);
                                                         }}
                                                         disabled={member.role === 'admin'}
                                                         className={cn(
@@ -393,6 +460,68 @@ export default function RegistrarUsersPage() {
                     <p className="text-slate-400 text-sm font-medium">Instantly disable access for departing staff or compromised accounts.</p>
                 </Card>
             </div>
+
+            {/* Edit Credentials Dialog */}
+            <Dialog open={!!editTarget} onOpenChange={(open) => !open && setEditTarget(null)}>
+                <DialogContent className="sm:max-w-[425px] rounded-3xl">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-black">Edit Credentials</DialogTitle>
+                        <DialogDescription>Update this staff member's profile and role.</DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-6 py-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="edit-name">Full Name</Label>
+                            <Input
+                                id="edit-name"
+                                value={editForm.displayName}
+                                onChange={(e) => setEditForm({ ...editForm, displayName: e.target.value })}
+                                className="h-11 rounded-xl"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="edit-email">Email Address</Label>
+                            <Input
+                                id="edit-email"
+                                type="email"
+                                value={editForm.email}
+                                onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                                className="h-11 rounded-xl"
+                            />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <Label>System Role</Label>
+                                <Select value={editForm.role} onValueChange={(v) => setEditForm({ ...editForm, role: v as any })}>
+                                    <SelectTrigger className="h-11 rounded-xl">
+                                        <SelectValue placeholder="Select role" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="instructor">Instructor</SelectItem>
+                                        <SelectItem value="course_registrar">Course Registrar</SelectItem>
+                                        <SelectItem value="finance">Finance Officer</SelectItem>
+                                        <SelectItem value="registrar">Registrar</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="edit-title">Job Title</Label>
+                                <Input
+                                    id="edit-title"
+                                    value={editForm.title}
+                                    onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                                    className="h-11 rounded-xl"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="ghost" onClick={() => setEditTarget(null)} className="rounded-xl">Cancel</Button>
+                        <Button onClick={handleSaveEdit} disabled={saving} className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl px-8 h-11">
+                            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save Changes'}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

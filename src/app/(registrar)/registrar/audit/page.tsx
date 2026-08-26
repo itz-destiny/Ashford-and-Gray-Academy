@@ -107,6 +107,25 @@ export default function RegistrarAuditPage() {
             : <Badge className="bg-rose-50 text-rose-700 hover:bg-rose-50 border-rose-100 flex items-center gap-1 w-fit"><AlertCircle className="w-3 h-3" /> Failure</Badge>;
     };
 
+    const handleExportCsv = () => {
+        if (logs.length === 0) return;
+        const rows = [
+            ['Timestamp', 'User', 'Email', 'Role', 'Action', 'Resource', 'Status', 'IP Address'],
+            ...logs.map(l => [
+                format(new Date(l.timestamp), 'yyyy-MM-dd HH:mm:ss'),
+                l.userName, l.userEmail, l.role, l.action, l.resource, l.status, l.ipAddress || '',
+            ]),
+        ];
+        const csv = rows.map(r => r.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',')).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `audit-log-page-${page}-${new Date().toISOString().slice(0, 10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
     const getActionColor = (action: string) => {
         if (action.includes('CREATE') || action.includes('UPLOAD')) return 'text-indigo-600';
         if (action.includes('DELETE') || action.includes('REMOVE')) return 'text-rose-600';
@@ -124,7 +143,7 @@ export default function RegistrarAuditPage() {
                     <p className="text-slate-500 font-medium tracking-tight">Immutable record of all platform activities and administrative changes.</p>
                 </div>
                 <div className="flex gap-3">
-                    <Button variant="outline" className="h-11 rounded-2xl font-bold border-slate-200 shadow-sm gap-2">
+                    <Button variant="outline" onClick={handleExportCsv} disabled={logs.length === 0} className="h-11 rounded-2xl font-bold border-slate-200 shadow-sm gap-2">
                         <Download className="w-4 h-4" /> Export Audit Trail
                     </Button>
                 </div>
