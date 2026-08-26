@@ -15,7 +15,7 @@ import {
   Clock,
   FileText,
   Video,
-  MonitorPlay,
+  History,
   ClipboardCheck
 } from "lucide-react";
 import Link from "next/link";
@@ -30,6 +30,7 @@ export function InstructorSidebar({ className }: { className?: string }) {
     { href: "/instructor", label: "Overview", icon: LayoutDashboard },
     { href: "/instructor/courses", label: "My Teaching", icon: Book },
     { href: "/instructor/schedule", label: "Class Schedule", icon: Clock },
+    { href: "/instructor/live-classes", label: "Live Class History", icon: History },
     { href: "/instructor/students", label: "My Students", icon: Users },
     { href: "/instructor/tests", label: "Tests & Exams", icon: ClipboardCheck },
     { href: "/instructor/communications", label: "My Messages", icon: MessageSquare },
@@ -98,19 +99,6 @@ export function InstructorSidebar({ className }: { className?: string }) {
       </nav>
 
       <div className="p-6 mt-auto space-y-4">
-        <div className="bg-gradient-to-br from-white/[0.04] to-white/[0.01] border border-white/10 rounded-none p-6 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full -mr-12 -mt-12 blur-xl" />
-          <div className="relative z-10">
-            <div className="flex items-center gap-2 mb-3">
-              <MonitorPlay className="w-4 h-4 text-[#C8A96A]" />
-              <p className="text-[#C8A96A] text-[9px] font-black uppercase tracking-[0.2em]">Storage</p>
-            </div>
-            <div className="h-1.5 w-full bg-white/10 rounded-none overflow-hidden mb-3">
-              <div className="h-full bg-[#C8A96A] w-[75%] rounded-none shadow-[0_0_8px_rgba(200,169,106,0.5)]" />
-            </div>
-            <p className="text-[10px] text-white/50 font-medium">7.5GB of 10GB utilized</p>
-          </div>
-        </div>
         <Link
           href="/account"
           className="flex items-center gap-4 px-5 py-2 text-white/60 hover:text-white transition-all group"
