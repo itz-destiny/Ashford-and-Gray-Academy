@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useState } from 'react';
+import { upload } from '@vercel/blob/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,58 +20,18 @@ interface FilePickerProps {
     placeholder?: string;
 }
 
-type SignedUrlResponse = {
-    uploadUrl: string;
-    publicUrl: string;
-    path: string;
-    maxBytes: number;
-    expiresAt: string;
-};
-
 function categoryForAccept(accept: string): Category {
     if (accept.startsWith('image')) return 'image';
     if (accept.startsWith('video')) return 'video';
     return 'document';
 }
 
-async function requestSignedUrl(
-    idToken: string,
-    payload: { filename: string; contentType: string; category: Category }
-): Promise<SignedUrlResponse> {
-    const res = await fetch('/api/storage/signed-url', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${idToken}`,
-        },
-        body: JSON.stringify(payload),
-    });
-    if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || `Failed to issue signed URL (HTTP ${res.status})`);
-    }
-    return res.json();
-}
-
-function uploadToSignedUrl(
-    uploadUrl: string,
-    file: File,
-    onProgress: (pct: number) => void
-): Promise<void> {
-    return new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open('PUT', uploadUrl, true);
-        xhr.setRequestHeader('Content-Type', file.type);
-        xhr.upload.onprogress = (event) => {
-            if (event.lengthComputable) onProgress((event.loaded / event.total) * 100);
-        };
-        xhr.onload = () => {
-            if (xhr.status >= 200 && xhr.status < 300) resolve();
-            else reject(new Error(`Upload failed (HTTP ${xhr.status})`));
-        };
-        xhr.onerror = () => reject(new Error('Network error during upload'));
-        xhr.send(file);
-    });
+function sanitizeFilename(filename: string): string {
+    return filename
+        .normalize('NFKD')
+        .replace(/[^a-zA-Z0-9.\-_]/g, '_')
+        .replace(/_{2,}/g, '_')
+        .slice(0, 80) || 'file';
 }
 
 export function FilePicker({
@@ -111,20 +72,17 @@ export function FilePicker({
 
         try {
             const idToken = await currentUser.getIdToken();
-            const signed = await requestSignedUrl(idToken, {
-                filename: file.name,
-                contentType: file.type,
-                category,
+            const pathname = `uploads/${category}/${currentUser.uid}/${sanitizeFilename(file.name)}`;
+
+            const blob = await upload(pathname, file, {
+                access: 'public',
+                handleUploadUrl: '/api/upload',
+                clientPayload: JSON.stringify({ category, contentType: file.type }),
+                headers: { Authorization: `Bearer ${idToken}` },
+                onUploadProgress: ({ percentage }) => setProgress(percentage),
             });
 
-            if (file.size > signed.maxBytes) {
-                throw new Error(
-                    `File is too large. Maximum ${Math.round(signed.maxBytes / (1024 * 1024))} MB.`
-                );
-            }
-
-            await uploadToSignedUrl(signed.uploadUrl, file, setProgress);
-            onChange(signed.publicUrl);
+            onChange(blob.url);
             toast({ title: 'Upload complete', description: file.name });
         } catch (err) {
             const message = err instanceof Error ? err.message : 'Upload failed';

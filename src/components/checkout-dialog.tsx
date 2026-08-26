@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
+import { upload } from "@vercel/blob/client";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import {
@@ -151,7 +152,7 @@ export function CheckoutDialog({ courses }: { courses: Course[] }) {
     }
 
     async function handleBankTransferSubmit() {
-        if (!course || isSignedOut) { goSignUp(); return; }
+        if (!course || isSignedOut || !user) { goSignUp(); return; }
         if (!proofFile) {
             toast({ variant: "destructive", title: "No proof uploaded", description: "Please upload your payment screenshot." });
             return;
@@ -159,36 +160,25 @@ export function CheckoutDialog({ courses }: { courses: Course[] }) {
 
         setUploading(true);
         try {
-            // Step 1: Get a signed upload URL
-            const signedRes = await apiFetch("/api/storage/signed-url", {
-                method: "POST",
-                body: JSON.stringify({
-                    filename: proofFile.name,
-                    contentType: proofFile.type,
-                    category: "image",
-                }),
-            });
-            if (!signedRes.ok) {
-                const body = await signedRes.json().catch(() => ({} as any));
-                toast({ variant: "destructive", title: "Upload failed", description: body.error || "Could not prepare upload." });
-                setUploading(false);
-                return;
-            }
-            const { uploadUrl, publicUrl } = await signedRes.json();
+            const idToken = await user.getIdToken();
+            const pathname = `uploads/image/${user.uid}/${proofFile.name.replace(/[^a-zA-Z0-9.\-_]/g, '_')}`;
 
-            // Step 2: PUT the file to Firebase Storage
-            const putRes = await fetch(uploadUrl, {
-                method: "PUT",
-                headers: { "Content-Type": proofFile.type },
-                body: proofFile,
-            });
-            if (!putRes.ok) {
-                toast({ variant: "destructive", title: "Upload failed", description: "Could not upload your proof. Please try again." });
+            let publicUrl: string;
+            try {
+                const blob = await upload(pathname, proofFile, {
+                    access: "public",
+                    handleUploadUrl: "/api/upload",
+                    clientPayload: JSON.stringify({ category: "image", contentType: proofFile.type }),
+                    headers: { Authorization: `Bearer ${idToken}` },
+                });
+                publicUrl = blob.url;
+            } catch (uploadErr) {
+                toast({ variant: "destructive", title: "Upload failed", description: uploadErr instanceof Error ? uploadErr.message : "Could not upload your proof. Please try again." });
                 setUploading(false);
                 return;
             }
 
-            // Step 3: Submit the manual payment record
+            // Submit the manual payment record
             const manualRes = await apiFetch("/api/payments/manual", {
                 method: "POST",
                 body: JSON.stringify({ courseId: course.id, proofUrl: publicUrl }),
