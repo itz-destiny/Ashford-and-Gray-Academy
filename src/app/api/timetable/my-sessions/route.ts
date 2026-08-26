@@ -14,7 +14,13 @@ export const GET = withAuth(async (_req, { auth }) => {
             if (courseIds.length === 0) {
                 return NextResponse.json({ success: true, sessions: [] });
             }
-            const sessions = await TimetableSession.find({ courseId: { $in: courseIds } }).sort({ startTime: 1 });
+            const sessions = await TimetableSession.find({
+                $or: [
+                    { courseId: { $in: courseIds } },
+                    { courseId: { $exists: false } },
+                    { courseId: null },
+                ],
+            }).sort({ startTime: 1 });
             return NextResponse.json({ success: true, sessions });
         }
 
