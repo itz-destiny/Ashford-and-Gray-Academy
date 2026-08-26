@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import dbConnect from '@/lib/mongodb';
 import { Conversation } from '@/models/Supports';
+import User from '@/models/User';
 import { withAuth } from '@/lib/auth-server';
 
 export const GET = withAuth(async (_req: NextRequest, { auth }) => {
@@ -35,6 +36,21 @@ export const POST = withAuth(async (req: NextRequest, { auth }) => {
         await dbConnect();
         // Always include the authenticated user in the conversation; dedupe.
         const participants = Array.from(new Set([auth.uid, ...parsed.data.participants]));
+
+        // An instructor may only open a direct conversation with a student —
+        // never another instructor or an admin/registrar/finance/admissions
+        // office. Cohort enrollment itself is enforced when a message is
+        // actually sent (POST /api/messages).
+        if (auth.role === 'instructor' && participants.length === 2) {
+            const otherUid = participants.find((p) => p !== auth.uid);
+            const other = await User.findOne({ uid: otherUid }).select('role').lean<{ role: string } | null>();
+            if (other?.role !== 'student') {
+                return NextResponse.json(
+                    { error: 'Instructors can only message students in their own cohort.' },
+                    { status: 403 }
+                );
+            }
+        }
 
         const existing = await Conversation.findOne({
             participants: { $all: participants, $size: participants.length },

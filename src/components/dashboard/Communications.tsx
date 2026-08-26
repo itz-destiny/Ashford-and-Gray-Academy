@@ -42,24 +42,44 @@ export function Communications() {
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
     const [showMobileChat, setShowMobileChat] = useState(false);
 
-    // Staff (admin, instructor, registrar, course_registrar, finance) get two
+    // Office staff (admin, registrar, course_registrar, finance) get two
     // directories — Offices and Lecturers — so they can reach any colleague
-    // directly, without waiting for the other side to message first. Students
-    // only see the instructors of the courses they're actually enrolled in.
-    const isStaff = !!user?.role && user.role !== 'student';
+    // directly, without waiting for the other side to message first. An
+    // instructor can only ever reach their own cohort — the students actually
+    // enrolled in courses they teach — never another instructor or an office.
+    // Students only see the instructors of the courses they're actually
+    // enrolled in.
+    const isInstructor = user?.role === 'instructor';
+    const isOfficeStaff = !!user?.role && user.role !== 'student' && user.role !== 'instructor';
+    const isStaff = isOfficeStaff;
 
     useEffect(() => {
         if (!user) return;
 
         const fetchDirectory = async () => {
             try {
-                if (isStaff) {
+                if (isOfficeStaff) {
                     const res = await apiFetch('/api/users?role=staff');
                     const data = await res.json();
                     if (Array.isArray(data)) {
                         const others = data.filter((u: any) => u.uid !== user.uid);
                         setOfficesDirectory(others.filter((u: any) => OFFICE_ROLES.includes(u.role)));
                         setLecturersDirectory(others.filter((u: any) => u.role === 'instructor'));
+                    }
+                    return;
+                }
+
+                if (isInstructor) {
+                    const res = await apiFetch('/api/instructor/students');
+                    const data = await res.json();
+                    if (data?.success && Array.isArray(data.students)) {
+                        const seen = new Set<string>();
+                        const uniqueStudents = data.students.filter((s: any) => {
+                            if (seen.has(s.uid)) return false;
+                            seen.add(s.uid);
+                            return true;
+                        });
+                        setLecturersDirectory(uniqueStudents);
                     }
                     return;
                 }
@@ -99,7 +119,7 @@ export function Communications() {
         };
 
         fetchDirectory();
-    }, [user, isStaff]);
+    }, [user, isOfficeStaff, isInstructor]);
 
     const query = searchQuery.trim().toLowerCase();
     const filteredConversations = conversations.filter((c) =>
@@ -332,14 +352,14 @@ export function Communications() {
                             onClick={() => setActiveTab('lecturers')}
                             className={cn("flex-1 gap-1.5 rounded-none font-black text-[9px] uppercase tracking-widest transition-all", activeTab === 'lecturers' ? "bg-[#0B1F3A] text-white shadow-none" : "text-slate-400")}
                         >
-                            <GraduationCap className="h-3.5 w-3.5" /> {isStaff ? 'Lecturers' : 'Instructors'}
+                            <GraduationCap className="h-3.5 w-3.5" /> {isOfficeStaff ? 'Lecturers' : isInstructor ? 'My Students' : 'Instructors'}
                         </Button>
                     </div>
 
                     <div className="relative group">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-[#C8A96A] transition-colors" />
                         <Input
-                            placeholder={activeTab === 'conversations' ? "Search conversations..." : activeTab === 'offices' ? "Find an office..." : isStaff ? "Find a lecturer..." : "Find instructor..."}
+                            placeholder={activeTab === 'conversations' ? "Search conversations..." : activeTab === 'offices' ? "Find an office..." : isOfficeStaff ? "Find a lecturer..." : isInstructor ? "Find a student..." : "Find instructor..."}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="pl-12 pr-10 bg-white border-[#0B1F3A]/10 rounded-none focus-visible:ring-1 focus-visible:ring-[#C8A96A] placeholder:text-slate-300 font-medium h-12 shadow-sm"
@@ -478,7 +498,7 @@ export function Communications() {
                                                 {staff.displayName}
                                             </h3>
                                             <span className="inline-flex text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-none bg-[#C8A96A]/10 text-[#0B1F3A] border border-[#C8A96A]/30">
-                                                Lecturer
+                                                {isInstructor ? (staff.courseTitle || 'Student') : 'Lecturer'}
                                             </span>
                                         </div>
                                         <Button
@@ -500,7 +520,11 @@ export function Communications() {
                                             <GraduationCap className="w-7 h-7 text-slate-200" />
                                         </div>
                                         <p className="text-slate-300 font-serif italic">
-                                            {query ? 'No matching lecturers.' : isStaff ? 'No lecturers available.' : 'No authorized instructors available.'}
+                                            {isOfficeStaff
+                                                ? (query ? 'No matching lecturers.' : 'No lecturers available.')
+                                                : isInstructor
+                                                ? (query ? 'No matching students.' : 'No students enrolled in your courses yet.')
+                                                : (query ? 'No matching instructors.' : 'No authorized instructors available.')}
                                         </p>
                                     </div>
                                 )}

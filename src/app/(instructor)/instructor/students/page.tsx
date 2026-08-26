@@ -3,65 +3,42 @@
 import React, { useState, useEffect } from 'react';
 import { useUser } from '@/firebase';
 import { apiFetch } from '@/lib/api-client';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, ChevronRight, UserCheck, Clock, Award } from 'lucide-react';
+import { Search, ChevronRight, UserCheck, Award } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import Link from 'next/link';
 
 export default function InstructorStudentsPage() {
     const { user } = useUser();
     const [courses, setCourses] = useState<any[]>([]);
     const [selectedCourse, setSelectedCourse] = useState<string>('all');
     const [students, setStudents] = useState<any[]>([]);
+    const [search, setSearch] = useState('');
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (!user) return;
         const fetchData = async () => {
             try {
-                // 1. Fetch Instructor's courses
-                const cRes = await fetch('/api/courses');
-                const allCourses = await cRes.json();
-
-                // In a real app, we use instructor ID. For now, filter by name.
-                const instructorCourses = allCourses.filter((c: any) =>
-                    c.instructor?.name === user.displayName ||
-                    c.instructor?.name === 'Instructor' // Fallback for testing
-                );
-                setCourses(instructorCourses);
-
-                const courseIds = instructorCourses.map((c: any) => c._id);
-
-                // 2. Fetch all enrollments
-                const eRes = await apiFetch('/api/enrollments');
-                const allEnrollments = await eRes.json();
-
-                if (Array.isArray(allEnrollments)) {
-                    const studentData = await Promise.all(allEnrollments
-                        .filter((e: any) => courseIds.includes(e.courseId?._id || e.courseId))
-                        .map(async (e: any) => {
-                            // Fetch user details for each enrollment
-                            const uRes = await apiFetch(`/api/users?uid=${e.userId}`);
-                            const uData = await uRes.json();
-
-                            return {
-                                id: e._id,
-                                name: uData.displayName || 'Anonymous Student',
-                                avatar: uData.displayName ? uData.displayName.split(' ').map((n: any) => n[0]).join('') : 'ST',
-                                photoURL: uData.photoURL,
-                                course: e.courseId?.title || 'Unknown Course',
-                                progress: e.progress || 0,
-                                grade: e.grade || 'Pending',
-                                lastActive: 'Recent'
-                            };
-                        })
-                    );
-                    setStudents(studentData);
+                const res = await apiFetch('/api/instructor/students');
+                const data = await res.json();
+                if (data?.success) {
+                    setCourses(data.courses || []);
+                    setStudents((data.students || []).map((s: any) => ({
+                        id: `${s.uid}-${s.courseId}`,
+                        uid: s.uid,
+                        name: s.displayName || 'Anonymous Student',
+                        avatar: s.displayName ? s.displayName.split(' ').map((n: string) => n[0]).join('') : 'ST',
+                        photoURL: s.photoURL,
+                        courseId: s.courseId,
+                        course: s.courseTitle || 'Unknown Course',
+                        progress: s.progress || 0,
+                    })));
                 }
             } catch (err) {
                 console.error(err);
@@ -72,9 +49,9 @@ export default function InstructorStudentsPage() {
         fetchData();
     }, [user]);
 
-    const filteredStudents = selectedCourse === 'all'
-        ? students
-        : students.filter(s => s.course === courses.find(c => c._id === selectedCourse)?.title);
+    const filteredStudents = students
+        .filter(s => selectedCourse === 'all' || s.courseId === selectedCourse)
+        .filter(s => !search.trim() || s.name.toLowerCase().includes(search.trim().toLowerCase()));
 
     return (
         <div className="space-y-6">
@@ -97,19 +74,19 @@ export default function InstructorStudentsPage() {
                     </Select>
                     <div className="relative flex-1 md:w-64">
                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
-                        <Input placeholder="Search students..." className="pl-9 bg-white" />
+                        <Input placeholder="Search students..." className="pl-9 bg-white" value={search} onChange={(e) => setSearch(e.target.value)} />
                     </div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card className="border-none bg-indigo-50/50 shadow-none">
                     <CardContent className="p-6 flex items-center gap-4">
                         <div className="bg-indigo-600 p-3 rounded-xl text-white">
                             <UserCheck className="w-6 h-6" />
                         </div>
                         <div>
-                            <h3 className="text-2xl font-bold text-slate-900">{students.length}</h3>
+                            <h3 className="text-2xl font-bold text-slate-900">{new Set(students.map(s => s.uid)).size}</h3>
                             <p className="text-xs text-indigo-700 font-medium">Total Active Students</p>
                         </div>
                     </CardContent>
@@ -125,17 +102,6 @@ export default function InstructorStudentsPage() {
                         </div>
                     </CardContent>
                 </Card>
-                <Card className="border-none bg-amber-50/50 shadow-none">
-                    <CardContent className="p-6 flex items-center gap-4">
-                        <div className="bg-amber-600 p-3 rounded-xl text-white">
-                            <Clock className="w-6 h-6" />
-                        </div>
-                        <div>
-                            <h3 className="text-2xl font-bold text-slate-900">{students.filter(s => s.grade === 'Pending').length}</h3>
-                            <p className="text-xs text-amber-700 font-medium">Pending Grades</p>
-                        </div>
-                    </CardContent>
-                </Card>
             </div>
 
             <Card className="border-none shadow-none overflow-hidden">
@@ -146,8 +112,6 @@ export default function InstructorStudentsPage() {
                                 <TableHead className="font-bold text-slate-900 pl-6">Student</TableHead>
                                 <TableHead className="font-bold text-slate-900">Enrolled Course</TableHead>
                                 <TableHead className="font-bold text-slate-900">Progress</TableHead>
-                                <TableHead className="font-bold text-slate-900">Current Grade</TableHead>
-                                <TableHead className="font-bold text-slate-900">Last Active</TableHead>
                                 <TableHead className="text-right pr-6">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -157,6 +121,7 @@ export default function InstructorStudentsPage() {
                                     <TableCell className="pl-6 py-4">
                                         <div className="flex items-center gap-3">
                                             <Avatar className="h-9 w-9 border">
+                                                <AvatarImage src={student.photoURL} />
                                                 <AvatarFallback className="bg-slate-100 text-slate-600 font-bold">{student.avatar}</AvatarFallback>
                                             </Avatar>
                                             <span className="font-bold text-slate-700">{student.name}</span>
@@ -171,19 +136,11 @@ export default function InstructorStudentsPage() {
                                             <Progress value={student.progress} className="h-1.5" />
                                         </div>
                                     </TableCell>
-                                    <TableCell>
-                                        <Badge variant="outline" className={
-                                            student.grade === 'Pending'
-                                                ? 'bg-amber-50 text-amber-700 border-amber-200'
-                                                : 'bg-indigo-50 text-indigo-700 border-indigo-200'
-                                        }>
-                                            {student.grade}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell className="text-xs text-slate-500 font-medium">{student.lastActive}</TableCell>
                                     <TableCell className="text-right pr-6">
-                                        <Button variant="ghost" size="sm" className="text-indigo-600 font-bold hover:bg-indigo-50">
-                                            View Details <ChevronRight className="w-4 h-4 ml-1" />
+                                        <Button asChild variant="ghost" size="sm" className="text-indigo-600 font-bold hover:bg-indigo-50">
+                                            <Link href="/instructor/communications">
+                                                Message <ChevronRight className="w-4 h-4 ml-1" />
+                                            </Link>
                                         </Button>
                                     </TableCell>
                                 </TableRow>

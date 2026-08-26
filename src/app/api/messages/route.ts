@@ -98,11 +98,22 @@ export const POST = withAuth(async (req: NextRequest, { auth }) => {
 
         // A student may only message an instructor while actively enrolled in
         // one of their courses, and only until that course's stated duration
-        // has elapsed — this applies in both directions. Group (class)
-        // conversations are gated purely by conversation membership above.
+        // has elapsed — this applies in both directions. An instructor may
+        // never message anyone but a student in their own cohort — no other
+        // instructors, no admin/registrar/finance/admissions offices. Group
+        // (class) conversations are gated purely by conversation membership
+        // above.
         if (conversation?.type !== 'group' && (auth.role === 'student' || auth.role === 'instructor')) {
             const receiver = await User.findOne({ uid: receiverId }).select('role').lean<{ role: string } | null>();
             const otherRole = receiver?.role;
+
+            if (auth.role === 'instructor' && otherRole !== 'student') {
+                return NextResponse.json(
+                    { error: 'Instructors can only message students in their own cohort.' },
+                    { status: 403 }
+                );
+            }
+
             const isStudentInstructorPair =
                 (auth.role === 'student' && otherRole === 'instructor') ||
                 (auth.role === 'instructor' && otherRole === 'student');

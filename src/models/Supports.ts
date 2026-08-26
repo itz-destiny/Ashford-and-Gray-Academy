@@ -136,6 +136,7 @@ export interface IResource extends Document {
     courseId?: mongoose.Types.ObjectId;
     url: string;
     fileHint?: string;
+    createdBy?: string;
 }
 
 const ResourceSchema: Schema = new Schema({
@@ -144,6 +145,7 @@ const ResourceSchema: Schema = new Schema({
     courseId: { type: Schema.Types.ObjectId, ref: 'Course' },
     url: { type: String, required: true },
     fileHint: { type: String },
+    createdBy: { type: String }, // Firebase UID of the uploader.
 }, { timestamps: true });
 
 export const Resource = mongoose.models.Resource || mongoose.model<IResource>('Resource', ResourceSchema);

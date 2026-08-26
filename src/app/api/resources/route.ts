@@ -2,14 +2,31 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import dbConnect from '@/lib/mongodb';
 import { Resource } from '@/models/Supports';
+import Course from '@/models/Course';
 import { AuthError, requireRole, withAuth } from '@/lib/auth-server';
 
-export const GET = withAuth(async (req: NextRequest) => {
+export const GET = withAuth(async (req: NextRequest, { auth }) => {
     try {
         await dbConnect();
         const { searchParams } = new URL(req.url);
         const courseId = searchParams.get('courseId');
         const type = searchParams.get('type');
+
+        // An instructor may only ever see resources for courses they actually
+        // teach — never the whole platform's library.
+        if (auth.role === 'instructor') {
+            const myCourses = await Course.find({ instructorUid: auth.uid }).select('_id').lean();
+            const myCourseIds = myCourses.map((c: any) => c._id.toString());
+
+            if (courseId && !myCourseIds.includes(courseId)) {
+                return NextResponse.json({ error: 'You can only view resources for courses you teach.' }, { status: 403 });
+            }
+
+            const query: Record<string, unknown> = { courseId: courseId ? courseId : { $in: myCourseIds } };
+            if (type) query.type = type;
+            const resources = await Resource.find(query).populate('courseId').sort({ createdAt: -1 });
+            return NextResponse.json(resources);
+        }
 
         const query: Record<string, unknown> = {};
         if (courseId) query.courseId = courseId;
@@ -52,7 +69,20 @@ export const POST = withAuth(async (req: NextRequest, { auth }) => {
 
     try {
         await dbConnect();
-        const resource = await Resource.create(parsed.data);
+
+        // An instructor can only ever share a resource into a course they
+        // actually teach — their own cohort, never anyone else's.
+        if (auth.role === 'instructor') {
+            if (!parsed.data.courseId) {
+                return NextResponse.json({ error: 'A course is required to share a resource.' }, { status: 400 });
+            }
+            const owns = await Course.findOne({ _id: parsed.data.courseId, instructorUid: auth.uid }).select('_id').lean();
+            if (!owns) {
+                return NextResponse.json({ error: 'You can only share resources for courses you teach.' }, { status: 403 });
+            }
+        }
+
+        const resource = await Resource.create({ ...parsed.data, createdBy: auth.uid });
         return NextResponse.json(resource, { status: 201 });
     } catch (error: any) {
         console.error('POST /api/resources failed:', error);
