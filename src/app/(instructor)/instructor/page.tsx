@@ -24,6 +24,7 @@ export default function InstructorDashboard() {
     const [messages, setMessages] = useState<any[]>([]);
     const [upcomingEvents, setUpcomingEvents] = useState<any[]>([]);
     const [sessions, setSessions] = useState<any[]>([]);
+    const [senderNames, setSenderNames] = useState<Record<string, string | null>>({});
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -31,15 +32,15 @@ export default function InstructorDashboard() {
 
         const fetchData = async () => {
             try {
-                const [cRes, enRes, mRes, evRes, sRes] = await Promise.all([
+                const [cRes, stuRes, mRes, evRes, sRes] = await Promise.all([
                     apiFetch('/api/courses'),
-                    apiFetch('/api/enrollments'),
+                    apiFetch('/api/instructor/students'),
                     apiFetch('/api/messages'),
                     fetch('/api/events'),
                     apiFetch('/api/timetable/my-sessions'),
                 ]);
-                const [allCourses, allEnrollments, allMessages, events, sessionsBody] = await Promise.all([
-                    cRes.json(), enRes.json(), mRes.json(), evRes.json(), sRes.json().catch(() => null),
+                const [allCourses, studentsBody, allMessages, events, sessionsBody] = await Promise.all([
+                    cRes.json(), stuRes.json().catch(() => null), mRes.json(), evRes.json(), sRes.json().catch(() => null),
                 ]);
                 if (sessionsBody?.success && Array.isArray(sessionsBody.sessions)) setSessions(sessionsBody.sessions);
 
@@ -50,14 +51,39 @@ export default function InstructorDashboard() {
                     : [];
                 setCourses(mine);
 
-                const myCourseIds = mine.map((c: any) => (c._id || c.id)?.toString());
-                const myEnrollments = Array.isArray(allEnrollments)
-                    ? allEnrollments.filter((en: any) => myCourseIds.includes(en.courseId?.toString()))
+                const myEnrollments = studentsBody?.success && Array.isArray(studentsBody.students)
+                    ? studentsBody.students.map((s: any) => ({
+                        id: `${s.uid}-${s.courseId}`,
+                        userId: s.uid,
+                        userName: s.displayName,
+                        userPhoto: s.photoURL,
+                        enrolledAt: s.enrolledAt,
+                        course: { title: s.courseTitle },
+                    }))
                     : [];
                 setEnrollments(myEnrollments);
 
                 const msgList = Array.isArray(allMessages) ? allMessages : [];
-                setMessages(msgList.filter((m: any) => !m.isRead && m.receiverId === user.uid).slice(0, 4));
+                const unread = msgList.filter((m: any) => !m.isRead && m.receiverId === user.uid).slice(0, 4);
+                setMessages(unread);
+
+                // Resolve real sender names for the inbox preview — never show
+                // a raw Firebase UID.
+                const uniqueSenders: string[] = Array.from(new Set(unread.map((m: any) => m.senderId)));
+                if (uniqueSenders.length > 0) {
+                    const senderProfiles = await Promise.all(
+                        uniqueSenders.map(async (uid) => {
+                            try {
+                                const r = await apiFetch(`/api/users?uid=${uid}`);
+                                const d = await r.json();
+                                return [uid, d?.displayName || null] as const;
+                            } catch {
+                                return [uid, null] as const;
+                            }
+                        })
+                    );
+                    setSenderNames(Object.fromEntries(senderProfiles));
+                }
 
                 const upcoming = (Array.isArray(events) ? events : [])
                     .filter((e: any) => e.date && isAfter(new Date(e.date), new Date()))
@@ -382,19 +408,22 @@ export default function InstructorDashboard() {
 
                         <div className="bg-white border border-[#0B1F3A]/10 shadow-sm border-t-4 border-t-[#C8A96A]">
                             {messages.length > 0 ? (
-                                messages.map((msg: any, i: number) => (
-                                    <div key={msg._id || i} className="flex items-start gap-4 p-6 border-b border-[#0B1F3A]/5 last:border-none hover:bg-[#F6F4F2] transition-all">
-                                        <Avatar className="w-10 h-10 rounded-none border border-[#0B1F3A]/10 flex-shrink-0">
-                                            <AvatarFallback className="rounded-none bg-[#F6F4F2] text-[#0B1F3A] text-xs font-black">
-                                                {(msg.senderId || '?')[0]?.toUpperCase()}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-black text-[#0B1F3A] truncate">{msg.senderId}</p>
-                                            <p className="text-xs text-slate-400 font-medium mt-0.5 truncate">{msg.content}</p>
+                                messages.map((msg: any, i: number) => {
+                                    const senderName = senderNames[msg.senderId] || 'Loading…';
+                                    return (
+                                        <div key={msg._id || i} className="flex items-start gap-4 p-6 border-b border-[#0B1F3A]/5 last:border-none hover:bg-[#F6F4F2] transition-all">
+                                            <Avatar className="w-10 h-10 rounded-none border border-[#0B1F3A]/10 flex-shrink-0">
+                                                <AvatarFallback className="rounded-none bg-[#F6F4F2] text-[#0B1F3A] text-xs font-black">
+                                                    {senderName[0]?.toUpperCase()}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-black text-[#0B1F3A] truncate">{senderName}</p>
+                                                <p className="text-xs text-slate-400 font-medium mt-0.5 truncate">{msg.content}</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))
+                                    );
+                                })
                             ) : (
                                 <div className="p-16 text-center">
                                     <p className="text-slate-400 font-medium italic text-sm font-serif">Inbox clear.</p>

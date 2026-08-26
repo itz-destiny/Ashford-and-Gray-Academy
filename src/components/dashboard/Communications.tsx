@@ -161,7 +161,7 @@ export function Communications() {
                     otherUser: {
                         id: staffMember.uid,
                         name: staffMember.displayName,
-                        avatar: staffMember.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${staffMember.uid}`,
+                        avatar: staffMember.photoURL || undefined,
                         online: false
                     }
                 };
@@ -196,7 +196,7 @@ export function Communications() {
                             const uData = await uRes.json();
                             info = {
                                 name: uData.displayName || 'Institutional Member',
-                                avatar: uData.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${otherUserId}`,
+                                avatar: uData.photoURL || undefined,
                                 role: uData.role || 'student',
                             };
                             userCacheRef.current.set(otherUserId, info);
@@ -228,6 +228,10 @@ export function Communications() {
 
     // Realtime messages for the active conversation — replaces 5s polling.
     const { messages: rtMessages } = useConversationMessages(selectedConversation?._id ?? null);
+    // A message the user just hit "send" on, echoed locally so it appears
+    // instantly instead of waiting on the Firestore round-trip. Cleared the
+    // moment the real copy shows up in rtMessages (or on send failure).
+    const [pendingMessages, setPendingMessages] = useState<any[]>([]);
     useEffect(() => {
         setMessages(
             rtMessages.map((m) => ({
@@ -238,6 +242,7 @@ export function Communications() {
                 createdAt: m.createdAt,
             }))
         );
+        setPendingMessages([]);
     }, [rtMessages]);
 
     useEffect(() => {
@@ -247,7 +252,15 @@ export function Communications() {
     }, [messages]);
 
     const handleSendMessage = async () => {
-        if (!newMessage.trim() || !user || !selectedConversation) return;
+        const content = newMessage.trim();
+        if (!content || !user || !selectedConversation) return;
+
+        const pendingId = `pending-${Date.now()}`;
+        setNewMessage("");
+        setPendingMessages((prev) => [
+            ...prev,
+            { _id: pendingId, senderId: user.uid, receiverId: selectedConversation.otherUser.id, content, createdAt: new Date().toISOString(), pending: true },
+        ]);
 
         try {
             const res = await apiFetch('/api/messages', {
@@ -255,23 +268,26 @@ export function Communications() {
                 body: JSON.stringify({
                     receiverId: selectedConversation.otherUser.id,
                     conversationId: selectedConversation._id,
-                    content: newMessage
+                    content
                 })
             });
 
-            if (res.ok) {
-                setNewMessage("");
-                // Firestore listener will surface the new message to both sides.
-            } else {
+            if (!res.ok) {
                 const body = await res.json().catch(() => ({}));
+                setPendingMessages((prev) => prev.filter((m) => m._id !== pendingId));
+                setNewMessage(content);
                 toast({
                     variant: "destructive",
                     title: "Message not sent",
                     description: body.error || "This conversation is no longer available.",
                 });
             }
+            // On success, the Firestore listener replaces this pending echo
+            // with the real message (see the rtMessages effect above).
         } catch (error) {
             console.error(error);
+            setPendingMessages((prev) => prev.filter((m) => m._id !== pendingId));
+            setNewMessage(content);
         }
     };
 
@@ -437,7 +453,7 @@ export function Communications() {
                                     >
                                         <div className="relative">
                                             <Avatar className="h-14 w-14 border-4 border-white shadow-md">
-                                                <AvatarImage src={staff.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${staff.uid}`} />
+                                                <AvatarImage src={staff.photoURL || undefined} />
                                                 <AvatarFallback className="bg-[#F6F4F2] text-[#0B1F3A] font-serif">{getInitials(staff.displayName)}</AvatarFallback>
                                             </Avatar>
                                             <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-50">
@@ -486,7 +502,7 @@ export function Communications() {
                                     >
                                         <div className="relative">
                                             <Avatar className="h-14 w-14 border-4 border-white shadow-md">
-                                                <AvatarImage src={staff.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${staff.uid}`} />
+                                                <AvatarImage src={staff.photoURL || undefined} />
                                                 <AvatarFallback className="bg-[#C8A96A]/10 text-[#0B1F3A] font-serif">{getInitials(staff.displayName)}</AvatarFallback>
                                             </Avatar>
                                             <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-50">
@@ -584,12 +600,12 @@ export function Communications() {
 
                         <ScrollArea className="flex-1 min-h-0 p-6 md:p-10 bg-[#FCFCFE]">
                             <div className="space-y-12 max-w-5xl mx-auto">
-                                {messages.map((msg, i) => {
+                                {[...messages, ...pendingMessages].map((msg, i) => {
                                     const isMe = msg.senderId === user?.uid;
                                     const isMeetingLink = msg.content.includes('zoom.us/');
 
                                     return (
-                                        <div key={msg._id || i} className={`flex items-end gap-3 md:gap-4 ${isMe ? "justify-end" : "justify-start"} animate-in slide-in-from-bottom-4 duration-700`}>
+                                        <div key={msg._id || i} className={`flex items-end gap-3 md:gap-4 ${isMe ? "justify-end" : "justify-start"} animate-in slide-in-from-bottom-4 duration-700 ${msg.pending ? 'opacity-50' : ''}`}>
                                             {!isMe && (
                                                 <Avatar className="h-8 w-8 md:h-10 md:w-10 mb-1 shadow-sm border-2 border-white shrink-0">
                                                     <AvatarImage src={selectedConversation.otherUser.avatar} />
@@ -618,7 +634,7 @@ export function Communications() {
                                                     <p className="text-sm md:text-base font-medium leading-relaxed whitespace-pre-wrap">{msg.content}</p>
                                                 )}
                                                 <p className={cn("text-[8px] md:text-[9px] font-black uppercase tracking-widest mt-2 self-end opacity-40", isMe ? "text-white" : "text-slate-400")}>
-                                                    {format(new Date(msg.createdAt), "hh:mm a")}
+                                                    {msg.pending ? 'Sending…' : format(new Date(msg.createdAt), "hh:mm a")}
                                                 </p>
                                             </div>
                                         </div>

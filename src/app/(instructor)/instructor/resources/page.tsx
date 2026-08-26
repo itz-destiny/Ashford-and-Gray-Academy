@@ -10,20 +10,19 @@ import {
 } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FilePicker } from "@/components/FilePicker";
-import { FileText, Plus, Search, Video, Presentation, Code, FileArchive, Trash2, Download, Loader2 } from "lucide-react";
+import { FileText, Plus, Search, Video, Presentation, FileArchive, Trash2, Download, Loader2 } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiFetch } from "@/lib/api-client";
 import { useUser } from "@/firebase";
 import { useToast } from "@/hooks/use-toast";
 
-type ResourceType = 'PDF' | 'Video' | 'Slides' | 'Code' | 'Other';
+type ResourceType = 'PDF' | 'Video' | 'Slides' | 'Other';
 
 const ACCEPT_BY_TYPE: Record<ResourceType, string> = {
     PDF: 'application/pdf',
     Video: 'video/*',
     Slides: '.ppt,.pptx',
-    Code: '.zip',
     Other: '*/*',
 };
 
@@ -121,7 +120,6 @@ export default function InstructorResourcesPage() {
             case 'PDF': return <FileText className={`${ICON_CLASS} text-rose-500`} />;
             case 'VIDEO': return <Video className={`${ICON_CLASS} text-sky-500`} />;
             case 'SLIDES': return <Presentation className={`${ICON_CLASS} text-amber-500`} />;
-            case 'CODE': return <Code className={`${ICON_CLASS} text-emerald-500`} />;
             default: return <FileArchive className={`${ICON_CLASS} text-slate-400`} />;
         }
     };
@@ -182,7 +180,7 @@ export default function InstructorResourcesPage() {
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {(['PDF', 'Video', 'Slides', 'Code', 'Other'] as ResourceType[]).map((t) => (
+                                            {(['PDF', 'Video', 'Slides', 'Other'] as ResourceType[]).map((t) => (
                                                 <SelectItem key={t} value={t}>{t}</SelectItem>
                                             ))}
                                         </SelectContent>

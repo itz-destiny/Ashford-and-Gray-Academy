@@ -132,7 +132,7 @@ export const Conversation = mongoose.models.Conversation || mongoose.model<IConv
 // --- Resource Model ---
 export interface IResource extends Document {
     title: string;
-    type: 'PDF' | 'Video' | 'Slides' | 'Code' | 'Other';
+    type: 'PDF' | 'Video' | 'Slides' | 'Other';
     courseId?: mongoose.Types.ObjectId;
     url: string;
     fileHint?: string;
@@ -141,7 +141,7 @@ export interface IResource extends Document {
 
 const ResourceSchema: Schema = new Schema({
     title: { type: String, required: true },
-    type: { type: String, enum: ['PDF', 'Video', 'Slides', 'Code', 'Other'], default: 'PDF' },
+    type: { type: String, enum: ['PDF', 'Video', 'Slides', 'Other'], default: 'PDF' },
     courseId: { type: Schema.Types.ObjectId, ref: 'Course' },
     url: { type: String, required: true },
     fileHint: { type: String },

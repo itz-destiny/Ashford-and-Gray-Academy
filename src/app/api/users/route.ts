@@ -66,15 +66,12 @@ export async function GET(req: NextRequest): Promise<Response> {
 
         if (uid && !roleParam) {
             const identity = await authenticateFirebase(req);
-            if (uid !== identity.uid) {
+            let isSelfOrElevated = uid === identity.uid;
+            if (!isSelfOrElevated) {
                 const caller = await loadProfile(identity.uid);
-                if (!caller || !isElevated(caller)) {
-                    return NextResponse.json(
-                        { error: 'You can only read your own profile.' },
-                        { status: 403 }
-                    );
-                }
+                isSelfOrElevated = !!caller && isElevated(caller);
             }
+
             try {
                 await dbConnect();
             } catch (dbErr) {
@@ -90,7 +87,20 @@ export async function GET(req: NextRequest): Promise<Response> {
                 // as a clear error, not get silently treated as a new student.
                 return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
             }
-            return NextResponse.json(user);
+
+            if (isSelfOrElevated) {
+                return NextResponse.json(user);
+            }
+
+            // Anyone else (e.g. a student resolving who they're chatting with)
+            // only ever gets the public-facing identity fields — never email,
+            // phone, dateOfBirth, or anything else in the full profile.
+            return NextResponse.json({
+                uid: user.uid,
+                displayName: user.displayName,
+                photoURL: user.photoURL,
+                role: user.role,
+            });
         }
 
         // Listing modes require elevated role with full profile loaded.

@@ -162,26 +162,32 @@ export const POST = withAuth(async (req: NextRequest, { auth }) => {
             participants: conversation?.participants,
         });
 
-        // Support-request thread: when the advisor (anyone other than the
-        // student) replies, email the student so they know to check back —
-        // they have no reason to be polling the dashboard otherwise.
-        if (conversation?.kind === 'support' && auth.role !== 'student') {
-            const student = await User.findOne({ uid: receiverId }).select('uid email displayName').lean<{ uid: string; email: string; displayName: string } | null>();
-            if (student) {
+        // Notify the receiver on every direct message — not just support
+        // threads — so their notification bell/tab actually lights up
+        // instead of requiring them to be already looking at the inbox.
+        // Group (class) conversations skip this: everyone would get pinged
+        // on every message in a whole-cohort thread.
+        if (conversation?.type !== 'group') {
+            const receiverProfile = await User.findOne({ uid: receiverId }).select('uid email displayName').lean<{ uid: string; email: string; displayName: string } | null>();
+            if (receiverProfile) {
+                const isSupportReply = conversation?.kind === 'support' && auth.role !== 'student';
                 void createNotification({
-                    userId: student.uid,
+                    userId: receiverProfile.uid,
                     type: 'message',
-                    title: 'Your Support Request Has a Reply',
-                    message: `${auth.displayName} replied to your request.`,
+                    title: isSupportReply ? 'Your Support Request Has a Reply' : `New message from ${auth.displayName}`,
+                    message: isSupportReply ? `${auth.displayName} replied to your request.` : content.length > 140 ? `${content.slice(0, 140)}…` : content,
                     actionUrl: '/communications',
-                    sendEmail: true,
-                    userEmail: student.email,
-                    emailData: {
-                        recipientName: student.displayName,
+                    // Only email for support replies — a student has no reason
+                    // to be polling the dashboard otherwise. Regular chat stays
+                    // in-app only so every message doesn't also send an email.
+                    sendEmail: isSupportReply,
+                    userEmail: receiverProfile.email,
+                    emailData: isSupportReply ? {
+                        recipientName: receiverProfile.displayName,
                         senderName: auth.displayName,
                         messagePreview: content.length > 200 ? `${content.slice(0, 200)}…` : content,
                         conversationUrl: `${getEmailUrl()}/communications`,
-                    },
+                    } : undefined,
                 });
             }
         }

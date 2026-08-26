@@ -2,11 +2,11 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useUser } from "@/firebase";
 import { apiFetch } from "@/lib/api-client";
-import { BookOpen, MoreVertical, Search, Users, Star, Clock, Filter, Layers, Video } from "lucide-react";
+import { BookOpen, Search, Users, Star, Clock } from "lucide-react";
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -45,47 +45,36 @@ export default function InstructorCoursesPage() {
     );
 
     return (
-        <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                <div className="space-y-1">
-                    <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
-                        <BookOpen className="w-8 h-8 text-indigo-600" />
-                        My Teaching
-                    </h1>
-                    <p className="text-slate-500 font-medium tracking-tight">Your assigned classes — manage content, track engagement, and run live sessions.</p>
+        <div className="mx-auto px-4 sm:px-6 md:px-12 py-8 md:py-12 space-y-10 md:space-y-16 pb-32 max-w-[1600px] bg-[#FAF9F6]">
+            {/* Header */}
+            <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                    <div className="w-2 h-8 bg-[#C8A96A]" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#0B1F3A]/60">Faculty Portal</span>
                 </div>
+                <h1 className="text-3xl md:text-5xl font-serif text-[#0B1F3A] tracking-tight leading-tight">
+                    My <span className="text-[#C8A96A]">Teaching.</span>
+                </h1>
+                <p className="text-slate-500 font-medium text-base md:text-lg max-w-lg leading-relaxed font-serif">
+                    Your assigned classes — manage content, track engagement, and run live sessions.
+                </p>
             </div>
 
-            <Card className="border-none shadow-none bg-white/60 backdrop-blur-xl border border-white/20 rounded-3xl overflow-hidden">
-                <CardContent className="p-8">
-                    <div className="flex flex-col gap-6 md:flex-row">
-                        <div className="relative flex-1 group">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
-                            <Input
-                                placeholder="Search your curriculum..."
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                                className="pl-12 h-14 bg-slate-100/50 border-none focus-visible:ring-2 focus-visible:ring-indigo-500/20 text-lg font-medium rounded-2xl"
-                            />
-                        </div>
-                        <div className="flex gap-4">
-                            <Button variant="outline" className="h-14 px-6 rounded-2xl border-slate-100 bg-white shadow-none font-bold text-slate-600 gap-2">
-                                <Filter className="w-4 h-4" />
-                                Refine
-                            </Button>
-                            <Button variant="outline" className="h-14 px-6 rounded-2xl border-slate-100 bg-white shadow-none font-bold text-slate-600 gap-2">
-                                <Layers className="w-4 h-4" />
-                                Categories
-                            </Button>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
+            {/* Search */}
+            <div className="relative group max-w-xl">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-[#0B1F3A]/30 group-focus-within:text-[#C8A96A] transition-colors" />
+                <Input
+                    placeholder="Search your curriculum..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="pl-12 h-14 bg-white border border-[#0B1F3A]/10 rounded-none focus-visible:ring-1 focus-visible:ring-[#C8A96A] text-base font-medium shadow-sm"
+                />
+            </div>
 
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3">
                 {loading ? (
                     Array.from({ length: 6 }).map((_, i) => (
-                        <Card key={i} className="border-none shadow-none rounded-3xl overflow-hidden animate-pulse">
+                        <Card key={i} className="border-none shadow-none rounded-none overflow-hidden animate-pulse">
                             <div className="h-48 bg-slate-100" />
                             <CardHeader className="space-y-2">
                                 <Skeleton className="h-4 w-1/4" />
@@ -93,69 +82,71 @@ export default function InstructorCoursesPage() {
                             </CardHeader>
                         </Card>
                     ))
+                ) : filteredCourses.length === 0 ? (
+                    <div className="col-span-full p-16 md:p-20 text-center bg-white border border-[#0B1F3A]/10 border-t-4 border-t-[#C8A96A] shadow-sm">
+                        <div className="w-16 h-16 bg-[#F6F4F2] border border-[#0B1F3A]/10 flex items-center justify-center text-slate-300 mx-auto mb-6">
+                            <BookOpen className="w-8 h-8" />
+                        </div>
+                        <h3 className="text-2xl font-serif text-[#0B1F3A] mb-3">No courses yet</h3>
+                        <p className="text-slate-400 font-medium max-w-sm mx-auto leading-relaxed font-serif">
+                            You haven't been assigned to teach any courses yet. Contact the Registry if you believe this is a mistake.
+                        </p>
+                    </div>
                 ) : filteredCourses.map((course) => (
-                    <Card key={course._id} className="group border-none hover:shadow-2xl transition-all duration-500 bg-white/80 backdrop-blur-md rounded-3xl overflow-hidden flex flex-col border border-white/20 hover:-translate-y-2 shadow-none">
-                        <div className="relative h-48 overflow-hidden bg-slate-200">
+                    <Card key={course._id} className="group border border-[#0B1F3A]/10 hover:border-[#C8A96A] transition-all duration-500 bg-white rounded-none overflow-hidden flex flex-col shadow-sm border-t-4 border-t-[#C8A96A]">
+                        <div className="relative h-44 overflow-hidden bg-[#F6F4F2]">
                             <img
                                 src={course.imageUrl}
                                 alt={course.title}
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                             <div className="absolute top-4 right-4">
-                                <Badge className="bg-white/90 backdrop-blur text-slate-900 font-black border-none px-3 py-1 shadow-none">
+                                <Badge className="bg-white/90 text-[#0B1F3A] font-black text-[9px] uppercase tracking-widest border-none rounded-none px-3 py-1">
                                     {course.category}
                                 </Badge>
                             </div>
                         </div>
-                        <CardHeader className="flex-1 pb-4">
-                            <div className="flex justify-between items-start mb-2">
-                                <div className="flex items-center gap-1.5 text-amber-500 font-bold text-xs uppercase">
+                        <CardHeader className="flex-1 pb-4 space-y-2">
+                            <div className="flex justify-between items-start">
+                                <div className="flex items-center gap-1.5 text-[#C8A96A] font-black text-[10px] uppercase tracking-widest">
                                     <Star className="w-3.5 h-3.5 fill-current" />
                                     {course.rating} ({course.reviews})
                                 </div>
-                                <div className="flex items-center gap-1.5 text-slate-400 font-bold text-[10px] uppercase">
+                                <div className="flex items-center gap-1.5 text-slate-400 font-black text-[10px] uppercase tracking-widest">
                                     <Clock className="w-3.5 h-3.5" />
                                     {course.duration}h
                                 </div>
                             </div>
-                            <CardTitle className="text-xl font-black text-slate-800 line-clamp-2 leading-tight group-hover:text-indigo-600 transition-colors">
+                            <CardTitle className="text-xl font-serif text-[#0B1F3A] line-clamp-2 leading-snug group-hover:text-[#C8A96A] transition-colors">
                                 {course.title}
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="pt-0 pb-6">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-indigo-50 rounded-xl">
-                                        <Users className="w-4 h-4 text-indigo-600" />
+                                    <div className="w-9 h-9 bg-[#F6F4F2] border border-[#0B1F3A]/5 flex items-center justify-center flex-shrink-0">
+                                        <Users className="w-4 h-4 text-[#0B1F3A]" />
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Enrolled</p>
-                                        <p className="font-bold text-slate-700">{course.enrollmentCount ?? 0} Students</p>
+                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Enrolled</p>
+                                        <p className="font-bold text-[#0B1F3A] text-sm">{course.enrollmentCount ?? 0} Students</p>
                                     </div>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Revenue</p>
-                                    <p className="font-bold text-emerald-600">${((course.price || 0) * (course.enrollmentCount ?? 0)).toLocaleString()}</p>
+                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Est. Revenue</p>
+                                    <p className="font-bold text-[#1F7A5A] text-sm">${((course.price || 0) * (course.enrollmentCount ?? 0)).toLocaleString()}</p>
                                 </div>
                             </div>
                             {course.status && course.status !== 'published' && (
-                                <Badge className="mt-3 bg-amber-50 text-amber-700 border-none font-bold text-[10px] uppercase tracking-widest px-2.5 py-0.5">
+                                <Badge className="mt-3 bg-amber-50 text-amber-700 border-none font-black text-[9px] uppercase tracking-widest rounded-none px-2.5 py-0.5">
                                     {course.status}
                                 </Badge>
                             )}
                         </CardContent>
-                        <div className="p-6 pt-0 border-t border-slate-50 mt-auto">
-                            <div className="flex gap-2 pt-6">
-                                <Button asChild className="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold h-11 rounded-xl shadow-none transition-all active:scale-95">
-                                    <Link href={`/instructor/courses/${course._id}`}>Manage</Link>
-                                </Button>
-                                <Button asChild variant="outline" className="h-11 px-4 rounded-xl border-slate-100 text-[#1F7A5A] hover:bg-emerald-50 transition-all gap-2 font-bold">
-                                    <Link href={`/live-classes/course-${course._id}`}>
-                                        <Video className="h-4 w-4" /> Live
-                                    </Link>
-                                </Button>
-                            </div>
+                        <div className="p-6 pt-0 border-t border-[#0B1F3A]/5 mt-auto">
+                            <Button asChild className="w-full bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black h-11 rounded-none shadow-none text-[10px] uppercase tracking-widest transition-colors">
+                                <Link href={`/instructor/courses/${course._id}`}>Manage</Link>
+                            </Button>
                         </div>
                     </Card>
                 ))}
