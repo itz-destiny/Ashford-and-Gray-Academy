@@ -1,5 +1,6 @@
 "use client";
 
+import { upload } from "@vercel/blob/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -32,7 +33,7 @@ export default function MessagesPage() {
 
   // Realtime conversation list from Firestore — replaces the 5s polling.
   const { conversations: rtConversations } = useUserConversations(user?.uid);
-  const userCacheRef = useRef<Map<string, { name: string; avatar: string }>>(new Map());
+  const userCacheRef = useRef<Map<string, { name: string; avatar: string | undefined }>>(new Map());
 
   useEffect(() => {
     if (!user) return;
@@ -49,13 +50,13 @@ export default function MessagesPage() {
               const uData = await uRes.json();
               info = {
                 name: uData.displayName || 'Anonymous',
-                avatar: uData.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${otherUserId}`,
+                avatar: uData.photoURL || undefined,
               };
               userCacheRef.current.set(otherUserId, info);
             } catch {
               info = {
                 name: 'Anonymous',
-                avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${otherUserId}`,
+                avatar: undefined,
               };
             }
           }
@@ -184,26 +185,15 @@ export default function MessagesPage() {
 
     setUploading(true);
     try {
-      const signRes = await apiFetch('/api/storage/signed-url', {
-        method: 'POST',
-        body: JSON.stringify({
-          filename: file.name,
-          contentType: file.type,
-          category,
-        }),
+      const idToken = await user.getIdToken();
+      const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+      const blob = await upload(`uploads/${category}/${user.uid}/${safeName}`, file, {
+        access: 'public',
+        handleUploadUrl: '/api/upload',
+        clientPayload: JSON.stringify({ category, contentType: file.type }),
+        headers: { Authorization: `Bearer ${idToken}` },
       });
-      if (!signRes.ok) {
-        const err = await signRes.json().catch(() => ({}));
-        throw new Error(err.error || 'Could not get an upload URL.');
-      }
-      const { uploadUrl, publicUrl } = await signRes.json();
-
-      const putRes = await fetch(uploadUrl, {
-        method: 'PUT',
-        headers: { 'Content-Type': file.type },
-        body: file,
-      });
-      if (!putRes.ok) throw new Error('Upload failed.');
+      const publicUrl = blob.url;
 
       await apiFetch('/api/messages', {
         method: 'POST',
