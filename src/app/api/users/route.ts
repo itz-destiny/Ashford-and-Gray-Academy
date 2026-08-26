@@ -143,6 +143,12 @@ const upsertSchema = z.object({
     highestQualification: z.string().max(120).optional(),
     professionalBackground: z.string().max(2000).optional(),
     applicationStatement: z.string().max(3000).optional(),
+    notificationPreferences: z.object({
+        userManagement: z.boolean().optional(),
+        courseApprovals: z.boolean().optional(),
+        auditLogs: z.boolean().optional(),
+        systemAlerts: z.boolean().optional(),
+    }).optional(),
 });
 
 export async function POST(req: NextRequest): Promise<Response> {
@@ -228,6 +234,9 @@ export async function POST(req: NextRequest): Promise<Response> {
             highestQualification: body.highestQualification ?? existing?.highestQualification,
             professionalBackground: body.professionalBackground ?? existing?.professionalBackground,
             applicationStatement: body.applicationStatement ?? existing?.applicationStatement,
+            notificationPreferences: body.notificationPreferences
+                ? { ...existing?.notificationPreferences, ...body.notificationPreferences }
+                : existing?.notificationPreferences,
         };
 
         // Email verification is not required to use the academy (frictionless

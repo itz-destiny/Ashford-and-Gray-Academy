@@ -120,11 +120,18 @@ export const GET = withAuth(async (_req: NextRequest, { auth }) => {
         const sixtyDaysAgo = new Date();
         sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
 
-        const [curr30, prev30] = await Promise.all([
+        const [curr30, prev30, studentsCurr30, studentsPrev30, coursesCurr30, coursesPrev30] = await Promise.all([
             Enrollment.countDocuments({ enrolledAt: { $gte: thirtyDaysAgo } }),
             Enrollment.countDocuments({ enrolledAt: { $gte: sixtyDaysAgo, $lt: thirtyDaysAgo } }),
+            User.countDocuments({ role: 'student', createdAt: { $gte: thirtyDaysAgo } }),
+            User.countDocuments({ role: 'student', createdAt: { $gte: sixtyDaysAgo, $lt: thirtyDaysAgo } }),
+            Course.countDocuments({ createdAt: { $gte: thirtyDaysAgo } }),
+            Course.countDocuments({ createdAt: { $gte: sixtyDaysAgo, $lt: thirtyDaysAgo } }),
         ]);
-        const enrollmentGrowth = prev30 === 0 ? 100 : Math.round(((curr30 - prev30) / prev30) * 100);
+        const pctChange = (curr: number, prev: number) => prev === 0 ? (curr > 0 ? 100 : 0) : Math.round(((curr - prev) / prev) * 100);
+        const enrollmentGrowth = pctChange(curr30, prev30);
+        const studentGrowth = pctChange(studentsCurr30, studentsPrev30);
+        const courseGrowth = pctChange(coursesCurr30, coursesPrev30);
 
         const topPerformingCoursesRaw = await Enrollment.aggregate([
             { $group: { _id: '$courseId', count: { $sum: 1 } } },
@@ -158,6 +165,8 @@ export const GET = withAuth(async (_req: NextRequest, { auth }) => {
                 completionRate,
                 thirtyDayEnrollments: curr30,
                 enrollmentGrowth,
+                studentGrowth,
+                courseGrowth,
                 topPerformingCourses,
             },
             recentEnrollments,
