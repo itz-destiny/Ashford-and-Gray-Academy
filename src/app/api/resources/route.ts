@@ -42,7 +42,7 @@ export const GET = withAuth(async (req: NextRequest, { auth }) => {
 
 const createSchema = z.object({
     title: z.string().min(1).max(300),
-    type: z.enum(['PDF', 'Video', 'Slides', 'Code', 'Other']).optional(),
+    type: z.enum(['PDF', 'Video', 'Slides', 'Other']).optional(),
     courseId: z.string().optional(),
     url: z.string().url().min(1),
     fileHint: z.string().max(200).optional(),

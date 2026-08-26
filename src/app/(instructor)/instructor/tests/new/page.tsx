@@ -18,6 +18,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Plus, Trash2, Loader2, GripVertical } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type QuestionType = 'mcq' | 'true_false' | 'short_answer';
 
@@ -258,16 +259,24 @@ export default function NewTestPage() {
 
                                     {q.type !== 'short_answer' && (
                                         <div className="space-y-2 pl-1">
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Select the correct answer:</p>
                                             {q.options.map((o, oIdx) => (
-                                                <div key={oIdx} className="flex items-center gap-3">
-                                                    <input
-                                                        type="radio"
-                                                        name={`correct-${qIdx}`}
-                                                        checked={o.isCorrect}
-                                                        onChange={() => setCorrectOption(qIdx, oIdx)}
-                                                        className="w-4 h-4 accent-indigo-600"
-                                                        title="Mark as correct answer"
-                                                    />
+                                                <div key={oIdx} className={cn(
+                                                    "flex items-center gap-3 rounded-xl border px-3 py-1.5 transition-colors",
+                                                    o.isCorrect ? "border-emerald-300 bg-emerald-50" : "border-transparent"
+                                                )}>
+                                                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                                                        <input
+                                                            type="radio"
+                                                            name={`correct-${qIdx}`}
+                                                            checked={o.isCorrect}
+                                                            onChange={() => setCorrectOption(qIdx, oIdx)}
+                                                            className="w-4 h-4 accent-emerald-600"
+                                                        />
+                                                        <span className={cn("text-[10px] font-black uppercase tracking-wide", o.isCorrect ? "text-emerald-700" : "text-slate-400")}>
+                                                            Correct
+                                                        </span>
+                                                    </label>
                                                     <Input
                                                         value={o.text}
                                                         onChange={e => updateOption(qIdx, oIdx, e.target.value)}

@@ -14,13 +14,18 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useUser } from "@/firebase"
 import { signOut } from "@/firebase/auth"
-import { CreditCard, LogOut, Settings, User as UserIcon } from "lucide-react"
+import { CreditCard, LogOut, User as UserIcon } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
 export function UserNav() {
   const { user } = useUser();
   const router = useRouter();
+  // Only students carry a personal bill (tuition) — staff have nothing to
+  // pay, so Billing has no meaning in their menu. Settings is dropped for
+  // everyone: every portal already has its own Account Settings link in the
+  // sidebar, and settings belongs in exactly one place, not two.
+  const showBilling = user?.role === 'student';
 
   const getInitials = (name: string) => {
     return name ? name.split(' ').map(n => n[0]).join('') : '';
@@ -82,18 +87,14 @@ export function UserNav() {
               <span>Profile</span>
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href="/account/billing">
-              <CreditCard className="mr-2 h-4 w-4" />
-              <span>Billing</span>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href="/account/settings">
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Settings</span>
-            </Link>
-          </DropdownMenuItem>
+          {showBilling && (
+            <DropdownMenuItem asChild>
+              <Link href="/account/billing">
+                <CreditCard className="mr-2 h-4 w-4" />
+                <span>Billing</span>
+              </Link>
+            </DropdownMenuItem>
+          )}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut}>
