@@ -13,13 +13,22 @@ export class StorageError extends Error {
 const ALLOWED_CONTENT_TYPES: Record<UploadCategory, readonly string[]> = {
     image: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
     video: ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'],
-    document: ['application/pdf'],
+    document: [
+        'application/pdf',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation', // .pptx
+        'application/vnd.ms-powerpoint', // .ppt
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
+        'application/msword', // .doc
+        'application/zip',
+        'application/x-zip-compressed',
+        'text/plain',
+    ],
 };
 
 export const MAX_BYTES_PER_CATEGORY: Record<UploadCategory, number> = {
     image: 10 * 1024 * 1024,        // 10 MB
     video: 500 * 1024 * 1024,       // 500 MB
-    document: 25 * 1024 * 1024,     // 25 MB
+    document: 50 * 1024 * 1024,     // 50 MB — also covers slide decks and zipped code bundles.
 };
 
 const UPLOAD_URL_TTL_MS = 15 * 60 * 1000;
