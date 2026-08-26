@@ -15,12 +15,14 @@ import {
     FileText,
     Clock,
     ChevronRight,
-    Sparkles
+    Sparkles,
+    ClipboardCheck
 } from "lucide-react";
 
 const sidebarItems = [
     { href: "/dashboard", label: "My Home", icon: Home },
     { href: "/my-courses", label: "My Courses", icon: BookOpen },
+    { href: "/tests", label: "Tests & Exams", icon: ClipboardCheck },
     { href: "/my-events", label: "Academy Events", icon: Calendar },
     { href: "/grades", label: "My Grades", icon: GraduationCap },
     { href: "/communications", label: "My Messages", icon: MessageSquare },
