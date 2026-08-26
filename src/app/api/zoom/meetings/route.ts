@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import LiveClass from '@/models/LiveClass';
-import { createZoomMeeting } from '@/lib/zoom';
+import { createZoomMeeting, renameZoomHost } from '@/lib/zoom';
 import { findAvailableZoomHost } from '@/lib/zoom-scheduler';
 import { withAuth } from '@/lib/auth-server';
 import { z } from 'zod';
@@ -35,6 +35,10 @@ export const POST = withAuth(async (req, { auth }) => {
                 { error: 'Every licensed Zoom host is already booked for this time. Please choose a different time, or add another Zoom license.' },
                 { status: 409 }
             );
+        }
+
+        if (auth.displayName) {
+            await renameZoomHost(assignment.account, assignment.hostEmail, auth.displayName);
         }
 
         // Create Zoom meeting via API, under whichever host is free
