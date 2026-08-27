@@ -100,32 +100,14 @@ export function Communications() {
 
                 // Student: only the instructors of courses they're currently,
                 // actively enrolled in — access ends once the course's stated
-                // duration has elapsed from the enrollment date.
-                const enRes = await apiFetch('/api/enrollments');
-                const enrollments = await enRes.json();
-
-                if (Array.isArray(enrollments)) {
-                    const now = Date.now();
-                    const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
-                    const activeInstructorUids = new Set(
-                        enrollments
-                            .filter((en: any) => {
-                                const uid = en.course?.instructorUid;
-                                if (!uid) return false;
-                                const enrolledAt = new Date(en.enrolledAt).getTime();
-                                const durationWeeks = en.course?.duration || 0;
-                                return now <= enrolledAt + durationWeeks * WEEK_MS;
-                            })
-                            .map((en: any) => en.course.instructorUid)
-                    );
-
-                    const res = await apiFetch('/api/users?role=instructor');
-                    const data = await res.json();
-
-                    if (Array.isArray(data)) {
-                        const instructors = data.filter((u: any) => activeInstructorUids.has(u.uid));
-                        setLecturersDirectory(instructors);
-                    }
+                // duration has elapsed from the enrollment date. Uses a
+                // student-scoped endpoint rather than /api/users?role=instructor,
+                // which requires an elevated role and always 403'd for a
+                // student, silently leaving this directory empty.
+                const res = await apiFetch('/api/student/instructors');
+                const body = await res.json().catch(() => null);
+                if (body?.success && Array.isArray(body.instructors)) {
+                    setLecturersDirectory(body.instructors);
                 }
             } catch (error) {
                 console.error('Error fetching directory:', error);
@@ -250,6 +232,17 @@ export function Communications() {
         return () => { cancelled = true; };
     }, [user, rtConversations, selectedConversation, showMobileChat]);
 
+    // Opening a conversation clears its unread count everywhere else it's
+    // shown (dashboard inbox previews, notification counts) — nothing in
+    // this UI ever did that before.
+    useEffect(() => {
+        if (!selectedConversation?._id) return;
+        apiFetch('/api/messages/mark-read', {
+            method: 'PATCH',
+            body: JSON.stringify({ conversationId: selectedConversation._id }),
+        }).catch(() => null);
+    }, [selectedConversation?._id]);
+
     // Realtime messages for the active conversation — replaces 5s polling.
     const { messages: rtMessages } = useConversationMessages(selectedConversation?._id ?? null);
     // A message the user just hit "send" on, echoed locally so it appears
@@ -312,42 +305,6 @@ export function Communications() {
             console.error(error);
             setPendingMessages((prev) => prev.filter((m) => m._id !== pendingId));
             setNewMessage(content);
-        }
-    };
-
-    const handleStartVideoCall = async () => {
-        if (!user || !selectedConversation) return;
-
-        try {
-            const zoomRes = await apiFetch('/api/messages/video-call', {
-                method: 'POST',
-                body: JSON.stringify({ conversationId: selectedConversation._id }),
-            });
-            const zoomBody = await zoomRes.json().catch(() => ({}));
-            if (!zoomRes.ok || !zoomBody.joinUrl) {
-                toast({
-                    variant: 'destructive',
-                    title: 'Could not start video call',
-                    description: zoomBody.error || 'Please try again.',
-                });
-                return;
-            }
-
-            const messageContent = `I started a video meeting. Join here: ${zoomBody.joinUrl}`;
-            await apiFetch('/api/messages', {
-                method: 'POST',
-                body: JSON.stringify({
-                    receiverId: selectedConversation.otherUser.id,
-                    conversationId: selectedConversation._id,
-                    content: messageContent
-                })
-            });
-            // Firestore listener fans the meeting message out.
-
-            window.open(zoomBody.joinUrl, '_blank');
-        } catch (error) {
-            console.error(error);
-            toast({ variant: 'destructive', title: 'Could not start video call', description: 'Please try again.' });
         }
     };
 
@@ -498,7 +455,7 @@ export function Communications() {
                                                 </p>
                                             </div>
                                             <p className="text-xs truncate font-medium text-slate-400">
-                                                {conv.lastMessage}
+                                                {/^https?:\/\/\S+\.(jpg|jpeg|png|gif|webp)(\?\S*)?$/i.test((conv.lastMessage || '').trim()) ? '📷 Photo' : conv.lastMessage}
                                             </p>
                                         </div>
                                     </div>
@@ -652,15 +609,6 @@ export function Communications() {
                                 </div>
                             </div>
                             <div className="flex items-center gap-2 md:gap-3">
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="rounded-none border border-[#1F7A5A]/20 bg-[#1F7A5A]/5 hover:bg-[#1F7A5A]/10 text-[#1F7A5A]"
-                                    onClick={handleStartVideoCall}
-                                    title="Start Video Call"
-                                >
-                                    <Video className="h-5 w-5" />
-                                </Button>
                                 <Button variant="ghost" size="icon" className="rounded-none border border-[#0B1F3A]/10 bg-white hover:bg-[#F6F4F2] text-[#0B1F3A]/50">
                                     <MoreVertical className="h-4 w-4" />
                                 </Button>
