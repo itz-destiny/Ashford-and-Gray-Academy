@@ -4,9 +4,10 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { CalendarClock, Video, Hourglass, CheckCircle2 } from "lucide-react";
+import { CalendarClock, Video, Hourglass, CheckCircle2, Loader2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiFetch } from "@/lib/api-client";
+import { useToast } from "@/hooks/use-toast";
 
 type TimetableSession = {
     _id: string;
@@ -20,6 +21,7 @@ type TimetableSession = {
     status: 'unassigned' | 'assigned' | 'scheduled' | 'completed' | 'cancelled';
     zoomJoinUrl?: string;
     zoomStartUrl?: string;
+    liveClassId?: string;
 };
 
 function fmtDate(iso: string) {
@@ -33,6 +35,28 @@ function fmtTimeRange(startIso: string, endIso: string) {
 export default function InstructorSchedulePage() {
     const [sessions, setSessions] = useState<TimetableSession[]>([]);
     const [loading, setLoading] = useState(true);
+    const [startingId, setStartingId] = useState<string | null>(null);
+    const { toast } = useToast();
+
+    // A stored zoomStartUrl's ZAK token goes stale after a while, so always
+    // fetch a freshly-signed one right when the instructor clicks Start —
+    // otherwise Zoom rejects it as "not the meeting owner."
+    const handleStartClass = async (liveClassId?: string) => {
+        if (!liveClassId) return;
+        setStartingId(liveClassId);
+        try {
+            const res = await apiFetch(`/api/live-classes/${liveClassId}/start-url`);
+            const body = await res.json();
+            if (!res.ok || !body.startUrl) {
+                throw new Error(body.error || 'Could not start this class.');
+            }
+            window.open(body.startUrl, '_blank');
+        } catch (err: any) {
+            toast({ variant: 'destructive', title: 'Could not start class', description: err.message });
+        } finally {
+            setStartingId(null);
+        }
+    };
 
     const fetchSessions = async () => {
         try {
@@ -108,10 +132,13 @@ export default function InstructorSchedulePage() {
                                 </div>
                                 <div className="flex gap-2 shrink-0">
                                     {session.status === 'scheduled' ? (
-                                        <Button asChild className="h-12 px-6 rounded-xl bg-[#1F7A5A] hover:bg-[#1F7A5A]/90 text-white font-black text-[10px] uppercase tracking-widest gap-2">
-                                            <a href={session.zoomStartUrl} target="_blank" rel="noopener noreferrer">
-                                                <Video className="w-4 h-4" /> Start Class
-                                            </a>
+                                        <Button
+                                            className="h-12 px-6 rounded-xl bg-[#1F7A5A] hover:bg-[#1F7A5A]/90 text-white font-black text-[10px] uppercase tracking-widest gap-2"
+                                            onClick={() => handleStartClass(session.liveClassId)}
+                                            disabled={startingId === session.liveClassId}
+                                        >
+                                            {startingId === session.liveClassId ? <Loader2 className="w-4 h-4 animate-spin" /> : <Video className="w-4 h-4" />}
+                                            Start Class
                                         </Button>
                                     ) : (
                                         <div className="h-12 px-6 rounded-xl bg-slate-50 text-slate-400 font-black text-[10px] uppercase tracking-widest gap-2 flex items-center">

@@ -93,6 +93,28 @@ export async function createZoomMeeting(params: CreateZoomMeetingParams) {
     return await res.json();
 }
 
+// The start_url saved at scheduling time embeds a ZAK (Zoom Access Key) that
+// goes stale after a while — clicking a stored one later gets "not the
+// meeting owner, please sign in" instead of actually starting the class.
+// Zoom re-signs a fresh ZAK on every GET of the meeting, so the fix is to
+// never reuse a cached start_url: fetch a new one right when the host is
+// about to start.
+export async function getFreshZoomStartUrl(account: ZoomAccountCredentials, zoomMeetingId: string): Promise<string> {
+    const token = await getZoomAccessToken(account);
+    const res = await fetch(`https://api.zoom.us/v2/meetings/${encodeURIComponent(zoomMeetingId)}`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+    });
+    if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Failed to refresh Zoom start URL: ${errorText}`);
+    }
+    const data = await res.json();
+    if (!data.start_url) {
+        throw new Error('Zoom did not return a start_url for this meeting.');
+    }
+    return data.start_url as string;
+}
+
 // Every licensed Zoom host is a shared, generic seat rotated across whichever
 // instructor is teaching that time slot — never a per-instructor account. Left
 // alone, a class would open showing that seat's own registered name (e.g. the

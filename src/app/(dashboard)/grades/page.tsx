@@ -15,6 +15,7 @@ import Link from 'next/link';
 export default function StudentGradesPage() {
     const { user } = useUser();
     const [performanceData, setPerformanceData] = useState<any[]>([]);
+    const [testResults, setTestResults] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState({ gpa: '0.00', enrolled: 0, certificates: 0, percentile: 'Top 100%' });
 
@@ -22,18 +23,23 @@ export default function StudentGradesPage() {
         if (!user) return;
         const fetchData = async () => {
             try {
-                const enRes = await apiFetch('/api/enrollments');
+                const [enRes, attemptsRes] = await Promise.all([
+                    apiFetch('/api/enrollments'),
+                    apiFetch('/api/attempts/mine'),
+                ]);
                 const enrollments = await enRes.json();
+                const attemptsBody = await attemptsRes.json().catch(() => null);
+                if (attemptsBody?.success) setTestResults(attemptsBody.results);
 
                 if (Array.isArray(enrollments)) {
                     const detailedPerformance = await Promise.all(enrollments.map(async (en: any) => {
-                        const assRes = await fetch(`/api/assignments?courseId=${en.courseId._id}`);
-                        const assignments = await assRes.json();
+                        const assRes = await apiFetch(`/api/assignments?courseId=${en.courseId._id}`);
+                        const assignments = await assRes.json().catch(() => []);
 
                         // Fetch all submissions for these assignments by this user
-                        const submissions = await Promise.all(assignments.map(async (ass: any) => {
-                            const subRes = await fetch(`/api/assignments?assignmentId=${ass._id}&userId=${user.uid}`);
-                            return subRes.json();
+                        const submissions = await Promise.all((Array.isArray(assignments) ? assignments : []).map(async (ass: any) => {
+                            const subRes = await apiFetch(`/api/assignments?assignmentId=${ass._id}&userId=${user.uid}`);
+                            return subRes.json().catch(() => null);
                         }));
 
                         const gradedSubmissions = submissions.filter(s => s && s.grade !== undefined);
@@ -150,6 +156,46 @@ export default function StudentGradesPage() {
                     </Card>
                 ))}
             </div>
+
+            {/* Test & Exam Results — real, automatically scored the moment an
+                MCQ/true-false attempt is submitted. Short-answer questions
+                show as pending until an instructor grades them. */}
+            <Card className="border border-[#0B1F3A]/10 rounded-none shadow-md bg-white border-t-4 border-t-[#C8A96A] overflow-hidden">
+                <div className="px-8 py-8 border-b border-[#0B1F3A]/10">
+                    <h2 className="text-2xl font-serif text-[#0B1F3A]">Test &amp; Exam Results</h2>
+                    <p className="text-slate-400 font-medium mt-2">Automatically scored the moment you submit.</p>
+                </div>
+                <CardContent className="p-0">
+                    {testResults.length === 0 ? (
+                        <div className="text-center py-16 text-slate-400 font-serif italic">
+                            {loading ? 'Loading…' : "You haven't taken a test yet."}
+                        </div>
+                    ) : (
+                        <div className="divide-y divide-[#0B1F3A]/5">
+                            {testResults.map((r) => (
+                                <div key={r._id} className="flex items-center justify-between px-8 py-5">
+                                    <div>
+                                        <p className="font-serif text-[#0B1F3A]">{r.title}</p>
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
+                                            {r.type} · {r.submittedAt ? new Date(r.submittedAt).toLocaleDateString([], { day: '2-digit', month: 'short', year: 'numeric' }) : ''}
+                                        </p>
+                                    </div>
+                                    {r.status === 'pending' ? (
+                                        <Badge className="bg-amber-50 text-amber-700 border border-amber-200 font-black text-[9px] uppercase tracking-widest rounded-none">
+                                            Awaiting Grading
+                                        </Badge>
+                                    ) : (
+                                        <div className="text-right">
+                                            <p className="font-serif text-[#0B1F3A] text-lg">{r.percentage}%</p>
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{r.score}/{r.maxScore} pts</p>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
 
             {/* Table */}
             <Card className="border border-[#0B1F3A]/10 rounded-none shadow-md bg-white border-t-4 border-t-[#C8A96A] overflow-hidden">

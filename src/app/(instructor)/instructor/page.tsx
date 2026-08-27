@@ -10,12 +10,13 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
     Users, BookOpen, MessageSquare, ChevronRight,
-    Video, Clock, Calendar, ArrowUpRight,
+    Video, Clock, Calendar, ArrowUpRight, Loader2,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { format, isAfter } from "date-fns";
+import { useToast } from "@/hooks/use-toast";
 
 export default function InstructorDashboard() {
     const { user } = useUser();
@@ -26,6 +27,25 @@ export default function InstructorDashboard() {
     const [sessions, setSessions] = useState<any[]>([]);
     const [senderNames, setSenderNames] = useState<Record<string, string | null>>({});
     const [loading, setLoading] = useState(true);
+    const [startingClass, setStartingClass] = useState(false);
+    const { toast } = useToast();
+
+    // A stored zoomStartUrl's ZAK token goes stale after a while, so always
+    // fetch a freshly-signed one right when the instructor clicks Start.
+    const handleStartClass = async (liveClassId?: string) => {
+        if (!liveClassId) return;
+        setStartingClass(true);
+        try {
+            const res = await apiFetch(`/api/live-classes/${liveClassId}/start-url`);
+            const body = await res.json();
+            if (!res.ok || !body.startUrl) throw new Error(body.error || 'Could not start this class.');
+            window.open(body.startUrl, '_blank');
+        } catch (err: any) {
+            toast({ variant: 'destructive', title: 'Could not start class', description: err.message });
+        } finally {
+            setStartingClass(false);
+        }
+    };
 
     useEffect(() => {
         if (!user) return;
@@ -345,11 +365,13 @@ export default function InstructorDashboard() {
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                {nextSession?.status === 'scheduled' && nextSession.zoomStartUrl ? (
-                                    <Button asChild className="w-full h-14 bg-[#C8A96A] hover:bg-[#B69859] text-[#0B1F3A] font-black rounded-none shadow-xl text-[10px] uppercase tracking-widest">
-                                        <a href={nextSession.zoomStartUrl} target="_blank" rel="noopener noreferrer">
-                                            <Video className="w-4 h-4 mr-2" /> Start Live Class
-                                        </a>
+                                {nextSession?.status === 'scheduled' && nextSession.liveClassId ? (
+                                    <Button
+                                        className="w-full h-14 bg-[#C8A96A] hover:bg-[#B69859] text-[#0B1F3A] font-black rounded-none shadow-xl text-[10px] uppercase tracking-widest"
+                                        onClick={() => handleStartClass(nextSession.liveClassId)}
+                                        disabled={startingClass}
+                                    >
+                                        {startingClass ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Video className="w-4 h-4 mr-2" />} Start Live Class
                                     </Button>
                                 ) : (
                                     <Button disabled className="w-full h-14 bg-white/10 text-white/40 font-black rounded-none shadow-none text-[10px] uppercase tracking-widest cursor-not-allowed">

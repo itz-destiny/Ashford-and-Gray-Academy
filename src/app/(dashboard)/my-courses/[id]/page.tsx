@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { useUser, useDirectMessages, useConversationMessages } from '@/firebase';
+import { useUser, useConversationMessages } from '@/firebase';
 import { apiFetch } from '@/lib/api-client';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -117,14 +117,32 @@ export default function CourseViewerPage() {
         }
     };
 
-    // Realtime DMs with the course instructor — replaces 5s polling.
+    // Realtime DMs with the course instructor. Uses a real Conversation
+    // document (get-or-created via /api/conversations), the same way every
+    // other messaging surface does — never the synthetic sender::receiver
+    // fallback id, which produced a second, disconnected thread with the
+    // same person any time a message went out with no conversationId.
     const instructorUid = course?.instructorUid as string | undefined;
-    const rtCourseMessages = useDirectMessages(user?.uid ?? null, instructorUid ?? null);
+    const [dmConversationId, setDmConversationId] = useState<string | null>(null);
+
     useEffect(() => {
-        if (!instructorUid) {
-            setMessages([]);
+        if (!user || !instructorUid) {
+            setDmConversationId(null);
             return;
         }
+        let active = true;
+        apiFetch('/api/conversations', {
+            method: 'POST',
+            body: JSON.stringify({ participants: [instructorUid] }),
+        })
+            .then((res) => (res.ok ? res.json() : null))
+            .then((data) => { if (active && data?._id) setDmConversationId(data._id); })
+            .catch((error) => console.error('Error provisioning instructor DM:', error));
+        return () => { active = false; };
+    }, [user, instructorUid]);
+
+    const { messages: rtCourseMessages } = useConversationMessages(dmConversationId);
+    useEffect(() => {
         setMessages(
             rtCourseMessages.map((m) => ({
                 _id: m.id,
@@ -134,13 +152,14 @@ export default function CourseViewerPage() {
                 createdAt: m.createdAt,
             }))
         );
-    }, [rtCourseMessages, instructorUid]);
+    }, [rtCourseMessages]);
 
     const handleSendMessage = async () => {
-        if (!newMessage.trim() || !user || !course) return;
+        if (!newMessage.trim() || !user || !course || !instructorUid || !dmConversationId) return;
 
         const msg = {
-            receiverId: course.instructorUid || course.instructor?.name,
+            receiverId: instructorUid,
+            conversationId: dmConversationId,
             courseId,
             content: newMessage,
         };
