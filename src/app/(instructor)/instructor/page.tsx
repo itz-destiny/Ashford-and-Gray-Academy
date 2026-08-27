@@ -432,6 +432,7 @@ export default function InstructorDashboard() {
                             {messages.length > 0 ? (
                                 messages.map((msg: any, i: number) => {
                                     const senderName = senderNames[msg.senderId] || 'Loading…';
+                                    const isImage = /^https?:\/\/\S+\.(jpg|jpeg|png|gif|webp)(\?\S*)?$/i.test((msg.content || '').trim());
                                     return (
                                         <div key={msg._id || i} className="flex items-start gap-4 p-6 border-b border-[#0B1F3A]/5 last:border-none hover:bg-[#F6F4F2] transition-all">
                                             <Avatar className="w-10 h-10 rounded-none border border-[#0B1F3A]/10 flex-shrink-0">
@@ -441,7 +442,7 @@ export default function InstructorDashboard() {
                                             </Avatar>
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-sm font-black text-[#0B1F3A] truncate">{senderName}</p>
-                                                <p className="text-xs text-slate-400 font-medium mt-0.5 truncate">{msg.content}</p>
+                                                <p className="text-xs text-slate-400 font-medium mt-0.5 truncate">{isImage ? '📷 Photo' : msg.content}</p>
                                             </div>
                                         </div>
                                     );
