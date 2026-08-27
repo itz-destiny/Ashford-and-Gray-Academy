@@ -271,7 +271,7 @@ export default function ManageCoursePage() {
                                 : "bg-slate-100 text-slate-600"
                             )}>{course.status}</Badge>
                         </div>
-                        <p className="text-slate-500 font-medium italic">{course.category} · {course.level} · ₦{course.price?.toLocaleString()}</p>
+                        <p className="text-slate-500 font-medium italic">{course.category} · {course.level}</p>
                     </div>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -282,7 +282,7 @@ export default function ManageCoursePage() {
                         <DialogContent>
                             <DialogHeader>
                                 <DialogTitle>Edit course details</DialogTitle>
-                                <DialogDescription>Update title, description, price and level.</DialogDescription>
+                                <DialogDescription>Update title, description, category and level.</DialogDescription>
                             </DialogHeader>
                             <div className="space-y-4 py-2 max-h-[60vh] overflow-y-auto pr-2">
                                 <div><Label>Title</Label><Input value={editForm.title} onChange={e => setEditForm(f => ({ ...f, title: e.target.value }))} /></div>
@@ -291,7 +291,6 @@ export default function ManageCoursePage() {
                                     <div><Label>Category</Label><Input value={editForm.category} onChange={e => setEditForm(f => ({ ...f, category: e.target.value }))} /></div>
                                     <div><Label>Level</Label><Input value={editForm.level} onChange={e => setEditForm(f => ({ ...f, level: e.target.value }))} /></div>
                                 </div>
-                                <div><Label>Price</Label><Input type="number" value={editForm.price} onChange={e => setEditForm(f => ({ ...f, price: Number(e.target.value) }))} /></div>
                                 <div>
                                     <Label>Who this is for (one per line)</Label>
                                     <Textarea
