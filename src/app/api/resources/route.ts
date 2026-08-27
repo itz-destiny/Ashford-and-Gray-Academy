@@ -3,6 +3,7 @@ import { z } from 'zod';
 import dbConnect from '@/lib/mongodb';
 import { Resource } from '@/models/Supports';
 import Course from '@/models/Course';
+import Enrollment from '@/models/Enrollment';
 import { AuthError, requireRole, withAuth } from '@/lib/auth-server';
 
 export const GET = withAuth(async (req: NextRequest, { auth }) => {
@@ -20,6 +21,22 @@ export const GET = withAuth(async (req: NextRequest, { auth }) => {
 
             if (courseId && !myCourseIds.includes(courseId)) {
                 return NextResponse.json({ error: 'You can only view resources for courses you teach.' }, { status: 403 });
+            }
+
+            const query: Record<string, unknown> = { courseId: courseId ? courseId : { $in: myCourseIds } };
+            if (type) query.type = type;
+            const resources = await Resource.find(query).populate('courseId').sort({ createdAt: -1 });
+            return NextResponse.json(resources);
+        }
+
+        // A student may only ever see resources for courses they're actually
+        // enrolled in — never the whole platform's library.
+        if (auth.role === 'student') {
+            const enrollments = await Enrollment.find({ userId: auth.uid }).select('courseId').lean();
+            const myCourseIds = enrollments.map((e: any) => String(e.courseId));
+
+            if (courseId && !myCourseIds.includes(courseId)) {
+                return NextResponse.json({ error: 'You can only view resources for courses you are enrolled in.' }, { status: 403 });
             }
 
             const query: Record<string, unknown> = { courseId: courseId ? courseId : { $in: myCourseIds } };

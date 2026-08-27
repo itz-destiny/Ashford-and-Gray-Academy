@@ -11,9 +11,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Download, FileText, Search, SlidersHorizontal, Video, Presentation, Code, FileArchive } from "lucide-react";
+import { Download, FileText, Search, SlidersHorizontal, Video, Presentation, FileArchive } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { apiFetch } from "@/lib/api-client";
 
 export default function ResourcesPage() {
   const [resources, setResources] = useState<any[]>([]);
@@ -24,7 +25,7 @@ export default function ResourcesPage() {
   useEffect(() => {
     const fetchResources = async () => {
       try {
-        const res = await fetch('/api/resources');
+        const res = await apiFetch('/api/resources');
         const data = await res.json();
         if (Array.isArray(data)) {
           setResources(data);
@@ -53,8 +54,6 @@ export default function ResourcesPage() {
         return <Video className={ICON_CLASS} />;
       case 'SLIDES':
         return <Presentation className={ICON_CLASS} />;
-      case 'CODE':
-        return <Code className={ICON_CLASS} />;
       default:
         return <FileArchive className={ICON_CLASS} />;
     }
@@ -102,7 +101,6 @@ export default function ResourcesPage() {
                   <SelectItem value="pdf" className="font-bold py-3">PDF Documents</SelectItem>
                   <SelectItem value="video" className="font-bold py-3">Video Lectures</SelectItem>
                   <SelectItem value="slides" className="font-bold py-3">Presentations</SelectItem>
-                  <SelectItem value="code" className="font-bold py-3">Source Files</SelectItem>
                 </SelectContent>
               </Select>
               <Button variant="outline" size="icon" className="h-14 w-14 rounded-none border border-[#0B1F3A]/10 hover:bg-[#F6F4F2] shadow-sm transition-all">

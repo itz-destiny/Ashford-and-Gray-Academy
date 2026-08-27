@@ -409,7 +409,7 @@ export function Communications() {
         <Card className="h-[calc(100vh-12rem)] w-full flex flex-col md:grid md:grid-cols-3 lg:grid-cols-4 border border-[#0B1F3A]/10 shadow-md rounded-none overflow-hidden bg-white relative">
             {/* Sidebar: Contacts */}
             <div className={cn(
-                "md:col-span-1 lg:col-span-1 border-r border-slate-50 flex flex-col bg-slate-50/50 transition-all duration-300",
+                "md:col-span-1 lg:col-span-1 border-r border-slate-50 flex flex-col bg-slate-50/50 transition-all duration-300 min-h-0",
                 showMobileChat ? "hidden md:flex" : "flex w-full"
             )}>
                 <div className="p-8 border-b border-slate-50 space-y-6">
@@ -624,7 +624,7 @@ export function Communications() {
 
             {/* Main Chat Area */}
             <div className={cn(
-                "md:col-span-2 lg:col-span-3 flex flex-col h-full bg-white transition-all duration-300",
+                "md:col-span-2 lg:col-span-3 flex flex-col h-full min-h-0 bg-white transition-all duration-300",
                 showMobileChat ? "flex w-full" : "hidden md:flex"
             )}>
                 {selectedConversation ? (
