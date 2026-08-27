@@ -145,9 +145,11 @@ export default function ResourcesPage() {
                 </p>
               </CardHeader>
               <CardContent className="pt-0 p-6">
-                <Button className="w-full bg-[#0B1F3A] hover:bg-[#C8A96A] text-white font-black h-12 rounded-none transition-all shadow-none gap-2 text-[10px] uppercase tracking-widest">
-                  <Download className="h-4 w-4" />
-                  Download
+                <Button asChild className="w-full bg-[#0B1F3A] hover:bg-[#C8A96A] text-white font-black h-12 rounded-none transition-all shadow-none gap-2 text-[10px] uppercase tracking-widest">
+                  <a href={resource.url} target="_blank" rel="noopener noreferrer">
+                    <Download className="h-4 w-4" />
+                    Download
+                  </a>
                 </Button>
               </CardContent>
             </Card>
