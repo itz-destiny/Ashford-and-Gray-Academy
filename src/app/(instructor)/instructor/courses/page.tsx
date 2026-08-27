@@ -122,19 +122,13 @@ export default function InstructorCoursesPage() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="pt-0 pb-6">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-9 h-9 bg-[#F6F4F2] border border-[#0B1F3A]/5 flex items-center justify-center flex-shrink-0">
-                                        <Users className="w-4 h-4 text-[#0B1F3A]" />
-                                    </div>
-                                    <div>
-                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Enrolled</p>
-                                        <p className="font-bold text-[#0B1F3A] text-sm">{course.enrollmentCount ?? 0} Students</p>
-                                    </div>
+                            <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 bg-[#F6F4F2] border border-[#0B1F3A]/5 flex items-center justify-center flex-shrink-0">
+                                    <Users className="w-4 h-4 text-[#0B1F3A]" />
                                 </div>
-                                <div className="text-right">
-                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Est. Revenue</p>
-                                    <p className="font-bold text-[#1F7A5A] text-sm">₦{((course.price || 0) * (course.enrollmentCount ?? 0)).toLocaleString()}</p>
+                                <div>
+                                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Enrolled</p>
+                                    <p className="font-bold text-[#0B1F3A] text-sm">{course.enrollmentCount ?? 0} Students</p>
                                 </div>
                             </div>
                             {course.status && course.status !== 'published' && (
