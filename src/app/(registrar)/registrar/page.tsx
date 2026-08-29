@@ -206,8 +206,8 @@ export default function RegistrarDashboardPage() {
                                 <span className="text-xs font-black text-[#0B1F3A]">{stats.totalUsers}</span>
                             </div>
                             <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Uptime</span>
-                                <span className="text-xs font-black text-[#0B1F3A]">99.9%</span>
+                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Accounts</span>
+                                <span className="text-xs font-black text-[#0B1F3A]">{stats.activeUsers}</span>
                             </div>
                         </div>
                     </div>

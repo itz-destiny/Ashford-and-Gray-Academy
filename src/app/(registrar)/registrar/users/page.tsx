@@ -213,36 +213,41 @@ export default function RegistrarUsersPage() {
     });
 
     const getRoleBadge = (role: string) => {
+        const base = "rounded-none font-black text-[9px] uppercase tracking-widest border-none";
         switch (role) {
-            case 'admin': return <Badge className="bg-rose-100 text-rose-700 hover:bg-rose-100 border-none">Admin</Badge>;
-            case 'registrar': return <Badge className="bg-indigo-100 text-indigo-700 hover:bg-indigo-100 border-none">Registrar</Badge>;
-            case 'course_registrar': return <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none">Course Registrar</Badge>;
-            case 'finance': return <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-none">Finance</Badge>;
-            case 'instructor': return <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100 border-none">Instructor</Badge>;
-            default: return <Badge variant="outline">{role}</Badge>;
+            case 'admin': return <Badge className={cn(base, "bg-rose-100 text-rose-700 hover:bg-rose-100")}>Admin</Badge>;
+            case 'registrar': return <Badge className={cn(base, "bg-[#0B1F3A]/10 text-[#0B1F3A] hover:bg-[#0B1F3A]/10")}>Registrar</Badge>;
+            case 'course_registrar': return <Badge className={cn(base, "bg-slate-200 text-slate-700 hover:bg-slate-200")}>Course Registrar</Badge>;
+            case 'finance': return <Badge className={cn(base, "bg-[#1F7A5A]/10 text-[#1F7A5A] hover:bg-[#1F7A5A]/10")}>Finance</Badge>;
+            case 'instructor': return <Badge className={cn(base, "bg-[#C8A96A]/10 text-[#0B1F3A] hover:bg-[#C8A96A]/10")}>Instructor</Badge>;
+            default: return <Badge variant="outline" className="rounded-none">{role}</Badge>;
         }
     };
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-700">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                <div className="space-y-1">
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
-                        Institutional Staff
-                        <Badge variant="outline" className="rounded-full px-3">{filteredStaff.length} Total</Badge>
+        <div className="px-6 md:px-12 py-12 space-y-16 pb-32 max-w-[1400px] mx-auto">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+                <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                        <div className="w-2 h-8 bg-[#C8A96A]" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#0B1F3A]/60">Enrolment Office</span>
+                    </div>
+                    <h1 className="text-4xl font-serif text-[#0B1F3A] tracking-tight flex items-center gap-3">
+                        Institutional <span className="text-[#C8A96A]">Staff.</span>
+                        <Badge className="bg-[#C8A96A]/10 text-[#0B1F3A] border border-[#C8A96A]/20 rounded-none text-[9px] font-black uppercase tracking-widest">{filteredStaff.length} Total</Badge>
                     </h1>
-                    <p className="text-slate-500 font-medium">Manage institutional access and organizational roles.</p>
+                    <p className="text-slate-500 font-medium font-serif">Manage institutional access and organizational roles.</p>
                 </div>
 
                 <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
                     <DialogTrigger asChild>
-                        <Button className="bg-indigo-600 hover:bg-indigo-700 text-white font-black h-11 px-6 rounded-xl shadow-lg shadow-indigo-100 transition-all active:scale-95">
+                        <Button className="h-11 px-6 rounded-none bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black text-[10px] uppercase tracking-widest shadow-none border-none">
                             <UserPlus className="w-4 h-4 mr-2" /> Add Staff Member
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px] rounded-3xl">
+                    <DialogContent className="sm:max-w-[425px] rounded-none border-[#0B1F3A]/10">
                         <DialogHeader>
-                            <DialogTitle className="text-2xl font-black">Add New Staff</DialogTitle>
+                            <DialogTitle className="text-2xl font-serif text-[#0B1F3A]">Add New Staff</DialogTitle>
                             <DialogDescription>
                                 Creates a real login account. They'll receive an email with their address and a temporary password.
                             </DialogDescription>
@@ -255,7 +260,7 @@ export default function RegistrarUsersPage() {
                                     placeholder="Jane Doe"
                                     value={newStaff.displayName}
                                     onChange={(e) => setNewStaff({ ...newStaff, displayName: e.target.value })}
-                                    className="h-11 rounded-xl"
+                                    className="h-11 rounded-none border-[#0B1F3A]/10 focus-visible:ring-[#C8A96A]"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -266,17 +271,17 @@ export default function RegistrarUsersPage() {
                                     placeholder="jane@ashfordandgrayfusionacademy.com"
                                     value={newStaff.email}
                                     onChange={(e) => setNewStaff({ ...newStaff, email: e.target.value })}
-                                    className="h-11 rounded-xl"
+                                    className="h-11 rounded-none border-[#0B1F3A]/10 focus-visible:ring-[#C8A96A]"
                                 />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label>System Role</Label>
                                     <Select value={newStaff.role} onValueChange={(v) => setNewStaff({ ...newStaff, role: v as any })}>
-                                        <SelectTrigger className="h-11 rounded-xl">
+                                        <SelectTrigger className="h-11 rounded-none border-[#0B1F3A]/10 focus:ring-[#C8A96A]">
                                             <SelectValue placeholder="Select role" />
                                         </SelectTrigger>
-                                        <SelectContent>
+                                        <SelectContent className="rounded-none border-[#0B1F3A]/10">
                                             <SelectItem value="instructor">Instructor</SelectItem>
                                             <SelectItem value="course_registrar">Course Registrar</SelectItem>
                                             <SelectItem value="finance">Finance Officer</SelectItem>
@@ -291,14 +296,14 @@ export default function RegistrarUsersPage() {
                                         placeholder="Head of Dept"
                                         value={newStaff.title}
                                         onChange={(e) => setNewStaff({ ...newStaff, title: e.target.value })}
-                                        className="h-11 rounded-xl"
+                                        className="h-11 rounded-none border-[#0B1F3A]/10 focus-visible:ring-[#C8A96A]"
                                     />
                                 </div>
                             </div>
                         </div>
                         <DialogFooter>
-                            <Button variant="ghost" onClick={() => setIsAddModalOpen(false)} className="rounded-xl">Cancel</Button>
-                            <Button onClick={handleAddStaff} disabled={saving} className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl px-8 h-11">
+                            <Button variant="ghost" onClick={() => setIsAddModalOpen(false)} className="rounded-none font-black uppercase text-[10px] tracking-widest">Cancel</Button>
+                            <Button onClick={handleAddStaff} disabled={saving} className="bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black rounded-none px-8 h-11 text-[10px] uppercase tracking-widest shadow-none">
                                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Create Account'}
                             </Button>
                         </DialogFooter>
@@ -306,26 +311,26 @@ export default function RegistrarUsersPage() {
                 </Dialog>
             </div>
 
-            <Card className="border-none shadow-xl shadow-slate-100 rounded-[2rem] overflow-hidden bg-white">
-                <CardHeader className="p-8 border-b border-slate-50 bg-slate-50/30">
+            <Card className="border border-[#0B1F3A]/10 border-t-4 border-t-[#C8A96A] rounded-none shadow-sm overflow-hidden bg-white">
+                <CardHeader className="p-8 border-b border-[#0B1F3A]/5 bg-[#F6F4F2]/30">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div className="relative flex-1 max-w-md">
                             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                             <Input
                                 placeholder="Search by name or email..."
-                                className="pl-10 h-11 bg-white border-slate-200 rounded-2xl focus-visible:ring-indigo-500 shadow-sm"
+                                className="pl-10 h-11 bg-white border-[#0B1F3A]/10 rounded-none focus-visible:ring-[#C8A96A]"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
                         </div>
                         <div className="flex items-center gap-3">
-                            <div className="flex items-center gap-2 px-4 h-11 bg-white border border-slate-200 rounded-2xl shadow-sm">
+                            <div className="flex items-center gap-2 px-4 h-11 bg-white border border-[#0B1F3A]/10 rounded-none">
                                 <Filter className="w-4 h-4 text-slate-400" />
                                 <Select value={roleFilter} onValueChange={setRoleFilter}>
                                     <SelectTrigger className="border-none shadow-none focus:ring-0 w-[140px] h-full p-0">
                                         <SelectValue placeholder="All Roles" />
                                     </SelectTrigger>
-                                    <SelectContent>
+                                    <SelectContent className="rounded-none border-[#0B1F3A]/10">
                                         <SelectItem value="all">All Roles</SelectItem>
                                         <SelectItem value="registrar">Registrars</SelectItem>
                                         <SelectItem value="course_registrar">Course Registrars</SelectItem>
@@ -334,7 +339,7 @@ export default function RegistrarUsersPage() {
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <Button variant="outline" onClick={fetchStaff} className="h-11 rounded-2xl border-slate-200 shadow-sm hover:bg-slate-50">
+                            <Button variant="outline" onClick={fetchStaff} className="h-11 rounded-none border-[#0B1F3A]/10 font-black text-[10px] uppercase tracking-widest text-[#0B1F3A] hover:bg-[#F6F4F2]">
                                 Refresh
                             </Button>
                         </div>
@@ -343,7 +348,7 @@ export default function RegistrarUsersPage() {
                 <CardContent className="p-0">
                     <Table>
                         <TableHeader>
-                            <TableRow className="hover:bg-transparent border-slate-50">
+                            <TableRow className="hover:bg-transparent border-[#0B1F3A]/5">
                                 <TableHead className="w-[300px] pl-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Staff Member</TableHead>
                                 <TableHead className="py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Position / Title</TableHead>
                                 <TableHead className="py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Role</TableHead>
@@ -354,7 +359,7 @@ export default function RegistrarUsersPage() {
                             {loading ? (
                                 Array(5).fill(0).map((_, i) => (
                                     <TableRow key={i} className="animate-pulse">
-                                        <TableCell colSpan={4} className="h-20 bg-slate-50/30 mb-2" />
+                                        <TableCell colSpan={4} className="h-20 bg-[#F6F4F2]/60 mb-2" />
                                     </TableRow>
                                 ))
                             ) : filteredStaff.length === 0 ? (
@@ -362,24 +367,24 @@ export default function RegistrarUsersPage() {
                                     <TableCell colSpan={4} className="h-64 text-center">
                                         <div className="flex flex-col items-center justify-center text-slate-400 gap-2">
                                             <Users className="w-12 h-12 opacity-20" />
-                                            <p className="font-bold">No staff members found</p>
+                                            <p className="font-serif italic">No staff members found</p>
                                             <p className="text-sm">Try adjusting your filters or search query.</p>
                                         </div>
                                     </TableCell>
                                 </TableRow>
                             ) : (
                                 filteredStaff.map((member) => (
-                                    <TableRow key={member.uid} className="group hover:bg-slate-50/50 border-slate-50 transition-colors">
+                                    <TableRow key={member.uid} className="group hover:bg-[#F6F4F2] border-[#0B1F3A]/5 transition-colors">
                                         <TableCell className="pl-8 py-4">
                                             <div className="flex items-center gap-4">
-                                                <Avatar className="h-11 w-11 border-2 border-white shadow-sm ring-1 ring-slate-100">
+                                                <Avatar className="h-11 w-11 border border-[#0B1F3A]/10">
                                                     <AvatarImage src={member.photoURL} alt={member.displayName} />
-                                                    <AvatarFallback className="bg-slate-100 text-slate-600 font-bold">
+                                                    <AvatarFallback className="bg-[#F6F4F2] text-[#0B1F3A] font-black rounded-none">
                                                         {member.displayName.split(' ').map(n => n[0]).join('')}
                                                     </AvatarFallback>
                                                 </Avatar>
                                                 <div className="flex flex-col">
-                                                    <span className="font-bold text-slate-900 leading-tight">{member.displayName}</span>
+                                                    <span className="font-bold text-[#0B1F3A] leading-tight">{member.displayName}</span>
                                                     <span className="text-xs text-slate-400 font-medium">{member.email}</span>
                                                 </div>
                                             </div>
@@ -393,27 +398,27 @@ export default function RegistrarUsersPage() {
                                         <TableCell className="py-4 text-right pr-8">
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" size="icon" className="rounded-xl hover:bg-white hover:shadow-sm">
+                                                    <Button variant="ghost" size="icon" className="rounded-none hover:bg-[#F6F4F2]">
                                                         <MoreHorizontal className="h-4 w-4 text-slate-400" />
                                                     </Button>
                                                 </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end" className="w-56 rounded-2xl p-2 shadow-xl border-slate-100">
+                                                <DropdownMenuContent align="end" className="w-56 rounded-none p-2 border-[#0B1F3A]/10 shadow-xl">
                                                     <DropdownMenuLabel className="px-3 pb-2 text-[10px] uppercase font-black text-slate-400">Management Action</DropdownMenuLabel>
                                                     <DropdownMenuItem
                                                         onClick={() => router.push('/registrar/communications')}
-                                                        className="rounded-xl flex items-center gap-3 p-3 cursor-pointer"
+                                                        className="rounded-none flex items-center gap-3 p-3 cursor-pointer"
                                                     >
                                                         <Mail className="h-4 w-4 text-slate-400" />
                                                         <span className="font-bold text-sm">Send Message</span>
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem
                                                         onClick={() => openEdit(member)}
-                                                        className="rounded-xl flex items-center gap-3 p-3 cursor-pointer"
+                                                        className="rounded-none flex items-center gap-3 p-3 cursor-pointer"
                                                     >
                                                         <Edit2 className="h-4 w-4 text-slate-400" />
                                                         <span className="font-bold text-sm">Edit Credentials</span>
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuSeparator className="bg-slate-50 my-2" />
+                                                    <DropdownMenuSeparator className="bg-[#0B1F3A]/5 my-2" />
                                                     <DropdownMenuItem
                                                         onClick={() => {
                                                             if (member.role === 'admin') {
@@ -424,7 +429,7 @@ export default function RegistrarUsersPage() {
                                                         }}
                                                         disabled={member.role === 'admin'}
                                                         className={cn(
-                                                            "rounded-xl flex items-center gap-3 p-3 cursor-pointer text-red-500 focus:text-red-600 focus:bg-red-50",
+                                                            "rounded-none flex items-center gap-3 p-3 cursor-pointer text-rose-500 focus:text-rose-600 focus:bg-rose-50",
                                                             member.role === 'admin' && "opacity-50 cursor-not-allowed"
                                                         )}
                                                     >
@@ -443,29 +448,29 @@ export default function RegistrarUsersPage() {
             </Card>
 
             <div className="grid md:grid-cols-3 gap-6">
-                <Card className="border-none shadow-xl shadow-slate-100 rounded-3xl bg-indigo-600 text-white p-6 relative overflow-hidden group">
+                <div className="bg-[#0B1F3A] border-t-4 border-t-[#C8A96A] p-8 relative overflow-hidden group">
                     <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
-                    <ShieldCheck className="w-10 h-10 mb-4 opacity-50" />
-                    <h3 className="text-xl font-black mb-1 leading-tight">Secure Access</h3>
-                    <p className="text-indigo-100/70 text-sm font-medium">All staff actions are logged and encrypted in the audit system.</p>
-                </Card>
-                <Card className="border-none shadow-xl shadow-slate-100 rounded-3xl bg-white p-6 border border-slate-50">
-                    <CheckCircle2 className="w-10 h-10 mb-4 text-emerald-500 opacity-50" />
-                    <h3 className="text-xl font-black mb-1 leading-tight text-slate-900">Compliance</h3>
+                    <ShieldCheck className="w-10 h-10 mb-4 text-[#C8A96A] opacity-70" />
+                    <h3 className="text-xl font-serif text-white mb-1 leading-tight">Secure Access</h3>
+                    <p className="text-white/60 text-sm font-medium">All staff actions are logged and encrypted in the audit system.</p>
+                </div>
+                <div className="bg-white border border-[#0B1F3A]/10 border-t-4 border-t-[#1F7A5A] p-8">
+                    <CheckCircle2 className="w-10 h-10 mb-4 text-[#1F7A5A] opacity-70" />
+                    <h3 className="text-xl font-serif text-[#0B1F3A] mb-1 leading-tight">Compliance</h3>
                     <p className="text-slate-500 text-sm font-medium">Staff roles verify institutional identity and platform permissions.</p>
-                </Card>
-                <Card className="border-none shadow-xl shadow-slate-100 rounded-3xl bg-slate-900 text-white p-6">
-                    <XCircle className="w-10 h-10 mb-4 text-rose-500 opacity-50" />
-                    <h3 className="text-xl font-black mb-1 leading-tight">Revocation</h3>
-                    <p className="text-slate-400 text-sm font-medium">Instantly disable access for departing staff or compromised accounts.</p>
-                </Card>
+                </div>
+                <div className="bg-[#0B1F3A] border-t-4 border-t-rose-400 p-8">
+                    <XCircle className="w-10 h-10 mb-4 text-rose-400 opacity-70" />
+                    <h3 className="text-xl font-serif text-white mb-1 leading-tight">Revocation</h3>
+                    <p className="text-white/60 text-sm font-medium">Instantly disable access for departing staff or compromised accounts.</p>
+                </div>
             </div>
 
             {/* Edit Credentials Dialog */}
             <Dialog open={!!editTarget} onOpenChange={(open) => !open && setEditTarget(null)}>
-                <DialogContent className="sm:max-w-[425px] rounded-3xl">
+                <DialogContent className="sm:max-w-[425px] rounded-none border-[#0B1F3A]/10">
                     <DialogHeader>
-                        <DialogTitle className="text-2xl font-black">Edit Credentials</DialogTitle>
+                        <DialogTitle className="text-2xl font-serif text-[#0B1F3A]">Edit Credentials</DialogTitle>
                         <DialogDescription>Update this staff member's profile and role.</DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-6 py-4">
@@ -475,7 +480,7 @@ export default function RegistrarUsersPage() {
                                 id="edit-name"
                                 value={editForm.displayName}
                                 onChange={(e) => setEditForm({ ...editForm, displayName: e.target.value })}
-                                className="h-11 rounded-xl"
+                                className="h-11 rounded-none border-[#0B1F3A]/10 focus-visible:ring-[#C8A96A]"
                             />
                         </div>
                         <div className="space-y-2">
@@ -485,17 +490,17 @@ export default function RegistrarUsersPage() {
                                 type="email"
                                 value={editForm.email}
                                 onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                                className="h-11 rounded-xl"
+                                className="h-11 rounded-none border-[#0B1F3A]/10 focus-visible:ring-[#C8A96A]"
                             />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label>System Role</Label>
                                 <Select value={editForm.role} onValueChange={(v) => setEditForm({ ...editForm, role: v as any })}>
-                                    <SelectTrigger className="h-11 rounded-xl">
+                                    <SelectTrigger className="h-11 rounded-none border-[#0B1F3A]/10 focus:ring-[#C8A96A]">
                                         <SelectValue placeholder="Select role" />
                                     </SelectTrigger>
-                                    <SelectContent>
+                                    <SelectContent className="rounded-none border-[#0B1F3A]/10">
                                         <SelectItem value="instructor">Instructor</SelectItem>
                                         <SelectItem value="course_registrar">Course Registrar</SelectItem>
                                         <SelectItem value="finance">Finance Officer</SelectItem>
@@ -509,14 +514,14 @@ export default function RegistrarUsersPage() {
                                     id="edit-title"
                                     value={editForm.title}
                                     onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-                                    className="h-11 rounded-xl"
+                                    className="h-11 rounded-none border-[#0B1F3A]/10 focus-visible:ring-[#C8A96A]"
                                 />
                             </div>
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button variant="ghost" onClick={() => setEditTarget(null)} className="rounded-xl">Cancel</Button>
-                        <Button onClick={handleSaveEdit} disabled={saving} className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl px-8 h-11">
+                        <Button variant="ghost" onClick={() => setEditTarget(null)} className="rounded-none font-black uppercase text-[10px] tracking-widest">Cancel</Button>
+                        <Button onClick={handleSaveEdit} disabled={saving} className="bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black rounded-none px-8 h-11 text-[10px] uppercase tracking-widest shadow-none">
                             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save Changes'}
                         </Button>
                     </DialogFooter>

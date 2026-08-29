@@ -1,6 +1,5 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -27,11 +26,11 @@ type Txn = {
     createdAt: string;
 };
 
-const STATUS_STYLES: Record<string, { bg: string; text: string; label: string }> = {
-    completed: { bg: "bg-emerald-50", text: "text-emerald-700", label: "Completed" },
-    pending: { bg: "bg-blue-50", text: "text-blue-700", label: "Pending" },
-    failed: { bg: "bg-rose-50", text: "text-rose-700", label: "Failed" },
-    cancelled: { bg: "bg-slate-100", text: "text-slate-600", label: "Cancelled" },
+const STATUS_STYLES: Record<string, { cls: string; label: string }> = {
+    completed: { cls: "bg-[#1F7A5A]/10 text-[#1F7A5A]", label: "Completed" },
+    pending: { cls: "bg-[#C8A96A]/10 text-[#C8A96A]", label: "Pending" },
+    failed: { cls: "bg-rose-50 text-rose-600", label: "Failed" },
+    cancelled: { cls: "bg-slate-100 text-slate-500", label: "Cancelled" },
 };
 
 export default function FinanceTransactionsPage() {
@@ -79,33 +78,36 @@ export default function FinanceTransactionsPage() {
     });
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 className="text-3xl font-black text-[#0B1F3A] tracking-tight">Transaction Ledger</h1>
-                    <p className="text-slate-500 font-medium italic">All payments processed by the academy.</p>
+        <div className="px-6 md:px-12 py-12 space-y-16 pb-32 max-w-[1400px] mx-auto">
+
+            {/* Header */}
+            <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                    <div className="w-2 h-8 bg-[#C8A96A]" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#0B1F3A]/60">Financial Office</span>
                 </div>
+                <h1 className="text-4xl font-serif text-[#0B1F3A] tracking-tight">Transaction Ledger</h1>
+                <p className="text-slate-500 font-medium font-serif">All payments processed by the academy.</p>
             </div>
 
-            <Card className="border-none bg-white rounded-[2.5rem] shadow-sm">
-                <CardHeader className="p-8 pb-0">
-                    <CardTitle className="text-lg font-black text-[#0B1F3A]">Search & Filter</CardTitle>
-                </CardHeader>
-                <CardContent className="p-8 grid gap-4 md:grid-cols-3">
+            {/* Search & Filter */}
+            <div className="bg-white border border-[#0B1F3A]/10 border-t-4 border-t-[#C8A96A] p-8">
+                <h2 className="text-2xl font-serif text-[#0B1F3A] mb-6">Search &amp; Filter</h2>
+                <div className="grid gap-4 md:grid-cols-3">
                     <div className="relative md:col-span-1">
-                        <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                         <Input
                             placeholder="Student, email or reference…"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="pl-10 h-11 bg-slate-50 border-none rounded-xl"
+                            className="pl-11 h-11 bg-white border border-[#0B1F3A]/10 rounded-none focus-visible:ring-[#C8A96A]"
                         />
                     </div>
                     <Select value={type} onValueChange={(v) => { setType(v); setPage(1); }}>
-                        <SelectTrigger className="h-11 bg-slate-50 border-none rounded-xl">
+                        <SelectTrigger className="h-11 bg-white border border-[#0B1F3A]/10 rounded-none focus:ring-[#C8A96A]">
                             <SelectValue placeholder="Type" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="rounded-none">
                             <SelectItem value="all">All types</SelectItem>
                             <SelectItem value="enrollment">Enrollment</SelectItem>
                             <SelectItem value="refund">Refund</SelectItem>
@@ -114,10 +116,10 @@ export default function FinanceTransactionsPage() {
                         </SelectContent>
                     </Select>
                     <Select value={status} onValueChange={(v) => { setStatus(v); setPage(1); }}>
-                        <SelectTrigger className="h-11 bg-slate-50 border-none rounded-xl">
+                        <SelectTrigger className="h-11 bg-white border border-[#0B1F3A]/10 rounded-none focus:ring-[#C8A96A]">
                             <SelectValue placeholder="Status" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="rounded-none">
                             <SelectItem value="all">All statuses</SelectItem>
                             <SelectItem value="completed">Completed</SelectItem>
                             <SelectItem value="pending">Pending</SelectItem>
@@ -125,80 +127,79 @@ export default function FinanceTransactionsPage() {
                             <SelectItem value="cancelled">Cancelled</SelectItem>
                         </SelectContent>
                     </Select>
-                </CardContent>
-            </Card>
+                </div>
+            </div>
 
-            <Card className="border-none bg-white rounded-[2.5rem] shadow-sm overflow-hidden">
-                <CardContent className="p-0">
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm text-left">
-                            <thead className="bg-slate-50/70 text-slate-400 font-black uppercase text-[10px] tracking-widest border-b border-slate-100">
-                                <tr>
-                                    <th className="px-6 py-4">Reference</th>
-                                    <th className="px-6 py-4">Student</th>
-                                    <th className="px-6 py-4">Course</th>
-                                    <th className="px-6 py-4">Type</th>
-                                    <th className="px-6 py-4">Date</th>
-                                    <th className="px-6 py-4 text-right">Amount</th>
-                                    <th className="px-6 py-4 text-right">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-50">
-                                {loading ? (
-                                    <tr><td colSpan={7} className="px-6 py-16 text-center text-slate-400">
-                                        <Loader2 className="h-6 w-6 animate-spin mx-auto" />
-                                    </td></tr>
-                                ) : filtered.length === 0 ? (
-                                    <tr><td colSpan={7} className="px-6 py-16 text-center text-slate-400 font-bold italic">
-                                        <DollarSign className="h-10 w-10 mx-auto mb-2 text-slate-200" />
-                                        No transactions match the current filters.
-                                    </td></tr>
-                                ) : (
-                                    filtered.map(t => {
-                                        const variant = STATUS_STYLES[t.status] || STATUS_STYLES.pending;
-                                        const negative = t.type === 'refund' || t.type === 'payout' || t.type === 'chargeback';
-                                        return (
-                                            <tr key={t._id} className="hover:bg-slate-50/50 transition-colors">
-                                                <td className="px-6 py-4 font-mono text-[11px] text-slate-400">#{t._id.slice(-8)}</td>
-                                                <td className="px-6 py-4">
-                                                    <p className="font-bold text-[#0B1F3A] truncate max-w-[180px]">{t.userName}</p>
-                                                    <p className="text-[11px] text-slate-400 truncate max-w-[180px]">{t.userEmail}</p>
-                                                </td>
-                                                <td className="px-6 py-4 text-slate-600 font-medium truncate max-w-[180px]">{t.courseName || '—'}</td>
-                                                <td className="px-6 py-4">
-                                                    <span className="inline-flex items-center gap-1.5 font-bold text-[#0B1F3A] capitalize">
-                                                        {negative ? <ArrowDownRight className="h-3.5 w-3.5 text-orange-500" /> : <ArrowUpRight className="h-3.5 w-3.5 text-emerald-500" />}
-                                                        {t.type}
-                                                    </span>
-                                                </td>
-                                                <td className="px-6 py-4 text-slate-500">{new Date(t.createdAt).toLocaleDateString()}</td>
-                                                <td className={cn(
-                                                    "px-6 py-4 text-right font-black",
-                                                    negative ? "text-orange-600" : "text-emerald-600"
-                                                )}>
-                                                    {negative ? '-' : '+'}₦{t.amount.toLocaleString()} <span className="text-[10px] font-bold text-slate-400">{t.currency}</span>
-                                                </td>
-                                                <td className="px-6 py-4 text-right">
-                                                    <Badge className={cn("border-none font-bold text-[10px] uppercase tracking-widest px-2.5 py-0.5", variant.bg, variant.text)}>
-                                                        {variant.label}
-                                                    </Badge>
-                                                </td>
-                                            </tr>
-                                        );
-                                    })
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                </CardContent>
-            </Card>
+            {/* Table */}
+            <div className="bg-white border border-[#0B1F3A]/10 border-t-4 border-t-[#C8A96A] overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-sm text-left">
+                        <thead className="bg-[#F6F4F2] text-slate-400 font-black uppercase text-[9px] tracking-widest border-b border-[#0B1F3A]/10">
+                            <tr>
+                                <th className="px-8 py-4">Reference</th>
+                                <th className="px-6 py-4">Student</th>
+                                <th className="px-6 py-4">Course</th>
+                                <th className="px-6 py-4">Type</th>
+                                <th className="px-6 py-4">Date</th>
+                                <th className="px-6 py-4 text-right">Amount</th>
+                                <th className="px-6 py-4 text-right pr-8">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[#0B1F3A]/5">
+                            {loading ? (
+                                <tr><td colSpan={7} className="px-6 py-16 text-center text-slate-400">
+                                    <Loader2 className="h-6 w-6 animate-spin mx-auto" />
+                                </td></tr>
+                            ) : filtered.length === 0 ? (
+                                <tr><td colSpan={7} className="px-6 py-16 text-center text-slate-400 font-medium italic font-serif">
+                                    <DollarSign className="h-10 w-10 mx-auto mb-2 text-slate-200" />
+                                    No transactions match the current filters.
+                                </td></tr>
+                            ) : (
+                                filtered.map(t => {
+                                    const variant = STATUS_STYLES[t.status] || STATUS_STYLES.pending;
+                                    const negative = t.type === 'refund' || t.type === 'payout' || t.type === 'chargeback';
+                                    return (
+                                        <tr key={t._id} className="hover:bg-[#F6F4F2]/50 transition-colors">
+                                            <td className="px-8 py-5 font-mono text-[10px] text-slate-400">#{t._id.slice(-8)}</td>
+                                            <td className="px-6 py-5">
+                                                <p className="font-black text-[#0B1F3A] truncate max-w-[180px]">{t.userName}</p>
+                                                <p className="text-[11px] text-slate-400 truncate max-w-[180px]">{t.userEmail}</p>
+                                            </td>
+                                            <td className="px-6 py-5 text-slate-500 font-medium truncate max-w-[180px]">{t.courseName || '—'}</td>
+                                            <td className="px-6 py-5">
+                                                <span className="inline-flex items-center gap-1.5 font-black text-[#0B1F3A] text-[10px] uppercase tracking-widest">
+                                                    {negative ? <ArrowDownRight className="h-3.5 w-3.5 text-rose-400" /> : <ArrowUpRight className="h-3.5 w-3.5 text-[#1F7A5A]" />}
+                                                    {t.type}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-5 text-slate-500 font-medium text-xs">{new Date(t.createdAt).toLocaleDateString()}</td>
+                                            <td className={cn(
+                                                "px-6 py-5 text-right font-black",
+                                                negative ? "text-rose-600" : "text-[#1F7A5A]"
+                                            )}>
+                                                {negative ? '-' : '+'}₦{t.amount.toLocaleString()} <span className="text-[10px] font-bold text-slate-400">{t.currency}</span>
+                                            </td>
+                                            <td className="px-6 py-5 text-right pr-8">
+                                                <Badge className={cn("border-none rounded-none font-black text-[9px] uppercase tracking-widest px-2.5 py-0.5", variant.cls)}>
+                                                    {variant.label}
+                                                </Badge>
+                                            </td>
+                                        </tr>
+                                    );
+                                })
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
             {pages > 1 && (
                 <div className="flex items-center justify-between">
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Page {page} of {pages}</p>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Page {page} of {pages}</p>
                     <div className="flex gap-2">
-                        <Button variant="outline" disabled={page <= 1} onClick={() => setPage(p => Math.max(1, p - 1))}>Previous</Button>
-                        <Button variant="outline" disabled={page >= pages} onClick={() => setPage(p => Math.min(pages, p + 1))}>Next</Button>
+                        <Button variant="outline" disabled={page <= 1} onClick={() => setPage(p => Math.max(1, p - 1))} className="h-10 px-5 rounded-none border-[#0B1F3A]/10 font-black text-[10px] uppercase tracking-widest text-[#0B1F3A]">Previous</Button>
+                        <Button variant="outline" disabled={page >= pages} onClick={() => setPage(p => Math.min(pages, p + 1))} className="h-10 px-5 rounded-none border-[#0B1F3A]/10 font-black text-[10px] uppercase tracking-widest text-[#0B1F3A]">Next</Button>
                     </div>
                 </div>
             )}

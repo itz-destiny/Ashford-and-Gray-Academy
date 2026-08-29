@@ -215,199 +215,191 @@ export default function AdminEventsPage() {
     };
 
     return (
-        <div className="space-y-6">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Events Management</h1>
-                    <p className="text-slate-500 text-sm">Organize and monitor all academy workshops and seminars.</p>
+        <div className="px-6 md:px-12 py-12 space-y-16 pb-32 max-w-[1400px] mx-auto bg-[#FAF9F6]">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                        <div className="w-2 h-8 bg-[#C8A96A]" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#0B1F3A]/60">Academy Calendar</span>
+                    </div>
+                    <h1 className="text-4xl font-serif text-[#0B1F3A] tracking-tight">Events <span className="text-[#C8A96A]">Management.</span></h1>
+                    <p className="text-slate-500 font-medium font-serif">Organize and monitor all academy workshops and seminars.</p>
                 </div>
-                <Button className="bg-indigo-600 hover:bg-indigo-700 gap-2" onClick={openCreateDialog}>
+                <Button className="h-11 px-5 rounded-none bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black text-[10px] uppercase tracking-widest shadow-none border-none gap-2" onClick={openCreateDialog}>
                     <Plus className="w-4 h-4" /> Create Event
                 </Button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <Card className="border-none shadow-sm bg-indigo-50/50">
-                    <CardContent className="p-4">
-                        <p className="text-xs font-bold text-indigo-700 uppercase tracking-wider mb-1">Upcoming</p>
-                        <h3 className="text-2xl font-bold">{stats.upcomingCount}</h3>
-                    </CardContent>
-                </Card>
-                <Card className="border-none shadow-sm bg-emerald-50/50">
-                    <CardContent className="p-4">
-                        <p className="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-1">Total Registrations</p>
-                        <h3 className="text-2xl font-bold">{stats.totalRegistrations}</h3>
-                    </CardContent>
-                </Card>
-                <Card className="border-none shadow-sm bg-amber-50/50">
-                    <CardContent className="p-4">
-                        <p className="text-xs font-bold text-amber-700 uppercase tracking-wider mb-1">Live Workshops</p>
-                        <h3 className="text-2xl font-bold">{stats.liveWorkshops}</h3>
-                    </CardContent>
-                </Card>
-                <Card className="border-none shadow-sm bg-rose-50/50">
-                    <CardContent className="p-4">
-                        <p className="text-xs font-bold text-rose-700 uppercase tracking-wider mb-1">Requires Attention</p>
-                        <h3 className="text-2xl font-bold">{stats.requiresAttention}</h3>
-                    </CardContent>
-                </Card>
+                <div className="bg-white border border-[#0B1F3A]/10 border-t-4 border-t-[#C8A96A] p-6">
+                    <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 mb-2">Upcoming</p>
+                    <h3 className="text-3xl font-serif text-[#0B1F3A]">{stats.upcomingCount}</h3>
+                </div>
+                <div className="bg-white border border-[#0B1F3A]/10 border-t-4 border-t-[#1F7A5A] p-6">
+                    <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 mb-2">Total Registrations</p>
+                    <h3 className="text-3xl font-serif text-[#0B1F3A]">{stats.totalRegistrations}</h3>
+                </div>
+                <div className="bg-white border border-[#0B1F3A]/10 border-t-4 border-t-[#C8A96A] p-6">
+                    <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 mb-2">Live Workshops</p>
+                    <h3 className="text-3xl font-serif text-[#0B1F3A]">{stats.liveWorkshops}</h3>
+                </div>
+                <div className="bg-white border border-[#0B1F3A]/10 border-t-4 border-t-rose-400 p-6">
+                    <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 mb-2">Requires Attention</p>
+                    <h3 className="text-3xl font-serif text-[#0B1F3A]">{stats.requiresAttention}</h3>
+                </div>
             </div>
 
-            <Card className="border-none shadow-sm overflow-hidden">
-                <CardHeader className="bg-white border-b px-6 py-4 flex flex-row items-center justify-between space-y-0">
+            <div className="bg-white border border-[#0B1F3A]/10 border-t-4 border-t-[#C8A96A]">
+                <div className="px-8 py-6 border-b border-[#0B1F3A]/5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                     <div className="relative w-full max-w-sm">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                         <Input
                             placeholder="Search by title or location..."
-                            className="pl-10 bg-slate-50 border-none focus-visible:ring-1"
+                            className="pl-10 h-11 bg-white border-[#0B1F3A]/10 rounded-none focus-visible:ring-1 focus-visible:ring-[#C8A96A]"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
                     </div>
-                    <div className="flex gap-2">
-                        <Button variant="ghost" size="sm" onClick={handleExport} className="text-slate-500 font-bold">Export CSV</Button>
+                    <Button variant="ghost" size="sm" onClick={handleExport} className="text-[#C8A96A] hover:text-[#0B1F3A] font-black uppercase text-[10px] tracking-widest rounded-none">Export CSV</Button>
+                </div>
+                <Table>
+                    <TableHeader>
+                        <TableRow className="hover:bg-transparent border-[#0B1F3A]/5">
+                            <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-8 py-5">Event Details</TableHead>
+                            <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400">Date & Time</TableHead>
+                            <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400">Location</TableHead>
+                            <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400">Registrations</TableHead>
+                            <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400">Status</TableHead>
+                            <TableHead className="text-right pr-8 text-[10px] font-black uppercase tracking-widest text-slate-400">Actions</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {filteredEvents.map((event) => {
+                            const status = eventStatus(event.date);
+                            return (
+                                <TableRow key={event._id} className="hover:bg-[#F6F4F2] border-[#0B1F3A]/5 transition-colors">
+                                    <TableCell className="pl-8 py-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="bg-[#F6F4F2] border border-[#0B1F3A]/5 p-2">
+                                                <Calendar className="w-5 h-5 text-[#0B1F3A]" />
+                                            </div>
+                                            <span className="font-bold text-[#0B1F3A]">{event.title}</span>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex flex-col">
+                                            <span className="text-sm font-bold text-[#0B1F3A]">{new Date(event.date).toLocaleDateString()}</span>
+                                            <span className="text-[10px] text-slate-400 font-medium flex items-center gap-1 uppercase tracking-tighter">
+                                                <Clock className="w-3 h-3" /> {event.time || '—'}
+                                            </span>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center gap-2 text-sm text-slate-600">
+                                            <MapPin className="w-3 h-3" /> {event.location}
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs font-bold text-[#0B1F3A]">{event.registrationCount} Attendee(s)</span>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Badge className={`${status.className} border-none rounded-none px-2 py-0.5 text-[9px] font-black uppercase tracking-wider`}>
+                                            {status.label}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell className="text-right pr-8">
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="rounded-none"><MoreVertical className="w-4 h-4" /></Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end" className="rounded-none border-[#0B1F3A]/10">
+                                                <DropdownMenuItem
+                                                    className="gap-2 text-[#0B1F3A] font-bold cursor-pointer"
+                                                    onClick={() => openEditDialog(event)}
+                                                >
+                                                    <Edit2 className="w-4 h-4" /> Edit Event
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem className="gap-2"><Users className="w-4 h-4" /> View Attendees</DropdownMenuItem>
+                                                <DropdownMenuItem
+                                                    className="gap-2 text-red-600 font-bold cursor-pointer"
+                                                    onClick={() => handleDelete(event._id)}
+                                                >
+                                                    <Trash2 className="w-4 h-4" /> Delete
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </TableCell>
+                                </TableRow>
+                            );
+                        })}
+                    </TableBody>
+                </Table>
+                {loading && <div className="p-8 text-center text-slate-400 font-serif italic">Finding academy events...</div>}
+                {!loading && filteredEvents.length === 0 && (
+                    <div className="p-12 text-center text-slate-400 font-serif italic">
+                        No events yet. Click <span className="font-bold text-[#0B1F3A] not-italic">Create Event</span> to add the first one.
                     </div>
-                </CardHeader>
-                <CardContent className="p-0">
-                    <Table>
-                        <TableHeader className="bg-slate-50/50">
-                            <TableRow>
-                                <TableHead className="font-bold text-slate-900 pl-6">Event Details</TableHead>
-                                <TableHead className="font-bold text-slate-900">Date & Time</TableHead>
-                                <TableHead className="font-bold text-slate-900">Location</TableHead>
-                                <TableHead className="font-bold text-slate-900">Registrations</TableHead>
-                                <TableHead className="font-bold text-slate-900">Status</TableHead>
-                                <TableHead className="text-right pr-6">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {filteredEvents.map((event) => {
-                                const status = eventStatus(event.date);
-                                return (
-                                    <TableRow key={event._id} className="hover:bg-slate-50/50 transition-colors">
-                                        <TableCell className="pl-6 py-4">
-                                            <div className="flex items-center gap-3">
-                                                <div className="bg-blue-100 p-2 rounded-lg">
-                                                    <Calendar className="w-5 h-5 text-blue-600" />
-                                                </div>
-                                                <span className="font-bold text-slate-700">{event.title}</span>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className="flex flex-col">
-                                                <span className="text-sm font-bold text-slate-700">{new Date(event.date).toLocaleDateString()}</span>
-                                                <span className="text-[10px] text-slate-400 font-medium flex items-center gap-1 uppercase tracking-tighter">
-                                                    <Clock className="w-3 h-3" /> {event.time || '—'}
-                                                </span>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className="flex items-center gap-2 text-sm text-slate-600">
-                                                <MapPin className="w-3 h-3" /> {event.location}
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-xs font-bold text-slate-700">{event.registrationCount} Attendee(s)</span>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            <Badge className={`${status.className} border-none px-2 py-0.5 text-[10px] font-bold`}>
-                                                {status.label}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="text-right pr-6">
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" size="icon"><MoreVertical className="w-4 h-4" /></Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem
-                                                        className="gap-2 text-indigo-600 font-bold cursor-pointer"
-                                                        onClick={() => openEditDialog(event)}
-                                                    >
-                                                        <Edit2 className="w-4 h-4" /> Edit Event
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem className="gap-2"><Users className="w-4 h-4" /> View Attendees</DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        className="gap-2 text-red-600 font-bold cursor-pointer"
-                                                        onClick={() => handleDelete(event._id)}
-                                                    >
-                                                        <Trash2 className="w-4 h-4" /> Delete
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        </TableCell>
-                                    </TableRow>
-                                );
-                            })}
-                        </TableBody>
-                    </Table>
-                    {loading && <div className="p-8 text-center text-slate-400 italic">Finding academy events...</div>}
-                    {!loading && filteredEvents.length === 0 && (
-                        <div className="p-12 text-center text-slate-400">
-                            No events yet. Click <span className="font-bold text-slate-500">Create Event</span> to add the first one.
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
+                )}
+            </div>
 
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+                <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto rounded-none border-[#0B1F3A]/10">
                     <DialogHeader>
-                        <DialogTitle>{editingEvent ? 'Edit Event' : 'Create Event'}</DialogTitle>
+                        <DialogTitle className="font-serif text-2xl text-[#0B1F3A]">{editingEvent ? 'Edit Event' : 'Create Event'}</DialogTitle>
                     </DialogHeader>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="title">Title</Label>
-                            <Input id="title" required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+                            <Input id="title" required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className="rounded-none" />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label>Category</Label>
                                 <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
-                                    <SelectTrigger><SelectValue /></SelectTrigger>
-                                    <SelectContent>
+                                    <SelectTrigger className="rounded-none"><SelectValue /></SelectTrigger>
+                                    <SelectContent className="rounded-none">
                                         {CATEGORIES.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
                                     </SelectContent>
                                 </Select>
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="organizer">Organizer</Label>
-                                <Input id="organizer" required value={form.organizer} onChange={(e) => setForm({ ...form, organizer: e.target.value })} />
+                                <Input id="organizer" required value={form.organizer} onChange={(e) => setForm({ ...form, organizer: e.target.value })} className="rounded-none" />
                             </div>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="date">Date</Label>
-                                <Input id="date" type="date" required value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} />
+                                <Input id="date" type="date" required value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} className="rounded-none" />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="time">Time (optional)</Label>
-                                <Input id="time" placeholder="e.g. 10:00 AM" value={form.time} onChange={(e) => setForm({ ...form, time: e.target.value })} />
+                                <Input id="time" placeholder="e.g. 10:00 AM" value={form.time} onChange={(e) => setForm({ ...form, time: e.target.value })} className="rounded-none" />
                             </div>
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="location">Location</Label>
-                            <Input id="location" required value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} />
+                            <Input id="location" required value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} className="rounded-none" />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="price">Price (₦, optional)</Label>
-                                <Input id="price" type="number" min="0" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
+                                <Input id="price" type="number" min="0" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} className="rounded-none" />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="imageHint">Image Hint</Label>
-                                <Input id="imageHint" required value={form.imageHint} onChange={(e) => setForm({ ...form, imageHint: e.target.value })} />
+                                <Input id="imageHint" required value={form.imageHint} onChange={(e) => setForm({ ...form, imageHint: e.target.value })} className="rounded-none" />
                             </div>
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="imageUrl">Image URL</Label>
-                            <Input id="imageUrl" required placeholder="/events/example.jpg" value={form.imageUrl} onChange={(e) => setForm({ ...form, imageUrl: e.target.value })} />
+                            <Input id="imageUrl" required placeholder="/events/example.jpg" value={form.imageUrl} onChange={(e) => setForm({ ...form, imageUrl: e.target.value })} className="rounded-none" />
                         </div>
                         <DialogFooter>
-                            <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
-                            <Button type="submit" disabled={submitting} className="bg-indigo-600 hover:bg-indigo-700">
+                            <Button type="button" variant="outline" onClick={() => setDialogOpen(false)} className="rounded-none">Cancel</Button>
+                            <Button type="submit" disabled={submitting} className="bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white rounded-none font-black text-[10px] uppercase tracking-widest">
                                 {submitting ? 'Saving...' : editingEvent ? 'Save Changes' : 'Create Event'}
                             </Button>
                         </DialogFooter>

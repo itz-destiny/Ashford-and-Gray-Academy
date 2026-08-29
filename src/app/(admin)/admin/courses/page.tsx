@@ -157,36 +157,40 @@ export default function AdminCoursesPage() {
     };
 
     return (
-        <div className="space-y-6">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-900">Manage Courses</h1>
-                    <p className="text-slate-500 text-sm">Review, edit, and manage all academic offerings.</p>
+        <div className="px-6 md:px-12 py-12 space-y-16 pb-32 max-w-[1400px] mx-auto bg-[#FAF9F6]">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                        <div className="w-2 h-8 bg-[#C8A96A]" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#0B1F3A]/60">Academy Catalogue</span>
+                    </div>
+                    <h1 className="text-4xl font-serif text-[#0B1F3A] tracking-tight">Manage <span className="text-[#C8A96A]">Courses.</span></h1>
+                    <p className="text-slate-500 font-medium font-serif">Review, edit, and manage all academic offerings.</p>
                 </div>
-                <div className="flex gap-2 w-full md:w-auto">
-                    <Button variant="outline" className="gap-2">
+                <div className="flex gap-3 w-full md:w-auto">
+                    <Button variant="outline" className="h-11 px-5 rounded-none border-[#0B1F3A]/10 bg-white hover:bg-[#F6F4F2] font-black text-[10px] uppercase tracking-widest text-[#0B1F3A] shadow-none gap-2">
                         <Filter className="w-4 h-4" /> Filter
                     </Button>
-                    <Button className="bg-indigo-600 hover:bg-indigo-700 gap-2">
+                    <Button className="h-11 px-5 rounded-none bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black text-[10px] uppercase tracking-widest shadow-none border-none gap-2">
                         <Plus className="w-4 h-4" /> Create Course
                     </Button>
                 </div>
             </div>
 
-            <Card className="border-none shadow-sm overflow-hidden">
-                <CardHeader className="bg-white border-b px-6 py-4 flex flex-row items-center justify-between space-y-0">
-                    <div className="flex gap-4 items-center">
+            <div className="bg-white border border-[#0B1F3A]/10 border-t-4 border-t-[#C8A96A]">
+                <div className="px-8 py-6 border-b border-[#0B1F3A]/5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div className="flex gap-4 items-center flex-wrap">
                         <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                             <Input
                                 placeholder="Search by title or instructor..."
-                                className="pl-10 max-w-sm bg-slate-50 border-none focus-visible:ring-1"
+                                className="pl-10 h-11 max-w-sm bg-white border-[#0B1F3A]/10 rounded-none focus-visible:ring-1 focus-visible:ring-[#C8A96A]"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
                         </div>
                         <select
-                            className="h-10 px-3 bg-slate-50 border-none rounded-md text-sm text-slate-600 focus:ring-1 focus:ring-indigo-500"
+                            className="h-11 px-3 bg-white border border-[#0B1F3A]/10 rounded-none text-sm text-[#0B1F3A] font-medium focus:outline-none focus:ring-1 focus:ring-[#C8A96A]"
                             value={filterCategory}
                             onChange={(e) => setFilterCategory(e.target.value)}
                         >
@@ -195,87 +199,85 @@ export default function AdminCoursesPage() {
                             ))}
                         </select>
                     </div>
-                    <Button variant="ghost" size="sm" onClick={handleExport} className="text-indigo-600 font-bold">
+                    <Button variant="ghost" size="sm" onClick={handleExport} className="text-[#C8A96A] hover:text-[#0B1F3A] font-black uppercase text-[10px] tracking-widest rounded-none">
                         Export CSV
                     </Button>
-                </CardHeader>
-                <CardContent className="p-0">
-                    <Table>
-                        <TableHeader className="bg-slate-50/50">
-                            <TableRow>
-                                <TableHead className="font-bold text-slate-900 pl-6">Course</TableHead>
-                                <TableHead className="font-bold text-slate-900">Instructor</TableHead>
-                                <TableHead className="font-bold text-slate-900">Category</TableHead>
-                                <TableHead className="font-bold text-slate-900">Price</TableHead>
-                                <TableHead className="font-bold text-slate-900">Enrollments</TableHead>
-                                <TableHead className="font-bold text-slate-900">Status</TableHead>
-                                <TableHead className="text-right pr-6">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {filteredCourses.map((course) => (
-                                <TableRow key={course._id} className="hover:bg-slate-50/50 transition-colors">
-                                    <TableCell className="pl-6 py-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-12 h-12 rounded-lg bg-slate-100 overflow-hidden flex-shrink-0">
-                                                <img src={course.imageUrl} className="w-full h-full object-cover" />
-                                            </div>
-                                            <span className="font-bold text-slate-700 block max-w-[200px] truncate">{course.title}</span>
+                </div>
+                <Table>
+                    <TableHeader>
+                        <TableRow className="hover:bg-transparent border-[#0B1F3A]/5">
+                            <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-8 py-5">Course</TableHead>
+                            <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400">Instructor</TableHead>
+                            <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400">Category</TableHead>
+                            <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400">Price</TableHead>
+                            <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400">Enrollments</TableHead>
+                            <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400">Status</TableHead>
+                            <TableHead className="text-right pr-8 text-[10px] font-black uppercase tracking-widest text-slate-400">Actions</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {filteredCourses.map((course) => (
+                            <TableRow key={course._id} className="hover:bg-[#F6F4F2] border-[#0B1F3A]/5 transition-colors">
+                                <TableCell className="pl-8 py-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-12 h-12 bg-[#F6F4F2] border border-[#0B1F3A]/5 overflow-hidden flex-shrink-0">
+                                            <img src={course.imageUrl} className="w-full h-full object-cover" />
                                         </div>
-                                    </TableCell>
-                                    <TableCell className="text-sm text-slate-600">{course.instructor.name}</TableCell>
-                                    <TableCell>
-                                        <Badge variant="secondary" className="bg-blue-50 text-blue-700 hover:bg-blue-50 border-none px-2 py-0.5 text-[10px] font-bold">
-                                            {course.category}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell className="font-bold text-slate-700">₦{course.price?.toLocaleString()}</TableCell>
-                                    <TableCell className="text-slate-500 font-medium">{course.enrollmentCount} Student(s)</TableCell>
-                                    <TableCell>
-                                        <Badge className="bg-emerald-50 text-emerald-700 hover:bg-emerald-50 border-none px-2 py-0.5 text-[10px] font-bold">
-                                            Published
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell className="text-right pr-6">
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" size="icon"><MoreVertical className="w-4 h-4" /></Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuItem className="gap-2"><Eye className="w-4 h-4" /> View Details</DropdownMenuItem>
-                                                <DropdownMenuItem className="gap-2 text-indigo-600 font-bold"><Edit2 className="w-4 h-4" /> Edit Course</DropdownMenuItem>
-                                                <DropdownMenuItem 
-                                                    className="gap-2 text-emerald-600 font-bold cursor-pointer"
-                                                    onClick={() => {
-                                                        setSelectedCourse(course);
-                                                        setSelectedInstructorUid(course.instructorUid || '');
-                                                        setIsAssignOpen(true);
-                                                    }}
-                                                >
-                                                    <Search className="w-4 h-4" /> Assign Instructor
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem
-                                                    className="gap-2 text-red-600 font-bold cursor-pointer"
-                                                    onClick={() => handleDelete(course._id)}
-                                                >
-                                                    <Trash2 className="w-4 h-4" /> Delete
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                    {loading && <div className="p-8 text-center text-slate-400">Loading courses...</div>}
-                </CardContent>
-            </Card>
+                                        <span className="font-bold text-[#0B1F3A] block max-w-[200px] truncate">{course.title}</span>
+                                    </div>
+                                </TableCell>
+                                <TableCell className="text-sm text-slate-600">{course.instructor.name}</TableCell>
+                                <TableCell>
+                                    <Badge className="bg-[#F6F4F2] text-[#0B1F3A] border border-[#0B1F3A]/5 rounded-none px-2 py-0.5 text-[9px] font-black uppercase tracking-wider">
+                                        {course.category}
+                                    </Badge>
+                                </TableCell>
+                                <TableCell className="font-bold text-[#0B1F3A]">₦{course.price?.toLocaleString()}</TableCell>
+                                <TableCell className="text-slate-500 font-medium">{course.enrollmentCount} Student(s)</TableCell>
+                                <TableCell>
+                                    <Badge className="bg-emerald-50 text-emerald-700 border-none rounded-none px-2 py-0.5 text-[9px] font-black uppercase tracking-wider">
+                                        Published
+                                    </Badge>
+                                </TableCell>
+                                <TableCell className="text-right pr-8">
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="icon" className="rounded-none"><MoreVertical className="w-4 h-4" /></Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end" className="rounded-none border-[#0B1F3A]/10">
+                                            <DropdownMenuItem className="gap-2"><Eye className="w-4 h-4" /> View Details</DropdownMenuItem>
+                                            <DropdownMenuItem className="gap-2 text-[#0B1F3A] font-bold"><Edit2 className="w-4 h-4" /> Edit Course</DropdownMenuItem>
+                                            <DropdownMenuItem
+                                                className="gap-2 text-[#1F7A5A] font-bold cursor-pointer"
+                                                onClick={() => {
+                                                    setSelectedCourse(course);
+                                                    setSelectedInstructorUid(course.instructorUid || '');
+                                                    setIsAssignOpen(true);
+                                                }}
+                                            >
+                                                <Search className="w-4 h-4" /> Assign Instructor
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem
+                                                className="gap-2 text-red-600 font-bold cursor-pointer"
+                                                onClick={() => handleDelete(course._id)}
+                                            >
+                                                <Trash2 className="w-4 h-4" /> Delete
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+                {loading && <div className="p-8 text-center text-slate-400 font-serif italic">Loading courses...</div>}
+            </div>
 
             {/* Assign Instructor Dialog */}
             <Dialog open={isAssignOpen} onOpenChange={setIsAssignOpen}>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent className="sm:max-w-[425px] rounded-none border-[#0B1F3A]/10">
                     <DialogHeader>
-                        <DialogTitle>Assign Instructor</DialogTitle>
+                        <DialogTitle className="font-serif text-2xl text-[#0B1F3A]">Assign Instructor</DialogTitle>
                         <DialogDescription>
                             Assign {selectedCourse?.title} to an instructor. They will manage this course's live classes.
                         </DialogDescription>
@@ -287,10 +289,10 @@ export default function AdminCoursesPage() {
                                 value={selectedInstructorUid}
                                 onValueChange={setSelectedInstructorUid}
                             >
-                                <SelectTrigger>
+                                <SelectTrigger className="rounded-none">
                                     <SelectValue placeholder="Select an instructor" />
                                 </SelectTrigger>
-                                <SelectContent>
+                                <SelectContent className="rounded-none">
                                     {instructors.length > 0 ? instructors.map(inst => (
                                         <SelectItem key={inst.uid} value={inst.uid}>
                                             {inst.displayName} ({inst.email})
@@ -303,8 +305,8 @@ export default function AdminCoursesPage() {
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsAssignOpen(false)}>Cancel</Button>
-                        <Button onClick={handleAssignInstructor} disabled={assigning} className="bg-indigo-600">
+                        <Button variant="outline" onClick={() => setIsAssignOpen(false)} className="rounded-none">Cancel</Button>
+                        <Button onClick={handleAssignInstructor} disabled={assigning} className="bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white rounded-none font-black text-[10px] uppercase tracking-widest">
                             {assigning ? 'Assigning...' : 'Assign Instructor'}
                         </Button>
                     </DialogFooter>

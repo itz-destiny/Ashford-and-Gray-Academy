@@ -1,14 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
     DollarSign,
     TrendingUp,
     CreditCard,
-    ArrowUpRight,
     Search,
     Filter,
     Download,
@@ -17,6 +15,7 @@ import {
     Loader2
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 interface Transaction {
     _id: string;
@@ -101,147 +100,142 @@ export default function TuitionRevenuePage() {
     };
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-700">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                <div className="space-y-1">
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+        <div className="px-6 md:px-12 py-12 space-y-16 pb-32 max-w-[1400px] mx-auto">
+
+            {/* Header */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+                <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                        <div className="w-2 h-8 bg-[#C8A96A]" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#0B1F3A]/60">Financial Office</span>
+                    </div>
+                    <h1 className="text-4xl font-serif text-[#0B1F3A] tracking-tight flex items-center gap-4">
                         Tuition Revenue
-                        <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-none rounded-full px-4">Live</Badge>
+                        <Badge className="bg-[#1F7A5A]/10 text-[#1F7A5A] border-none rounded-none font-black text-[9px] uppercase tracking-widest">Live</Badge>
                     </h1>
-                    <p className="text-slate-500 font-medium">Monitoring academic fees, installments, and payment collections.</p>
+                    <p className="text-slate-500 font-medium font-serif">Monitoring academic fees, installments, and payment collections.</p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <Button variant="outline" className="h-11 px-6 rounded-xl border-slate-200 font-bold text-slate-600 hover:bg-slate-50" onClick={fetchTuitionData}>
-                        <Download className="w-4 h-4 mr-2" /> Export Report
+                    <Button variant="outline" onClick={fetchTuitionData} className="h-11 px-5 rounded-none border-[#0B1F3A]/10 bg-white hover:bg-[#F6F4F2] font-black text-[10px] uppercase tracking-widest text-[#0B1F3A] shadow-none">
+                        <Download className="w-4 h-4 mr-2 text-[#C8A96A]" /> Export Report
                     </Button>
-                    <Button className="bg-indigo-600 hover:bg-indigo-700 text-white font-black h-11 px-8 rounded-xl shadow-lg shadow-indigo-100 transition-all active:scale-95">
+                    <Button className="h-11 px-5 rounded-none bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black text-[10px] uppercase tracking-widest shadow-none border-none">
                         Generate Invoices
                     </Button>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* KPI Strip */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
-                    { label: "Total Revenue", value: formatCurrency(stats.totalRevenue), trend: `${stats.completedCount} Paid`, icon: DollarSign, color: "bg-emerald-500" },
-                    { label: "Pending Fees", value: formatCurrency(stats.pendingAmount), trend: `${stats.pendingCount} Students`, icon: Clock, color: "bg-amber-500" },
-                    { label: "Paid Today", value: formatCurrency(stats.todayRevenue), trend: "Last 24h", icon: TrendingUp, color: "bg-indigo-500" },
-                    { label: "Enrollments", value: stats.completedCount.toString(), trend: "Completed", icon: GraduationCap, color: "bg-rose-500" },
+                    { label: "Total Revenue", value: formatCurrency(stats.totalRevenue), sub: `${stats.completedCount} Paid`, icon: DollarSign, accent: "border-t-[#1F7A5A]", color: "text-[#1F7A5A]" },
+                    { label: "Pending Fees", value: formatCurrency(stats.pendingAmount), sub: `${stats.pendingCount} Students`, icon: Clock, accent: "border-t-[#C8A96A]", color: "text-[#C8A96A]" },
+                    { label: "Paid Today", value: formatCurrency(stats.todayRevenue), sub: "Last 24h", icon: TrendingUp, accent: "border-t-[#0B1F3A]", color: "text-[#0B1F3A]" },
+                    { label: "Enrollments", value: stats.completedCount.toString(), sub: "Completed", icon: GraduationCap, accent: "border-t-rose-400", color: "text-rose-500" },
                 ].map((stat, i) => (
-                    <Card key={i} className="border-none shadow-xl shadow-slate-100 rounded-[2rem] overflow-hidden group hover:scale-[1.02] transition-all duration-300">
-                        <CardContent className="p-8">
-                            <div className="flex items-center justify-between mb-6">
-                                <div className={`${stat.color} p-4 rounded-2xl text-white shadow-lg`}>
-                                    <stat.icon className="w-6 h-6" />
-                                </div>
-                                <div className="text-xs font-black text-emerald-500 bg-emerald-50 px-3 py-1.5 rounded-full">
-                                    {stat.trend}
-                                </div>
-                            </div>
-                            <div className="space-y-1">
-                                <h3 className="text-sm font-black text-slate-400 uppercase tracking-widest">{stat.label}</h3>
-                                <p className="text-3xl font-black text-slate-900">{stat.value}</p>
-                            </div>
-                        </CardContent>
-                    </Card>
+                    <div key={i} className={`bg-white border border-[#0B1F3A]/10 border-t-4 ${stat.accent} p-8 group hover:shadow-lg transition-all duration-300`}>
+                        <div className="flex items-start justify-between mb-6">
+                            <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">{stat.label}</p>
+                            <stat.icon className={`w-5 h-5 ${stat.color}`} />
+                        </div>
+                        <p className="text-3xl font-serif text-[#0B1F3A] mb-3">{stat.value}</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-[#1F7A5A]">{stat.sub}</p>
+                    </div>
                 ))}
             </div>
 
-            <Card className="border-none shadow-xl shadow-slate-100 rounded-[2.5rem] overflow-hidden bg-white">
-                <CardHeader className="p-10 border-b border-slate-50">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                        <div>
-                            <CardTitle className="text-2xl font-black text-slate-900 leading-tight">Recent Collections</CardTitle>
-                            <CardDescription className="text-slate-400 font-bold">Live transaction stream from the student portal.</CardDescription>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <div className="relative">
-                                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                                <Input
-                                    placeholder="Search students..."
-                                    className="pl-10 h-11 bg-slate-50 border-none rounded-xl w-[260px] font-medium"
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                />
-                            </div>
-                            <Button variant="outline" size="icon" className="h-11 w-11 rounded-xl border-slate-100">
-                                <Filter className="w-4 h-4 text-slate-400" />
-                            </Button>
-                        </div>
+            {/* Table */}
+            <div className="bg-white border border-[#0B1F3A]/10 border-t-4 border-t-[#C8A96A]">
+                <div className="p-8 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 className="text-2xl font-serif text-[#0B1F3A]">Recent Collections</h2>
+                        <p className="text-slate-400 font-medium text-sm mt-1">Live transaction stream from the student portal.</p>
                     </div>
-                </CardHeader>
-                <CardContent className="p-0">
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="border-b border-slate-50">
-                                    <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-slate-400">Student Access</th>
-                                    <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-slate-400">Course / Term</th>
-                                    <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-slate-400">Amount</th>
-                                    <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-slate-400">Method</th>
-                                    <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-slate-400">Status</th>
-                                    <th className="px-10 py-6 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right">Time</th>
+                    <div className="flex items-center gap-3">
+                        <div className="relative">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                            <Input
+                                placeholder="Search students..."
+                                className="pl-11 h-11 bg-white border border-[#0B1F3A]/10 rounded-none w-[260px] focus-visible:ring-[#C8A96A]"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </div>
+                        <Button variant="outline" size="icon" className="h-11 w-11 rounded-none border-[#0B1F3A]/10">
+                            <Filter className="w-4 h-4 text-slate-400" />
+                        </Button>
+                    </div>
+                </div>
+                <div className="overflow-x-auto">
+                    <table className="w-full text-sm text-left">
+                        <thead className="bg-[#F6F4F2] text-slate-400 font-black uppercase text-[9px] tracking-widest border-b border-[#0B1F3A]/10">
+                            <tr>
+                                <th className="px-8 py-4">Student Access</th>
+                                <th className="px-6 py-4">Course / Term</th>
+                                <th className="px-6 py-4">Amount</th>
+                                <th className="px-6 py-4">Method</th>
+                                <th className="px-6 py-4">Status</th>
+                                <th className="px-6 py-4 text-right pr-8">Time</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[#0B1F3A]/5">
+                            {loading ? (
+                                <tr>
+                                    <td colSpan={6} className="px-8 py-20 text-center">
+                                        <Loader2 className="w-8 h-8 animate-spin text-slate-300 mx-auto" />
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-50">
-                                {loading ? (
-                                    <tr>
-                                        <td colSpan={6} className="px-10 py-20 text-center">
-                                            <Loader2 className="w-8 h-8 animate-spin text-slate-300 mx-auto" />
-                                        </td>
-                                    </tr>
-                                ) : filteredTransactions.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={6} className="px-10 py-20 text-center text-slate-400 font-bold">
-                                            No transactions found
-                                        </td>
-                                    </tr>
-                                ) : (
-                                    filteredTransactions.map((txn) => (
-                                        <tr key={txn._id} className="hover:bg-slate-50/50 transition-colors group">
-                                            <td className="px-10 py-6">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-black text-slate-500 text-xs">
-                                                        {txn.userName?.split(' ').map(n => n[0]).join('') || 'U'}
-                                                    </div>
-                                                    <div className="flex flex-col">
-                                                        <span className="font-bold text-slate-900">{txn.userName || 'Unknown'}</span>
-                                                        <span className="text-xs text-slate-400 font-bold">{txn.userEmail}</span>
-                                                    </div>
+                            ) : filteredTransactions.length === 0 ? (
+                                <tr>
+                                    <td colSpan={6} className="px-8 py-20 text-center text-slate-400 font-medium italic font-serif">
+                                        No transactions found
+                                    </td>
+                                </tr>
+                            ) : (
+                                filteredTransactions.map((txn) => (
+                                    <tr key={txn._id} className="hover:bg-[#F6F4F2]/50 transition-colors">
+                                        <td className="px-8 py-5">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-10 h-10 bg-[#F6F4F2] border border-[#0B1F3A]/5 flex items-center justify-center font-black text-[#0B1F3A] text-xs">
+                                                    {txn.userName?.split(' ').map(n => n[0]).join('') || 'U'}
                                                 </div>
-                                            </td>
-                                            <td className="px-10 py-6">
                                                 <div className="flex flex-col">
-                                                    <span className="font-bold text-slate-700">{txn.courseName || 'Course Enrollment'}</span>
-                                                    <span className="text-xs text-slate-400 font-bold italic">Spring 2026</span>
+                                                    <span className="font-black text-[#0B1F3A]">{txn.userName || 'Unknown'}</span>
+                                                    <span className="text-xs text-slate-400 font-medium">{txn.userEmail}</span>
                                                 </div>
-                                            </td>
-                                            <td className="px-10 py-6 font-black text-slate-900">{formatCurrency(txn.amount)}</td>
-                                            <td className="px-10 py-6">
-                                                <div className="flex items-center gap-2 text-slate-500 font-bold text-sm">
-                                                    <CreditCard className="w-4 h-4 opacity-50" />
-                                                    {txn.paymentMethod || 'Card'}
-                                                </div>
-                                            </td>
-                                            <td className="px-10 py-6">
-                                                <Badge className={
-                                                    txn.status === "completed" ? "bg-emerald-100 text-emerald-700 border-none rounded-lg" :
-                                                        txn.status === "pending" ? "bg-amber-100 text-amber-700 border-none rounded-lg" :
-                                                            "bg-rose-100 text-rose-700 border-none rounded-lg"
-                                                }>
-                                                    {txn.status}
-                                                </Badge>
-                                            </td>
-                                            <td className="px-10 py-6 text-right">
-                                                <span className="text-xs font-bold text-slate-400">{formatTimeAgo(txn.createdAt)}</span>
-                                            </td>
-                                        </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                </CardContent>
-            </Card>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-5">
+                                            <div className="flex flex-col">
+                                                <span className="font-medium text-slate-700">{txn.courseName || 'Course Enrollment'}</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-5 font-black text-[#0B1F3A]">{formatCurrency(txn.amount)}</td>
+                                        <td className="px-6 py-5">
+                                            <div className="flex items-center gap-2 text-slate-500 font-medium text-sm">
+                                                <CreditCard className="w-4 h-4 opacity-50" />
+                                                {txn.paymentMethod || 'Card'}
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-5">
+                                            <Badge className={cn("border-none rounded-none font-black text-[9px] uppercase tracking-widest px-2.5 py-0.5",
+                                                txn.status === "completed" ? "bg-[#1F7A5A]/10 text-[#1F7A5A]" :
+                                                    txn.status === "pending" ? "bg-[#C8A96A]/10 text-[#C8A96A]" :
+                                                        "bg-rose-50 text-rose-600"
+                                            )}>
+                                                {txn.status}
+                                            </Badge>
+                                        </td>
+                                        <td className="px-6 py-5 text-right pr-8">
+                                            <span className="text-xs font-bold text-slate-400">{formatTimeAgo(txn.createdAt)}</span>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     );
 }
