@@ -102,20 +102,24 @@ export default function RegistrarSettingsPage() {
     };
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-700">
-            <div>
-                <h2 className="text-3xl font-black text-slate-900 flex items-center gap-3">
-                    Platform Settings
-                    <Badge variant="outline" className="rounded-full px-4">Registrar Role</Badge>
-                </h2>
-                <p className="text-slate-500 font-medium mt-2">Configure platform-wide settings and administrative preferences</p>
+        <div className="px-6 md:px-12 py-12 space-y-16 pb-32 max-w-[1000px] mx-auto">
+            <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                    <div className="w-2 h-8 bg-[#C8A96A]" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#0B1F3A]/60">Enrolment Office</span>
+                </div>
+                <h1 className="text-4xl font-serif text-[#0B1F3A] tracking-tight flex items-center gap-3">
+                    Platform <span className="text-[#C8A96A]">Settings.</span>
+                    <Badge className="bg-[#C8A96A]/10 text-[#0B1F3A] border border-[#C8A96A]/20 rounded-none text-[9px] font-black uppercase tracking-widest">Registrar Role</Badge>
+                </h1>
+                <p className="text-slate-500 font-medium font-serif">Configure platform-wide settings and administrative preferences.</p>
             </div>
 
             {/* Profile Information */}
-            <Card className="border-none shadow-xl shadow-slate-100 rounded-[2.5rem]">
+            <Card className="border border-[#0B1F3A]/10 border-t-4 border-t-[#C8A96A] rounded-none shadow-sm">
                 <CardHeader className="p-8">
-                    <CardTitle className="flex items-center gap-2 text-xl">
-                        <User className="w-5 h-5 text-indigo-500" />
+                    <CardTitle className="flex items-center gap-2 text-2xl font-serif text-[#0B1F3A]">
+                        <User className="w-5 h-5 text-[#C8A96A]" />
                         Profile Information
                     </CardTitle>
                     <CardDescription>Your administrative account details</CardDescription>
@@ -128,7 +132,7 @@ export default function RegistrarSettingsPage() {
                                 id="displayName"
                                 value={displayName}
                                 onChange={(e) => setDisplayName(e.target.value)}
-                                className="h-12 rounded-xl bg-slate-50 border-none"
+                                className="h-12 rounded-none bg-[#F6F4F2] border-none focus-visible:ring-[#C8A96A]"
                             />
                         </div>
                         <div className="space-y-2">
@@ -139,7 +143,7 @@ export default function RegistrarSettingsPage() {
                                     id="email"
                                     type="email"
                                     defaultValue={user?.email || ''}
-                                    className="h-12 rounded-xl bg-slate-50 border-none pl-10"
+                                    className="h-12 rounded-none bg-[#F6F4F2] border-none pl-10"
                                     disabled
                                 />
                             </div>
@@ -149,10 +153,10 @@ export default function RegistrarSettingsPage() {
             </Card>
 
             {/* Institution Settings */}
-            <Card className="border-none shadow-xl shadow-slate-100 rounded-[2.5rem]">
+            <Card className="border border-[#0B1F3A]/10 border-t-4 border-t-[#C8A96A] rounded-none shadow-sm">
                 <CardHeader className="p-8">
-                    <CardTitle className="flex items-center gap-2 text-xl">
-                        <Building className="w-5 h-5 text-indigo-500" />
+                    <CardTitle className="flex items-center gap-2 text-2xl font-serif text-[#0B1F3A]">
+                        <Building className="w-5 h-5 text-[#C8A96A]" />
                         Institution Configuration
                     </CardTitle>
                     <CardDescription>Platform-wide institutional settings</CardDescription>
@@ -166,7 +170,7 @@ export default function RegistrarSettingsPage() {
                                 value={institutionName}
                                 onChange={(e) => setInstitutionName(e.target.value)}
                                 disabled={loading}
-                                className="h-12 rounded-xl bg-slate-50 border-none"
+                                className="h-12 rounded-none bg-[#F6F4F2] border-none focus-visible:ring-[#C8A96A]"
                             />
                         </div>
                         <div className="space-y-2">
@@ -176,7 +180,7 @@ export default function RegistrarSettingsPage() {
                                 value={academicYear}
                                 onChange={(e) => setAcademicYear(e.target.value)}
                                 disabled={loading}
-                                className="h-12 rounded-xl bg-slate-50 border-none"
+                                className="h-12 rounded-none bg-[#F6F4F2] border-none focus-visible:ring-[#C8A96A]"
                             />
                         </div>
                     </div>
@@ -184,19 +188,19 @@ export default function RegistrarSettingsPage() {
             </Card>
 
             {/* Notification Preferences */}
-            <Card className="border-none shadow-xl shadow-slate-100 rounded-[2.5rem]">
+            <Card className="border border-[#0B1F3A]/10 border-t-4 border-t-[#C8A96A] rounded-none shadow-sm">
                 <CardHeader className="p-8">
-                    <CardTitle className="flex items-center gap-2 text-xl">
-                        <Bell className="w-5 h-5 text-indigo-500" />
+                    <CardTitle className="flex items-center gap-2 text-2xl font-serif text-[#0B1F3A]">
+                        <Bell className="w-5 h-5 text-[#C8A96A]" />
                         Notification Preferences
                     </CardTitle>
                     <CardDescription>Manage your administrative alert settings</CardDescription>
                 </CardHeader>
-                <CardContent className="p-8 pt-0 space-y-6">
+                <CardContent className="p-8 pt-0 space-y-4">
                     {NOTIFICATION_ITEMS.map((item) => (
-                        <div key={item.id} className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 hover:bg-slate-100 transition-colors">
+                        <div key={item.id} className="flex items-center justify-between p-4 bg-[#F6F4F2] hover:bg-[#F0EDE7] transition-colors border border-[#0B1F3A]/5">
                             <div className="flex-1">
-                                <p className="font-bold text-slate-900">{item.label}</p>
+                                <p className="font-bold text-[#0B1F3A]">{item.label}</p>
                                 <p className="text-sm text-slate-500">{item.description}</p>
                             </div>
                             <Switch
@@ -213,7 +217,7 @@ export default function RegistrarSettingsPage() {
                 <Button
                     onClick={handleSave}
                     disabled={saving || loading}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white h-12 px-8 rounded-xl font-bold shadow-lg shadow-indigo-100"
+                    className="bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white h-12 px-8 rounded-none font-black text-[10px] uppercase tracking-widest shadow-none"
                 >
                     {saving ? (
                         <Loader2 className="w-4 h-4 animate-spin" />

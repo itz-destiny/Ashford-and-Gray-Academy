@@ -1,8 +1,7 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { PieChart, TrendingUp, DollarSign, Receipt, Wallet, AlertTriangle, Loader2 } from "lucide-react";
+import { TrendingUp, DollarSign, Receipt, Wallet, AlertTriangle, Loader2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useUser } from "@/firebase";
 import { apiFetch } from "@/lib/api-client";
@@ -82,109 +81,95 @@ export default function FinanceReportsPage() {
     }
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-500">
-            <div>
-                <h1 className="text-3xl font-black text-[#0B1F3A] tracking-tight">Financial Reports</h1>
-                <p className="text-slate-500 font-medium italic">Six-month revenue, expenses and top-performing courses.</p>
+        <div className="px-6 md:px-12 py-12 space-y-16 pb-32 max-w-[1400px] mx-auto">
+
+            {/* Header */}
+            <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                    <div className="w-2 h-8 bg-[#C8A96A]" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#0B1F3A]/60">Financial Office</span>
+                </div>
+                <h1 className="text-4xl font-serif text-[#0B1F3A] tracking-tight">Financial Reports</h1>
+                <p className="text-slate-500 font-medium font-serif">Six-month revenue, expenses and top-performing courses.</p>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-4">
-                <KpiCard label="Net Profit" value={`₦${stats.net.toLocaleString()}`} icon={TrendingUp} tint="emerald" />
-                <KpiCard label="Gross Revenue" value={`₦${stats.revenue.toLocaleString()}`} icon={DollarSign} tint="blue" />
-                <KpiCard label="Refunds" value={`₦${stats.refunds.toLocaleString()}`} icon={Receipt} tint="orange" />
-                <KpiCard label="Payouts" value={`₦${stats.payouts.toLocaleString()}`} icon={Wallet} tint="indigo" />
+            <div className="grid gap-4 md:grid-cols-4">
+                <KpiCard label="Net Profit" value={`₦${stats.net.toLocaleString()}`} icon={TrendingUp} accent="border-t-[#1F7A5A]" iconColor="text-[#1F7A5A]" />
+                <KpiCard label="Gross Revenue" value={`₦${stats.revenue.toLocaleString()}`} icon={DollarSign} accent="border-t-[#C8A96A]" iconColor="text-[#C8A96A]" />
+                <KpiCard label="Refunds" value={`₦${stats.refunds.toLocaleString()}`} icon={Receipt} accent="border-t-rose-400" iconColor="text-rose-500" />
+                <KpiCard label="Payouts" value={`₦${stats.payouts.toLocaleString()}`} icon={Wallet} accent="border-t-[#0B1F3A]" iconColor="text-[#0B1F3A]" />
             </div>
 
-            <Card className="border-none bg-white rounded-[2.5rem] shadow-sm">
-                <CardHeader className="p-8 pb-0">
-                    <CardTitle className="text-lg font-black text-[#0B1F3A]">Last 6 Months</CardTitle>
-                </CardHeader>
-                <CardContent className="p-8">
-                    <div className="grid grid-cols-6 gap-4 items-end h-56">
-                        {stats.months.map(m => (
-                            <div key={m.key} className="flex flex-col items-center gap-2 group">
-                                <div className="w-full flex gap-1 items-end h-44">
-                                    <div className="flex-1 bg-emerald-500/80 hover:bg-emerald-500 rounded-t-lg transition-all" style={{ height: `${(m.revenue / stats.peak) * 100}%` }} title={`Revenue: ₦${m.revenue.toLocaleString()}`} />
-                                    <div className="flex-1 bg-orange-400/80 hover:bg-orange-400 rounded-t-lg transition-all" style={{ height: `${(m.expenses / stats.peak) * 100}%` }} title={`Expenses: ₦${m.expenses.toLocaleString()}`} />
-                                </div>
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{m.label}</p>
+            <div className="bg-white border border-[#0B1F3A]/10 border-t-4 border-t-[#C8A96A] p-8">
+                <h2 className="text-2xl font-serif text-[#0B1F3A] mb-6">Last 6 Months</h2>
+                <div className="grid grid-cols-6 gap-4 items-end h-56">
+                    {stats.months.map(m => (
+                        <div key={m.key} className="flex flex-col items-center gap-2 group">
+                            <div className="w-full flex gap-1 items-end h-44">
+                                <div className="flex-1 bg-[#1F7A5A]/80 hover:bg-[#1F7A5A] transition-all" style={{ height: `${(m.revenue / stats.peak) * 100}%` }} title={`Revenue: ₦${m.revenue.toLocaleString()}`} />
+                                <div className="flex-1 bg-rose-400/80 hover:bg-rose-400 transition-all" style={{ height: `${(m.expenses / stats.peak) * 100}%` }} title={`Expenses: ₦${m.expenses.toLocaleString()}`} />
                             </div>
-                        ))}
-                    </div>
-                    <div className="flex justify-center gap-6 mt-6 text-xs font-bold text-slate-500">
-                        <span className="flex items-center gap-2"><span className="w-3 h-3 bg-emerald-500 rounded-sm" /> Revenue</span>
-                        <span className="flex items-center gap-2"><span className="w-3 h-3 bg-orange-400 rounded-sm" /> Expenses</span>
-                    </div>
-                </CardContent>
-            </Card>
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{m.label}</p>
+                        </div>
+                    ))}
+                </div>
+                <div className="flex justify-center gap-6 mt-6 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                    <span className="flex items-center gap-2"><span className="w-3 h-3 bg-[#1F7A5A]" /> Revenue</span>
+                    <span className="flex items-center gap-2"><span className="w-3 h-3 bg-rose-400" /> Expenses</span>
+                </div>
+            </div>
 
             <div className="grid gap-8 lg:grid-cols-2">
-                <Card className="border-none bg-white rounded-[2.5rem] shadow-sm">
-                    <CardHeader className="p-8 pb-0">
-                        <CardTitle className="text-lg font-black text-[#0B1F3A]">Top Courses by Revenue</CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-8 space-y-4">
+                <div className="bg-white border border-[#0B1F3A]/10 border-t-4 border-t-[#C8A96A] p-8">
+                    <h2 className="text-2xl font-serif text-[#0B1F3A] mb-6">Top Courses by Revenue</h2>
+                    <div className="space-y-4">
                         {stats.topCourses.length === 0 ? (
-                            <p className="text-sm text-slate-400 font-bold italic text-center py-8">No completed enrollments yet.</p>
+                            <p className="text-sm text-slate-400 font-medium italic font-serif text-center py-8">No completed enrollments yet.</p>
                         ) : stats.topCourses.map(([name, amount], i) => (
                             <div key={name} className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center font-black text-slate-600">{i + 1}</div>
+                                <div className="w-10 h-10 bg-[#F6F4F2] border border-[#0B1F3A]/5 flex items-center justify-center font-black text-[#0B1F3A]">{i + 1}</div>
                                 <div className="flex-1 min-w-0">
-                                    <p className="font-bold text-[#0B1F3A] truncate">{name}</p>
-                                    <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden mt-1.5">
+                                    <p className="font-black text-[#0B1F3A] truncate">{name}</p>
+                                    <div className="h-1.5 bg-slate-100 overflow-hidden mt-1.5">
                                         <div className="h-full bg-[#1F7A5A]" style={{ width: `${(amount / stats.topCourses[0][1]) * 100}%` }} />
                                     </div>
                                 </div>
                                 <p className="font-black text-[#0B1F3A]">₦{amount.toLocaleString()}</p>
                             </div>
                         ))}
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
 
-                <Card className={cn(
-                    "border-none rounded-[2.5rem] shadow-sm",
-                    stats.failed > 0 ? "bg-rose-50" : "bg-emerald-50"
+                <div className={cn(
+                    "border border-[#0B1F3A]/10 border-t-4 p-8",
+                    stats.failed > 0 ? "bg-rose-50 border-t-rose-500" : "bg-white border-t-[#1F7A5A]"
                 )}>
-                    <CardHeader className="p-8 pb-0">
-                        <CardTitle className="text-lg font-black text-[#0B1F3A] flex items-center gap-2">
-                            <AlertTriangle className={cn("h-5 w-5", stats.failed > 0 ? "text-rose-600" : "text-emerald-600")} />
-                            Payment Health
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-8 space-y-4">
-                        <p className="text-5xl font-black text-[#0B1F3A]">{stats.failed}</p>
-                        <p className="text-sm font-bold text-slate-600">Failed transactions in the visible window.</p>
-                        <Badge className={cn(
-                            "border-none font-bold text-[10px] uppercase tracking-widest px-3 py-1",
-                            stats.failed > 0 ? "bg-rose-100 text-rose-700" : "bg-emerald-100 text-emerald-700"
-                        )}>
-                            {stats.failed > 0 ? 'Action recommended' : 'Healthy'}
-                        </Badge>
-                    </CardContent>
-                </Card>
+                    <h2 className="text-2xl font-serif text-[#0B1F3A] flex items-center gap-2 mb-6">
+                        <AlertTriangle className={cn("h-5 w-5", stats.failed > 0 ? "text-rose-600" : "text-[#1F7A5A]")} />
+                        Payment Health
+                    </h2>
+                    <p className="text-5xl font-serif text-[#0B1F3A]">{stats.failed}</p>
+                    <p className="text-sm font-medium text-slate-600 mt-3 mb-4">Failed transactions in the visible window.</p>
+                    <Badge className={cn(
+                        "border-none rounded-none font-black text-[9px] uppercase tracking-widest px-3 py-1",
+                        stats.failed > 0 ? "bg-rose-100 text-rose-700" : "bg-[#1F7A5A]/10 text-[#1F7A5A]"
+                    )}>
+                        {stats.failed > 0 ? 'Action recommended' : 'Healthy'}
+                    </Badge>
+                </div>
             </div>
         </div>
     );
 }
 
-function KpiCard({ label, value, icon: Icon, tint }: { label: string; value: string; icon: any; tint: string }) {
-    const tints: Record<string, string> = {
-        emerald: "bg-emerald-50 text-emerald-600",
-        blue: "bg-blue-50 text-blue-600",
-        orange: "bg-orange-50 text-orange-600",
-        indigo: "bg-indigo-50 text-indigo-600",
-    };
+function KpiCard({ label, value, icon: Icon, accent, iconColor }: { label: string; value: string; icon: any; accent: string; iconColor: string }) {
     return (
-        <Card className="border-none bg-white rounded-[2rem] shadow-sm">
-            <CardContent className="p-6 flex items-center gap-4">
-                <div className={cn("p-3 rounded-2xl", tints[tint])}>
-                    <Icon className="h-5 w-5" />
-                </div>
-                <div>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{label}</p>
-                    <p className="text-2xl font-black text-[#0B1F3A]">{value}</p>
-                </div>
-            </CardContent>
-        </Card>
+        <div className={cn("bg-white border border-[#0B1F3A]/10 border-t-4 p-8", accent)}>
+            <div className="flex items-start justify-between mb-4">
+                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400">{label}</p>
+                <Icon className={cn("w-5 h-5", iconColor)} />
+            </div>
+            <p className="text-2xl font-serif text-[#0B1F3A]">{value}</p>
+        </div>
     );
 }
