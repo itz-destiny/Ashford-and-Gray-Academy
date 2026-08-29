@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useUser, useConversationMessages } from '@/firebase';
 import { apiFetch } from '@/lib/api-client';
@@ -224,7 +225,7 @@ export default function CourseViewerPage() {
                             </div>
                             {zoomHasStarted && (
                                 <Button asChild className="h-11 px-6 rounded-full bg-[#C8A96A] hover:bg-[#B69859] text-[#0B1F3A] font-black text-[10px] uppercase tracking-[0.25em] shadow-none shrink-0">
-                                    <a href={liveClasses[0].zoomJoinUrl} target="_blank" rel="noopener noreferrer">Join Class</a>
+                                    <Link href={`/live-classes/${liveClasses[0]._id}`} target="_blank">Join Class</Link>
                                 </Button>
                             )}
                         </div>

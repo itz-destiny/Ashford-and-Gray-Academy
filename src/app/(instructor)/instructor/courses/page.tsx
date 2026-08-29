@@ -114,7 +114,7 @@ export default function InstructorCoursesPage() {
                                 </div>
                                 <div className="flex items-center gap-1.5 text-slate-400 font-black text-[10px] uppercase tracking-widest">
                                     <Clock className="w-3.5 h-3.5" />
-                                    {course.duration}h
+                                    {course.duration} wks
                                 </div>
                             </div>
                             <CardTitle className="text-xl font-serif text-[#0B1F3A] line-clamp-2 leading-snug group-hover:text-[#C8A96A] transition-colors">

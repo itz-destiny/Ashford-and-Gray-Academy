@@ -32,6 +32,28 @@ const nextConfig: NextConfig = {
         '@sentry/nextjs',
         '@opentelemetry/instrumentation',
     ],
+    // The Zoom Meeting SDK's WASM media engine needs SharedArrayBuffer, which
+    // Chrome only grants in a cross-origin-isolated context. `credentialless`
+    // (not `require-corp`) so we don't have to audit every cross-origin
+    // resource on the page for CORP headers — scoped to just this route so
+    // the rest of the site (Firebase, Blob storage images, Paystack, Google
+    // Fonts) is unaffected.
+    async headers() {
+        const coiHeaders = [
+            { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
+            { key: 'Cross-Origin-Embedder-Policy', value: 'credentialless' },
+        ];
+        return [
+            { source: '/live-classes/:path*', headers: coiHeaders },
+            // The classic Zoom SDK runs inside these two static files (loaded
+            // in an iframe), isolated from the app's React 19 — see the
+            // comment in public/zoom-classic-room.html for why. That iframe
+            // document needs its own COI headers too; a nested document
+            // doesn't inherit them from the parent.
+            { source: '/zoom-classic-room.html', headers: coiHeaders },
+            { source: '/zoom-classic-left.html', headers: coiHeaders },
+        ];
+    },
     // Sentry's OpenTelemetry transitive dep uses a dynamic require; safe to
     // ignore at bundle time — the package still works at runtime.
     webpack: (config) => {

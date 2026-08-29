@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8" /><title>Leaving…</title></head>
+<body>
+<script>
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({ type: 'ZOOM_LEFT' }, window.location.origin);
+  }
+</script>
+</body>
+</html>
