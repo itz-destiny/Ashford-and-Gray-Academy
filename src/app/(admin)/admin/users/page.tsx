@@ -6,12 +6,6 @@ import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import {
     Table,
     TableBody,
     TableCell,
@@ -41,11 +35,6 @@ import { Loader2, Search, Trash, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 
-// Firebase imports for Secondary App
-import { initializeApp, getApps, getApp, deleteApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword, updateProfile, signOut } from "firebase/auth";
-import { firebaseConfig } from "@/firebase/config";
-
 interface User {
     _id: string;
     uid: string;
@@ -70,7 +59,6 @@ export default function UsersPage() {
     const [newUser, setNewUser] = useState({
         displayName: "",
         email: "",
-        password: "",
         role: "student"
     });
 
@@ -131,67 +119,36 @@ export default function UsersPage() {
     };
 
     const handleCreateUser = async () => {
-        if (!newUser.email || !newUser.password || !newUser.displayName) {
+        if (!newUser.email || !newUser.displayName) {
             toast({ variant: "destructive", title: "Missing Fields", description: "Please fill in all fields." });
             return;
         }
 
         setIsCreating(true);
-        let secondaryApp;
-
         try {
-            // 1. Initialize Secondary App to avoid logging out the current admin
-            const secondaryAppName = "secondaryApp";
-            try {
-                secondaryApp = getApp(secondaryAppName);
-            } catch (e) {
-                secondaryApp = initializeApp(firebaseConfig, secondaryAppName);
-            }
-
-            const secondaryAuth = getAuth(secondaryApp);
-
-            // 2. Create User in Firebase Auth
-            const userCredential = await createUserWithEmailAndPassword(secondaryAuth, newUser.email, newUser.password);
-            const user = userCredential.user;
-
-            // 3. Update Profile (Display Name)
-            await updateProfile(user, {
-                displayName: newUser.displayName
-            });
-
-            // 4. Create User Request to our API (MongoDB)
-            const res = await apiFetch('/api/users', {
+            const res = await apiFetch('/api/admin/users', {
                 method: 'POST',
                 body: JSON.stringify({
-                    uid: user.uid,
-                    email: user.email,
+                    email: newUser.email,
                     displayName: newUser.displayName,
                     role: newUser.role,
-                    photoURL: '',
-                    bio: 'New Staff Member',
-                    school: 'Ashford & Gray Academy'
                 })
             });
 
-            if (!res.ok) throw new Error("Failed to save user to database");
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.error || "Failed to create account");
+            }
 
-            // 5. Cleanup
-            await signOut(secondaryAuth);
-            // We don't delete the app immediately to avoid errors if logic continues, but ideally we should.
-            // deleteApp(secondaryApp); 
-
-            toast({ title: "User Created", description: `${newUser.displayName} has been created as a ${newUser.role}.` });
+            toast({ title: "Account Created", description: `${newUser.displayName} can now log in — credentials were emailed to ${newUser.email}.` });
             setIsCreateOpen(false);
-            setNewUser({ displayName: "", email: "", password: "", role: "student" });
+            setNewUser({ displayName: "", email: "", role: "student" });
             fetchUsers();
 
         } catch (error: any) {
             console.error("Creation Error:", error);
             toast({ variant: "destructive", title: "Creation Failed", description: error.message });
         } finally {
-            if (secondaryApp) {
-                // await deleteApp(secondaryApp).catch(()=> {}); // Optional cleanup
-            }
             setIsCreating(false);
         }
     };
@@ -238,25 +195,29 @@ export default function UsersPage() {
     const getInitials = (name: string) => name?.substring(0, 2).toUpperCase() || '??';
 
     return (
-        <div className="space-y-6">
-            <div className="flex justify-between items-center">
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-slate-900">User Management</h1>
-                    <p className="text-slate-500">Manage students, instructors, and admins.</p>
+        <div className="px-6 md:px-12 py-12 space-y-16 pb-32 max-w-[1400px] mx-auto bg-[#FAF9F6]">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                        <div className="w-2 h-8 bg-[#C8A96A]" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#0B1F3A]/60">System Administration</span>
+                    </div>
+                    <h1 className="text-4xl font-serif text-[#0B1F3A] tracking-tight">User <span className="text-[#C8A96A]">Management.</span></h1>
+                    <p className="text-slate-500 font-medium font-serif">Manage students, instructors, and admins.</p>
                 </div>
 
                 {/* Create User Dialog */}
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                     <DialogTrigger asChild>
-                        <Button className="bg-indigo-600 hover:bg-indigo-700">
+                        <Button className="h-11 px-5 rounded-none bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black text-[10px] uppercase tracking-widest shadow-none border-none">
                             <Plus className="w-4 h-4 mr-2" /> Create User
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
+                    <DialogContent className="sm:max-w-[425px] rounded-none border-[#0B1F3A]/10">
                         <DialogHeader>
-                            <DialogTitle>Create New Account</DialogTitle>
+                            <DialogTitle className="font-serif text-2xl text-[#0B1F3A]">Create New Account</DialogTitle>
                             <DialogDescription>
-                                Create a new login for staff or students. They can change their password later.
+                                Creates a real login account. They'll receive an email with their address and a temporary password.
                             </DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
@@ -266,6 +227,7 @@ export default function UsersPage() {
                                     id="name"
                                     value={newUser.displayName}
                                     onChange={(e) => setNewUser({ ...newUser, displayName: e.target.value })}
+                                    className="rounded-none"
                                 />
                             </div>
                             <div className="grid gap-2">
@@ -275,15 +237,7 @@ export default function UsersPage() {
                                     type="email"
                                     value={newUser.email}
                                     onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                                />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="password">Initial Password</Label>
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    value={newUser.password}
-                                    onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                                    className="rounded-none"
                                 />
                             </div>
                             <div className="grid gap-2">
@@ -292,10 +246,10 @@ export default function UsersPage() {
                                     value={newUser.role}
                                     onValueChange={(val) => setNewUser({ ...newUser, role: val })}
                                 >
-                                    <SelectTrigger>
+                                    <SelectTrigger className="rounded-none">
                                         <SelectValue placeholder="Select a role" />
                                     </SelectTrigger>
-                                    <SelectContent>
+                                    <SelectContent className="rounded-none">
                                         {createRoles.map(role => (
                                             <SelectItem key={role.value} value={role.value}>
                                                 {role.label}
@@ -306,8 +260,8 @@ export default function UsersPage() {
                             </div>
                         </div>
                         <DialogFooter>
-                            <Button variant="outline" onClick={() => setIsCreateOpen(false)}>Cancel</Button>
-                            <Button onClick={handleCreateUser} disabled={isCreating} className="bg-indigo-600">
+                            <Button variant="outline" onClick={() => setIsCreateOpen(false)} className="rounded-none">Cancel</Button>
+                            <Button onClick={handleCreateUser} disabled={isCreating} className="bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white rounded-none font-black text-[10px] uppercase tracking-widest">
                                 {isCreating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                                 Create Account
                             </Button>
@@ -316,118 +270,115 @@ export default function UsersPage() {
                 </Dialog>
             </div>
 
-            <Card>
-                <CardHeader>
-                    <div className="flex items-center justify-between">
-                        <div className="flex gap-4 items-center">
-                            <CardTitle>All Users</CardTitle>
-                            <select
-                                className="h-9 px-2 bg-slate-50 border-none rounded-md text-sm text-slate-600 focus:ring-1 focus:ring-indigo-500"
-                                value={filterRole}
-                                onChange={(e) => setFilterRole(e.target.value)}
-                            >
-                                {roles.map(role => (
-                                    <option key={role} value={role}>{role.charAt(0).toUpperCase() + role.slice(1).replace('_', ' ')}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="flex Number-4 gap-4 items-center">
-                            <div className="relative w-64">
-                                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                                <Input
-                                    placeholder="Search users..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="pl-8 bg-slate-50 border-none"
-                                />
-                            </div>
-                            <Button variant="outline" size="sm" onClick={handleExport} className="text-indigo-600 font-bold border-indigo-100 hover:bg-indigo-50">
-                                Export CSV
-                            </Button>
-                        </div>
+            <div className="bg-white border border-[#0B1F3A]/10 border-t-4 border-t-[#C8A96A]">
+                <div className="px-8 py-6 border-b border-[#0B1F3A]/5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div className="flex gap-4 items-center flex-wrap">
+                        <h2 className="text-lg font-serif text-[#0B1F3A]">All Users</h2>
+                        <select
+                            className="h-11 px-3 bg-white border border-[#0B1F3A]/10 rounded-none text-sm text-[#0B1F3A] font-medium focus:outline-none focus:ring-1 focus:ring-[#C8A96A]"
+                            value={filterRole}
+                            onChange={(e) => setFilterRole(e.target.value)}
+                        >
+                            {roles.map(role => (
+                                <option key={role} value={role}>{role.charAt(0).toUpperCase() + role.slice(1).replace('_', ' ')}</option>
+                            ))}
+                        </select>
                     </div>
-                </CardHeader>
-                <CardContent>
-                    {loading ? (
-                        <div className="flex justify-center p-8">
-                            <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+                    <div className="flex gap-4 items-center">
+                        <div className="relative w-64">
+                            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                            <Input
+                                placeholder="Search users..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="pl-10 h-11 bg-white border-[#0B1F3A]/10 rounded-none focus-visible:ring-1 focus-visible:ring-[#C8A96A]"
+                            />
                         </div>
-                    ) : (
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>User</TableHead>
-                                    <TableHead>Role</TableHead>
-                                    <TableHead>School / Org</TableHead>
-                                    <TableHead>Joined</TableHead>
-                                    <TableHead className="text-right">Actions</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {filteredUsers.map((user) => (
-                                    <TableRow key={user.uid}>
-                                        <TableCell>
-                                            <div className="flex items-center gap-3">
-                                                <Avatar>
-                                                    <AvatarImage src={user.photoURL} />
-                                                    <AvatarFallback>{getInitials(user.displayName)}</AvatarFallback>
-                                                </Avatar>
-                                                <div>
-                                                    <div className="font-medium">{user.displayName}</div>
-                                                    <div className="text-xs text-muted-foreground">{user.email}</div>
-                                                </div>
+                        <Button variant="outline" size="sm" onClick={handleExport} className="h-11 rounded-none border-[#0B1F3A]/10 font-black text-[10px] uppercase tracking-widest text-[#0B1F3A]">
+                            Export CSV
+                        </Button>
+                    </div>
+                </div>
+                {loading ? (
+                    <div className="flex justify-center p-16">
+                        <Loader2 className="h-8 w-8 animate-spin text-[#C8A96A]" />
+                    </div>
+                ) : (
+                    <Table>
+                        <TableHeader>
+                            <TableRow className="hover:bg-transparent border-[#0B1F3A]/5">
+                                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-8 py-5">User</TableHead>
+                                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400">Role</TableHead>
+                                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400">School / Org</TableHead>
+                                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400">Joined</TableHead>
+                                <TableHead className="text-right pr-8 text-[10px] font-black uppercase tracking-widest text-slate-400">Actions</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {filteredUsers.map((user) => (
+                                <TableRow key={user.uid} className="hover:bg-[#F6F4F2] border-[#0B1F3A]/5 transition-colors">
+                                    <TableCell className="pl-8 py-4">
+                                        <div className="flex items-center gap-3">
+                                            <Avatar>
+                                                <AvatarImage src={user.photoURL} />
+                                                <AvatarFallback>{getInitials(user.displayName)}</AvatarFallback>
+                                            </Avatar>
+                                            <div>
+                                                <div className="font-bold text-[#0B1F3A]">{user.displayName}</div>
+                                                <div className="text-xs text-slate-400">{user.email}</div>
                                             </div>
-                                        </TableCell>
-                                        <TableCell>
-                                            <Badge
-                                                variant="outline"
-                                                className={
-                                                    user.role === 'admin' ? "bg-purple-50 text-purple-700 border-purple-200" :
-                                                        user.role === 'registrar' ? "bg-orange-50 text-orange-700 border-orange-200" :
-                                                            user.role === 'course_registrar' ? "bg-cyan-50 text-cyan-700 border-cyan-200" :
-                                                                user.role === 'finance' ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
-                                                                    user.role === 'instructor' ? "bg-blue-50 text-blue-700 border-blue-200" :
-                                                                        "bg-slate-50 text-slate-700 border-slate-200"
-                                                }
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Badge
+                                            variant="outline"
+                                            className={cn(
+                                                "rounded-none font-black text-[9px] uppercase tracking-wider",
+                                                user.role === 'admin' ? "bg-[#0B1F3A]/5 text-[#0B1F3A] border-[#0B1F3A]/10" :
+                                                    user.role === 'registrar' ? "bg-[#C8A96A]/10 text-[#C8A96A] border-[#C8A96A]/20" :
+                                                        user.role === 'course_registrar' ? "bg-sky-50 text-sky-700 border-sky-200" :
+                                                            user.role === 'finance' ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
+                                                                user.role === 'instructor' ? "bg-amber-50 text-amber-700 border-amber-200" :
+                                                                    "bg-slate-50 text-slate-700 border-slate-200"
+                                            )}
+                                        >
+                                            {user.role?.replace('_', ' ').toUpperCase()}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell className="text-slate-600">
+                                        {user.school || '-'}
+                                    </TableCell>
+                                    <TableCell className="text-slate-600">
+                                        {new Date(user.createdAt).toLocaleDateString()}
+                                    </TableCell>
+                                    <TableCell className="text-right pr-8">
+                                        <div className="flex justify-end gap-2">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => {
+                                                    if (user.role === 'admin') {
+                                                        toast({ variant: "destructive", title: "Action Prohibited", description: "Super Admin accounts cannot be deleted." });
+                                                        return;
+                                                    }
+                                                    handleDelete(user.uid);
+                                                }}
+                                                disabled={user.role === 'admin'}
+                                                className={cn(
+                                                    "rounded-none text-red-500 hover:text-red-700 hover:bg-red-50",
+                                                    user.role === 'admin' && "opacity-50 cursor-not-allowed"
+                                                )}
                                             >
-                                                {user.role?.replace('_', ' ').toUpperCase()}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell>
-                                            {user.school || '-'}
-                                        </TableCell>
-                                        <TableCell>
-                                            {new Date(user.createdAt).toLocaleDateString()}
-                                        </TableCell>
-                                        <TableCell className="text-right">
-                                            <div className="flex justify-end gap-2">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    onClick={() => {
-                                                        if (user.role === 'admin') {
-                                                            toast({ variant: "destructive", title: "Action Prohibited", description: "Super Admin accounts cannot be deleted." });
-                                                            return;
-                                                        }
-                                                        handleDelete(user.uid);
-                                                    }}
-                                                    disabled={user.role === 'admin'}
-                                                    className={cn(
-                                                        "text-red-500 hover:text-red-700 hover:bg-red-50",
-                                                        user.role === 'admin' && "opacity-50 cursor-not-allowed"
-                                                    )}
-                                                >
-                                                    <Trash className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    )}
-                </CardContent>
-            </Card>
+                                                <Trash className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                )}
+            </div>
         </div>
     );
 }

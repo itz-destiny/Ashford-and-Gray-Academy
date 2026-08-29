@@ -9,7 +9,7 @@ import { AuthError, requireRole, withAuth } from '@/lib/auth-server';
 
 export const GET = withAuth(async (_req: NextRequest, { auth }) => {
     try {
-        requireRole(auth, ['admin', 'registrar']);
+        requireRole(auth, ['admin', 'registrar', 'course_registrar']);
     } catch (err) {
         if (err instanceof AuthError) {
             return NextResponse.json({ error: err.message }, { status: err.status });

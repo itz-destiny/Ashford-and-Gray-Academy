@@ -19,6 +19,10 @@ export interface IUser extends Document {
     highestQualification?: string;
     professionalBackground?: string;
     applicationStatement?: string;
+    // The individual/foundation covering this student's tuition, per the
+    // academy's Flagship Cohort master list. Not every student has one —
+    // absence means self-funded/paid enrollment, not "application pending."
+    sponsor?: string;
     emailVerified?: boolean;
     emailVerifiedAt?: Date;
     welcomeEmailSentAt?: Date;
@@ -49,6 +53,7 @@ const UserSchema: Schema = new Schema({
     highestQualification: { type: String },
     professionalBackground: { type: String },
     applicationStatement: { type: String },
+    sponsor: { type: String, index: true },
     emailVerified: { type: Boolean, default: false, index: true },
     emailVerifiedAt: { type: Date },
     welcomeEmailSentAt: { type: Date },

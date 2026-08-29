@@ -81,8 +81,8 @@ export const PATCH = withAuth<RouteParams>(async (request: NextRequest, { auth, 
         await assertCanEditCourse(id, auth);
 
         const body = await request.json();
-        // Non-admins cannot flip status to published.
-        if (auth.role !== 'admin' && body.status === 'published') {
+        // Only the roles that actually run the approvals queue may publish.
+        if (!['admin', 'course_registrar'].includes(auth.role) && body.status === 'published') {
             delete body.status;
         }
 
