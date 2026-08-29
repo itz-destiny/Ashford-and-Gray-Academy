@@ -1,24 +1,19 @@
 "use client";
 
 import { apiFetch } from "@/lib/api-client";
+import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
     Users,
     Search,
-    Filter,
     MoreHorizontal,
     GraduationCap,
     BookOpen,
     Activity,
     Mail,
-    ChevronRight,
-    ArrowUpRight,
-    Star,
-    Clock
 } from "lucide-react";
 import {
     Table,
@@ -35,7 +30,6 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
@@ -47,13 +41,13 @@ interface Student {
     photoURL?: string;
     enrollmentCount: number;
     avgProgress: number;
-    lastActive: string;
 }
 
 export default function CourseRegistrarStudentsPage() {
     const [students, setStudents] = useState<Student[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
+    const router = useRouter();
 
     useEffect(() => {
         fetchStudents();
@@ -62,19 +56,10 @@ export default function CourseRegistrarStudentsPage() {
     const fetchStudents = async () => {
         setLoading(true);
         try {
-            // Fetch students and their enrollment stats
-            const res = await apiFetch('/api/users?role=student');
+            const res = await apiFetch('/api/course-registrar/students');
             const data = await res.json();
-
-            if (res.ok) {
-                // Mocking enrollment stats for this view as the API might not provide them directly yet
-                const studentsWithStats = data.map((s: any) => ({
-                    ...s,
-                    enrollmentCount: Math.floor(Math.random() * 5) + 1,
-                    avgProgress: Math.floor(Math.random() * 100),
-                    lastActive: new Date().toISOString()
-                }));
-                setStudents(studentsWithStats);
+            if (res.ok && Array.isArray(data)) {
+                setStudents(data);
             }
         } catch (error) {
             console.error("Error fetching students:", error);
@@ -83,73 +68,78 @@ export default function CourseRegistrarStudentsPage() {
         }
     };
 
+    const fullyEnrolled = students.filter(s => s.avgProgress === 100).length;
+    const avgEnrollment = students.length > 0
+        ? (students.reduce((sum, s) => sum + s.enrollmentCount, 0) / students.length).toFixed(1)
+        : '0.0';
+
     const filteredStudents = students.filter(s =>
         s.displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         s.email.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-700 pb-20">
+        <div className="px-6 md:px-12 py-12 space-y-16 pb-32 max-w-[1400px] mx-auto">
+
+            {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                <div className="space-y-1">
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
-                        Student Oversight
-                        <Badge variant="outline" className="rounded-full px-3">{students.length} Total</Badge>
+                <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                        <div className="w-2 h-8 bg-[#C8A96A]" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#0B1F3A]/60">Programme Office</span>
+                    </div>
+                    <h1 className="text-4xl font-serif text-[#0B1F3A] tracking-tight flex items-center gap-3">
+                        Student <span className="text-[#C8A96A]">Oversight.</span>
+                        <Badge className="bg-[#F6F4F2] text-[#0B1F3A] border border-[#0B1F3A]/10 rounded-none font-black text-[10px] uppercase tracking-widest px-3 py-1">{students.length} Total</Badge>
                     </h1>
-                    <p className="text-slate-500 font-medium">Monitoring student distribution, enrollment status, and academic progress.</p>
+                    <p className="text-slate-500 font-medium font-serif">Monitoring student distribution, enrollment status, and academic progress.</p>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="outline" className="h-11 rounded-xl px-6 font-bold border-slate-200 shadow-sm" onClick={fetchStudents}>
+                    <Button variant="outline" className="h-11 px-6 rounded-none border-[#0B1F3A]/10 bg-white hover:bg-[#F6F4F2] font-black text-[10px] uppercase tracking-widest text-[#0B1F3A] shadow-none" onClick={fetchStudents}>
                         Refresh List
                     </Button>
                 </div>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-3 gap-4">
                 {[
-                    { label: "Highly Engaged", value: "64%", icon: Activity, color: "text-emerald-500", bg: "bg-emerald-50" },
-                    { label: "Average Enrollment", value: "3.2", icon: BookOpen, color: "text-indigo-500", bg: "bg-indigo-50" },
-                    { label: "Graduation Rate", value: "88%", icon: GraduationCap, color: "text-amber-500", bg: "bg-amber-50" },
+                    { label: "Total Students", value: students.length.toString(), icon: Activity, color: "text-[#1F7A5A]" },
+                    { label: "Average Enrollment", value: avgEnrollment, icon: BookOpen, color: "text-[#C8A96A]" },
+                    { label: "Fully Completed", value: fullyEnrolled.toString(), icon: GraduationCap, color: "text-[#0B1F3A]" },
                 ].map((stat, i) => (
-                    <Card key={i} className="border-none shadow-xl shadow-slate-100 rounded-3xl bg-white p-6 flex flex-row items-center gap-5">
-                        <div className={cn("p-4 rounded-2xl", stat.bg, stat.color)}>
+                    <div key={i} className="bg-white border border-[#0B1F3A]/10 border-t-4 border-t-[#C8A96A] p-8 flex flex-row items-center gap-5">
+                        <div className={cn("p-4 bg-[#F6F4F2] border border-[#0B1F3A]/5", stat.color)}>
                             <stat.icon className="w-6 h-6" />
                         </div>
                         <div>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
-                            <p className="text-2xl font-black text-slate-900">{stat.value}</p>
+                            <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em]">{stat.label}</p>
+                            <p className="text-2xl font-serif text-[#0B1F3A]">{stat.value}</p>
                         </div>
-                    </Card>
+                    </div>
                 ))}
             </div>
 
-            <Card className="border-none shadow-xl shadow-slate-100 rounded-[2.5rem] overflow-hidden bg-white">
-                <CardHeader className="p-8 border-b border-slate-50 bg-slate-50/10">
+            <div className="bg-white border border-[#0B1F3A]/10 border-t-4 border-t-[#C8A96A] overflow-hidden">
+                <div className="p-8 border-b border-[#0B1F3A]/10">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                         <div className="relative flex-1 max-w-md w-full">
                             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                             <Input
-                                placeholder="Search by name, email, or student ID..."
-                                className="pl-10 h-11 bg-white border-slate-200 rounded-2xl shadow-sm focus-visible:ring-indigo-500"
+                                placeholder="Search by name or email..."
+                                className="pl-10 h-11 bg-white border-[#0B1F3A]/10 rounded-none focus-visible:ring-1 focus-visible:ring-[#C8A96A]"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
                         </div>
-                        <div className="flex items-center gap-3">
-                            <Button variant="outline" className="rounded-2xl h-11 font-bold border-slate-200 shadow-sm">
-                                <Filter className="w-4 h-4 mr-2 text-slate-400" /> Filters
-                            </Button>
-                        </div>
                     </div>
-                </CardHeader>
-                <CardContent className="p-0">
+                </div>
+                <div className="p-0">
                     <Table>
                         <TableHeader>
-                            <TableRow className="hover:bg-transparent border-slate-50">
+                            <TableRow className="hover:bg-transparent border-[#0B1F3A]/10">
                                 <TableHead className="pl-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Student Identity</TableHead>
                                 <TableHead className="py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Enrollments</TableHead>
                                 <TableHead className="py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Avg. Progress</TableHead>
-                                <TableHead className="py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Engagement Score</TableHead>
                                 <TableHead className="py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right pr-8">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -157,37 +147,37 @@ export default function CourseRegistrarStudentsPage() {
                             {loading ? (
                                 Array(8).fill(0).map((_, i) => (
                                     <TableRow key={i} className="animate-pulse">
-                                        <TableCell colSpan={5} className="h-16 bg-slate-50/20" />
+                                        <TableCell colSpan={4} className="h-16 bg-slate-50/50" />
                                     </TableRow>
                                 ))
                             ) : filteredStudents.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={5} className="h-64 text-center">
+                                    <TableCell colSpan={4} className="h-64 text-center">
                                         <div className="flex flex-col items-center justify-center text-slate-400 gap-2">
                                             <Users className="w-12 h-12 opacity-20" />
-                                            <p className="font-bold">No students found matching your search</p>
+                                            <p className="font-bold font-serif">No students found matching your search</p>
                                         </div>
                                     </TableCell>
                                 </TableRow>
                             ) : (
                                 filteredStudents.map((student) => (
-                                    <TableRow key={student.uid} className="group hover:bg-slate-50/50 border-slate-50 transition-colors">
+                                    <TableRow key={student.uid} className="group hover:bg-[#F6F4F2] border-[#0B1F3A]/5 transition-colors">
                                         <TableCell className="pl-8 py-4">
                                             <div className="flex items-center gap-3">
-                                                <Avatar className="h-11 w-11 rounded-xl border-2 border-white shadow-sm ring-1 ring-slate-100">
+                                                <Avatar className="h-11 w-11 rounded-none border border-[#0B1F3A]/10">
                                                     <AvatarImage src={student.photoURL} alt={student.displayName} />
-                                                    <AvatarFallback className="bg-slate-100 text-slate-600 font-bold">
+                                                    <AvatarFallback className="bg-[#F6F4F2] text-[#0B1F3A] font-black rounded-none">
                                                         {student.displayName.split(' ').map(n => n[0]).join('')}
                                                     </AvatarFallback>
                                                 </Avatar>
                                                 <div className="flex flex-col">
-                                                    <span className="font-bold text-slate-900 leading-tight">{student.displayName}</span>
+                                                    <span className="font-black text-[#0B1F3A] leading-tight">{student.displayName}</span>
                                                     <span className="text-xs text-slate-400 font-medium">{student.email}</span>
                                                 </div>
                                             </div>
                                         </TableCell>
                                         <TableCell className="py-4">
-                                            <Badge variant="outline" className="rounded-lg px-2 text-indigo-600 border-indigo-100 bg-indigo-50/50 font-black">
+                                            <Badge className="rounded-none px-2 text-[#0B1F3A] border border-[#C8A96A]/30 bg-[#C8A96A]/10 font-black">
                                                 {student.enrollmentCount} Courses
                                             </Badge>
                                         </TableCell>
@@ -196,43 +186,24 @@ export default function CourseRegistrarStudentsPage() {
                                                 <div className="flex justify-between text-[10px] font-black text-slate-400">
                                                     <span>{student.avgProgress}%</span>
                                                 </div>
-                                                <Progress value={student.avgProgress} className="h-1.5 bg-slate-100" />
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="py-4">
-                                            <div className="flex items-center gap-1.5">
-                                                <div className="flex gap-0.5">
-                                                    {[...Array(5)].map((_, i) => (
-                                                        <Star
-                                                            key={i}
-                                                            className={cn("w-3 h-3", i < 4 ? "text-amber-400 fill-amber-400" : "text-slate-200 fill-slate-200")}
-                                                        />
-                                                    ))}
-                                                </div>
-                                                <span className="text-xs font-black text-slate-900">4.2</span>
+                                                <Progress value={student.avgProgress} className="h-1.5 rounded-none bg-slate-100" />
                                             </div>
                                         </TableCell>
                                         <TableCell className="py-4 text-right pr-8">
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" size="icon" className="rounded-xl hover:bg-white hover:shadow-sm">
+                                                    <Button variant="ghost" size="icon" className="rounded-none hover:bg-white hover:shadow-sm">
                                                         <MoreHorizontal className="h-4 w-4 text-slate-400" />
                                                     </Button>
                                                 </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end" className="w-56 rounded-2xl p-2 shadow-xl border-slate-100">
+                                                <DropdownMenuContent align="end" className="w-56 rounded-none p-2 shadow-xl border-[#0B1F3A]/10">
                                                     <DropdownMenuLabel className="px-3 pb-2 text-[10px] uppercase font-black text-slate-400">Academic Oversight</DropdownMenuLabel>
-                                                    <DropdownMenuItem className="rounded-xl flex items-center gap-3 p-3 cursor-pointer">
-                                                        <GraduationCap className="h-4 w-4 text-slate-400" />
-                                                        <span className="font-bold text-sm">Transcripts</span>
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem className="rounded-xl flex items-center gap-3 p-3 cursor-pointer">
-                                                        <Clock className="h-4 w-4 text-slate-400" />
-                                                        <span className="font-bold text-sm">Attendance Log</span>
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuSeparator className="bg-slate-50 my-2" />
-                                                    <DropdownMenuItem className="rounded-xl flex items-center gap-3 p-3 cursor-pointer text-indigo-600 font-bold">
+                                                    <DropdownMenuItem
+                                                        onClick={() => router.push('/course-registrar/communications')}
+                                                        className="rounded-none flex items-center gap-3 p-3 cursor-pointer text-[#0B1F3A] font-bold"
+                                                    >
                                                         <Mail className="h-4 w-4" />
-                                                        <span className="font-bold text-sm">Send Consultation</span>
+                                                        <span className="font-bold text-sm">Send Message</span>
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
@@ -242,42 +213,9 @@ export default function CourseRegistrarStudentsPage() {
                             )}
                         </TableBody>
                     </Table>
-                </CardContent>
-            </Card>
-
-            <div className="grid md:grid-cols-2 gap-8">
-                <Card className="border-none shadow-xl shadow-slate-100 rounded-[2.5rem] bg-slate-900 text-white p-10 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-10 opacity-10">
-                        <Activity className="w-32 h-32" />
-                    </div>
-                    <div className="relative z-10 flex flex-col justify-between h-full">
-                        <div>
-                            <h3 className="text-3xl font-black mb-4 tracking-tighter">Academic Interventions</h3>
-                            <p className="text-slate-400 font-medium text-base mb-8 leading-relaxed max-w-sm">
-                                Proactively identify students falling below engagement thresholds.
-                            </p>
-                        </div>
-                        <Button className="w-fit h-12 bg-white text-slate-900 hover:bg-slate-100 font-black rounded-xl px-8 items-center gap-2">
-                            View Risk Analysis <ArrowUpRight className="w-4 h-4" />
-                        </Button>
-                    </div>
-                </Card>
-
-                <Card className="border-none shadow-xl shadow-slate-100 rounded-[2.5rem] bg-indigo-600 text-white p-10 relative overflow-hidden group">
-                    <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-white/10 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700" />
-                    <div className="relative z-10 flex flex-col justify-between h-full">
-                        <div>
-                            <h3 className="text-3xl font-black mb-4 tracking-tighter">Alumni Readiness</h3>
-                            <p className="text-indigo-100 font-medium text-base mb-8 leading-relaxed max-w-sm">
-                                Track certification eligibility and external organization placements.
-                            </p>
-                        </div>
-                        <Button variant="outline" className="w-fit h-12 border-white/20 hover:bg-white/10 text-white font-black rounded-xl px-8 items-center gap-2">
-                            Placement Dashboard <ChevronRight className="w-4 h-4" />
-                        </Button>
-                    </div>
-                </Card>
+                </div>
             </div>
+
         </div>
     );
 }

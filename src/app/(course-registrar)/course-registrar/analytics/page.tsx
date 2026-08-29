@@ -1,25 +1,17 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { apiFetch } from "@/lib/api-client";
 import {
-    BarChart3,
     TrendingUp,
-    BookOpen,
     Activity,
-    Download,
-    Calendar,
-    ArrowUpRight,
     Loader2,
     PieChart,
     Target,
-    Zap,
-    Trophy
+    BookOpen,
+    Users,
 } from "lucide-react";
 import {
-    BarChart,
-    Bar,
     XAxis,
     YAxis,
     CartesianGrid,
@@ -31,91 +23,88 @@ import {
     Pie,
     PieChart as RePieChart
 } from 'recharts';
-import { cn } from "@/lib/utils";
+
+interface AnalyticsData {
+    enrollmentTrends: { name: string; count: number }[];
+    categoryDistribution: { name: string; value: number }[];
+    stats: {
+        totalEnrollments: number;
+        totalCourses: number;
+        completionRate: number;
+        thirtyDayEnrollments: number;
+    };
+}
 
 export default function CourseRegistrarAnalyticsPage() {
     const [loading, setLoading] = useState(true);
-    const [stats, setStats] = useState<any>(null);
+    const [data, setData] = useState<AnalyticsData | null>(null);
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            setStats({
-                enrollmentTrends: [
-                    { name: 'Mon', count: 42 },
-                    { name: 'Tue', count: 52 },
-                    { name: 'Wed', count: 38 },
-                    { name: 'Thu', count: 65 },
-                    { name: 'Fri', count: 48 },
-                    { name: 'Sat', count: 28 },
-                    { name: 'Sun', count: 35 },
-                ],
-                categoryDistribution: [
-                    { name: 'Hospitality', value: 35 },
-                    { name: 'Legal Studies', value: 25 },
-                    { name: 'Management', value: 20 },
-                    { name: 'Architecture', value: 15 },
-                    { name: 'Others', value: 5 },
-                ]
-            });
-            setLoading(false);
-        }, 1000);
-        return () => clearTimeout(timer);
+        const fetchAnalytics = async () => {
+            try {
+                const res = await apiFetch('/api/course-registrar/analytics');
+                const body = await res.json();
+                if (res.ok) setData(body);
+            } catch (err) {
+                console.error('Error fetching analytics:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchAnalytics();
     }, []);
 
-    const COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981'];
+    const COLORS = ['#0B1F3A', '#C8A96A', '#1F7A5A', '#94a3b8', '#e11d48', '#f59e0b'];
+
+    const kpis = [
+        { label: "Total Enrollments", value: data?.stats.totalEnrollments.toString() ?? '0', icon: Users },
+        { label: "Completion Rate", value: `${data?.stats.completionRate ?? 0}%`, icon: Target },
+        { label: "Active Courses", value: data?.stats.totalCourses.toString() ?? '0', icon: BookOpen },
+        { label: "New Enrollments (30d)", value: data?.stats.thirtyDayEnrollments.toString() ?? '0', icon: Activity },
+    ];
 
     return (
-        <div className="space-y-10 animate-in fade-in duration-700 pb-20">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                <div className="space-y-1">
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
-                        Academic Analytics
+        <div className="px-6 md:px-12 py-12 space-y-16 pb-32 max-w-[1600px] mx-auto">
+
+            {/* Header */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+                <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                        <div className="w-2 h-8 bg-[#C8A96A]" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#0B1F3A]/60">Programme Office</span>
+                    </div>
+                    <h1 className="text-4xl font-serif text-[#0B1F3A] tracking-tight">
+                        Academic <span className="text-[#C8A96A]">Analytics.</span>
                     </h1>
-                    <p className="text-slate-500 font-medium tracking-tight">Data-driven insights into curriculum performance and student success.</p>
-                </div>
-                <div className="flex gap-3">
-                    <Button variant="outline" className="h-11 rounded-xl font-bold border-slate-200 shadow-sm gap-2">
-                        <Download className="w-4 h-4" /> Reports
-                    </Button>
-                    <Button className="h-11 rounded-xl bg-slate-900 text-white font-bold shadow-lg shadow-slate-200 gap-2 px-6">
-                        <Calendar className="w-4 h-4" /> Fiscal Year
-                    </Button>
+                    <p className="text-slate-500 font-medium font-serif">Real enrollment activity and curriculum mix across the academy.</p>
                 </div>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {[
-                    { label: "Content Engagement", value: "94.2%", icon: Activity, color: "text-emerald-600", bg: "bg-emerald-50", trend: "+2.4%" },
-                    { label: "Completion Rate", value: "82.1%", icon: Target, color: "text-indigo-600", bg: "bg-indigo-50", trend: "+5.1%" },
-                    { label: "Course Velocity", value: "4.8/5", icon: Zap, color: "text-amber-600", bg: "bg-amber-50", trend: "Stable" },
-                    { label: "Student ROI", value: "98%", icon: Trophy, color: "text-rose-600", bg: "bg-rose-50", trend: "+1.2%" },
-                ].map((stat, i) => (
-                    <Card key={i} className="border-none shadow-xl shadow-slate-100 rounded-[2rem] bg-white group">
-                        <CardContent className="p-8">
-                            <div className="flex justify-between items-start mb-6">
-                                <div className={cn("p-4 rounded-2xl group-hover:scale-110 transition-transform duration-500", stat.bg, stat.color)}>
-                                    <stat.icon className="w-6 h-6" />
-                                </div>
-                                <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">{stat.trend}</span>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {kpis.map((stat, i) => (
+                    <div key={i} className="bg-white border border-[#0B1F3A]/10 border-t-4 border-t-[#C8A96A] p-8 group hover:shadow-lg transition-all duration-300">
+                        <div className="flex justify-between items-start mb-6">
+                            <div className="p-4 bg-[#F6F4F2] border border-[#0B1F3A]/5 text-[#C8A96A] group-hover:scale-105 transition-transform duration-500">
+                                <stat.icon className="w-6 h-6" />
                             </div>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{stat.label}</p>
-                            <h3 className="text-3xl font-black text-slate-900">{stat.value}</h3>
-                        </CardContent>
-                    </Card>
+                        </div>
+                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] mb-1">{stat.label}</p>
+                        <h3 className="text-3xl font-serif text-[#0B1F3A]">{loading ? '—' : stat.value}</h3>
+                    </div>
                 ))}
             </div>
 
-            <div className="grid lg:grid-cols-3 gap-8">
-                <Card className="lg:col-span-2 border-none shadow-xl shadow-slate-100 rounded-[3rem] bg-white overflow-hidden">
-                    <CardHeader className="p-10 pb-0 flex flex-row items-center justify-between">
+            <div className="grid lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2 bg-white border border-[#0B1F3A]/10 border-t-4 border-t-[#C8A96A] overflow-hidden">
+                    <div className="p-8 pb-0 flex flex-row items-center justify-between">
                         <div>
-                            <CardTitle className="text-2xl font-black text-slate-900 flex items-center gap-2">
-                                <TrendingUp className="w-6 h-6 text-indigo-500" /> Enrollment Velocity
-                            </CardTitle>
-                            <CardDescription className="font-medium">Student sign-up frequency across the dynamic curriculum.</CardDescription>
+                            <h2 className="text-2xl font-serif text-[#0B1F3A] flex items-center gap-2">
+                                <TrendingUp className="w-6 h-6 text-[#C8A96A]" /> Enrollment Velocity
+                            </h2>
+                            <p className="text-slate-500 font-medium mt-1">New enrollments over the last 7 days.</p>
                         </div>
-                    </CardHeader>
-                    <CardContent className="p-10">
+                    </div>
+                    <div className="p-8">
                         <div className="h-[350px] w-full">
                             {loading ? (
                                 <div className="h-full w-full flex items-center justify-center">
@@ -123,11 +112,11 @@ export default function CourseRegistrarAnalyticsPage() {
                                 </div>
                             ) : (
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <AreaChart data={stats.enrollmentTrends}>
+                                    <AreaChart data={data?.enrollmentTrends || []}>
                                         <defs>
                                             <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="5%" stopColor="#6366f1" stopOpacity={0.1} />
-                                                <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                                                <stop offset="5%" stopColor="#0B1F3A" stopOpacity={0.15} />
+                                                <stop offset="95%" stopColor="#0B1F3A" stopOpacity={0} />
                                             </linearGradient>
                                         </defs>
                                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -138,97 +127,83 @@ export default function CourseRegistrarAnalyticsPage() {
                                             tick={{ fontSize: 10, fill: '#94a3b8', fontWeight: 800 }}
                                             dy={15}
                                         />
-                                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8', fontWeight: 800 }} />
+                                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8', fontWeight: 800 }} allowDecimals={false} />
                                         <Tooltip
-                                            contentStyle={{ borderRadius: '20px', border: 'none', boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.15)' }}
+                                            contentStyle={{ borderRadius: 0, border: '1px solid rgba(11,31,58,0.1)', boxShadow: '0 25px 50px -12px rgb(0 0 0 / 0.15)' }}
                                             itemStyle={{ fontWeight: 800, fontSize: '12px' }}
                                         />
                                         <Area
                                             type="monotone"
                                             dataKey="count"
-                                            stroke="#6366f1"
-                                            strokeWidth={5}
+                                            stroke="#0B1F3A"
+                                            strokeWidth={3}
                                             fillOpacity={1}
                                             fill="url(#colorCount)"
-                                            animationDuration={2000}
+                                            animationDuration={800}
                                         />
                                     </AreaChart>
                                 </ResponsiveContainer>
                             )}
                         </div>
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
 
-                <Card className="border-none shadow-xl shadow-slate-100 rounded-[3rem] bg-white overflow-hidden">
-                    <CardHeader className="p-10 pb-0">
-                        <CardTitle className="text-2xl font-black text-slate-900 flex items-center gap-2">
-                            <PieChart className="w-6 h-6 text-indigo-500" /> Curriculum Mix
-                        </CardTitle>
-                        <CardDescription className="font-medium">Market share by academic category.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-10">
+                <div className="bg-white border border-[#0B1F3A]/10 border-t-4 border-t-[#C8A96A] overflow-hidden">
+                    <div className="p-8 pb-0">
+                        <h2 className="text-2xl font-serif text-[#0B1F3A] flex items-center gap-2">
+                            <PieChart className="w-6 h-6 text-[#C8A96A]" /> Curriculum Mix
+                        </h2>
+                        <p className="text-slate-500 font-medium mt-1">Real enrollments by course category.</p>
+                    </div>
+                    <div className="p-8">
                         <div className="h-[300px] w-full relative">
                             {loading ? (
                                 <div className="h-full w-full flex items-center justify-center">
                                     <Loader2 className="w-8 h-8 animate-spin text-slate-200" />
                                 </div>
+                            ) : !data || data.categoryDistribution.length === 0 ? (
+                                <div className="h-full flex items-center justify-center text-slate-400 font-serif italic">
+                                    No enrollment data yet
+                                </div>
                             ) : (
                                 <ResponsiveContainer width="100%" height="100%">
                                     <RePieChart>
                                         <Pie
-                                            data={stats.categoryDistribution}
+                                            data={data.categoryDistribution}
                                             cx="50%"
                                             cy="50%"
                                             innerRadius={70}
                                             outerRadius={100}
-                                            paddingAngle={8}
+                                            paddingAngle={4}
                                             dataKey="value"
                                         >
-                                            {stats.categoryDistribution.map((entry: any, index: number) => (
+                                            {data.categoryDistribution.map((entry, index) => (
                                                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                             ))}
                                         </Pie>
                                         <Tooltip
-                                            contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)' }}
+                                            contentStyle={{ borderRadius: 0, border: '1px solid rgba(11,31,58,0.1)', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)' }}
                                         />
                                     </RePieChart>
                                 </ResponsiveContainer>
                             )}
                         </div>
-                        <div className="mt-6 space-y-3">
-                            {stats?.categoryDistribution.map((item: any, i: number) => (
-                                <div key={i} className="flex justify-between items-center text-sm">
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
-                                        <span className="font-bold text-slate-600">{item.name}</span>
+                        {data && data.categoryDistribution.length > 0 && (
+                            <div className="mt-6 space-y-3">
+                                {data.categoryDistribution.map((item, i) => (
+                                    <div key={i} className="flex justify-between items-center text-sm">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-3 h-3" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
+                                            <span className="font-bold text-slate-600">{item.name}</span>
+                                        </div>
+                                        <span className="font-black text-[#0B1F3A]">{item.value}</span>
                                     </div>
-                                    <span className="font-black text-slate-900">{item.value}%</span>
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
             </div>
-
-            <Card className="border-none shadow-xl shadow-slate-100 rounded-[3rem] bg-slate-900 text-white p-12 overflow-hidden relative group">
-                <div className="absolute top-0 right-0 p-12 opacity-5 scale-150 rotate-12 transition-transform duration-700 group-hover:scale-[1.7] group-hover:rotate-0">
-                    <BarChart3 className="w-64 h-64" />
-                </div>
-                <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-10">
-                    <div className="max-w-xl text-center md:text-left">
-                        <h2 className="text-4xl font-black mb-4 tracking-tighter">Strategic Curriculum Pivot</h2>
-                        <p className="text-slate-400 text-lg font-medium leading-relaxed">
-                            Data suggests an 18% increase in demand for Management-related courses. Recommend expanding content in this vector.
-                        </p>
-                    </div>
-                    <div className="flex flex-col gap-4 w-full md:w-auto">
-                        <Button className="h-14 bg-white text-slate-900 hover:bg-slate-100 font-black rounded-2xl px-10 text-lg shadow-2xl transition-all active:scale-95">
-                            Generate Faculty Briefing
-                        </Button>
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-center text-indigo-400">Quarterly Analysis Due in 4 Days</p>
-                    </div>
-                </div>
-            </Card>
         </div>
     );
 }
