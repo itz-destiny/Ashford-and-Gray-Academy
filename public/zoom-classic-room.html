@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>Live Class</title>
+  <link type="text/css" rel="stylesheet" href="https://source.zoom.us/6.0.2/css/bootstrap.css" />
+  <link type="text/css" rel="stylesheet" href="https://source.zoom.us/6.0.2/css/react-select.css" />
+  <style>html, body { margin: 0; padding: 0; height: 100%; background: #0B1F3A; }</style>
+</head>
+<body>
+  <!--
+    Deliberately a plain static file with zero bundler/React involvement.
+    The Zoom Meeting SDK's UI layer (any version, either view mode) throws
+    `Cannot read properties of undefined (reading 'ReactCurrentOwner')` when
+    it shares a page with React 19 — a known, unresolved Zoom/React-19
+    conflict (see Zoom developer forum). Loading the SDK here, in a
+    completely separate document with its own isolated vendor React 18
+    build (from Zoom's own CDN) and no trace of the host app's React 19,
+    sidesteps the conflict entirely instead of patching React internals.
+  -->
+  <script src="https://source.zoom.us/6.0.2/lib/vendor/react.min.js"></script>
+  <script src="https://source.zoom.us/6.0.2/lib/vendor/react-dom.min.js"></script>
+  <script src="https://source.zoom.us/6.0.2/lib/vendor/react-redux.min.js"></script>
+  <script src="https://source.zoom.us/6.0.2/lib/vendor/redux.min.js"></script>
+  <script src="https://source.zoom.us/6.0.2/lib/vendor/redux-thunk.min.js"></script>
+  <script src="https://source.zoom.us/6.0.2/lib/vendor/lodash.min.js"></script>
+  <script src="https://source.zoom.us/6.0.2/zoom-meeting-6.0.2.min.js"></script>
+  <script>
+    (function () {
+      function postToParent(msg) {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage(msg, window.location.origin);
+        }
+      }
+
+      window.addEventListener('message', function (event) {
+        if (event.origin !== window.location.origin) return;
+        if (!event.data || event.data.type !== 'ZOOM_JOIN') return;
+
+        var info = event.data.payload;
+
+        try {
+          ZoomMtg.setZoomJSLib('https://source.zoom.us/6.0.2/lib', '/av');
+          ZoomMtg.preLoadWasm();
+          ZoomMtg.prepareWebSDK();
+
+          ZoomMtg.init({
+            leaveUrl: window.location.origin + '/zoom-classic-left.html',
+            patchJsMedia: true,
+            success: function () {
+              var joinArgs = {
+                signature: info.signature,
+                meetingNumber: info.meetingNumber,
+                passWord: info.passcode,
+                userName: info.userName,
+                success: function () {
+                  postToParent({ type: 'ZOOM_JOINED' });
+                },
+                error: function (err) {
+                  postToParent({ type: 'ZOOM_ERROR', message: (err && (err.reason || err.errorMessage)) || 'Could not join this class.' });
+                },
+              };
+              if (info.zak) joinArgs.zak = info.zak;
+              ZoomMtg.join(joinArgs);
+            },
+            error: function (err) {
+              postToParent({ type: 'ZOOM_ERROR', message: (err && (err.reason || err.errorMessage)) || 'Could not start the meeting client.' });
+            },
+          });
+        } catch (err) {
+          postToParent({ type: 'ZOOM_ERROR', message: (err && err.message) || 'Could not start the meeting client.' });
+        }
+      });
+
+      postToParent({ type: 'ZOOM_FRAME_READY' });
+    })();
+  </script>
+</body>
+</html>

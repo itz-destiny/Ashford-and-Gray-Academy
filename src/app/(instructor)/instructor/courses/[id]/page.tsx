@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import {
-    ArrowLeft, BookOpen, Plus, Trash2, Video, Edit2, Send, Users, Loader2, Calendar, PlayCircle,
+    ArrowLeft, Video, Edit2, Send, Users, Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { RecordingsList } from "@/components/meeting/RecordingsList";
@@ -40,9 +40,6 @@ type Course = {
     careerOpportunities?: string[];
 };
 
-type Module = { _id: string; courseId: string; title: string; description?: string; order: number };
-type Lesson = { _id: string; moduleId: string; title: string; content?: string; videoUrl?: string; duration?: number; isLive?: boolean; scheduledAt?: string };
-
 export default function ManageCoursePage() {
     const { id } = useParams<{ id: string }>();
     const router = useRouter();
@@ -50,8 +47,6 @@ export default function ManageCoursePage() {
     const { toast } = useToast();
 
     const [course, setCourse] = useState<Course | null>(null);
-    const [modules, setModules] = useState<Module[]>([]);
-    const [lessons, setLessons] = useState<Lesson[]>([]);
     const [loading, setLoading] = useState(true);
 
     // Edit state
@@ -68,11 +63,6 @@ export default function ManageCoursePage() {
     });
     const [saving, setSaving] = useState(false);
 
-    // Add-module / add-lesson state
-    const [newModuleTitle, setNewModuleTitle] = useState("");
-    const [newLesson, setNewLesson] = useState<Record<string, { title: string; videoUrl: string; isLive: boolean; scheduledAt: string }>>({});
-    const [adding, setAdding] = useState(false);
-
     // Zoom classes for this course are read-only here — they come from the
     // academy timetable (see /instructor/schedule), not free-form scheduling.
     const [liveClasses, setLiveClasses] = useState<any[]>([]);
@@ -81,14 +71,12 @@ export default function ManageCoursePage() {
         if (userLoading || !user || !id) return;
         const load = async () => {
             try {
-                const [courseRes, contentRes, zoomRes] = await Promise.all([
+                const [courseRes, zoomRes] = await Promise.all([
                     apiFetch('/api/courses'),
-                    apiFetch(`/api/courses/${id}/content`),
                     apiFetch(`/api/courses/${id}/live-classes`)
                 ]);
-                const [allCourses, content, zoomData] = await Promise.all([
-                    courseRes.json(), 
-                    contentRes.json(),
+                const [allCourses, zoomData] = await Promise.all([
+                    courseRes.json(),
                     zoomRes.json()
                 ]);
                 const mine = Array.isArray(allCourses)
@@ -110,8 +98,6 @@ export default function ManageCoursePage() {
                     certificationDetails: Array.isArray(mine.certificationDetails) ? mine.certificationDetails.join('\n') : '',
                     careerOpportunities: Array.isArray(mine.careerOpportunities) ? mine.careerOpportunities.join('\n') : '',
                 });
-                setModules(content.modules || []);
-                setLessons(content.lessons || []);
                 if (zoomData.success) {
                     setLiveClasses(zoomData.classes);
                 }
@@ -154,78 +140,6 @@ export default function ManageCoursePage() {
             toast({ variant: "destructive", title: "Save failed", description: err?.message || 'Try again.' });
         } finally {
             setSaving(false);
-        }
-    };
-
-    const handleAddModule = async () => {
-        if (!newModuleTitle.trim()) return;
-        setAdding(true);
-        try {
-            const res = await apiFetch(`/api/courses/${id}/content`, {
-                method: 'POST',
-                body: JSON.stringify({ type: 'module', data: { title: newModuleTitle } }),
-            });
-            if (!res.ok) throw new Error('Failed to add module.');
-            const created = await res.json();
-            setModules(m => [...m, created]);
-            setNewModuleTitle("");
-        } catch (err: any) {
-            toast({ variant: "destructive", title: "Failed", description: err?.message });
-        } finally {
-            setAdding(false);
-        }
-    };
-
-    const handleAddLesson = async (moduleId: string) => {
-        const form = newLesson[moduleId];
-        if (!form || !form.title.trim()) return;
-        setAdding(true);
-        try {
-            const payload: any = {
-                moduleId,
-                title: form.title,
-                isLive: form.isLive,
-            };
-            if (form.videoUrl) payload.videoUrl = form.videoUrl;
-            if (form.isLive && form.scheduledAt) payload.scheduledAt = new Date(form.scheduledAt).toISOString();
-            const res = await apiFetch(`/api/courses/${id}/content`, {
-                method: 'POST',
-                body: JSON.stringify({ type: 'lesson', data: payload }),
-            });
-            if (!res.ok) {
-                const err = await res.json().catch(() => ({}));
-                throw new Error(err.error || 'Failed to add lesson.');
-            }
-            const created = await res.json();
-            setLessons(l => [...l, created]);
-            setNewLesson(prev => ({ ...prev, [moduleId]: { title: "", videoUrl: "", isLive: false, scheduledAt: "" } }));
-        } catch (err: any) {
-            toast({ variant: "destructive", title: "Failed", description: err?.message });
-        } finally {
-            setAdding(false);
-        }
-    };
-
-    const handleDeleteLesson = async (lessonId: string) => {
-        if (!confirm('Delete this lesson?')) return;
-        try {
-            const res = await apiFetch(`/api/courses/${id}/content?type=lesson&id=${lessonId}`, { method: 'DELETE' });
-            if (!res.ok) throw new Error('Delete failed.');
-            setLessons(l => l.filter(x => x._id !== lessonId));
-        } catch (error) {
-            toast({ variant: "destructive", title: "Error", description: "Failed to delete lesson" });
-        }
-    };
-
-    const handleDeleteModule = async (moduleId: string) => {
-        if (!confirm('Delete this module and all its lessons?')) return;
-        try {
-            const res = await apiFetch(`/api/courses/${id}/content?type=module&id=${moduleId}`, { method: 'DELETE' });
-            if (!res.ok) throw new Error('Delete failed.');
-            setModules(m => m.filter(x => x._id !== moduleId));
-            setLessons(l => l.filter(x => x.moduleId !== moduleId));
-        } catch (error) {
-            toast({ variant: "destructive", title: "Error", description: "Failed to delete module" });
         }
     };
 
@@ -361,7 +275,7 @@ export default function ManageCoursePage() {
                                         <a href={cls.zoomJoinUrl} target="_blank" rel="noopener noreferrer">Guest Link</a>
                                     </Button>
                                     <Button asChild size="sm" className="bg-[#1F7A5A] text-white rounded-xl">
-                                        <a href={cls.zoomStartUrl} target="_blank" rel="noopener noreferrer">Start as Host</a>
+                                        <Link href={`/live-classes/${cls._id}`}>Start as Host</Link>
                                     </Button>
                                 </div>
                             </div>
@@ -370,127 +284,17 @@ export default function ManageCoursePage() {
                 </Card>
             )}
 
-            <div className="grid gap-6 md:grid-cols-3">
-                <Card className="border-none bg-white rounded-[2rem] shadow-sm">
-                    <CardContent className="p-6 flex items-center gap-4">
-                        <div className="bg-indigo-50 p-3 rounded-2xl"><Users className="h-5 w-5 text-indigo-600" /></div>
-                        <div>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Enrolled</p>
-                            <p className="text-2xl font-black text-[#0B1F3A]">{course.enrollmentCount ?? 0}</p>
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card className="border-none bg-white rounded-[2rem] shadow-sm">
-                    <CardContent className="p-6 flex items-center gap-4">
-                        <div className="bg-emerald-50 p-3 rounded-2xl"><BookOpen className="h-5 w-5 text-emerald-600" /></div>
-                        <div>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Modules</p>
-                            <p className="text-2xl font-black text-[#0B1F3A]">{modules.length}</p>
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card className="border-none bg-white rounded-[2rem] shadow-sm">
-                    <CardContent className="p-6 flex items-center gap-4">
-                        <div className="bg-orange-50 p-3 rounded-2xl"><PlayCircle className="h-5 w-5 text-orange-600" /></div>
-                        <div>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Lessons</p>
-                            <p className="text-2xl font-black text-[#0B1F3A]">{lessons.length}</p>
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-
-            <RecordingsList courseId={String(id)} />
-
-            <Card className="border-none bg-white rounded-[2.5rem] shadow-sm">
-                <CardHeader className="p-8 pb-0">
-                    <CardTitle className="text-lg font-black text-[#0B1F3A]">Curriculum</CardTitle>
-                </CardHeader>
-                <CardContent className="p-8 space-y-6">
-                    <div className="flex gap-3">
-                        <Input
-                            placeholder="New module title…"
-                            value={newModuleTitle}
-                            onChange={e => setNewModuleTitle(e.target.value)}
-                            className="flex-1"
-                        />
-                        <Button onClick={handleAddModule} disabled={adding || !newModuleTitle.trim()} className="bg-[#0B1F3A] text-white font-bold rounded-xl gap-2">
-                            <Plus className="h-4 w-4" /> Add module
-                        </Button>
+            <Card className="border-none bg-white rounded-[2rem] shadow-sm max-w-xs">
+                <CardContent className="p-6 flex items-center gap-4">
+                    <div className="bg-indigo-50 p-3 rounded-2xl"><Users className="h-5 w-5 text-indigo-600" /></div>
+                    <div>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Enrolled</p>
+                        <p className="text-2xl font-black text-[#0B1F3A]">{course.enrollmentCount ?? 0}</p>
                     </div>
-
-                    {modules.length === 0 ? (
-                        <p className="text-sm text-slate-400 font-bold italic text-center py-8">No modules yet. Add your first module above.</p>
-                    ) : (
-                        <div className="space-y-6">
-                            {modules.sort((a, b) => a.order - b.order).map(mod => (
-                                <div key={mod._id} className="border border-slate-100 rounded-2xl overflow-hidden">
-                                    <div className="flex items-center justify-between bg-slate-50 px-5 py-3">
-                                        <h3 className="font-black text-[#0B1F3A]">{mod.title}</h3>
-                                        <Button variant="ghost" size="icon" onClick={() => handleDeleteModule(mod._id)}>
-                                            <Trash2 className="h-4 w-4 text-rose-500" />
-                                        </Button>
-                                    </div>
-                                    <div className="p-5 space-y-3">
-                                        {lessons.filter(l => l.moduleId === mod._id).map(lesson => (
-                                            <div key={lesson._id} className="flex items-center justify-between bg-white border border-slate-100 rounded-xl px-4 py-3">
-                                                <div className="flex items-center gap-3 min-w-0">
-                                                    {lesson.isLive ? <Calendar className="h-4 w-4 text-orange-500 shrink-0" /> : <PlayCircle className="h-4 w-4 text-slate-400 shrink-0" />}
-                                                    <div className="min-w-0">
-                                                        <p className="font-bold text-[#0B1F3A] truncate">{lesson.title}</p>
-                                                        <p className="text-[11px] text-slate-400">
-                                                            {lesson.isLive ? `Live · ${lesson.scheduledAt ? new Date(lesson.scheduledAt).toLocaleString() : 'unscheduled'}` : (lesson.videoUrl || 'no video')}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                                <Button variant="ghost" size="icon" onClick={() => handleDeleteLesson(lesson._id)}>
-                                                    <Trash2 className="h-4 w-4 text-rose-500" />
-                                                </Button>
-                                            </div>
-                                        ))}
-
-                                        <div className="grid gap-2 md:grid-cols-[1fr_1fr_auto_auto] items-center pt-3 border-t border-slate-50">
-                                            <Input
-                                                placeholder="Lesson title…"
-                                                value={newLesson[mod._id]?.title || ""}
-                                                onChange={e => setNewLesson(prev => ({ ...prev, [mod._id]: { ...prev[mod._id], title: e.target.value, videoUrl: prev[mod._id]?.videoUrl || "", isLive: prev[mod._id]?.isLive || false, scheduledAt: prev[mod._id]?.scheduledAt || "" } }))}
-                                            />
-                                            {newLesson[mod._id]?.isLive ? (
-                                                <Input
-                                                    type="datetime-local"
-                                                    value={newLesson[mod._id]?.scheduledAt || ""}
-                                                    onChange={e => setNewLesson(prev => ({ ...prev, [mod._id]: { ...prev[mod._id], scheduledAt: e.target.value } }))}
-                                                />
-                                            ) : (
-                                                <Input
-                                                    placeholder="Video URL (optional)"
-                                                    value={newLesson[mod._id]?.videoUrl || ""}
-                                                    onChange={e => setNewLesson(prev => ({ ...prev, [mod._id]: { ...prev[mod._id], videoUrl: e.target.value } }))}
-                                                />
-                                            )}
-                                            <label className="flex items-center gap-2 text-xs font-bold text-slate-500">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={newLesson[mod._id]?.isLive || false}
-                                                    onChange={e => setNewLesson(prev => ({ ...prev, [mod._id]: { ...prev[mod._id], isLive: e.target.checked, title: prev[mod._id]?.title || "", videoUrl: prev[mod._id]?.videoUrl || "", scheduledAt: prev[mod._id]?.scheduledAt || "" } }))}
-                                                />
-                                                Live class
-                                            </label>
-                                            <Button
-                                                onClick={() => handleAddLesson(mod._id)}
-                                                disabled={adding || !newLesson[mod._id]?.title?.trim()}
-                                                className="bg-[#1F7A5A] hover:bg-[#1F7A5A]/90 text-white rounded-xl font-bold gap-2"
-                                            >
-                                                <Plus className="h-4 w-4" /> Add lesson
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
                 </CardContent>
             </Card>
+
+            <RecordingsList courseId={String(id)} />
         </div>
     );
 }
