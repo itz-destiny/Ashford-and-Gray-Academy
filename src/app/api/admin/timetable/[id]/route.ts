@@ -21,7 +21,7 @@ const patchSchema = z.object({
 
 export const PATCH = withAuth<RouteParams>(async (req, { auth, params }) => {
     try {
-        if (auth.role !== 'admin') {
+        if (!['admin', 'course_registrar'].includes(auth.role)) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
         }
         const { id } = await params;
@@ -72,7 +72,7 @@ export const PATCH = withAuth<RouteParams>(async (req, { auth, params }) => {
 
 export const DELETE = withAuth<RouteParams>(async (_req, { auth, params }) => {
     try {
-        if (auth.role !== 'admin') {
+        if (!['admin', 'course_registrar'].includes(auth.role)) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
         }
         const { id } = await params;

@@ -4,14 +4,14 @@ export const courseRegistrarTourSteps: TourStep[] = [
     {
         target: '[data-tour="nav-cr-home"]',
         title: 'Welcome to the Programme Office',
-        content: "This is your home base for managing the academy's programmes — approvals, students, and performance.",
+        content: "This is your home base for managing the academy's timetable, live Zoom classes, and student performance.",
         skipBeacon: true,
         placement: 'right',
     },
     {
-        target: '[data-tour="nav-cr-courses"]',
-        title: 'Academy Programmes',
-        content: 'Review, approve, and manage every course offered at the academy.',
+        target: '[data-tour="nav-cr-timetable"]',
+        title: 'Timetable & Zoom',
+        content: 'Schedule new classes, assign lecturers, and create the Zoom meeting for each session — this is the only place classes get created. Instructors can start a class once it exists here, but never create one on their own.',
         placement: 'right',
     },
     {

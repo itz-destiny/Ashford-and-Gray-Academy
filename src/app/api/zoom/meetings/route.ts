@@ -16,7 +16,9 @@ const createMeetingSchema = z.object({
 
 export const POST = withAuth(async (req, { auth }) => {
     try {
-        if (!['admin', 'instructor'].includes(auth.role)) {
+        // Only the Programme Office schedules classes — instructors start a
+        // class once it has already been created for them, never on their own.
+        if (!['admin', 'course_registrar'].includes(auth.role)) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
         }
 
