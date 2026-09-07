@@ -267,17 +267,22 @@ export default function AdmissionsPage() {
         setRowAction({ uid: student.uid, type: 'resend' });
         try {
             const res = await apiFetch(`/api/admissions/students/${student.uid}/resend-welcome`, { method: 'POST' });
+            const data = await res.json().catch(() => ({}));
             if (!res.ok) {
-                const data = await res.json().catch(() => ({}));
                 throw new Error(data.error || 'Failed to resend welcome email');
             }
             await logAudit({
                 action: AUDIT_ACTIONS.WELCOME_EMAIL_RESENT,
                 resource: AUDIT_RESOURCES.COMMUNICATION,
                 resourceId: student.uid,
-                metadata: { email: student.email },
+                metadata: { email: student.email, passwordReset: data.passwordReset },
             });
-            toast({ title: "Welcome email resent", description: `${student.displayName} has been sent a fresh password and login link.` });
+            toast({
+                title: data.passwordReset ? "Welcome email resent" : "Login reminder sent",
+                description: data.passwordReset
+                    ? `${student.displayName} has never signed in, so a fresh password and login link were sent.`
+                    : `${student.displayName} has already signed in before, so their password was left alone — they were sent a reminder with the sign-in link instead.`,
+            });
         } catch (error: any) {
             toast({ variant: "destructive", title: "Resend Failed", description: error.message || "Could not resend the welcome email." });
         } finally {
@@ -654,7 +659,12 @@ export default function AdmissionsPage() {
                         <TableHeader>
                             <TableRow className="hover:bg-transparent border-slate-50">
                                 <TableHead className="w-[44px] pl-8 py-5">
-                                    <Checkbox checked={allVisibleSelected} onCheckedChange={toggleSelectAll} aria-label="Select all" />
+                                    <Checkbox
+                                        checked={allVisibleSelected}
+                                        onCheckedChange={toggleSelectAll}
+                                        aria-label="Select all"
+                                        className="h-5 w-5 border-2 border-slate-400 data-[state=checked]:border-indigo-600"
+                                    />
                                 </TableHead>
                                 <TableHead className="w-[60px] py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">#</TableHead>
                                 <TableHead className="w-[300px] py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Student</TableHead>
@@ -691,6 +701,7 @@ export default function AdmissionsPage() {
                                                 checked={selectedUids.has(student.uid)}
                                                 onCheckedChange={() => toggleSelect(student.uid)}
                                                 aria-label={`Select ${student.displayName}`}
+                                                className="h-5 w-5 border-2 border-slate-400 data-[state=checked]:border-indigo-600 data-[state=checked]:bg-indigo-600"
                                             />
                                         </TableCell>
                                         <TableCell className="py-4 text-sm font-bold text-slate-400">{index + 1}</TableCell>

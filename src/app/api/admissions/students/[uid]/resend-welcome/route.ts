@@ -27,9 +27,14 @@ function handleError(err: unknown): Response {
 }
 
 // =============================================================================
-// POST /api/admissions/students/[uid]/resend-welcome — reset the student's
-// password to a fresh temp password and resend their welcome/login email.
-// Used when a student reports never receiving (or losing) their credentials.
+// POST /api/admissions/students/[uid]/resend-welcome — smart resend: only
+// resets the password (and sends full credentials) for a student who has
+// NEVER actually signed in (checked via Firebase Auth's real sign-in
+// history, not guessed) — that's the case where they likely never received
+// or lost their original temp password. A student who has already signed in
+// has necessarily set their own password already; resetting it would wipe
+// out something they chose without their knowledge, so instead they get a
+// login reminder pointing at the self-service "Forgot Password" flow.
 // =============================================================================
 export const POST = withAuth<RouteParams>(async (req: NextRequest, { auth, params }) => {
     try {
@@ -50,18 +55,17 @@ export const POST = withAuth<RouteParams>(async (req: NextRequest, { auth, param
             return NextResponse.json({ error: 'Student not found' }, { status: 404 });
         }
 
-        const password = generateTempPassword(student.displayName || student.email);
         const fbAuth = adminAuth();
+        let fbUser;
         try {
-            await fbAuth.updateUser(uid, { password });
+            fbUser = await fbAuth.getUser(uid);
         } catch (err: any) {
             if (err?.errorInfo?.code === 'auth/user-not-found') {
                 return NextResponse.json({ error: 'No Firebase account found for this student' }, { status: 404 });
             }
             throw err;
         }
-
-        await User.updateOne({ uid }, { $set: { mustChangePassword: true } });
+        const hasLoggedIn = !!fbUser.metadata.lastSignInTime;
 
         const enrollment = await Enrollment.findOne({ userId: uid }).lean<{ courseId: unknown } | null>();
         let courseName: string | undefined;
@@ -71,11 +75,31 @@ export const POST = withAuth<RouteParams>(async (req: NextRequest, { auth, param
         }
 
         const appUrl = getEmailUrl();
+        const loginUrl = `${appUrl}/login`;
+
+        if (hasLoggedIn) {
+            const tpl = emailTemplates.loginReminder({
+                recipientName: student.displayName || student.email,
+                email: student.email,
+                loginUrl,
+                courseName,
+            });
+            const result = await sendEmail({ to: student.email, subject: tpl.subject, html: tpl.html });
+            if (!result.success) {
+                return NextResponse.json({ error: result.error || 'Failed to send email' }, { status: 502 });
+            }
+            return NextResponse.json({ success: true, email: student.email, passwordReset: false });
+        }
+
+        const password = generateTempPassword(student.displayName || student.email);
+        await fbAuth.updateUser(uid, { password });
+        await User.updateOne({ uid }, { $set: { mustChangePassword: true } });
+
         const tpl = emailTemplates.enrollmentWelcome({
             recipientName: student.displayName || student.email,
             email: student.email,
             password,
-            loginUrl: `${appUrl}/login`,
+            loginUrl,
             courseName,
         });
         const result = await sendEmail({ to: student.email, subject: tpl.subject, html: tpl.html });
@@ -83,7 +107,7 @@ export const POST = withAuth<RouteParams>(async (req: NextRequest, { auth, param
             return NextResponse.json({ error: result.error || 'Failed to send email' }, { status: 502 });
         }
 
-        return NextResponse.json({ success: true, email: student.email });
+        return NextResponse.json({ success: true, email: student.email, passwordReset: true });
     } catch (err) {
         return handleError(err);
     }
