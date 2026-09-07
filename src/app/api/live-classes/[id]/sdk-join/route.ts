@@ -3,7 +3,7 @@ import dbConnect from '@/lib/mongodb';
 import LiveClass from '@/models/LiveClass';
 import Enrollment from '@/models/Enrollment';
 import User from '@/models/User';
-import { getFreshZoomStartUrl } from '@/lib/zoom';
+import { getFreshZoomStartUrl, getZoomMeetingPassword } from '@/lib/zoom';
 import { getZoomAccounts } from '@/lib/zoom-hosts';
 import { generateZoomSdkSignature } from '@/lib/zoom-sdk-signature';
 import { getCurrentClassForSlot } from '@/lib/monitor-slots';
@@ -48,13 +48,6 @@ export const GET = withAuth<RouteParams>(async (_req: NextRequest, { auth, param
             }
         }
 
-        let passcode = '';
-        try {
-            passcode = new URL(liveClass.zoomJoinUrl).searchParams.get('pwd') || '';
-        } catch {
-            // no-op — meetings created without a passcode simply join without one
-        }
-
         if (!liveClass.zoomAccountKey) {
             return NextResponse.json({ error: 'This class has no Zoom host recorded.' }, { status: 400 });
         }
@@ -62,6 +55,8 @@ export const GET = withAuth<RouteParams>(async (_req: NextRequest, { auth, param
         if (!account) {
             return NextResponse.json({ error: 'The Zoom account this class was scheduled under is no longer configured.' }, { status: 500 });
         }
+
+        const passcode = await getZoomMeetingPassword(account, liveClass.zoomMeetingId);
 
         const role: 0 | 1 = isHost ? 1 : 0;
         const signature = generateZoomSdkSignature(liveClass.zoomMeetingId, role, {
