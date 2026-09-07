@@ -75,6 +75,7 @@ export const GET = withAuth<RouteParams>(async (_req: NextRequest, { auth, param
         return NextResponse.json({
             success: true,
             signature,
+            sdkKey: account.sdkClientId,
             meetingNumber: liveClass.zoomMeetingId,
             passcode,
             topic: liveClass.topic,
