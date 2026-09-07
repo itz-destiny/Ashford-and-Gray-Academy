@@ -527,6 +527,22 @@ export const emailTemplates = {
             `,
         }),
     }),
+
+    adminAnnouncement: (data: {
+        recipientName: string;
+        subject: string;
+        message: string; // plain text; line breaks preserved
+    }) => ({
+        subject: data.subject,
+        html: brandedShell({
+            preheader: data.subject,
+            title: data.subject,
+            body: `
+                <p style="font-size:16px;line-height:1.6;color:#334155;margin:0 0 22px">Dear ${escapeHtml(data.recipientName)},</p>
+                <p style="font-size:16px;line-height:1.7;color:#334155;margin:0;white-space:pre-line">${escapeHtml(data.message)}</p>
+            `,
+        }),
+    }),
 };
 
 // ============================================================================

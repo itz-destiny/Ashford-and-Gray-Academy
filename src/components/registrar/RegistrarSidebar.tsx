@@ -7,17 +7,18 @@ import { cn } from "@/lib/utils";
 import { Logo } from "@/components/logo";
 import {
     Users, ClipboardList, MessageSquare, Settings,
-    LayoutDashboard, LogOut, History, Sparkles,
+    LayoutDashboard, LogOut, History, Sparkles, PlayCircle,
 } from "lucide-react";
 import { useUser } from "@/firebase";
 import { signOut } from "@/firebase/auth";
+import { TOUR_QUERY_PARAM } from "@/components/tutorial/PortalTutorial";
 
 const navItems = [
-    { href: "/registrar",                label: "Enrolment Home",  icon: LayoutDashboard },
-    { href: "/registrar/users",          label: "Student Records", icon: Users },
-    { href: "/registrar/audit",          label: "System History",  icon: History },
-    { href: "/registrar/communications", label: "My Messages",     icon: MessageSquare },
-    { href: "/registrar/reports",        label: "Academy Reports", icon: ClipboardList },
+    { href: "/registrar",                label: "Enrolment Home",  icon: LayoutDashboard, tour: "nav-reg-home" },
+    { href: "/registrar/users",          label: "Student Records", icon: Users, tour: "nav-reg-users" },
+    { href: "/registrar/audit",          label: "System History",  icon: History, tour: "nav-reg-audit" },
+    { href: "/registrar/communications", label: "My Messages",     icon: MessageSquare, tour: "nav-reg-communications" },
+    { href: "/registrar/reports",        label: "Academy Reports", icon: ClipboardList, tour: "nav-reg-reports" },
 ];
 
 export function RegistrarSidebar({ className }: { className?: string }) {
@@ -42,6 +43,7 @@ export function RegistrarSidebar({ className }: { className?: string }) {
                         <Link
                             key={item.href}
                             href={item.href}
+                            data-tour={item.tour}
                             className={cn(
                                 "group flex items-center gap-4 px-5 py-3.5 transition-all duration-300 relative rounded-none",
                                 isActive
@@ -69,6 +71,7 @@ export function RegistrarSidebar({ className }: { className?: string }) {
                     <p className="px-4 text-[9px] font-black text-white/30 uppercase tracking-[0.2em] mb-4">System</p>
                     <Link
                         href="/registrar/settings"
+                        data-tour="nav-reg-settings"
                         className={cn(
                             "group flex items-center gap-4 px-5 py-3.5 transition-all duration-300 rounded-none",
                             pathname === "/registrar/settings"
@@ -81,6 +84,13 @@ export function RegistrarSidebar({ className }: { className?: string }) {
                             pathname === "/registrar/settings" ? "text-[#C8A96A]" : "text-white/40 group-hover:text-white"
                         )} />
                         <span className="text-xs font-black uppercase tracking-wider">Account Settings</span>
+                    </Link>
+                    <Link
+                        href={`/registrar?${TOUR_QUERY_PARAM}=1`}
+                        className="group flex items-center gap-4 px-5 py-3.5 transition-all duration-300 rounded-none text-white/60 hover:bg-white/[0.02] hover:text-white"
+                    >
+                        <PlayCircle className="w-4 h-4 text-white/40 group-hover:text-white transition-all duration-300" />
+                        <span className="text-xs font-black uppercase tracking-wider">Replay Tutorial</span>
                     </Link>
                 </div>
             </nav>

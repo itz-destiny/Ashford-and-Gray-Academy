@@ -8,20 +8,21 @@ import { Logo } from "@/components/logo";
 import {
     LayoutDashboard, DollarSign, Wallet, GraduationCap,
     BarChart3, LifeBuoy, MessageSquare, Settings, LogOut,
-    Receipt, Sparkles,
+    Receipt, Sparkles, PlayCircle,
 } from "lucide-react";
 import { useUser } from "@/firebase";
 import { signOut } from "@/firebase/auth";
+import { TOUR_QUERY_PARAM } from "@/components/tutorial/PortalTutorial";
 
 const navItems = [
-    { href: "/finance",                label: "Finance Home",    icon: LayoutDashboard },
-    { href: "/finance/transactions",   label: "Transactions",    icon: Receipt },
-    { href: "/finance/tuition",        label: "Tuition",         icon: DollarSign },
-    { href: "/finance/payouts",        label: "Payouts",         icon: Wallet },
-    { href: "/finance/scholarships",   label: "Scholarships",    icon: GraduationCap },
-    { href: "/finance/reports",        label: "Reports",         icon: BarChart3 },
-    { href: "/finance/tickets",        label: "Support Tickets", icon: LifeBuoy },
-    { href: "/finance/communications", label: "Messages",        icon: MessageSquare },
+    { href: "/finance",                label: "Finance Home",    icon: LayoutDashboard, tour: "nav-fin-home" },
+    { href: "/finance/transactions",   label: "Transactions",    icon: Receipt, tour: "nav-fin-transactions" },
+    { href: "/finance/tuition",        label: "Tuition",         icon: DollarSign, tour: "nav-fin-tuition" },
+    { href: "/finance/payouts",        label: "Payouts",         icon: Wallet, tour: "nav-fin-payouts" },
+    { href: "/finance/scholarships",   label: "Scholarships",    icon: GraduationCap, tour: "nav-fin-scholarships" },
+    { href: "/finance/reports",        label: "Reports",         icon: BarChart3, tour: "nav-fin-reports" },
+    { href: "/finance/tickets",        label: "Support Tickets", icon: LifeBuoy, tour: "nav-fin-tickets" },
+    { href: "/finance/communications", label: "Messages",        icon: MessageSquare, tour: "nav-fin-communications" },
 ];
 
 export function FinanceSidebar({ className }: { className?: string }) {
@@ -46,6 +47,7 @@ export function FinanceSidebar({ className }: { className?: string }) {
                         <Link
                             key={item.href}
                             href={item.href}
+                            data-tour={item.tour}
                             className={cn(
                                 "group flex items-center gap-4 px-5 py-3.5 transition-all duration-300 relative rounded-none",
                                 isActive
@@ -85,6 +87,13 @@ export function FinanceSidebar({ className }: { className?: string }) {
                             pathname === "/finance/settings" ? "text-[#C8A96A]" : "text-white/40 group-hover:text-white"
                         )} />
                         <span className="text-xs font-black uppercase tracking-wider">Account Settings</span>
+                    </Link>
+                    <Link
+                        href={`/finance?${TOUR_QUERY_PARAM}=1`}
+                        className="group flex items-center gap-4 px-5 py-3.5 transition-all duration-300 rounded-none text-white/60 hover:bg-white/[0.02] hover:text-white"
+                    >
+                        <PlayCircle className="w-4 h-4 text-white/40 group-hover:text-white transition-all duration-300" />
+                        <span className="text-xs font-black uppercase tracking-wider">Replay Tutorial</span>
                     </Link>
                 </div>
             </nav>

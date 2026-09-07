@@ -7,17 +7,18 @@ import { cn } from "@/lib/utils";
 import { Logo } from "@/components/logo";
 import {
     BookOpen, Users, MessageSquare, Settings,
-    LayoutDashboard, LogOut, TrendingUp, Sparkles,
+    LayoutDashboard, LogOut, TrendingUp, Sparkles, PlayCircle,
 } from "lucide-react";
 import { useUser } from "@/firebase";
 import { signOut } from "@/firebase/auth";
+import { TOUR_QUERY_PARAM } from "@/components/tutorial/PortalTutorial";
 
 const navItems = [
-    { href: "/course-registrar",                label: "Programme Home",    icon: LayoutDashboard },
-    { href: "/course-registrar/courses",        label: "Academy Programmes", icon: BookOpen },
-    { href: "/course-registrar/students",       label: "Student List",      icon: Users },
-    { href: "/course-registrar/communications", label: "My Messages",       icon: MessageSquare },
-    { href: "/course-registrar/analytics",      label: "Performance",       icon: TrendingUp },
+    { href: "/course-registrar",                label: "Programme Home",    icon: LayoutDashboard, tour: "nav-cr-home" },
+    { href: "/course-registrar/courses",        label: "Academy Programmes", icon: BookOpen, tour: "nav-cr-courses" },
+    { href: "/course-registrar/students",       label: "Student List",      icon: Users, tour: "nav-cr-students" },
+    { href: "/course-registrar/communications", label: "My Messages",       icon: MessageSquare, tour: "nav-cr-communications" },
+    { href: "/course-registrar/analytics",      label: "Performance",       icon: TrendingUp, tour: "nav-cr-analytics" },
 ];
 
 export function CourseRegistrarSidebar({ className }: { className?: string }) {
@@ -42,6 +43,7 @@ export function CourseRegistrarSidebar({ className }: { className?: string }) {
                         <Link
                             key={item.href}
                             href={item.href}
+                            data-tour={item.tour}
                             className={cn(
                                 "group flex items-center gap-4 px-5 py-3.5 transition-all duration-300 relative rounded-none",
                                 isActive
@@ -69,6 +71,7 @@ export function CourseRegistrarSidebar({ className }: { className?: string }) {
                     <p className="px-4 text-[9px] font-black text-white/30 uppercase tracking-[0.2em] mb-4">System</p>
                     <Link
                         href="/course-registrar/settings"
+                        data-tour="nav-cr-settings"
                         className={cn(
                             "group flex items-center gap-4 px-5 py-3.5 transition-all duration-300 rounded-none",
                             pathname === "/course-registrar/settings"
@@ -81,6 +84,13 @@ export function CourseRegistrarSidebar({ className }: { className?: string }) {
                             pathname === "/course-registrar/settings" ? "text-[#C8A96A]" : "text-white/40 group-hover:text-white"
                         )} />
                         <span className="text-xs font-black uppercase tracking-wider">Account Settings</span>
+                    </Link>
+                    <Link
+                        href={`/course-registrar?${TOUR_QUERY_PARAM}=1`}
+                        className="group flex items-center gap-4 px-5 py-3.5 transition-all duration-300 rounded-none text-white/60 hover:bg-white/[0.02] hover:text-white"
+                    >
+                        <PlayCircle className="w-4 h-4 text-white/40 group-hover:text-white transition-all duration-300" />
+                        <span className="text-xs font-black uppercase tracking-wider">Replay Tutorial</span>
                     </Link>
                 </div>
             </nav>

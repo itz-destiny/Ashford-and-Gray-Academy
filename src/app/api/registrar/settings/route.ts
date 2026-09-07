@@ -5,6 +5,9 @@ import PlatformSettings from '@/models/PlatformSettings';
 import { AuthError, requireRole, withAuth } from '@/lib/auth-server';
 
 const REGISTRAR_ROLES = ['admin', 'registrar'] as const;
+// Admissions staff need to read the WhatsApp link to send it to students,
+// but only Admin/Registrar can change institution-wide settings.
+const SETTINGS_READ_ROLES = ['admin', 'registrar', 'admissions_officer'] as const;
 
 function handleError(err: unknown): Response {
     if (err instanceof AuthError) {
@@ -19,7 +22,7 @@ function handleError(err: unknown): Response {
 // =============================================================================
 export const GET = withAuth(async (_req: NextRequest, { auth }) => {
     try {
-        requireRole(auth, REGISTRAR_ROLES);
+        requireRole(auth, SETTINGS_READ_ROLES);
         await dbConnect();
         const settings = await PlatformSettings.findOneAndUpdate(
             { key: 'default' },
@@ -38,6 +41,7 @@ export const GET = withAuth(async (_req: NextRequest, { auth }) => {
 const patchSchema = z.object({
     institutionName: z.string().min(1).max(200).optional(),
     academicYear: z.string().min(1).max(20).optional(),
+    whatsappCommunityUrl: z.string().url().max(500).optional().or(z.literal('')),
 });
 
 export const PATCH = withAuth(async (req: NextRequest, { auth }) => {

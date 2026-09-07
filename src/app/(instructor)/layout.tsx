@@ -10,6 +10,8 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Menu, Settings } from "lucide-react";
+import { PortalTutorial } from "@/components/tutorial/PortalTutorial";
+import { instructorTourSteps } from "@/lib/tutorial-steps/instructor";
 
 export default function InstructorLayout({
     children,
@@ -18,6 +20,7 @@ export default function InstructorLayout({
 }) {
     return (
         <RoleGuard allowed={["instructor"]}>
+            <PortalTutorial steps={instructorTourSteps} />
             <div className="grid min-h-screen w-full md:grid-cols-[288px_1fr] bg-[#FAF9F6]">
                 {/* Desktop Sidebar */}
                 <aside className="hidden md:block sticky top-0 h-screen">
@@ -54,7 +57,7 @@ export default function InstructorLayout({
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-3 md:gap-4 ml-auto">
+                        <div className="flex items-center gap-3 md:gap-4 ml-auto" data-tour="header-notifications">
                             <NotificationBell />
 
                             <Button

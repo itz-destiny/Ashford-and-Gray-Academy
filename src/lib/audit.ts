@@ -62,6 +62,10 @@ export const AUDIT_ACTIONS = {
 
     SETTINGS_CHANGED: 'settings_changed',
     FEATURE_TOGGLED: 'feature_toggled',
+
+    WELCOME_EMAIL_RESENT: 'welcome_email_resent',
+    WHATSAPP_INVITE_SENT: 'whatsapp_invite_sent',
+    MESSAGE_BROADCAST: 'message_broadcast',
 } as const;
 
 export const AUDIT_RESOURCES = {
@@ -73,4 +77,5 @@ export const AUDIT_RESOURCES = {
     CONTENT: 'content',
     SETTINGS: 'settings',
     SYSTEM: 'system',
+    COMMUNICATION: 'communication',
 } as const;
