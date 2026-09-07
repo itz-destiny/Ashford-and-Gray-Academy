@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import {
-    ArrowLeft, Video, Edit2, Send, Users, Loader2,
+    ArrowLeft, Video, Edit2, Send, Users, Loader2, Link2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { RecordingsList } from "@/components/meeting/RecordingsList";
@@ -271,6 +271,17 @@ export default function ManageCoursePage() {
                                     <p className="text-xs text-slate-500 font-medium">{new Date(cls.startTime).toLocaleString()} · {cls.durationMinutes} mins</p>
                                 </div>
                                 <div className="flex gap-2">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="rounded-xl border-slate-200"
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(`${window.location.origin}/attend/${cls._id}`);
+                                            toast({ title: "Attendance link copied", description: "Paste it into the Zoom meeting chat so students can check themselves in." });
+                                        }}
+                                    >
+                                        <Link2 className="h-3.5 w-3.5 mr-1.5" /> Attendance Link
+                                    </Button>
                                     <Button asChild variant="outline" size="sm" className="rounded-xl border-slate-200">
                                         <a href={cls.zoomJoinUrl} target="_blank" rel="noopener noreferrer">Guest Link</a>
                                     </Button>

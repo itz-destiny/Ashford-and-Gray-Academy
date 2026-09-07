@@ -92,6 +92,7 @@ export function LoginForm({ onSwitchToSignUp }: LoginFormProps) {
       if (role === 'course_registrar') { router.push('/course-registrar'); return; }
       if (role === 'finance') { router.push('/finance'); return; }
       if (role === 'admissions_officer') { router.push('/admissions'); return; }
+      if (role === 'live_monitor') { router.push('/monitor'); return; }
       // Students may follow the redirectUrl (e.g. back to a course page they tried to visit).
       if (role === 'student') { router.push(redirectUrl || '/dashboard'); return; }
       // No role yet — route to profile completion.

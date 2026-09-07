@@ -139,7 +139,7 @@ const upsertSchema = z.object({
     displayName: z.string().min(1).max(120).optional(),
     photoURL: z.string().url().optional().or(z.literal('')),
     role: z
-        .enum(['student', 'instructor', 'admin', 'registrar', 'course_registrar', 'finance', 'admissions_officer'])
+        .enum(['student', 'instructor', 'admin', 'registrar', 'course_registrar', 'finance', 'admissions_officer', 'live_monitor'])
         .optional(),
     bio: z.string().max(2000).optional(),
     title: z.string().max(200).optional(),

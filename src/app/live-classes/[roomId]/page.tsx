@@ -109,7 +109,7 @@ export default function LiveClassRoomPage() {
                 setError(data.message || 'Could not join this class.');
                 setStatus('error');
             } else if (data.type === 'ZOOM_LEFT') {
-                router.push(infoRef.current?.role === 1 ? '/instructor/schedule' : '/schedule');
+                router.push(infoRef.current?.backTo || (infoRef.current?.role === 1 ? '/instructor/schedule' : '/schedule'));
             }
         };
 
@@ -133,7 +133,10 @@ export default function LiveClassRoomPage() {
                             <Button
                                 variant="outline"
                                 className="mt-2 border-white/30 text-white hover:bg-white/10 gap-2"
-                                onClick={() => router.push(isHost ? '/instructor/schedule' : '/schedule')}
+                                onClick={() => router.push(
+                                    infoRef.current?.backTo
+                                    || (isHost ? '/instructor/schedule' : user?.role === 'live_monitor' ? '/monitor' : '/schedule')
+                                )}
                             >
                                 <ArrowLeft className="h-4 w-4" /> Back
                             </Button>
