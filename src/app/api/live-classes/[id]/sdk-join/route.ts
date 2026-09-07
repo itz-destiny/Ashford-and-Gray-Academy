@@ -2,9 +2,11 @@ import { NextResponse, type NextRequest } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import LiveClass from '@/models/LiveClass';
 import Enrollment from '@/models/Enrollment';
+import User from '@/models/User';
 import { getFreshZoomStartUrl } from '@/lib/zoom';
 import { getZoomAccounts } from '@/lib/zoom-hosts';
 import { generateZoomSdkSignature } from '@/lib/zoom-sdk-signature';
+import { getCurrentClassForSlot } from '@/lib/monitor-slots';
 import { withAuth } from '@/lib/auth-server';
 
 type RouteParams = { params: Promise<{ id: string }> };
@@ -28,9 +30,21 @@ export const GET = withAuth<RouteParams>(async (_req: NextRequest, { auth, param
 
         const isHost = auth.role === 'admin' || liveClass.instructorId === auth.uid;
         if (!isHost) {
-            const enrolled = await Enrollment.findOne({ userId: auth.uid, courseId: liveClass.courseId });
-            if (!enrolled) {
-                return NextResponse.json({ error: 'You are not enrolled in this course.' }, { status: 403 });
+            if (auth.role === 'live_monitor') {
+                // Dedicated monitor accounts never join by picking a class —
+                // they can only join whatever is currently live in the one
+                // Zoom capacity slot they're permanently bound to. Recompute
+                // that server-side rather than trusting the requested id.
+                const me = await User.findOne({ uid: auth.uid }).lean<{ monitorSlotIndex?: number } | null>();
+                const current = me?.monitorSlotIndex ? await getCurrentClassForSlot(me.monitorSlotIndex) : null;
+                if (!current || current._id.toString() !== id) {
+                    return NextResponse.json({ error: 'This class is not currently live in your assigned monitor slot.' }, { status: 403 });
+                }
+            } else {
+                const enrolled = await Enrollment.findOne({ userId: auth.uid, courseId: liveClass.courseId });
+                if (!enrolled) {
+                    return NextResponse.json({ error: 'You are not enrolled in this course.' }, { status: 403 });
+                }
             }
         }
 
@@ -57,6 +71,8 @@ export const GET = withAuth<RouteParams>(async (_req: NextRequest, { auth, param
             zak = new URL(startUrl).searchParams.get('zak') || undefined;
         }
 
+        const backTo = isHost ? '/instructor/schedule' : auth.role === 'live_monitor' ? '/monitor' : '/schedule';
+
         return NextResponse.json({
             success: true,
             sdkKey: process.env.ZOOM_SDK_KEY,
@@ -67,6 +83,7 @@ export const GET = withAuth<RouteParams>(async (_req: NextRequest, { auth, param
             userName: auth.displayName || (isHost ? 'Instructor' : 'Student'),
             role,
             zak,
+            backTo,
         });
     } catch (error: any) {
         console.error('GET /api/live-classes/[id]/sdk-join failed:', error);

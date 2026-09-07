@@ -8,8 +8,9 @@ import { generateTempPassword } from '@/lib/generate-password';
 import { sendEmail, emailTemplates } from '@/lib/email';
 import { getEmailUrl } from '@/lib/app-url';
 import { rateLimit } from '@/lib/rate-limit';
+import { totalMonitorSlots } from '@/lib/monitor-slots';
 
-const ASSIGNABLE_ROLES = ['student', 'instructor', 'course_registrar', 'finance', 'registrar', 'admissions_officer', 'admin'] as const;
+const ASSIGNABLE_ROLES = ['student', 'instructor', 'course_registrar', 'finance', 'registrar', 'admissions_officer', 'admin', 'live_monitor'] as const;
 
 const ROLE_TITLES: Record<string, string> = {
     instructor: 'Instructor',
@@ -18,6 +19,7 @@ const ROLE_TITLES: Record<string, string> = {
     registrar: 'Registrar',
     admissions_officer: 'Admissions Officer',
     admin: 'Administrator',
+    live_monitor: 'Live Class Monitor',
 };
 
 const limiter = rateLimit({
@@ -46,6 +48,7 @@ const createSchema = z.object({
     displayName: z.string().min(1).max(120),
     email: z.string().email(),
     role: z.enum(ASSIGNABLE_ROLES),
+    monitorSlotIndex: z.number().int().min(1).optional(),
 });
 
 export const POST = withAuth(async (req: NextRequest, { auth }) => {
@@ -68,12 +71,29 @@ export const POST = withAuth(async (req: NextRequest, { auth }) => {
             );
         }
         const { displayName, email, role } = parsed.data;
+        let { monitorSlotIndex } = parsed.data;
 
         await dbConnect();
 
         const existing = await User.findOne({ email }).lean();
         if (existing) {
             return NextResponse.json({ error: 'An account with this email already exists.' }, { status: 409 });
+        }
+
+        if (role === 'live_monitor') {
+            const totalSlots = totalMonitorSlots();
+            if (!monitorSlotIndex) {
+                return NextResponse.json({ error: 'A monitor slot number is required for this role.' }, { status: 400 });
+            }
+            if (monitorSlotIndex > totalSlots) {
+                return NextResponse.json({ error: `Only ${totalSlots} monitor slot(s) are currently configured (this platform's real concurrent Zoom capacity).` }, { status: 400 });
+            }
+            const slotTaken = await User.findOne({ role: 'live_monitor', monitorSlotIndex }).lean();
+            if (slotTaken) {
+                return NextResponse.json({ error: `Slot ${monitorSlotIndex} is already assigned to another monitor account.` }, { status: 409 });
+            }
+        } else {
+            monitorSlotIndex = undefined;
         }
 
         const password = generateTempPassword(displayName);
@@ -98,6 +118,7 @@ export const POST = withAuth(async (req: NextRequest, { auth }) => {
             email,
             displayName,
             role,
+            monitorSlotIndex,
             emailVerified: true,
             emailVerifiedAt: new Date(),
             mustChangePassword: true,
@@ -106,9 +127,10 @@ export const POST = withAuth(async (req: NextRequest, { auth }) => {
         try {
             const appUrl = getEmailUrl();
             const loginUrl = `${appUrl}/login`;
+            const roleTitle = role === 'live_monitor' ? `${ROLE_TITLES[role]} — Slot ${monitorSlotIndex}` : (ROLE_TITLES[role] || 'Staff Member');
             const tpl = role === 'student'
                 ? emailTemplates.enrollmentWelcome({ recipientName: displayName, email, password, loginUrl })
-                : emailTemplates.staffWelcome({ recipientName: displayName, email, password, loginUrl, roleTitle: ROLE_TITLES[role] || 'Staff Member' });
+                : emailTemplates.staffWelcome({ recipientName: displayName, email, password, loginUrl, roleTitle });
             void sendEmail({ to: email, subject: tpl.subject, html: tpl.html });
         } catch (mailErr) {
             console.warn('admin/users welcome email skipped:', mailErr);

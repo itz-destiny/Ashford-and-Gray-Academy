@@ -43,6 +43,7 @@ interface User {
     role: string;
     photoURL?: string;
     school?: string;
+    monitorSlotIndex?: number;
     createdAt: string;
 }
 
@@ -59,12 +60,27 @@ export default function UsersPage() {
     const [newUser, setNewUser] = useState({
         displayName: "",
         email: "",
-        role: "student"
+        role: "student",
+        monitorSlotIndex: "",
     });
+
+    // Live monitor slot info (fetched lazily, only needed for that role)
+    const [monitorSlots, setMonitorSlots] = useState<{ totalSlots: number; assigned: { monitorSlotIndex: number; displayName: string }[] } | null>(null);
+    const [loadingSlots, setLoadingSlots] = useState(false);
 
     useEffect(() => {
         fetchUsers();
     }, []);
+
+    useEffect(() => {
+        if (newUser.role !== 'live_monitor' || monitorSlots || loadingSlots) return;
+        setLoadingSlots(true);
+        apiFetch('/api/admin/live-monitor-slots')
+            .then(res => res.ok ? res.json() : null)
+            .then(data => { if (data) setMonitorSlots(data); })
+            .catch(() => null)
+            .finally(() => setLoadingSlots(false));
+    }, [newUser.role, monitorSlots, loadingSlots]);
 
     const fetchUsers = async () => {
         try {
@@ -123,6 +139,10 @@ export default function UsersPage() {
             toast({ variant: "destructive", title: "Missing Fields", description: "Please fill in all fields." });
             return;
         }
+        if (newUser.role === 'live_monitor' && !newUser.monitorSlotIndex) {
+            toast({ variant: "destructive", title: "Missing Slot", description: "Choose which monitor slot this account is for." });
+            return;
+        }
 
         setIsCreating(true);
         try {
@@ -132,6 +152,7 @@ export default function UsersPage() {
                     email: newUser.email,
                     displayName: newUser.displayName,
                     role: newUser.role,
+                    monitorSlotIndex: newUser.role === 'live_monitor' ? Number(newUser.monitorSlotIndex) : undefined,
                 })
             });
 
@@ -142,7 +163,8 @@ export default function UsersPage() {
 
             toast({ title: "Account Created", description: `${newUser.displayName} can now log in — credentials were emailed to ${newUser.email}.` });
             setIsCreateOpen(false);
-            setNewUser({ displayName: "", email: "", role: "student" });
+            setNewUser({ displayName: "", email: "", role: "student", monitorSlotIndex: "" });
+            setMonitorSlots(null);
             fetchUsers();
 
         } catch (error: any) {
@@ -182,14 +204,15 @@ export default function UsersPage() {
         return matchesSearch && matchesRole;
     });
 
-    const roles = ["All", "admin", "registrar", "course_registrar", "finance", "instructor", "student"];
+    const roles = ["All", "admin", "registrar", "course_registrar", "finance", "instructor", "student", "live_monitor"];
     const createRoles = [
         { value: "admin", label: "Super Admin" },
         { value: "registrar", label: "Acting Registrar" },
         { value: "course_registrar", label: "Course Registrar" },
         { value: "finance", label: "Finance Manager" },
         { value: "instructor", label: "Instructor" },
-        { value: "student", label: "Student" }
+        { value: "student", label: "Student" },
+        { value: "live_monitor", label: "Live Class Monitor" },
     ];
 
     const getInitials = (name: string) => name?.substring(0, 2).toUpperCase() || '??';
@@ -258,6 +281,40 @@ export default function UsersPage() {
                                     </SelectContent>
                                 </Select>
                             </div>
+                            {newUser.role === 'live_monitor' && (
+                                <div className="grid gap-2">
+                                    <Label htmlFor="monitor-slot">Monitor Slot</Label>
+                                    {loadingSlots ? (
+                                        <div className="flex items-center gap-2 text-sm text-slate-400 py-2">
+                                            <Loader2 className="w-4 h-4 animate-spin" /> Loading slots…
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <Select
+                                                value={newUser.monitorSlotIndex}
+                                                onValueChange={(val) => setNewUser({ ...newUser, monitorSlotIndex: val })}
+                                            >
+                                                <SelectTrigger id="monitor-slot" className="rounded-none">
+                                                    <SelectValue placeholder="Select a slot" />
+                                                </SelectTrigger>
+                                                <SelectContent className="rounded-none">
+                                                    {Array.from({ length: monitorSlots?.totalSlots || 0 }, (_, i) => i + 1).map((n) => {
+                                                        const taken = monitorSlots?.assigned.find(a => a.monitorSlotIndex === n);
+                                                        return (
+                                                            <SelectItem key={n} value={String(n)} disabled={!!taken}>
+                                                                Slot {n}{taken ? ` — taken by ${taken.displayName}` : ''}
+                                                            </SelectItem>
+                                                        );
+                                                    })}
+                                                </SelectContent>
+                                            </Select>
+                                            <p className="text-xs text-slate-400">
+                                                {monitorSlots?.totalSlots || 0} slot{monitorSlots?.totalSlots === 1 ? '' : 's'} configured right now — this matches the real concurrent Zoom capacity currently set up (accounts × licensed hosts × concurrency), not a fixed number of 8.
+                                            </p>
+                                        </>
+                                    )}
+                                </div>
+                            )}
                         </div>
                         <DialogFooter>
                             <Button variant="outline" onClick={() => setIsCreateOpen(false)} className="rounded-none">Cancel</Button>
@@ -346,7 +403,9 @@ export default function UsersPage() {
                                         </Badge>
                                     </TableCell>
                                     <TableCell className="text-slate-600">
-                                        {user.school || '-'}
+                                        {user.role === 'live_monitor'
+                                            ? (user.monitorSlotIndex ? `Slot ${user.monitorSlotIndex}` : 'No slot assigned')
+                                            : (user.school || '-')}
                                     </TableCell>
                                     <TableCell className="text-slate-600">
                                         {new Date(user.createdAt).toLocaleDateString()}

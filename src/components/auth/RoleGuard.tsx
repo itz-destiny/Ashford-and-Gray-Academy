@@ -17,6 +17,7 @@ const PORTAL_BY_ROLE: Record<string, string> = {
     instructor: "/instructor",
     student: "/dashboard",
     admissions_officer: "/admissions",
+    live_monitor: "/monitor",
 };
 
 type RoleGuardProps = {

@@ -5,7 +5,7 @@ export interface IUser extends Document {
     email: string;
     displayName: string;
     photoURL?: string;
-    role: 'student' | 'instructor' | 'admin' | 'registrar' | 'course_registrar' | 'finance' | 'admissions_officer';
+    role: 'student' | 'instructor' | 'admin' | 'registrar' | 'course_registrar' | 'finance' | 'admissions_officer' | 'live_monitor';
     bio?: string;
     title?: string;
     school?: string;
@@ -24,6 +24,10 @@ export interface IUser extends Document {
     // absence means self-funded/paid enrollment, not "application pending."
     sponsor?: string;
     hasSeenTutorial?: boolean;
+    // Only set for role:'live_monitor' — which of the platform's concurrent
+    // Zoom capacity slots (1..totalMonitorSlots()) this dedicated account is
+    // permanently bound to. See src/lib/monitor-slots.ts.
+    monitorSlotIndex?: number;
     emailVerified?: boolean;
     emailVerifiedAt?: Date;
     welcomeEmailSentAt?: Date;
@@ -41,7 +45,7 @@ const UserSchema: Schema = new Schema({
     email: { type: String, required: true },
     displayName: { type: String, required: true },
     photoURL: { type: String },
-    role: { type: String, enum: ['student', 'instructor', 'admin', 'registrar', 'course_registrar', 'finance', 'admissions_officer'], default: 'student' },
+    role: { type: String, enum: ['student', 'instructor', 'admin', 'registrar', 'course_registrar', 'finance', 'admissions_officer', 'live_monitor'], default: 'student' },
     bio: { type: String },
     title: { type: String },
     school: { type: String },
@@ -56,6 +60,7 @@ const UserSchema: Schema = new Schema({
     applicationStatement: { type: String },
     sponsor: { type: String, index: true },
     hasSeenTutorial: { type: Boolean, default: false },
+    monitorSlotIndex: { type: Number, index: true },
     emailVerified: { type: Boolean, default: false, index: true },
     emailVerifiedAt: { type: Date },
     welcomeEmailSentAt: { type: Date },
