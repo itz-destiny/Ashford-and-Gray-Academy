@@ -27,7 +27,23 @@ interface EmailOptions {
 interface SendResult {
     success: boolean;
     messageId?: string;
-    error?: unknown;
+    error?: string;
+}
+
+// Resend's SDK rejects with a { name, message } object, and unexpected
+// exceptions can be anything at all — always normalize to a plain string so
+// every caller can safely show `result.error` directly in a toast, rather
+// than each one having to guard against `[object Object]`.
+function toErrorMessage(err: unknown): string {
+    if (typeof err === 'string') return err;
+    if (err && typeof err === 'object' && 'message' in err && typeof (err as any).message === 'string') {
+        return (err as any).message;
+    }
+    try {
+        return JSON.stringify(err);
+    } catch {
+        return String(err);
+    }
 }
 
 const DEFAULT_FROM = 'Ashford & Gray Fusion Academy <onboarding@resend.dev>';
@@ -53,12 +69,12 @@ export async function sendEmail({ to, subject, html, from }: EmailOptions): Prom
         const result = await client.emails.send({ from: sender, to, subject, html });
         if (result.error) {
             console.error('sendEmail: Resend rejected message:', result.error);
-            return { success: false, error: result.error };
+            return { success: false, error: toErrorMessage(result.error) };
         }
         return { success: true, messageId: result.data?.id };
     } catch (error) {
         console.error('sendEmail: unexpected error:', error);
-        return { success: false, error };
+        return { success: false, error: toErrorMessage(error) };
     }
 }
 
