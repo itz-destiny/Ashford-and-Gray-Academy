@@ -25,7 +25,7 @@ export function generateZoomSdkSignature(
     const exp = iat + 60 * 60 * 2;
 
     return jwt.sign(
-        { appKey: sdkKey, mn: meetingNumber, role, iat, exp, tokenExp: exp },
+        { sdkKey, mn: meetingNumber, role, iat, exp, tokenExp: exp },
         sdkSecret,
         { algorithm: 'HS256' }
     );
