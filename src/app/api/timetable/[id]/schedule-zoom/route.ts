@@ -18,9 +18,9 @@ export const POST = withAuth<RouteParams>(async (_req, { auth, params }) => {
             return NextResponse.json({ error: 'Timetable session not found' }, { status: 404 });
         }
 
-        // Creating the Zoom meeting is an admin-only action — instructors only
-        // start a class once it has already been created for them.
-        if (auth.role !== 'admin') {
+        // Creating the Zoom meeting is an admin/course_registrar action —
+        // instructors only start a class once it has already been created for them.
+        if (!['admin', 'course_registrar'].includes(auth.role)) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
         }
 
@@ -34,6 +34,12 @@ export const POST = withAuth<RouteParams>(async (_req, { auth, params }) => {
         if (!session.courseId) {
             return NextResponse.json(
                 { error: 'This session is not linked to a course yet. Ask an admin to fix the timetable mapping first.' },
+                { status: 400 }
+            );
+        }
+        if (!session.instructorUid) {
+            return NextResponse.json(
+                { error: 'Assign a lecturer to this session before creating its Zoom class.' },
                 { status: 400 }
             );
         }

@@ -6,8 +6,8 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/logo";
 import {
-    BookOpen, Users, MessageSquare, Settings,
-    LayoutDashboard, LogOut, TrendingUp, Sparkles, PlayCircle,
+    Users, MessageSquare, Settings,
+    LayoutDashboard, LogOut, TrendingUp, Sparkles, PlayCircle, CalendarClock,
 } from "lucide-react";
 import { useUser } from "@/firebase";
 import { signOut } from "@/firebase/auth";
@@ -15,7 +15,7 @@ import { TOUR_QUERY_PARAM } from "@/components/tutorial/PortalTutorial";
 
 const navItems = [
     { href: "/course-registrar",                label: "Programme Home",    icon: LayoutDashboard, tour: "nav-cr-home" },
-    { href: "/course-registrar/courses",        label: "Academy Programmes", icon: BookOpen, tour: "nav-cr-courses" },
+    { href: "/course-registrar/timetable",      label: "Timetable & Zoom",  icon: CalendarClock, tour: "nav-cr-timetable" },
     { href: "/course-registrar/students",       label: "Student List",      icon: Users, tour: "nav-cr-students" },
     { href: "/course-registrar/communications", label: "My Messages",       icon: MessageSquare, tour: "nav-cr-communications" },
     { href: "/course-registrar/analytics",      label: "Performance",       icon: TrendingUp, tour: "nav-cr-analytics" },
