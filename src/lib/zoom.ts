@@ -115,6 +115,23 @@ export async function getFreshZoomStartUrl(account: ZoomAccountCredentials, zoom
     return data.start_url as string;
 }
 
+// The `pwd` query param on a meeting's join_url is a URL-safe encoded token
+// meant only for browser redirects — it is NOT the plaintext passcode the
+// Meeting SDK's client.join() call expects. That must come from the
+// meeting's own `password` field instead.
+export async function getZoomMeetingPassword(account: ZoomAccountCredentials, zoomMeetingId: string): Promise<string> {
+    const token = await getZoomAccessToken(account);
+    const res = await fetch(`https://api.zoom.us/v2/meetings/${encodeURIComponent(zoomMeetingId)}`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+    });
+    if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Failed to fetch Zoom meeting passcode: ${errorText}`);
+    }
+    const data = await res.json();
+    return (data.password as string) || '';
+}
+
 // Every licensed Zoom host is a shared, generic seat rotated across whichever
 // instructor is teaching that time slot — never a per-instructor account. Left
 // alone, a class would open showing that seat's own registered name (e.g. the
