@@ -15,24 +15,26 @@ import {
   Clock,
   FileText,
   History,
-  ClipboardCheck
+  ClipboardCheck,
+  PlayCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { TOUR_QUERY_PARAM } from "@/components/tutorial/PortalTutorial";
 
 export function InstructorSidebar({ className }: { className?: string }) {
   const pathname = usePathname();
 
   const sidebarItems = [
-    { href: "/instructor", label: "Overview", icon: LayoutDashboard },
-    { href: "/instructor/courses", label: "My Teaching", icon: Book },
-    { href: "/instructor/schedule", label: "Class Schedule", icon: Clock },
-    { href: "/instructor/live-classes", label: "Live Class History", icon: History },
-    { href: "/instructor/students", label: "My Students", icon: Users },
-    { href: "/instructor/tests", label: "Tests & Exams", icon: ClipboardCheck },
-    { href: "/instructor/communications", label: "My Messages", icon: MessageSquare },
+    { href: "/instructor", label: "Overview", icon: LayoutDashboard, tour: "nav-instructor-overview" },
+    { href: "/instructor/courses", label: "My Teaching", icon: Book, tour: "nav-instructor-courses" },
+    { href: "/instructor/schedule", label: "Class Schedule", icon: Clock, tour: "nav-instructor-schedule" },
+    { href: "/instructor/live-classes", label: "Live Class History", icon: History, tour: "nav-instructor-live-history" },
+    { href: "/instructor/students", label: "My Students", icon: Users, tour: "nav-instructor-students" },
+    { href: "/instructor/tests", label: "Tests & Exams", icon: ClipboardCheck, tour: "nav-instructor-tests" },
+    { href: "/instructor/communications", label: "My Messages", icon: MessageSquare, tour: "nav-instructor-communications" },
   ];
 
   return (
@@ -50,6 +52,7 @@ export function InstructorSidebar({ className }: { className?: string }) {
             <Link
               key={item.href}
               href={item.href}
+              data-tour={item.tour}
               className={cn(
                 "group flex items-center gap-4 px-5 py-3.5 transition-all duration-300 relative rounded-none",
                 isActive
@@ -75,6 +78,7 @@ export function InstructorSidebar({ className }: { className?: string }) {
           <p className="px-4 text-[9px] font-black text-white/30 uppercase tracking-[0.2em] mb-4">Academy Tools</p>
           <Link
             href="/instructor/reports"
+            data-tour="nav-instructor-performance"
             className={cn(
               "group flex items-center gap-4 px-5 py-3.5 transition-all duration-300 rounded-none",
               pathname === "/instructor/reports" ? "bg-white/5 text-[#C8A96A] border-l-4 border-[#C8A96A]" : "text-white/60 hover:bg-white/[0.02] hover:text-white"
@@ -92,6 +96,13 @@ export function InstructorSidebar({ className }: { className?: string }) {
           >
             <FileText className={cn("w-4 h-4 transition-all duration-300", pathname === "/instructor/resources" ? "text-[#C8A96A]" : "text-white/40 group-hover:text-white")} />
             <span className="text-xs font-black uppercase tracking-wider">Study Materials</span>
+          </Link>
+          <Link
+            href={`/instructor?${TOUR_QUERY_PARAM}=1`}
+            className="group flex items-center gap-4 px-5 py-3.5 transition-all duration-300 rounded-none text-white/60 hover:bg-white/[0.02] hover:text-white"
+          >
+            <PlayCircle className="w-4 h-4 text-white/40 group-hover:text-white transition-all duration-300" />
+            <span className="text-xs font-black uppercase tracking-wider">Replay Tutorial</span>
           </Link>
         </div>
       </nav>

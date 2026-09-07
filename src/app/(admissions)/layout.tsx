@@ -8,10 +8,13 @@ import { AdmissionsSidebar } from "@/components/admissions/AdmissionsSidebar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { RoleGuard } from "@/components/auth/RoleGuard";
 import Link from "next/link";
+import { PortalTutorial } from "@/components/tutorial/PortalTutorial";
+import { admissionsTourSteps } from "@/lib/tutorial-steps/admissions";
 
 export default function AdmissionsLayout({ children }: { children: React.ReactNode }) {
     return (
         <RoleGuard allowed={["admissions_officer"]}>
+            <PortalTutorial steps={admissionsTourSteps} />
             <div className="flex min-h-screen w-full bg-[#FAF9F6]">
                 <AdmissionsSidebar className="hidden md:flex" />
 

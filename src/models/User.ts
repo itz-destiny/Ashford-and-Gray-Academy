@@ -23,6 +23,7 @@ export interface IUser extends Document {
     // academy's Flagship Cohort master list. Not every student has one —
     // absence means self-funded/paid enrollment, not "application pending."
     sponsor?: string;
+    hasSeenTutorial?: boolean;
     emailVerified?: boolean;
     emailVerifiedAt?: Date;
     welcomeEmailSentAt?: Date;
@@ -54,6 +55,7 @@ const UserSchema: Schema = new Schema({
     professionalBackground: { type: String },
     applicationStatement: { type: String },
     sponsor: { type: String, index: true },
+    hasSeenTutorial: { type: Boolean, default: false },
     emailVerified: { type: Boolean, default: false, index: true },
     emailVerifiedAt: { type: Date },
     welcomeEmailSentAt: { type: Date },

@@ -16,18 +16,20 @@ import {
     Clock,
     ChevronRight,
     Sparkles,
-    ClipboardCheck
+    ClipboardCheck,
+    PlayCircle,
 } from "lucide-react";
+import { TOUR_QUERY_PARAM } from "@/components/tutorial/PortalTutorial";
 
 const sidebarItems = [
-    { href: "/dashboard", label: "My Home", icon: Home },
-    { href: "/my-courses", label: "My Courses", icon: BookOpen },
-    { href: "/tests", label: "Tests & Exams", icon: ClipboardCheck },
-    { href: "/my-events", label: "Academy Events", icon: Calendar },
-    { href: "/grades", label: "My Grades", icon: GraduationCap },
-    { href: "/communications", label: "My Messages", icon: MessageSquare },
-    { href: "/resources", label: "Study Materials", icon: FileText },
-    { href: "/schedule", label: "My Schedule", icon: Clock },
+    { href: "/dashboard", label: "My Home", icon: Home, tour: "nav-home" },
+    { href: "/my-courses", label: "My Courses", icon: BookOpen, tour: "nav-my-courses" },
+    { href: "/tests", label: "Tests & Exams", icon: ClipboardCheck, tour: "nav-tests" },
+    { href: "/my-events", label: "Academy Events", icon: Calendar, tour: "nav-events" },
+    { href: "/grades", label: "My Grades", icon: GraduationCap, tour: "nav-grades" },
+    { href: "/communications", label: "My Messages", icon: MessageSquare, tour: "nav-messages" },
+    { href: "/resources", label: "Study Materials", icon: FileText, tour: "nav-resources" },
+    { href: "/schedule", label: "My Schedule", icon: Clock, tour: "nav-schedule" },
 ];
 
 export function Sidebar({ className }: { className?: string }) {
@@ -53,6 +55,7 @@ export function Sidebar({ className }: { className?: string }) {
                         <Link
                             key={item.href}
                             href={item.href}
+                            data-tour={item.tour}
                             className={cn(
                                 "group flex items-center gap-4 px-5 py-3.5 transition-all duration-300 relative rounded-none",
                                 isActive
@@ -90,6 +93,13 @@ export function Sidebar({ className }: { className?: string }) {
                         </div>
                         <span className="text-xs font-black uppercase tracking-wider">Get Help</span>
                         <ChevronRight size={12} className={cn("ml-auto transition-all duration-300", pathname === "/help" ? "opacity-100" : "opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0")} />
+                    </Link>
+                    <Link
+                        href={`/dashboard?${TOUR_QUERY_PARAM}=1`}
+                        className="group flex items-center gap-4 px-5 py-3.5 transition-all duration-300 rounded-none text-white/60 hover:bg-white/[0.02] hover:text-white"
+                    >
+                        <PlayCircle className="w-4 h-4 text-white/40 group-hover:text-white transition-all duration-300" />
+                        <span className="text-xs font-black uppercase tracking-wider">Replay Tutorial</span>
                     </Link>
                 </div>
             </nav>

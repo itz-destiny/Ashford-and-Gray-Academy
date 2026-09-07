@@ -8,12 +8,14 @@ export interface IPlatformSettings extends Document {
     key: string;
     institutionName: string;
     academicYear: string;
+    whatsappCommunityUrl?: string;
 }
 
 const PlatformSettingsSchema: Schema = new Schema({
     key: { type: String, required: true, unique: true, default: 'default' },
     institutionName: { type: String, default: 'Ashford & Gray Fusion Academy' },
     academicYear: { type: String, default: new Date().getFullYear().toString() },
+    whatsappCommunityUrl: { type: String },
 }, { timestamps: true });
 
 export default mongoose.models.PlatformSettings

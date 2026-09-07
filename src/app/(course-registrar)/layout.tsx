@@ -8,10 +8,13 @@ import { CourseRegistrarSidebar } from "@/components/course-registrar/CourseRegi
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { RoleGuard } from "@/components/auth/RoleGuard";
 import Link from "next/link";
+import { PortalTutorial } from "@/components/tutorial/PortalTutorial";
+import { courseRegistrarTourSteps } from "@/lib/tutorial-steps/course-registrar";
 
 export default function CourseRegistrarLayout({ children }: { children: React.ReactNode }) {
     return (
         <RoleGuard allowed={["course_registrar"]}>
+            <PortalTutorial steps={courseRegistrarTourSteps} />
             <div className="flex min-h-screen w-full bg-[#FAF9F6]">
                 <CourseRegistrarSidebar className="hidden md:flex" />
 

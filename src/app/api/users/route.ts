@@ -159,6 +159,7 @@ const upsertSchema = z.object({
         auditLogs: z.boolean().optional(),
         systemAlerts: z.boolean().optional(),
     }).optional(),
+    hasSeenTutorial: z.boolean().optional(),
 });
 
 export async function POST(req: NextRequest): Promise<Response> {
@@ -247,6 +248,7 @@ export async function POST(req: NextRequest): Promise<Response> {
             notificationPreferences: body.notificationPreferences
                 ? { ...existing?.notificationPreferences, ...body.notificationPreferences }
                 : existing?.notificationPreferences,
+            hasSeenTutorial: body.hasSeenTutorial ?? existing?.hasSeenTutorial,
         };
 
         // Email verification is not required to use the academy (frictionless

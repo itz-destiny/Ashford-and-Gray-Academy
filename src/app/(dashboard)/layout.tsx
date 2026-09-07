@@ -17,6 +17,8 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { RoleGuard } from "@/components/auth/RoleGuard";
 import { EnrollmentGate } from "@/components/dashboard/EnrollmentGate";
+import { PortalTutorial } from "@/components/tutorial/PortalTutorial";
+import { studentTourSteps } from "@/lib/tutorial-steps/student";
 import "../globals.css";
 
 
@@ -29,6 +31,7 @@ export default function DashboardLayout({
 
   return (
     <RoleGuard allowed={["student"]}>
+    <PortalTutorial steps={studentTourSteps} />
     <div className="flex min-h-screen w-full bg-[#FAF9F6]">
       {/* Desktop Sidebar */}
       <Sidebar className="hidden md:flex" />
@@ -76,7 +79,7 @@ export default function DashboardLayout({
           </div>
 
           {/* Action Icons & User Nav */}
-          <div className="flex items-center gap-3 md:gap-5 ml-auto">
+          <div className="flex items-center gap-3 md:gap-5 ml-auto" data-tour="header-notifications">
             <NotificationBell />
 
             <Button variant="ghost" size="icon" className="rounded-none border border-[#0B1F3A]/10 bg-white hover:bg-[#0B1F3A]/5 transition-colors shadow-sm" asChild>

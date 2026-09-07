@@ -18,6 +18,9 @@ import {
     Edit2,
     Trash2,
     X,
+    Mail,
+    MessageCircle,
+    KeyRound,
 } from "lucide-react";
 import {
     Table,
@@ -54,6 +57,8 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 interface StudentEnrollment {
     enrollmentId: string;
@@ -106,6 +111,16 @@ export default function AdmissionsPage() {
     const [bulkSwitchCourseId, setBulkSwitchCourseId] = useState('');
     const [bulkSwitching, setBulkSwitching] = useState(false);
     const [bulkDeleting, setBulkDeleting] = useState(false);
+
+    // Per-row "resend welcome email" / "send WhatsApp invite" action state
+    const [rowAction, setRowAction] = useState<{ uid: string; type: 'resend' | 'whatsapp' } | null>(null);
+
+    // "Message Students" compose dialog state (Gmail-style broadcast/individual send)
+    const [composeOpen, setComposeOpen] = useState(false);
+    const [composeTarget, setComposeTarget] = useState<'all' | 'selected'>('all');
+    const [composeSubject, setComposeSubject] = useState('');
+    const [composeBody, setComposeBody] = useState('');
+    const [sendingMessage, setSendingMessage] = useState(false);
 
     useEffect(() => {
         fetchAll();
@@ -248,6 +263,93 @@ export default function AdmissionsPage() {
         fetchAll();
     };
 
+    const handleResendWelcome = async (student: Student) => {
+        setRowAction({ uid: student.uid, type: 'resend' });
+        try {
+            const res = await apiFetch(`/api/admissions/students/${student.uid}/resend-welcome`, { method: 'POST' });
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.error || 'Failed to resend welcome email');
+            }
+            await logAudit({
+                action: AUDIT_ACTIONS.WELCOME_EMAIL_RESENT,
+                resource: AUDIT_RESOURCES.COMMUNICATION,
+                resourceId: student.uid,
+                metadata: { email: student.email },
+            });
+            toast({ title: "Welcome email resent", description: `${student.displayName} has been sent a fresh password and login link.` });
+        } catch (error: any) {
+            toast({ variant: "destructive", title: "Resend Failed", description: error.message || "Could not resend the welcome email." });
+        } finally {
+            setRowAction(null);
+        }
+    };
+
+    const handleSendWhatsapp = async (student: Student) => {
+        setRowAction({ uid: student.uid, type: 'whatsapp' });
+        try {
+            const res = await apiFetch(`/api/admissions/students/${student.uid}/send-whatsapp`, { method: 'POST' });
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.error || 'Failed to send WhatsApp invite');
+            }
+            await logAudit({
+                action: AUDIT_ACTIONS.WHATSAPP_INVITE_SENT,
+                resource: AUDIT_RESOURCES.COMMUNICATION,
+                resourceId: student.uid,
+                metadata: { email: student.email },
+            });
+            toast({ title: "WhatsApp invite sent", description: `${student.displayName} has been emailed the community link.` });
+        } catch (error: any) {
+            toast({ variant: "destructive", title: "Send Failed", description: error.message || "Could not send the WhatsApp invite." });
+        } finally {
+            setRowAction(null);
+        }
+    };
+
+    const handleSendMessage = async () => {
+        if (!composeSubject.trim() || !composeBody.trim()) {
+            toast({ variant: "destructive", title: "Missing details", description: "Subject and message are required." });
+            return;
+        }
+        if (composeTarget === 'selected' && selectedStudents.length === 0) {
+            toast({ variant: "destructive", title: "No students selected", description: "Select at least one student, or switch to \"All Students\"." });
+            return;
+        }
+        setSendingMessage(true);
+        try {
+            const res = await apiFetch('/api/admissions/message', {
+                method: 'POST',
+                body: JSON.stringify({
+                    subject: composeSubject,
+                    message: composeBody,
+                    uids: composeTarget === 'selected' ? Array.from(selectedUids) : undefined,
+                }),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                throw new Error(data.error || 'Failed to send message');
+            }
+            await logAudit({
+                action: AUDIT_ACTIONS.MESSAGE_BROADCAST,
+                resource: AUDIT_RESOURCES.COMMUNICATION,
+                metadata: { subject: composeSubject, target: composeTarget, sent: data.sent, failed: data.failed, total: data.total },
+            });
+            toast({
+                title: "Message sent",
+                description: `Delivered to ${data.sent} of ${data.total} student${data.total === 1 ? '' : 's'}${data.failed ? `, ${data.failed} failed` : ''}.`,
+                variant: data.failed ? "destructive" : undefined,
+            });
+            setComposeOpen(false);
+            setComposeSubject('');
+            setComposeBody('');
+        } catch (error: any) {
+            toast({ variant: "destructive", title: "Send Failed", description: error.message || "Could not send the message." });
+        } finally {
+            setSendingMessage(false);
+        }
+    };
+
     const handleSwitch = async () => {
         if (!switchTarget || !switchCourseId) return;
         setSwitching(true);
@@ -372,12 +474,23 @@ export default function AdmissionsPage() {
                     <p className="text-slate-500 font-medium">Manage which department every student belongs to, and admit new students.</p>
                 </div>
 
-                <Button
-                    onClick={() => setIsAddOpen(true)}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-black h-11 px-6 rounded-xl shadow-lg shadow-indigo-100 transition-all active:scale-95"
-                >
-                    <UserPlus className="w-4 h-4 mr-2" /> Add Student
-                </Button>
+                <div className="flex items-center gap-3">
+                    <Button
+                        variant="outline"
+                        data-tour="admissions-message"
+                        onClick={() => { setComposeTarget(selectedUids.size > 0 ? 'selected' : 'all'); setComposeOpen(true); }}
+                        className="h-11 px-6 rounded-xl border-slate-200 shadow-sm hover:bg-slate-50 font-black"
+                    >
+                        <Mail className="w-4 h-4 mr-2" /> Message Students
+                    </Button>
+                    <Button
+                        data-tour="admissions-add"
+                        onClick={() => setIsAddOpen(true)}
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white font-black h-11 px-6 rounded-xl shadow-lg shadow-indigo-100 transition-all active:scale-95"
+                    >
+                        <UserPlus className="w-4 h-4 mr-2" /> Add Student
+                    </Button>
+                </div>
 
                 <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
                     <DialogContent className="sm:max-w-[425px] rounded-3xl">
@@ -465,10 +578,10 @@ export default function AdmissionsPage() {
                 </Card>
             </div>
 
-            <Card className="border-none shadow-xl shadow-slate-100 rounded-[2rem] overflow-hidden bg-white">
+            <Card className="border-none shadow-xl shadow-slate-100 rounded-[2rem] overflow-hidden bg-white" data-tour="admissions-table">
                 <CardHeader className="p-8 border-b border-slate-50 bg-slate-50/30">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div className="relative flex-1 max-w-md">
+                        <div className="relative flex-1 max-w-md" data-tour="admissions-search">
                             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                             <Input
                                 placeholder="Search by name or email..."
@@ -506,6 +619,14 @@ export default function AdmissionsPage() {
                             onClick={() => setBulkSwitchOpen(true)}
                         >
                             <ArrowRightLeft className="w-3.5 h-3.5 mr-1.5" /> Switch Department
+                        </Button>
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            className="rounded-xl border-indigo-200 bg-white font-bold text-xs h-9"
+                            onClick={() => { setComposeTarget('selected'); setComposeOpen(true); }}
+                        >
+                            <Mail className="w-3.5 h-3.5 mr-1.5" /> Message Selected
                         </Button>
                         <Button
                             size="sm"
@@ -604,9 +725,9 @@ export default function AdmissionsPage() {
                                                         variant="ghost"
                                                         size="icon"
                                                         className="rounded-xl hover:bg-slate-100"
-                                                        disabled={deletingUid === student.uid}
+                                                        disabled={deletingUid === student.uid || rowAction?.uid === student.uid}
                                                     >
-                                                        {deletingUid === student.uid ? (
+                                                        {deletingUid === student.uid || rowAction?.uid === student.uid ? (
                                                             <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
                                                         ) : (
                                                             <MoreHorizontal className="h-4 w-4 text-slate-400" />
@@ -624,6 +745,20 @@ export default function AdmissionsPage() {
                                                     >
                                                         <Edit2 className="h-4 w-4 text-slate-400" />
                                                         <span className="font-bold text-sm">Edit Profile</span>
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem
+                                                        className="rounded-xl flex items-center gap-3 p-3 cursor-pointer"
+                                                        onClick={() => handleResendWelcome(student)}
+                                                    >
+                                                        <KeyRound className="h-4 w-4 text-slate-400" />
+                                                        <span className="font-bold text-sm">Resend Welcome Email</span>
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem
+                                                        className="rounded-xl flex items-center gap-3 p-3 cursor-pointer"
+                                                        onClick={() => handleSendWhatsapp(student)}
+                                                    >
+                                                        <MessageCircle className="h-4 w-4 text-slate-400" />
+                                                        <span className="font-bold text-sm">Send WhatsApp Invite</span>
                                                     </DropdownMenuItem>
                                                     {student.enrollments.length > 0 && (
                                                         <DropdownMenuItem
@@ -763,6 +898,61 @@ export default function AdmissionsPage() {
                         <Button onClick={handleSaveEdit} disabled={saving} className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl px-8 h-11">
                             {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                             Save Changes
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={composeOpen} onOpenChange={(open) => { setComposeOpen(open); if (!open) { setComposeSubject(''); setComposeBody(''); } }}>
+                <DialogContent className="sm:max-w-[520px] rounded-3xl">
+                    <DialogHeader>
+                        <DialogTitle className="text-2xl font-black flex items-center gap-2">
+                            <Mail className="w-5 h-5 text-indigo-600" /> Message Students
+                        </DialogTitle>
+                        <DialogDescription>
+                            Compose a custom email announcement. It's sent to each recipient's registered address.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-5 py-4">
+                        <div className="space-y-2">
+                            <Label>Send To</Label>
+                            <RadioGroup value={composeTarget} onValueChange={(v) => setComposeTarget(v as 'all' | 'selected')} className="grid grid-cols-1 gap-2">
+                                <label className="flex items-center gap-3 rounded-xl border border-slate-200 p-3 cursor-pointer has-[:checked]:border-indigo-400 has-[:checked]:bg-indigo-50/50">
+                                    <RadioGroupItem value="all" id="target-all" />
+                                    <span className="font-bold text-sm text-slate-700">All Students <span className="text-slate-400 font-medium">({students.length})</span></span>
+                                </label>
+                                <label className={`flex items-center gap-3 rounded-xl border border-slate-200 p-3 ${selectedStudents.length === 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer has-[:checked]:border-indigo-400 has-[:checked]:bg-indigo-50/50'}`}>
+                                    <RadioGroupItem value="selected" id="target-selected" disabled={selectedStudents.length === 0} />
+                                    <span className="font-bold text-sm text-slate-700">Selected Students <span className="text-slate-400 font-medium">({selectedStudents.length})</span></span>
+                                </label>
+                            </RadioGroup>
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="msg-subject">Subject</Label>
+                            <Input
+                                id="msg-subject"
+                                placeholder="e.g. Upcoming Live Class Schedule Update"
+                                value={composeSubject}
+                                onChange={(e) => setComposeSubject(e.target.value)}
+                                className="h-11 rounded-xl"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="msg-body">Message</Label>
+                            <Textarea
+                                id="msg-body"
+                                placeholder="Write your message..."
+                                value={composeBody}
+                                onChange={(e) => setComposeBody(e.target.value)}
+                                className="min-h-[160px] rounded-xl"
+                            />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="ghost" onClick={() => setComposeOpen(false)} className="rounded-xl">Cancel</Button>
+                        <Button onClick={handleSendMessage} disabled={sendingMessage} className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl px-8 h-11">
+                            {sendingMessage ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Mail className="h-4 w-4 mr-2" />}
+                            {sendingMessage ? 'Sending…' : 'Send Message'}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

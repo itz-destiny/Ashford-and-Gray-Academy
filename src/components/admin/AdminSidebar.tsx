@@ -19,20 +19,22 @@ import {
     Mail,
     Sparkles,
     CreditCard,
+    PlayCircle,
 } from "lucide-react";
 import { useUser } from "@/firebase";
 import { signOut } from "@/firebase/auth";
+import { TOUR_QUERY_PARAM } from "@/components/tutorial/PortalTutorial";
 
 const navItems = [
-    { href: "/admin", label: "Academy Overview", icon: LayoutDashboard },
-    { href: "/admin/users", label: "Members & Staff", icon: Users },
-    { href: "/admin/courses", label: "Course Catalog", icon: Book },
-    { href: "/admin/timetable", label: "Timetable", icon: CalendarClock },
-    { href: "/admin/events", label: "Academy Events", icon: Calendar },
-    { href: "/admin/payments", label: "Payments", icon: CreditCard },
-    { href: "/admin/communications", label: "Messages", icon: MessageSquare },
+    { href: "/admin", label: "Academy Overview", icon: LayoutDashboard, tour: "nav-admin-overview" },
+    { href: "/admin/users", label: "Members & Staff", icon: Users, tour: "nav-admin-users" },
+    { href: "/admin/courses", label: "Course Catalog", icon: Book, tour: "nav-admin-courses" },
+    { href: "/admin/timetable", label: "Timetable", icon: CalendarClock, tour: "nav-admin-timetable" },
+    { href: "/admin/events", label: "Academy Events", icon: Calendar, tour: "nav-admin-events" },
+    { href: "/admin/payments", label: "Payments", icon: CreditCard, tour: "nav-admin-payments" },
+    { href: "/admin/communications", label: "Messages", icon: MessageSquare, tour: "nav-admin-communications" },
     { href: "/admin/newsletter", label: "Newsletter", icon: Mail },
-    { href: "/admin/reports", label: "Insights", icon: BarChart3 },
+    { href: "/admin/reports", label: "Insights", icon: BarChart3, tour: "nav-admin-reports" },
 ];
 
 export function AdminSidebar({ className }: { className?: string }) {
@@ -57,6 +59,7 @@ export function AdminSidebar({ className }: { className?: string }) {
                         <Link
                             key={item.href}
                             href={item.href}
+                            data-tour={item.tour}
                             className={cn(
                                 "group flex items-center gap-4 px-5 py-3.5 transition-all duration-300 relative rounded-none",
                                 isActive
@@ -98,6 +101,13 @@ export function AdminSidebar({ className }: { className?: string }) {
                                 : "text-white/40 group-hover:text-white"
                         )} />
                         <span className="text-xs font-black uppercase tracking-wider">Academy Settings</span>
+                    </Link>
+                    <Link
+                        href={`/admin?${TOUR_QUERY_PARAM}=1`}
+                        className="group flex items-center gap-4 px-5 py-3.5 transition-all duration-300 rounded-none text-white/60 hover:bg-white/[0.02] hover:text-white"
+                    >
+                        <PlayCircle className="w-4 h-4 text-white/40 group-hover:text-white transition-all duration-300" />
+                        <span className="text-xs font-black uppercase tracking-wider">Replay Tutorial</span>
                     </Link>
                 </div>
             </nav>

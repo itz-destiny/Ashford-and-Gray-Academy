@@ -14,6 +14,7 @@ import {
     Check,
     Building,
     Loader2,
+    MessageCircle,
 } from "lucide-react";
 import { useUser } from "@/firebase/auth/use-user";
 import { apiFetch } from "@/lib/api-client";
@@ -33,6 +34,7 @@ export default function RegistrarSettingsPage() {
     const [displayName, setDisplayName] = useState('');
     const [institutionName, setInstitutionName] = useState('');
     const [academicYear, setAcademicYear] = useState('');
+    const [whatsappCommunityUrl, setWhatsappCommunityUrl] = useState('');
     const [notifications, setNotifications] = useState({
         userManagement: true,
         courseApprovals: true,
@@ -57,6 +59,7 @@ export default function RegistrarSettingsPage() {
                     const settings = await settingsRes.json();
                     setInstitutionName(settings.institutionName || '');
                     setAcademicYear(settings.academicYear || '');
+                    setWhatsappCommunityUrl(settings.whatsappCommunityUrl || '');
                 }
                 if (profileRes.ok) {
                     const profile = await profileRes.json();
@@ -80,7 +83,7 @@ export default function RegistrarSettingsPage() {
             await Promise.all([
                 apiFetch('/api/registrar/settings', {
                     method: 'PATCH',
-                    body: JSON.stringify({ institutionName, academicYear }),
+                    body: JSON.stringify({ institutionName, academicYear, whatsappCommunityUrl }),
                 }),
                 apiFetch('/api/users', {
                     method: 'POST',
@@ -182,6 +185,20 @@ export default function RegistrarSettingsPage() {
                                 disabled={loading}
                                 className="h-12 rounded-none bg-[#F6F4F2] border-none focus-visible:ring-[#C8A96A]"
                             />
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                            <Label htmlFor="whatsappCommunityUrl" className="flex items-center gap-2">
+                                <MessageCircle className="w-3.5 h-3.5 text-[#1F7A5A]" /> WhatsApp Community Invite Link
+                            </Label>
+                            <Input
+                                id="whatsappCommunityUrl"
+                                placeholder="https://chat.whatsapp.com/..."
+                                value={whatsappCommunityUrl}
+                                onChange={(e) => setWhatsappCommunityUrl(e.target.value)}
+                                disabled={loading}
+                                className="h-12 rounded-none bg-[#F6F4F2] border-none focus-visible:ring-[#C8A96A]"
+                            />
+                            <p className="text-xs text-slate-400">Used by Admissions to send students the community invite — update this whenever the link changes.</p>
                         </div>
                     </div>
                 </CardContent>

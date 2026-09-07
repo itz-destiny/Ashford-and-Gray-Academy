@@ -8,10 +8,13 @@ import { FinanceSidebar } from "@/components/finance/FinanceSidebar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { RoleGuard } from "@/components/auth/RoleGuard";
 import Link from "next/link";
+import { PortalTutorial } from "@/components/tutorial/PortalTutorial";
+import { financeTourSteps } from "@/lib/tutorial-steps/finance";
 
 export default function FinanceLayout({ children }: { children: React.ReactNode }) {
     return (
         <RoleGuard allowed={["finance"]}>
+            <PortalTutorial steps={financeTourSteps} />
             <div className="flex min-h-screen w-full bg-[#FAF9F6]">
                 <FinanceSidebar className="hidden md:flex" />
 

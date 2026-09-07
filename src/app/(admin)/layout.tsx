@@ -9,6 +9,8 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Menu, Settings } from "lucide-react";
+import { PortalTutorial } from "@/components/tutorial/PortalTutorial";
+import { adminTourSteps } from "@/lib/tutorial-steps/admin";
 
 export default function AdminLayout({
     children,
@@ -17,6 +19,7 @@ export default function AdminLayout({
 }) {
     return (
         <RoleGuard allowed={["admin"]}>
+            <PortalTutorial steps={adminTourSteps} />
             <div className="flex min-h-screen w-full bg-[#FAF9F6]">
                 <AdminSidebar className="hidden md:flex" />
 
@@ -49,7 +52,7 @@ export default function AdminLayout({
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-3 md:gap-5 ml-auto">
+                        <div className="flex items-center gap-3 md:gap-5 ml-auto" data-tour="header-notifications">
                             <NotificationBell />
                             <Button
                                 variant="ghost"
