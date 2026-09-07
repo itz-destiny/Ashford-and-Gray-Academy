@@ -55,18 +55,22 @@ export const GET = withAuth<RouteParams>(async (_req: NextRequest, { auth, param
             // no-op — meetings created without a passcode simply join without one
         }
 
+        if (!liveClass.zoomAccountKey) {
+            return NextResponse.json({ error: 'This class has no Zoom host recorded.' }, { status: 400 });
+        }
+        const account = getZoomAccounts().find((a) => a.key === liveClass.zoomAccountKey);
+        if (!account) {
+            return NextResponse.json({ error: 'The Zoom account this class was scheduled under is no longer configured.' }, { status: 500 });
+        }
+
         const role: 0 | 1 = isHost ? 1 : 0;
-        const signature = generateZoomSdkSignature(liveClass.zoomMeetingId, role);
+        const signature = generateZoomSdkSignature(liveClass.zoomMeetingId, role, {
+            sdkClientId: account.sdkClientId,
+            sdkClientSecret: account.sdkClientSecret,
+        });
 
         let zak: string | undefined;
         if (isHost) {
-            if (!liveClass.zoomAccountKey) {
-                return NextResponse.json({ error: 'This class has no Zoom host recorded.' }, { status: 400 });
-            }
-            const account = getZoomAccounts().find((a) => a.key === liveClass.zoomAccountKey);
-            if (!account) {
-                return NextResponse.json({ error: 'The Zoom account this class was scheduled under is no longer configured.' }, { status: 500 });
-            }
             const startUrl = await getFreshZoomStartUrl(account, liveClass.zoomMeetingId);
             zak = new URL(startUrl).searchParams.get('zak') || undefined;
         }
@@ -75,7 +79,6 @@ export const GET = withAuth<RouteParams>(async (_req: NextRequest, { auth, param
 
         return NextResponse.json({
             success: true,
-            sdkKey: process.env.ZOOM_SDK_KEY,
             signature,
             meetingNumber: liveClass.zoomMeetingId,
             passcode,

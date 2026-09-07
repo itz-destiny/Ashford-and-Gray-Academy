@@ -23,6 +23,18 @@
 //     once instead of 1). Confirm this in the Zoom admin billing page
 //     before changing it — assume 1 until it's actually confirmed there.
 //
+//   ZOOM_PRIMARY_SDK_CLIENT_ID / ZOOM_PRIMARY_SDK_CLIENT_SECRET
+//   ZOOM_SCHOOL_SDK_CLIENT_ID / ZOOM_SCHOOL_SDK_CLIENT_SECRET
+//     — credentials from a separate Meeting SDK app (Marketplace → Develop →
+//     Build App → General App), ONE PER ACCOUNT. This is a different app
+//     registration from the Server-to-Server OAuth app above (which only
+//     handles the REST API: creating/updating meetings). The Meeting SDK app
+//     is what lets a browser actually JOIN a meeting via our embedded room —
+//     and per Zoom's rules, an app can only join meetings hosted within the
+//     same account that created it. So a meeting scheduled on the "primary"
+//     account can only be joined using primary's own Meeting SDK app, never
+//     school's, and vice versa.
+//
 // An account with no host emails configured is simply skipped, so this is
 // safe to leave partially filled in during setup.
 
@@ -33,6 +45,8 @@ export interface ZoomHostAccount {
     clientSecret: string;
     hosts: string[];
     concurrencyPerHost: number;
+    sdkClientId?: string;
+    sdkClientSecret?: string;
 }
 
 function parseHostList(raw: string | undefined): string[] {
@@ -58,6 +72,8 @@ export function getZoomAccounts(): ZoomHostAccount[] {
             clientSecret: process.env.ZOOM_CLIENT_SECRET,
             hosts: [process.env.ZOOM_ACCOUNT_EMAIL?.trim() || 'me'],
             concurrencyPerHost: parseConcurrency(process.env.ZOOM_PRIMARY_CONCURRENCY),
+            sdkClientId: process.env.ZOOM_PRIMARY_SDK_CLIENT_ID,
+            sdkClientSecret: process.env.ZOOM_PRIMARY_SDK_CLIENT_SECRET,
         });
     }
 
@@ -71,6 +87,8 @@ export function getZoomAccounts(): ZoomHostAccount[] {
                 clientSecret: process.env.ZOOM_SCHOOL_CLIENT_SECRET,
                 hosts,
                 concurrencyPerHost: parseConcurrency(process.env.ZOOM_SCHOOL_CONCURRENCY),
+                sdkClientId: process.env.ZOOM_SCHOOL_SDK_CLIENT_ID,
+                sdkClientSecret: process.env.ZOOM_SCHOOL_SDK_CLIENT_SECRET,
             });
         }
     }

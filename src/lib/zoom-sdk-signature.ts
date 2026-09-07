@@ -4,11 +4,21 @@ import jwt from 'jsonwebtoken';
 // an embedded join — role 1 (host) requires pairing this with a ZAK token,
 // role 0 (participant) needs nothing else. Per Zoom's Meeting SDK auth spec,
 // `exp`/`tokenExp` must be at least 1800s after `iat`.
-export function generateZoomSdkSignature(meetingNumber: string, role: 0 | 1): string {
-    const sdkKey = process.env.ZOOM_SDK_KEY;
-    const sdkSecret = process.env.ZOOM_SDK_SECRET;
+//
+// A Meeting SDK app can only join meetings hosted within the same Zoom
+// account that created it, so the caller must pass the SDK Client ID/Secret
+// belonging to whichever account actually hosts this specific meeting (see
+// ZoomHostAccount.sdkClientId/sdkClientSecret in zoom-hosts.ts) — never a
+// single global pair.
+export function generateZoomSdkSignature(
+    meetingNumber: string,
+    role: 0 | 1,
+    credentials: { sdkClientId?: string; sdkClientSecret?: string }
+): string {
+    const sdkKey = credentials.sdkClientId;
+    const sdkSecret = credentials.sdkClientSecret;
     if (!sdkKey || !sdkSecret) {
-        throw new Error('Zoom Meeting SDK credentials are not configured.');
+        throw new Error('No Meeting SDK app is configured for the Zoom account this class was scheduled under.');
     }
 
     const iat = Math.floor(Date.now() / 1000) - 30;
