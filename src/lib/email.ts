@@ -528,6 +528,29 @@ export const emailTemplates = {
         }),
     }),
 
+    loginReminder: (data: {
+        recipientName: string;
+        email: string;
+        loginUrl: string;
+        courseName?: string;
+    }) => ({
+        subject: 'Your Ashford & Gray Fusion Academy account is ready',
+        html: brandedShell({
+            preheader: `A reminder that your account (${data.email}) is active and ready.`,
+            title: 'Your Account Is Ready',
+            body: `
+                <p style="font-size:16px;line-height:1.6;color:#334155;margin:0 0 22px">Dear ${escapeHtml(data.recipientName)},</p>
+                <p style="font-size:16px;line-height:1.6;color:#334155;margin:0 0 28px">This is a reminder that your Ashford &amp; Gray Fusion Academy account${data.courseName ? ` for <strong style="color:#0B1F3A">${escapeHtml(data.courseName)}</strong>` : ''} is active. Sign in with the email and password you already set.</p>
+                <div style="background:#FBF8F0;border-left:3px solid #C8A96A;border-radius:8px;padding:16px 20px;margin:0 0 28px">
+                    <p style="font-size:13px;line-height:1.6;color:#64748b;margin:0">Forgotten your password? Use <strong style="color:#0B1F3A">Forgot Password</strong> on the sign-in page to reset it yourself — for your security we don't reset passwords on request without that step.</p>
+                </div>
+                <div style="text-align:center;margin:0 0 8px">
+                    <a href="${data.loginUrl}" style="display:inline-block;background:#0B1F3A;color:#ffffff;text-decoration:none;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;font-size:11px;padding:17px 44px;border-radius:9999px;box-shadow:0 8px 20px rgba(11,31,58,0.25)">Sign In to Your Dashboard</a>
+                </div>
+            `,
+        }),
+    }),
+
     adminAnnouncement: (data: {
         recipientName: string;
         subject: string;
