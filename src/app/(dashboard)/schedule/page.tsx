@@ -88,7 +88,7 @@ export default function SchedulePage() {
         title: `${s.courseTitle || s.programmeName}: ${s.module}`,
         time: `${format(start, 'hh:mm a')} – ${format(new Date(s.endTime), 'hh:mm a')}`,
         location: s.lecturerName ? `Lecturer: ${s.lecturerName}` : 'Live Class',
-        href: s.liveClassId && s.status === 'scheduled' ? `/live-classes/${s.liveClassId}` : undefined,
+        href: s.zoomJoinUrl && s.status === 'scheduled' ? s.zoomJoinUrl : undefined,
         liveClassId: s.liveClassId,
       });
     }

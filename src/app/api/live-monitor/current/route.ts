@@ -47,6 +47,7 @@ export const GET = withAuth(async (_req: NextRequest, { auth }) => {
                 courseTitle: course?.title || 'Unknown course',
                 startTime: liveClass.startTime,
                 durationMinutes: liveClass.durationMinutes,
+                zoomJoinUrl: liveClass.zoomJoinUrl,
             },
         });
     } catch (err) {

@@ -280,13 +280,10 @@ export default function ManageCoursePage() {
                                             toast({ title: "Attendance link copied", description: "Paste it into the Zoom meeting chat so students can check themselves in." });
                                         }}
                                     >
-                                        <Link2 className="h-3.5 w-3.5 mr-1.5" /> Attendance Link
-                                    </Button>
-                                    <Button asChild variant="outline" size="sm" className="rounded-xl border-slate-200">
-                                        <a href={cls.zoomJoinUrl} target="_blank" rel="noopener noreferrer">Guest Link</a>
+                                        <Link2 className="h-3.5 w-3.5 mr-1.5" /> Attendance
                                     </Button>
                                     <Button asChild size="sm" className="bg-[#1F7A5A] text-white rounded-xl">
-                                        <Link href={`/live-classes/${cls._id}`}>Start as Host</Link>
+                                        <a href={cls.zoomJoinUrl} target="_blank" rel="noopener noreferrer">Join</a>
                                     </Button>
                                 </div>
                             </div>
