@@ -6,6 +6,7 @@ import { AuthError, requireRole, withAuth } from '@/lib/auth-server';
 import { adminAuth } from '@/lib/firebase-admin';
 import { resolveCourses } from '@/lib/resolve-course';
 import { generateTempPassword } from '@/lib/generate-password';
+import { issueMagicLoginLink } from '@/lib/magic-login';
 import { sendEmail, emailTemplates } from '@/lib/email';
 import { getEmailUrl } from '@/lib/app-url';
 import { rateLimit } from '@/lib/rate-limit';
@@ -94,6 +95,7 @@ export const POST = withAuth<RouteParams>(async (req: NextRequest, { auth, param
         const password = generateTempPassword(student.displayName || student.email);
         await fbAuth.updateUser(uid, { password });
         await User.updateOne({ uid }, { $set: { mustChangePassword: true } });
+        const magicLoginUrl = await issueMagicLoginLink(uid);
 
         const tpl = emailTemplates.enrollmentWelcome({
             recipientName: student.displayName || student.email,
@@ -101,6 +103,7 @@ export const POST = withAuth<RouteParams>(async (req: NextRequest, { auth, param
             password,
             loginUrl,
             courseName,
+            magicLoginUrl,
         });
         const result = await sendEmail({ to: student.email, subject: tpl.subject, html: tpl.html });
         if (!result.success) {

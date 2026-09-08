@@ -7,6 +7,7 @@ import { AuthError, requireRole, withAuth } from '@/lib/auth-server';
 import { adminAuth } from '@/lib/firebase-admin';
 import { resolveCourse, resolveCourses } from '@/lib/resolve-course';
 import { generateTempPassword } from '@/lib/generate-password';
+import { issueMagicLoginLink } from '@/lib/magic-login';
 import { sendEmail, emailTemplates } from '@/lib/email';
 import { getEmailUrl } from '@/lib/app-url';
 import { rateLimit } from '@/lib/rate-limit';
@@ -158,12 +159,14 @@ export const POST = withAuth(async (req: NextRequest, { auth }) => {
 
         try {
             const appUrl = getEmailUrl();
+            const magicLoginUrl = await issueMagicLoginLink(fbUid);
             const tpl = emailTemplates.enrollmentWelcome({
                 recipientName: displayName,
                 email,
                 password,
                 loginUrl: `${appUrl}/login`,
                 courseName: course.title,
+                magicLoginUrl,
             });
             void sendEmail({ to: email, subject: tpl.subject, html: tpl.html });
         } catch (mailErr) {

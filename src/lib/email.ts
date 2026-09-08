@@ -330,18 +330,26 @@ export const emailTemplates = {
         password: string;
         loginUrl: string;
         courseName?: string;
+        magicLoginUrl?: string;
     }) => ({
         subject: 'Your Ashford & Gray Fusion Academy login',
         html: brandedShell({
-            preheader: `Your enrollment is confirmed. Here is your login for ${data.email}.`,
+            preheader: `Your enrollment is confirmed. Click below to access your dashboard.`,
             title: 'Welcome to the Academy',
             body: `
                 <p style="font-size:16px;line-height:1.6;color:#334155;margin:0 0 22px">Dear ${escapeHtml(data.recipientName)},</p>
-                <p style="font-size:16px;line-height:1.6;color:#334155;margin:0 0 28px">Congratulations — your enrollment is confirmed${data.courseName ? ` for <strong style="color:#0B1F3A">${escapeHtml(data.courseName)}</strong>` : ''}, and your student dashboard is now active. Your credentials are below.</p>
+                <p style="font-size:16px;line-height:1.6;color:#334155;margin:0 0 28px">Congratulations — your enrollment is confirmed${data.courseName ? ` for <strong style="color:#0B1F3A">${escapeHtml(data.courseName)}</strong>` : ''}, and your student dashboard is now active.</p>
+
+                ${data.magicLoginUrl ? `
+                <div style="text-align:center;margin:0 0 20px">
+                    <a href="${data.magicLoginUrl}" style="display:inline-block;background:#0B1F3A;color:#ffffff;text-decoration:none;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;font-size:11px;padding:17px 44px;border-radius:9999px;box-shadow:0 8px 20px rgba(11,31,58,0.25)">Access My Dashboard</a>
+                </div>
+                <p style="font-size:13px;line-height:1.6;color:#94a3b8;margin:0 0 28px;text-align:center">This link signs you in directly — you'll be asked to choose your own password right after.</p>
+                ` : ''}
 
                 <div style="background:linear-gradient(180deg,#0B1F3A 0%,#132C4F 100%);border-radius:20px;padding:2px;margin:0 0 28px">
                     <div style="background:#ffffff;border-radius:18px;padding:28px 28px 24px">
-                        <p style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.25em;color:#C8A96A;margin:0 0 18px;text-align:center">Your Login Credentials</p>
+                        <p style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.25em;color:#C8A96A;margin:0 0 18px;text-align:center">${data.magicLoginUrl ? 'Or Sign In Manually' : 'Your Login Credentials'}</p>
                         <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                             <tr>
                                 <td style="padding-bottom:16px">
@@ -359,9 +367,11 @@ export const emailTemplates = {
                     </div>
                 </div>
 
+                ${!data.magicLoginUrl ? `
                 <div style="text-align:center;margin:0 0 32px">
                     <a href="${data.loginUrl}" style="display:inline-block;background:#0B1F3A;color:#ffffff;text-decoration:none;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;font-size:11px;padding:17px 44px;border-radius:9999px;box-shadow:0 8px 20px rgba(11,31,58,0.25)">Sign In to Your Dashboard</a>
                 </div>
+                ` : ''}
 
                 <p style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.25em;color:#C8A96A;margin:0 0 16px">What Happens Next</p>
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 28px">
@@ -370,7 +380,7 @@ export const emailTemplates = {
                             <span style="display:inline-block;width:22px;height:22px;border-radius:50%;background:#0B1F3A;color:#ffffff;font-size:11px;font-weight:700;text-align:center;line-height:22px">1</span>
                         </td>
                         <td valign="top" style="padding-bottom:16px;padding-left:8px">
-                            <p style="font-size:14px;line-height:1.6;color:#334155;margin:0">Sign in with the temporary password above.</p>
+                            <p style="font-size:14px;line-height:1.6;color:#334155;margin:0">${data.magicLoginUrl ? 'Click the button above to open your dashboard.' : 'Sign in with the temporary password above.'}</p>
                         </td>
                     </tr>
                     <tr>
@@ -392,7 +402,7 @@ export const emailTemplates = {
                 </table>
 
                 <div style="background:#FBF8F0;border-left:3px solid #C8A96A;border-radius:8px;padding:16px 20px;margin:0">
-                    <p style="font-size:13px;line-height:1.6;color:#64748b;margin:0"><strong style="color:#0B1F3A">For your security:</strong> keep this password private and change it as soon as you log in. It will not be valid after your first sign-in.</p>
+                    <p style="font-size:13px;line-height:1.6;color:#64748b;margin:0"><strong style="color:#0B1F3A">For your security:</strong> ${data.magicLoginUrl ? 'the button above and the temporary password both stop working the moment you set your own password.' : 'keep this password private and change it as soon as you log in. It will not be valid after your first sign-in.'}</p>
                 </div>
             `,
         }),
@@ -404,18 +414,26 @@ export const emailTemplates = {
         password: string;
         loginUrl: string;
         roleTitle: string;
+        magicLoginUrl?: string;
     }) => ({
         subject: `Your Ashford & Gray Fusion Academy staff login — ${data.roleTitle}`,
         html: brandedShell({
-            preheader: `You've been added as ${data.roleTitle}. Here is your login for ${data.email}.`,
+            preheader: `You've been added as ${data.roleTitle}. Click below to access your workspace.`,
             title: 'Welcome to the Team',
             body: `
                 <p style="font-size:16px;line-height:1.6;color:#334155;margin:0 0 22px">Dear ${escapeHtml(data.recipientName)},</p>
-                <p style="font-size:16px;line-height:1.6;color:#334155;margin:0 0 28px">You've been added to the Ashford &amp; Gray Fusion Academy staff system as <strong style="color:#0B1F3A">${escapeHtml(data.roleTitle)}</strong>. Your credentials are below.</p>
+                <p style="font-size:16px;line-height:1.6;color:#334155;margin:0 0 28px">You've been added to the Ashford &amp; Gray Fusion Academy staff system as <strong style="color:#0B1F3A">${escapeHtml(data.roleTitle)}</strong>.</p>
+
+                ${data.magicLoginUrl ? `
+                <div style="text-align:center;margin:0 0 20px">
+                    <a href="${data.magicLoginUrl}" style="display:inline-block;background:#0B1F3A;color:#ffffff;text-decoration:none;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;font-size:11px;padding:17px 44px;border-radius:9999px;box-shadow:0 8px 20px rgba(11,31,58,0.25)">Access My Workspace</a>
+                </div>
+                <p style="font-size:13px;line-height:1.6;color:#94a3b8;margin:0 0 28px;text-align:center">This link signs you in directly — you'll be asked to choose your own password right after.</p>
+                ` : ''}
 
                 <div style="background:linear-gradient(180deg,#0B1F3A 0%,#132C4F 100%);border-radius:20px;padding:2px;margin:0 0 28px">
                     <div style="background:#ffffff;border-radius:18px;padding:28px 28px 24px">
-                        <p style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.25em;color:#C8A96A;margin:0 0 18px;text-align:center">Your Login Credentials</p>
+                        <p style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:0.25em;color:#C8A96A;margin:0 0 18px;text-align:center">${data.magicLoginUrl ? 'Or Sign In Manually' : 'Your Login Credentials'}</p>
                         <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                             <tr>
                                 <td style="padding-bottom:16px">
@@ -433,12 +451,14 @@ export const emailTemplates = {
                     </div>
                 </div>
 
+                ${!data.magicLoginUrl ? `
                 <div style="text-align:center;margin:0 0 32px">
                     <a href="${data.loginUrl}" style="display:inline-block;background:#0B1F3A;color:#ffffff;text-decoration:none;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;font-size:11px;padding:17px 44px;border-radius:9999px;box-shadow:0 8px 20px rgba(11,31,58,0.25)">Sign In to Your Workspace</a>
                 </div>
+                ` : ''}
 
                 <div style="background:#FBF8F0;border-left:3px solid #C8A96A;border-radius:8px;padding:16px 20px;margin:0">
-                    <p style="font-size:13px;line-height:1.6;color:#64748b;margin:0"><strong style="color:#0B1F3A">For your security:</strong> you'll be asked to set your own password the first time you sign in. Keep this temporary password private until then.</p>
+                    <p style="font-size:13px;line-height:1.6;color:#64748b;margin:0"><strong style="color:#0B1F3A">For your security:</strong> ${data.magicLoginUrl ? 'the button above and the temporary password both stop working the moment you set your own password.' : "you'll be asked to set your own password the first time you sign in. Keep this temporary password private until then."}</p>
                 </div>
             `,
         }),
