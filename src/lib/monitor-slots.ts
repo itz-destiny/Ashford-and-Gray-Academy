@@ -62,3 +62,14 @@ export async function getCurrentClassForSlot(slotNumber: number): Promise<
     const live = candidates.filter((c) => isCurrentlyLive(c, now));
     return live[slot.indexOnHost] || null;
 }
+
+/**
+ * Every class currently live right now, across every Zoom account/host —
+ * for the monitoring view, where any monitor account picks whichever class
+ * it wants to watch instead of being bound to one fixed capacity slot.
+ */
+export async function getAllLiveClasses(): Promise<ILiveClass[]> {
+    const now = Date.now();
+    const candidates = await LiveClass.find({ status: 'scheduled' }).sort({ startTime: 1 });
+    return candidates.filter((c) => isCurrentlyLive(c, now));
+}
