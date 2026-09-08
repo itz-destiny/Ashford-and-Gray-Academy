@@ -19,6 +19,23 @@ const limiter = rateLimit({
     uniqueTokenPerInterval: 500,
 });
 
+// Bulk-fetches every Firebase Auth user's real sign-in history in a handful
+// of paginated calls (1000/page) rather than one lookup per student — the
+// only way this stays fast with hundreds of students.
+async function getSignInStatusByUid(): Promise<Map<string, boolean>> {
+    const map = new Map<string, boolean>();
+    const auth_ = adminAuth();
+    let pageToken: string | undefined;
+    do {
+        const result = await auth_.listUsers(1000, pageToken);
+        for (const u of result.users) {
+            map.set(u.uid, !!u.metadata.lastSignInTime);
+        }
+        pageToken = result.pageToken;
+    } while (pageToken);
+    return map;
+}
+
 function handleError(err: unknown): Response {
     if (err instanceof AuthError) {
         return NextResponse.json({ error: err.message }, { status: err.status });
@@ -36,11 +53,12 @@ export const GET = withAuth(async (_req: NextRequest, { auth }) => {
         requireRole(auth, ADMISSIONS_ROLES);
         await dbConnect();
 
-        const [students, enrollments] = await Promise.all([
+        const [students, enrollments, signInStatus] = await Promise.all([
             User.find({ role: 'student' })
                 .select('uid displayName email phone')
                 .lean<{ uid: string; displayName: string; email: string; phone?: string }[]>(),
             Enrollment.find({}).lean<{ _id: unknown; userId: string; courseId: unknown }[]>(),
+            getSignInStatusByUid(),
         ]);
 
         const courseMap = await resolveCourses(
@@ -61,6 +79,7 @@ export const GET = withAuth(async (_req: NextRequest, { auth }) => {
                 displayName: s.displayName,
                 email: s.email,
                 phone: s.phone,
+                hasLoggedIn: signInStatus.get(s.uid) ?? false,
                 enrollments: ens.map(en => {
                     const cid = en.courseId?.toString();
                     const course = cid ? courseMap.get(cid) : null;
