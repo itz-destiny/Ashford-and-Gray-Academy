@@ -355,7 +355,7 @@ export default async function CourseDetailPage({ params }: RouteProps) {
                                 Dynamic Learning Syllabus
                             </h2>
                             <p className="text-[#0B1F3A]/60 text-xs font-black uppercase tracking-widest">
-                                {curriculum.length || course.learningOutcomes?.length || 0} Modules • {course.duration * 4} Lecture Hours
+                                {curriculum.length || course.learningOutcomes?.length || 0} Modules • 40 Lecture Hours
                             </p>
                         </div>
                         <Button variant="outline" className="text-[10px] font-black uppercase tracking-widest text-[#0B1F3A] border-slate-200 px-6 h-12 rounded-none hover:bg-slate-50">

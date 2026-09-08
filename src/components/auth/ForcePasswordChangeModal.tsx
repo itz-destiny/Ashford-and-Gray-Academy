@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, ShieldCheck } from "lucide-react";
+import { Loader2, ShieldCheck, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 /**
@@ -23,6 +23,7 @@ export function ForcePasswordChangeModal() {
     const [saving, setSaving] = useState(false);
     const [justChanged, setJustChanged] = useState(false);
     const [form, setForm] = useState({ current: "", next: "", confirm: "" });
+    const [showPassword, setShowPassword] = useState({ current: false, next: false, confirm: false });
 
     // useUser() only refetches the Mongo profile on auth state changes, not
     // when this flag flips server-side mid-session — so track success locally
@@ -90,15 +91,30 @@ export function ForcePasswordChangeModal() {
                 <form onSubmit={handleSubmit} className="px-8 py-8 space-y-5 bg-white">
                     <div className="space-y-2">
                         <Label htmlFor="fpc-current" className="text-[10px] font-black uppercase tracking-widest text-slate-400">Temporary Password</Label>
-                        <Input id="fpc-current" type="password" required autoFocus value={form.current} onChange={(e) => setForm(f => ({ ...f, current: e.target.value }))} className="h-12 rounded-xl bg-slate-50 border-none px-5" />
+                        <div className="relative">
+                            <Input id="fpc-current" type={showPassword.current ? "text" : "password"} required autoFocus value={form.current} onChange={(e) => setForm(f => ({ ...f, current: e.target.value }))} className="h-12 rounded-xl bg-slate-50 border-none px-5 pr-12" />
+                            <button type="button" onClick={() => setShowPassword(s => ({ ...s, current: !s.current }))} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#0B1F3A] transition-colors" tabIndex={-1}>
+                                {showPassword.current ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            </button>
+                        </div>
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="fpc-next" className="text-[10px] font-black uppercase tracking-widest text-slate-400">New Password</Label>
-                        <Input id="fpc-next" type="password" required value={form.next} onChange={(e) => setForm(f => ({ ...f, next: e.target.value }))} className="h-12 rounded-xl bg-slate-50 border-none px-5" />
+                        <div className="relative">
+                            <Input id="fpc-next" type={showPassword.next ? "text" : "password"} required value={form.next} onChange={(e) => setForm(f => ({ ...f, next: e.target.value }))} className="h-12 rounded-xl bg-slate-50 border-none px-5 pr-12" />
+                            <button type="button" onClick={() => setShowPassword(s => ({ ...s, next: !s.next }))} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#0B1F3A] transition-colors" tabIndex={-1}>
+                                {showPassword.next ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            </button>
+                        </div>
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="fpc-confirm" className="text-[10px] font-black uppercase tracking-widest text-slate-400">Confirm New Password</Label>
-                        <Input id="fpc-confirm" type="password" required value={form.confirm} onChange={(e) => setForm(f => ({ ...f, confirm: e.target.value }))} className="h-12 rounded-xl bg-slate-50 border-none px-5" />
+                        <div className="relative">
+                            <Input id="fpc-confirm" type={showPassword.confirm ? "text" : "password"} required value={form.confirm} onChange={(e) => setForm(f => ({ ...f, confirm: e.target.value }))} className="h-12 rounded-xl bg-slate-50 border-none px-5 pr-12" />
+                            <button type="button" onClick={() => setShowPassword(s => ({ ...s, confirm: !s.confirm }))} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#0B1F3A] transition-colors" tabIndex={-1}>
+                                {showPassword.confirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            </button>
+                        </div>
                     </div>
                     <Button type="submit" disabled={saving} className="w-full h-14 rounded-xl bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black text-[10px] uppercase tracking-[0.3em] gap-2">
                         {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}

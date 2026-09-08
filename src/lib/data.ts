@@ -579,7 +579,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     },
 
     {
-        title: 'Certificate in Business Innovation & Entrepreneurship',
+        title: 'Business Innovation and Entrepreneurship',
         category: 'Certification',
         instructor: faculty.woko,
         rating: 4.8,
@@ -592,7 +592,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
         imageHint: 'Entrepreneurs collaborating on a business plan',
         status: 'published',
         description:
-            'The Certificate in Business Innovation & Entrepreneurship is designed to provide participants with foundational knowledge and practical skills required to start, manage, and grow small businesses in today\'s competitive environment. The program introduces learners to entrepreneurship, innovation, business planning, branding, customer engagement, and digital business tools while equipping them with practical strategies for identifying opportunities and creating sustainable value.',
+            'The Business Innovation and Entrepreneurship Certificate Programme is designed to provide participants with foundational knowledge and practical skills required to start, manage, and grow small businesses in today\'s competitive environment. The program introduces learners to entrepreneurship, innovation, business planning, branding, customer engagement, and digital business tools while equipping them with practical strategies for identifying opportunities and creating sustainable value.',
         curriculum: [
             'Module 1: Introduction to Entrepreneurship & Innovation',
             'Module 2: Business Start-Up Fundamentals',
@@ -685,7 +685,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
             },
         ],
         certificationDetails: [
-            'Certificate in Business Innovation & Entrepreneurship',
+            'Business Innovation and Entrepreneurship Certificate Programme',
             'Completion of all required coursework',
             'Meeting attendance requirements',
             'Completion of practical exercises and assignments',
@@ -705,7 +705,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     },
 
     {
-        title: 'Certificate in Food & Beverage Management',
+        title: 'Food and Beverage Management',
         category: 'Certification',
         instructor: faculty.maimoona,
         rating: 4.8,
@@ -718,7 +718,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
         imageHint: 'Elegant restaurant table service and beverage presentation',
         status: 'published',
         description:
-            'The Certificate in Food & Beverage Management is designed to provide participants with foundational knowledge and practical skills in food service operations, restaurant management, customer service, food safety, and beverage operations. The program equips learners with the essential competencies required to work effectively in restaurants, hotels, catering organizations, lounges, event operations, and hospitality establishments.',
+            'The Food and Beverage Management Certificate Programme is designed to provide participants with foundational knowledge and practical skills in food service operations, restaurant management, customer service, food safety, and beverage operations. The program equips learners with the essential competencies required to work effectively in restaurants, hotels, catering organizations, lounges, event operations, and hospitality establishments.',
         curriculum: [
             'Module 1: Introduction to Food & Beverage Management',
             'Module 2: Food Service Operations',
@@ -808,7 +808,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
             },
         ],
         certificationDetails: [
-            'Certificate in Food & Beverage Management',
+            'Food and Beverage Management Certificate Programme',
             'Successful completion of coursework',
             'Completion of practical exercises',
             'Meeting attendance requirements',
@@ -955,7 +955,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
     },
 
     {
-        title: 'Certificate in Restaurant & Bar Service',
+        title: 'Restaurant and Bar Service',
         category: 'Certification',
         instructor: faculty.banigo,
         rating: 4.9,
@@ -968,7 +968,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
         imageHint: 'Professional waiter presenting fine dining table service',
         status: 'published',
         description:
-            'The Certificate in Restaurant & Bar Service is a practical hospitality program designed to equip participants with professional knowledge and service competencies required for effective restaurant and bar operations. The program focuses on service excellence, guest experience, table service procedures, beverage service, bar operations, wine and spirits knowledge, and professional hospitality etiquette. Participants will develop the technical, interpersonal, and operational skills necessary to deliver exceptional dining and beverage experiences in hotels, restaurants, resorts, lounges, clubs, and other hospitality establishments.',
+            'The Restaurant and Bar Service Certificate Programme is a practical hospitality program designed to equip participants with professional knowledge and service competencies required for effective restaurant and bar operations. The program focuses on service excellence, guest experience, table service procedures, beverage service, bar operations, wine and spirits knowledge, and professional hospitality etiquette. Participants will develop the technical, interpersonal, and operational skills necessary to deliver exceptional dining and beverage experiences in hotels, restaurants, resorts, lounges, clubs, and other hospitality establishments.',
         curriculum: [
             'Module 1: Introduction to Restaurant & Bar Operations',
             'Module 2: Restaurant Service Techniques',
@@ -1094,7 +1094,7 @@ export const coursesToSeed: Omit<Course, 'id' | 'progress'>[] = [
             },
         ],
         certificationDetails: [
-            'Certificate in Restaurant & Bar Service',
+            'Restaurant and Bar Service Certificate Programme',
             'Completion of required coursework',
             'Successful completion of practical assessments',
             'Meeting attendance requirements',
