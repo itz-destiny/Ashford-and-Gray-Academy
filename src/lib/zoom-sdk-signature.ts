@@ -24,8 +24,13 @@ export function generateZoomSdkSignature(
     const iat = Math.floor(Date.now() / 1000) - 30;
     const exp = iat + 60 * 60 * 2;
 
+    // The loaded classic Web SDK build (6.0.2) logs "we require appKey in
+    // signature since v5.0.0" and silently breaks internal reporting (and
+    // the join itself) when appKey is missing — even though Zoom's docs for
+    // newer SDK versions describe the field as sdkKey. Include both so the
+    // signature satisfies whichever field this SDK build actually reads.
     return jwt.sign(
-        { sdkKey, mn: meetingNumber, role, iat, exp, tokenExp: exp },
+        { appKey: sdkKey, sdkKey, mn: meetingNumber, role, iat, exp, tokenExp: exp },
         sdkSecret,
         { algorithm: 'HS256' }
     );
