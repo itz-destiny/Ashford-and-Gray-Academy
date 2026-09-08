@@ -5,6 +5,7 @@ import User from '@/models/User';
 import { AuthError, requireRole, withAuth } from '@/lib/auth-server';
 import { adminAuth } from '@/lib/firebase-admin';
 import { generateTempPassword } from '@/lib/generate-password';
+import { issueMagicLoginLink } from '@/lib/magic-login';
 import { sendEmail, emailTemplates } from '@/lib/email';
 import { getEmailUrl } from '@/lib/app-url';
 import { rateLimit } from '@/lib/rate-limit';
@@ -127,10 +128,11 @@ export const POST = withAuth(async (req: NextRequest, { auth }) => {
         try {
             const appUrl = getEmailUrl();
             const loginUrl = `${appUrl}/login`;
+            const magicLoginUrl = await issueMagicLoginLink(fbUid);
             const roleTitle = role === 'live_monitor' ? `${ROLE_TITLES[role]} — Slot ${monitorSlotIndex}` : (ROLE_TITLES[role] || 'Staff Member');
             const tpl = role === 'student'
-                ? emailTemplates.enrollmentWelcome({ recipientName: displayName, email, password, loginUrl })
-                : emailTemplates.staffWelcome({ recipientName: displayName, email, password, loginUrl, roleTitle });
+                ? emailTemplates.enrollmentWelcome({ recipientName: displayName, email, password, loginUrl, magicLoginUrl })
+                : emailTemplates.staffWelcome({ recipientName: displayName, email, password, loginUrl, roleTitle, magicLoginUrl });
             void sendEmail({ to: email, subject: tpl.subject, html: tpl.html });
         } catch (mailErr) {
             console.warn('admin/users welcome email skipped:', mailErr);

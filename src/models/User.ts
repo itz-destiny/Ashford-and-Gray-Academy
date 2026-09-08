@@ -32,6 +32,10 @@ export interface IUser extends Document {
     emailVerifiedAt?: Date;
     welcomeEmailSentAt?: Date;
     mustChangePassword?: boolean;
+    // One-time-issued token embedded in welcome-email "Access My Dashboard"
+    // links so a new user never has to type an email+temp-password pair.
+    // Only ever valid while mustChangePassword is true — see src/lib/magic-login.ts.
+    magicLoginToken?: string;
     notificationPreferences?: {
         userManagement?: boolean;
         courseApprovals?: boolean;
@@ -65,6 +69,7 @@ const UserSchema: Schema = new Schema({
     emailVerifiedAt: { type: Date },
     welcomeEmailSentAt: { type: Date },
     mustChangePassword: { type: Boolean, default: false },
+    magicLoginToken: { type: String, index: true, sparse: true },
     notificationPreferences: {
         userManagement: { type: Boolean, default: true },
         courseApprovals: { type: Boolean, default: true },

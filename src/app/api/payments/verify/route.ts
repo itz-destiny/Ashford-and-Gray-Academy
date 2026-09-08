@@ -10,6 +10,7 @@ import { createNotification } from '@/lib/notifications';
 import { sendEmail, emailTemplates } from '@/lib/email';
 import { adminAuth } from '@/lib/firebase-admin';
 import { getEmailUrl } from '@/lib/app-url';
+import { issueMagicLoginLink } from '@/lib/magic-login';
 
 /** `AGFA-<First>-<Last>-2026` — same simple, typeable scheme used for staff accounts. */
 function generateStudentPassword(name: string): string {
@@ -124,12 +125,14 @@ export async function finalizeSuccessfulPayment(params: {
             await adminAuth().updateUser(tx.userId, { password });
             await User.findOneAndUpdate({ uid: tx.userId }, { $set: { mustChangePassword: true } });
             if (tx.userEmail) {
+                const magicLoginUrl = await issueMagicLoginLink(tx.userId);
                 const tpl = emailTemplates.enrollmentWelcome({
                     recipientName: tx.userName || 'Student',
                     email: tx.userEmail,
                     password,
                     loginUrl: `${getEmailUrl()}/login`,
                     courseName: tx.courseName,
+                    magicLoginUrl,
                 });
                 await sendEmail({ to: tx.userEmail, subject: tpl.subject, html: tpl.html });
             }
