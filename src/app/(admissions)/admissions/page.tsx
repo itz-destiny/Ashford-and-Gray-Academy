@@ -21,6 +21,7 @@ import {
     Mail,
     MessageCircle,
     KeyRound,
+    LogIn,
 } from "lucide-react";
 import {
     Table,
@@ -71,6 +72,7 @@ interface Student {
     displayName: string;
     email: string;
     phone?: string;
+    hasLoggedIn: boolean;
     enrollments: StudentEnrollment[];
 }
 
@@ -85,6 +87,7 @@ export default function AdmissionsPage() {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [courseFilter, setCourseFilter] = useState('all');
+    const [loginFilter, setLoginFilter] = useState<'all' | 'logged-in' | 'not-logged-in'>('all');
     const { toast } = useToast();
 
     // Switch-department dialog state
@@ -165,9 +168,13 @@ export default function AdmissionsPage() {
                 s.email.toLowerCase().includes(searchQuery.toLowerCase());
             const matchesCourse = courseFilter === 'all' ||
                 s.enrollments.some(en => en.courseTitle === courseFilter);
-            return matchesSearch && matchesCourse;
+            const matchesLogin = loginFilter === 'all' ||
+                (loginFilter === 'logged-in' ? s.hasLoggedIn : !s.hasLoggedIn);
+            return matchesSearch && matchesCourse && matchesLogin;
         });
-    }, [students, searchQuery, courseFilter]);
+    }, [students, searchQuery, courseFilter, loginFilter]);
+
+    const loggedInCount = useMemo(() => students.filter(s => s.hasLoggedIn).length, [students]);
 
     // Selection is kept against uids so it survives search/filter changes;
     // only the currently visible rows matter for "select all", though.
@@ -581,6 +588,30 @@ export default function AdmissionsPage() {
                         </div>
                     </CardContent>
                 </Card>
+                <Card
+                    className="border-none shadow-lg shadow-slate-100 rounded-2xl cursor-pointer hover:shadow-xl transition-shadow"
+                    onClick={() => setLoginFilter(loginFilter === 'logged-in' ? 'all' : 'logged-in')}
+                >
+                    <CardContent className="p-5 flex items-center gap-4">
+                        <div className="bg-teal-500 p-3 rounded-xl text-white"><LogIn className="w-5 h-5" /></div>
+                        <div>
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Logged In</p>
+                            <p className="text-2xl font-black text-slate-900">{loggedInCount}</p>
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card
+                    className="border-none shadow-lg shadow-slate-100 rounded-2xl cursor-pointer hover:shadow-xl transition-shadow"
+                    onClick={() => setLoginFilter(loginFilter === 'not-logged-in' ? 'all' : 'not-logged-in')}
+                >
+                    <CardContent className="p-5 flex items-center gap-4">
+                        <div className="bg-amber-500 p-3 rounded-xl text-white"><LogIn className="w-5 h-5" /></div>
+                        <div>
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Not Logged In</p>
+                            <p className="text-2xl font-black text-slate-900">{students.length - loggedInCount}</p>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
 
             <Card className="border-none shadow-xl shadow-slate-100 rounded-[2rem] overflow-hidden bg-white" data-tour="admissions-table">
@@ -605,6 +636,16 @@ export default function AdmissionsPage() {
                                     {courses.map(c => (
                                         <SelectItem key={c.id} value={c.title}>{c.title}</SelectItem>
                                     ))}
+                                </SelectContent>
+                            </Select>
+                            <Select value={loginFilter} onValueChange={(v) => setLoginFilter(v as typeof loginFilter)}>
+                                <SelectTrigger className="h-11 rounded-2xl border-slate-200 shadow-sm w-[190px]">
+                                    <SelectValue placeholder="Login status" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">All Students</SelectItem>
+                                    <SelectItem value="logged-in">Logged In</SelectItem>
+                                    <SelectItem value="not-logged-in">Not Logged In</SelectItem>
                                 </SelectContent>
                             </Select>
                             <Button variant="outline" onClick={fetchAll} className="h-11 rounded-2xl border-slate-200 shadow-sm hover:bg-slate-50">
@@ -669,6 +710,7 @@ export default function AdmissionsPage() {
                                 <TableHead className="w-[60px] py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">#</TableHead>
                                 <TableHead className="w-[300px] py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Student</TableHead>
                                 <TableHead className="py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Department</TableHead>
+                                <TableHead className="py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">Login Status</TableHead>
                                 <TableHead className="py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right pr-8">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -676,12 +718,12 @@ export default function AdmissionsPage() {
                             {loading ? (
                                 Array(6).fill(0).map((_, i) => (
                                     <TableRow key={i} className="animate-pulse">
-                                        <TableCell colSpan={5} className="h-20 bg-slate-50/30 mb-2" />
+                                        <TableCell colSpan={6} className="h-20 bg-slate-50/30 mb-2" />
                                     </TableRow>
                                 ))
                             ) : filteredStudents.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={5} className="h-64 text-center">
+                                    <TableCell colSpan={6} className="h-64 text-center">
                                         <div className="flex flex-col items-center justify-center text-slate-400 gap-2">
                                             <Users className="w-12 h-12 opacity-20" />
                                             <p className="font-bold">No students found</p>
@@ -727,6 +769,13 @@ export default function AdmissionsPage() {
                                                         {en.courseTitle}
                                                     </Badge>
                                                 ))
+                                            )}
+                                        </TableCell>
+                                        <TableCell className="py-4">
+                                            {student.hasLoggedIn ? (
+                                                <Badge className="bg-teal-100 text-teal-700 hover:bg-teal-100 border-none">Logged In</Badge>
+                                            ) : (
+                                                <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100 border-none">Not Logged In</Badge>
                                             )}
                                         </TableCell>
                                         <TableCell className="py-4 text-right pr-8">
