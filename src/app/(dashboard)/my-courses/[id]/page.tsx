@@ -70,7 +70,16 @@ export default function CourseViewerPage() {
                 setModules(normalized.modules);
                 setLessons(normalized.lessons);
                 if (zoomData.success) {
-                    setLiveClasses(zoomData.classes);
+                    // The API returns every class ever created for this course,
+                    // oldest first, with no status filter — cancelled/finished
+                    // ones included. Keep only classes that haven't ended yet,
+                    // soonest first, so the "Join Class" card always points at
+                    // what's actually live or coming up next.
+                    const now = Date.now();
+                    const relevant = (zoomData.classes || [])
+                        .filter((c: any) => c.status === 'scheduled' && new Date(c.startTime).getTime() + (c.durationMinutes || 60) * 60000 >= now)
+                        .sort((a: any, b: any) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+                    setLiveClasses(relevant);
                 }
                 if (timetableData.success) {
                     setTimetable(timetableData.sessions);
