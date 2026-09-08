@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useUser } from "@/firebase";
-import { Loader2, Shield, Bell } from "lucide-react";
+import { Loader2, Shield, Bell, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function SettingsPage() {
@@ -27,6 +27,7 @@ export default function SettingsPage() {
   const [savingPrefs, setSavingPrefs] = useState(false);
 
   const [passwordForm, setPasswordForm] = useState({ current: "", next: "" });
+  const [showPassword, setShowPassword] = useState({ current: false, next: false });
   const [prefs, setPrefs] = useState({ announcements: true, "new-courses": true, reminders: true });
 
   useEffect(() => {
@@ -108,11 +109,21 @@ export default function SettingsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-3">
               <Label htmlFor="current-password" className="text-[10px] font-black uppercase tracking-widest text-slate-400">Current Password</Label>
-              <Input id="current-password" type="password" value={passwordForm.current} onChange={(e) => setPasswordForm(f => ({ ...f, current: e.target.value }))} className="h-14 rounded-2xl bg-slate-50 border-none px-6 focus-visible:ring-1 focus-visible:ring-[#1F7A5A]" />
+              <div className="relative">
+                <Input id="current-password" type={showPassword.current ? "text" : "password"} value={passwordForm.current} onChange={(e) => setPasswordForm(f => ({ ...f, current: e.target.value }))} className="h-14 rounded-2xl bg-slate-50 border-none px-6 pr-12 focus-visible:ring-1 focus-visible:ring-[#1F7A5A]" />
+                <button type="button" onClick={() => setShowPassword(s => ({ ...s, current: !s.current }))} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#0B1F3A] transition-colors" tabIndex={-1}>
+                  {showPassword.current ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
             </div>
             <div className="space-y-3">
               <Label htmlFor="new-password" className="text-[10px] font-black uppercase tracking-widest text-slate-400">New Password</Label>
-              <Input id="new-password" type="password" value={passwordForm.next} onChange={(e) => setPasswordForm(f => ({ ...f, next: e.target.value }))} className="h-14 rounded-2xl bg-slate-50 border-none px-6 focus-visible:ring-1 focus-visible:ring-[#1F7A5A]" />
+              <div className="relative">
+                <Input id="new-password" type={showPassword.next ? "text" : "password"} value={passwordForm.next} onChange={(e) => setPasswordForm(f => ({ ...f, next: e.target.value }))} className="h-14 rounded-2xl bg-slate-50 border-none px-6 pr-12 focus-visible:ring-1 focus-visible:ring-[#1F7A5A]" />
+                <button type="button" onClick={() => setShowPassword(s => ({ ...s, next: !s.next }))} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#0B1F3A] transition-colors" tabIndex={-1}>
+                  {showPassword.next ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
             </div>
           </div>
         </CardContent>

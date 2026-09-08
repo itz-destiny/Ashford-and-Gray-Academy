@@ -7,10 +7,10 @@ export default function CertificationsPage() {
     "6a44e9f2bae728bb84e6762e", // Events & Protocol Management
     "6a44e9f2bae728bb84e67633", // Executive Assistant Management
     "6a44e9f2bae728bb84e67638", // Hospitality & Global Relationship Management
-    "6a44e9f2bae728bb84e6763d", // Certificate in Business Innovation & Entrepreneurship
-    "6a44e9f2bae728bb84e67644", // Certificate in Food & Beverage Management
+    "6a44e9f2bae728bb84e6763d", // Business Innovation and Entrepreneurship
+    "6a44e9f2bae728bb84e67644", // Food and Beverage Management
     "6a44e9f2bae728bb84e6764b", // Hospitality Workforce Management (formerly Hospitality Labour Management)
-    "6a44e9f2bae728bb84e67652", // Certificate in Restaurant & Bar Service
+    "6a44e9f2bae728bb84e67652", // Restaurant and Bar Service
     "6a75aaad7cc19b6ca1a85f95", // Service Excellence (formerly The Silent Standard, split from the Executive Master Class)
   ];
 

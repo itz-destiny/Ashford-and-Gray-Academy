@@ -999,7 +999,7 @@ export const STATIC_COURSES: Course[] = [
   // ── New Certificate Programmes 2026 ─────────────────────────────────────
   {
     id: "664f3a8b2d1c9e8a7f0e0011",
-    title: "Certificate in Business Innovation & Entrepreneurship",
+    title: "Business Innovation and Entrepreneurship",
     category: "Certification",
     instructor: {
       name: "Dr Emmanuel Woko",
@@ -1013,7 +1013,7 @@ export const STATIC_COURSES: Course[] = [
     price: 150000,
     imageUrl: "/business-innovation-entrepreneurship-certificate.png",
     imageHint: "Entrepreneurs collaborating on a business plan",
-    description: "The Certificate in Business Innovation & Entrepreneurship is designed to provide participants with foundational knowledge and practical skills required to start, manage, and grow small businesses in today's competitive environment. The program introduces learners to entrepreneurship, innovation, business planning, branding, customer engagement, and digital business tools while equipping them with practical strategies for identifying opportunities and creating sustainable value.",
+    description: "The Business Innovation and Entrepreneurship Certificate Programme is designed to provide participants with foundational knowledge and practical skills required to start, manage, and grow small businesses in today's competitive environment. The program introduces learners to entrepreneurship, innovation, business planning, branding, customer engagement, and digital business tools while equipping them with practical strategies for identifying opportunities and creating sustainable value.",
     whoFor: [
       "Aspiring entrepreneurs",
       "Startup founders",
@@ -1050,7 +1050,7 @@ export const STATIC_COURSES: Course[] = [
       }
     ],
     certificationDetails: [
-      "Certificate in Business Innovation & Entrepreneurship",
+      "Business Innovation and Entrepreneurship Certificate Programme",
       "Completion of all required coursework",
       "Meeting attendance requirements",
       "Completion of practical exercises and assignments",
@@ -1070,7 +1070,7 @@ export const STATIC_COURSES: Course[] = [
   },
   {
     id: "664f3a8b2d1c9e8a7f0e0012",
-    title: "Certificate in Food & Beverage Management",
+    title: "Food and Beverage Management",
     category: "Certification",
     instructor: {
       name: "Dr Salim Maimoona",
@@ -1084,7 +1084,7 @@ export const STATIC_COURSES: Course[] = [
     price: 150000,
     imageUrl: "/food-beverage-management.png",
     imageHint: "Wok-tossed ingredients over a luxury culinary presentation",
-    description: "The Certificate in Food & Beverage Management is designed to provide participants with foundational knowledge and practical skills in food service operations, restaurant management, customer service, food safety, and beverage operations. The program equips learners with the essential competencies required to work effectively in restaurants, hotels, catering organizations, lounges, event operations, and hospitality establishments.",
+    description: "The Food and Beverage Management Certificate Programme is designed to provide participants with foundational knowledge and practical skills in food service operations, restaurant management, customer service, food safety, and beverage operations. The program equips learners with the essential competencies required to work effectively in restaurants, hotels, catering organizations, lounges, event operations, and hospitality establishments.",
     whoFor: [
       "Aspiring food and beverage professionals",
       "Restaurant supervisors and attendants",
@@ -1122,7 +1122,7 @@ export const STATIC_COURSES: Course[] = [
       }
     ],
     certificationDetails: [
-      "Certificate in Food & Beverage Management",
+      "Food and Beverage Management Certificate Programme",
       "Successful completion of coursework",
       "Completion of practical exercises",
       "Meeting attendance requirements",
@@ -1216,7 +1216,7 @@ export const STATIC_COURSES: Course[] = [
   },
   {
     id: "664f3a8b2d1c9e8a7f0e0014",
-    title: "Certificate in Restaurant & Bar Service",
+    title: "Restaurant and Bar Service",
     category: "Certification",
     instructor: {
       name: "Mr D. T. I. Banigo Esq",
@@ -1230,7 +1230,7 @@ export const STATIC_COURSES: Course[] = [
     price: 150000,
     imageUrl: "/restaurant-bar-service-certificate.png",
     imageHint: "Professional waiter presenting fine dining table service",
-    description: "The Certificate in Restaurant & Bar Service is a practical hospitality program designed to equip participants with professional knowledge and service competencies required for effective restaurant and bar operations. The program focuses on service excellence, guest experience, table service procedures, beverage service, bar operations, wine and spirits knowledge, and professional hospitality etiquette. Participants will develop the technical, interpersonal, and operational skills necessary to deliver exceptional dining and beverage experiences in hotels, restaurants, resorts, lounges, clubs, and other hospitality establishments.",
+    description: "The Restaurant and Bar Service Certificate Programme is a practical hospitality program designed to equip participants with professional knowledge and service competencies required for effective restaurant and bar operations. The program focuses on service excellence, guest experience, table service procedures, beverage service, bar operations, wine and spirits knowledge, and professional hospitality etiquette. Participants will develop the technical, interpersonal, and operational skills necessary to deliver exceptional dining and beverage experiences in hotels, restaurants, resorts, lounges, clubs, and other hospitality establishments.",
     whoFor: [
       "Aspiring restaurant professionals",
       "Waiters and waitresses",
@@ -1278,7 +1278,7 @@ export const STATIC_COURSES: Course[] = [
       }
     ],
     certificationDetails: [
-      "Certificate in Restaurant & Bar Service",
+      "Restaurant and Bar Service Certificate Programme",
       "Completion of required coursework",
       "Successful completion of practical assessments",
       "Meeting attendance requirements",
