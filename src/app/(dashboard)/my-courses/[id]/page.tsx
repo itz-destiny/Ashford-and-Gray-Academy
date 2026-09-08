@@ -15,7 +15,6 @@ import { Input } from '@/components/ui/input';
 import { PlayCircle, CheckCircle2, MessageSquare, Send, Calendar, Video, BookOpen, ChevronDown, Users } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
-import { RecordingsList } from '@/components/meeting/RecordingsList';
 import { normalizeCourseContent } from '@/lib/course-content';
 
 const tabsListClass = "bg-slate-100/50 p-1.5 rounded-2xl h-auto border border-slate-200/50 w-full lg:w-fit flex-wrap";
@@ -30,6 +29,7 @@ export default function CourseViewerPage() {
     const [lessons, setLessons] = useState<any[]>([]);
     const [openLesson, setOpenLesson] = useState<string | null>(null);
     const [liveClasses, setLiveClasses] = useState<any[]>([]);
+    const [recordings, setRecordings] = useState<any[]>([]);
     const [timetable, setTimetable] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -80,6 +80,11 @@ export default function CourseViewerPage() {
                         .filter((c: any) => c.status === 'scheduled' && new Date(c.startTime).getTime() + (c.durationMinutes || 60) * 60000 >= now)
                         .sort((a: any, b: any) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
                     setLiveClasses(relevant);
+
+                    const withRecordings = (zoomData.classes || [])
+                        .filter((c: any) => !!c.recordingUrl)
+                        .sort((a: any, b: any) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
+                    setRecordings(withRecordings);
                 }
                 if (timetableData.success) {
                     setTimetable(timetableData.sessions);
@@ -346,8 +351,30 @@ export default function CourseViewerPage() {
                                 )}
                             </TabsContent>
 
-                            <TabsContent value="recordings" className="pt-8">
-                                <RecordingsList courseId={String(courseId)} />
+                            <TabsContent value="recordings" className="pt-8 space-y-4">
+                                {recordings.length === 0 ? (
+                                    <div className="text-center py-16 text-slate-400 font-bold italic">
+                                        <PlayCircle className="w-10 h-10 mx-auto mb-3 text-slate-200" />
+                                        No recordings yet. They appear here a few minutes after each live class ends.
+                                    </div>
+                                ) : (
+                                    recordings.map(rec => (
+                                        <div key={rec._id} className="flex flex-col md:flex-row md:items-center justify-between p-5 bg-white border border-slate-100 rounded-2xl gap-3">
+                                            <div>
+                                                <p className="font-bold text-[#0B1F3A]">{rec.topic}</p>
+                                                <p className="text-xs text-slate-500 font-medium">{new Date(rec.startTime).toLocaleString()}</p>
+                                                {rec.recordingPasscode && (
+                                                    <p className="text-xs text-slate-400 mt-1">Passcode: <span className="font-mono">{rec.recordingPasscode}</span></p>
+                                                )}
+                                            </div>
+                                            <Button asChild size="sm" className="bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white rounded-xl">
+                                                <a href={rec.recordingUrl} target="_blank" rel="noopener noreferrer">
+                                                    <PlayCircle className="h-4 w-4 mr-1.5" /> Watch
+                                                </a>
+                                            </Button>
+                                        </div>
+                                    ))
+                                )}
                             </TabsContent>
 
                             <TabsContent value="resources" className="pt-8">

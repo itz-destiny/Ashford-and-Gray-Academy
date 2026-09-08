@@ -84,6 +84,11 @@ export async function createZoomMeeting(params: CreateZoomMeetingParams) {
                 // which can be "authenticated users only." Students should
                 // never need a Zoom account just to join a class link.
                 meeting_authentication: false,
+                // Every class is recorded to Zoom Cloud automatically — no one
+                // has to remember to press record. The recording.completed
+                // webhook (see /api/webhooks/zoom) picks up the share link
+                // once Zoom finishes processing it.
+                auto_recording: 'cloud',
             }
         })
     });

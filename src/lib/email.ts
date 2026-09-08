@@ -464,6 +464,37 @@ export const emailTemplates = {
         }),
     }),
 
+    classRecordingReady: (data: {
+        recipientName: string;
+        classTopic: string;
+        courseName?: string;
+        recordingUrl: string;
+        recordingPasscode?: string;
+        dashboardUrl: string;
+    }) => ({
+        subject: `Recording Ready — ${data.classTopic}`,
+        html: brandedShell({
+            preheader: `The recording for ${data.classTopic} is ready to watch.`,
+            title: 'Class Recording Ready',
+            body: `
+                <p style="font-size:16px;line-height:1.6;color:#334155;margin:0 0 22px">Dear ${escapeHtml(data.recipientName)},</p>
+                <p style="font-size:16px;line-height:1.6;color:#334155;margin:0 0 28px">The recording for <strong style="color:#0B1F3A">${escapeHtml(data.classTopic)}</strong>${data.courseName ? ` (${escapeHtml(data.courseName)})` : ''} is ready to watch.</p>
+
+                <div style="text-align:center;margin:0 0 20px">
+                    <a href="${data.recordingUrl}" style="display:inline-block;background:#0B1F3A;color:#ffffff;text-decoration:none;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;font-size:11px;padding:17px 44px;border-radius:9999px;box-shadow:0 8px 20px rgba(11,31,58,0.25)">Watch Recording</a>
+                </div>
+
+                ${data.recordingPasscode ? `
+                <div style="background:#FBF8F0;border-left:3px solid #C8A96A;border-radius:8px;padding:16px 20px;margin:0 0 28px">
+                    <p style="font-size:13px;line-height:1.6;color:#64748b;margin:0"><strong style="color:#0B1F3A">Passcode:</strong> <span style="font-family:'Courier New',monospace">${escapeHtml(data.recordingPasscode)}</span></p>
+                </div>
+                ` : ''}
+
+                <p style="font-size:14px;line-height:1.6;color:#64748b;margin:0">This recording is also saved on your <a href="${data.dashboardUrl}" style="color:#0B1F3A;font-weight:700">dashboard</a> alongside this class going forward.</p>
+            `,
+        }),
+    }),
+
     courseChanged: (data: {
         recipientName: string;
         previousCourseName: string;
