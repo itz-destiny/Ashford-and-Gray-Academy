@@ -66,6 +66,25 @@ export default function ManageCoursePage() {
     // Zoom classes for this course are read-only here — they come from the
     // academy timetable (see /instructor/schedule), not free-form scheduling.
     const [liveClasses, setLiveClasses] = useState<any[]>([]);
+    const [joiningId, setJoiningId] = useState<string | null>(null);
+
+    // The instructor must enter through the meeting's real host link (a
+    // freshly-signed ZAK) to actually hold the host role in Zoom — joining
+    // via the plain participant join_url leaves nobody as host, which is
+    // why things like screen-share default to "host only" and block everyone.
+    const handleInstructorJoin = async (liveClassId: string) => {
+        setJoiningId(liveClassId);
+        try {
+            const res = await apiFetch(`/api/live-classes/${liveClassId}/start-url`);
+            const data = await res.json();
+            if (!res.ok || !data.success) throw new Error(data.error || 'Could not start this class.');
+            window.open(data.startUrl, '_blank', 'noopener,noreferrer');
+        } catch (err: any) {
+            toast({ variant: "destructive", title: "Could not join", description: err?.message || 'Try again.' });
+        } finally {
+            setJoiningId(null);
+        }
+    };
 
     useEffect(() => {
         if (userLoading || !user || !id) return;
@@ -282,8 +301,13 @@ export default function ManageCoursePage() {
                                     >
                                         <Link2 className="h-3.5 w-3.5 mr-1.5" /> Attendance
                                     </Button>
-                                    <Button asChild size="sm" className="bg-[#1F7A5A] text-white rounded-xl">
-                                        <a href={cls.zoomJoinUrl} target="_blank" rel="noopener noreferrer">Join</a>
+                                    <Button
+                                        size="sm"
+                                        className="bg-[#1F7A5A] text-white rounded-xl"
+                                        disabled={joiningId === cls._id}
+                                        onClick={() => handleInstructorJoin(cls._id)}
+                                    >
+                                        {joiningId === cls._id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Join"}
                                     </Button>
                                 </div>
                             </div>
