@@ -72,9 +72,12 @@ export async function createZoomMeeting(params: CreateZoomMeetingParams) {
             settings: {
                 host_video: true,
                 participant_video: true,
-                join_before_host: false,
+                // Nobody manually "starts" a class — once the scheduled time
+                // arrives, whoever joins first (instructor or student) just
+                // enters. No host gate, no waiting room to be manually admitted from.
+                join_before_host: true,
                 mute_upon_entry: true,
-                waiting_room: true,
+                waiting_room: false,
                 approval_type: 2, // No registration required
                 // Without this, whether a plain join link requires a Zoom
                 // sign-in/account depends on the host account's own default —

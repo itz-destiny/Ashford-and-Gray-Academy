@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -36,12 +35,11 @@ function fmtTimeRange(startIso: string, endIso: string) {
 export default function InstructorSchedulePage() {
     const [sessions, setSessions] = useState<TimetableSession[]>([]);
     const [loading, setLoading] = useState(true);
-    const router = useRouter();
     const { toast } = useToast();
 
-    const handleStartClass = (liveClassId?: string) => {
-        if (!liveClassId) return;
-        router.push(`/live-classes/${liveClassId}`);
+    const handleJoinClass = (zoomJoinUrl?: string) => {
+        if (!zoomJoinUrl) return;
+        window.open(zoomJoinUrl, '_blank', 'noopener,noreferrer');
     };
 
     const fetchSessions = async () => {
@@ -120,10 +118,10 @@ export default function InstructorSchedulePage() {
                                     {session.status === 'scheduled' ? (
                                         <Button
                                             className="h-12 px-6 rounded-xl bg-[#1F7A5A] hover:bg-[#1F7A5A]/90 text-white font-black text-[10px] uppercase tracking-widest gap-2"
-                                            onClick={() => handleStartClass(session.liveClassId)}
+                                            onClick={() => handleJoinClass(session.zoomJoinUrl)}
                                         >
                                             <Video className="w-4 h-4" />
-                                            Start Class
+                                            Join
                                         </Button>
                                     ) : (
                                         <div className="h-12 px-6 rounded-xl bg-slate-50 text-slate-400 font-black text-[10px] uppercase tracking-widest gap-2 flex items-center">

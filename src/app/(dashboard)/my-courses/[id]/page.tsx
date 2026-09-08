@@ -223,9 +223,9 @@ export default function CourseViewerPage() {
                                     </>
                                 )}
                             </div>
-                            {zoomHasStarted && (
+                            {zoomHasStarted && liveClasses[0].zoomJoinUrl && (
                                 <Button asChild className="h-11 px-6 rounded-full bg-[#C8A96A] hover:bg-[#B69859] text-[#0B1F3A] font-black text-[10px] uppercase tracking-[0.25em] shadow-none shrink-0">
-                                    <Link href={`/live-classes/${liveClasses[0]._id}`} target="_blank">Join Class</Link>
+                                    <a href={liveClasses[0].zoomJoinUrl} target="_blank" rel="noopener noreferrer">Join Class</a>
                                 </Button>
                             )}
                         </div>

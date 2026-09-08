@@ -2,7 +2,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { useUser } from "@/firebase";
 import { apiFetch } from "@/lib/api-client";
 import { Card, CardTitle } from "@/components/ui/card";
@@ -29,11 +28,10 @@ export default function InstructorDashboard() {
     const [senderNames, setSenderNames] = useState<Record<string, string | null>>({});
     const [loading, setLoading] = useState(true);
     const { toast } = useToast();
-    const router = useRouter();
 
-    const handleStartClass = (liveClassId?: string) => {
-        if (!liveClassId) return;
-        router.push(`/live-classes/${liveClassId}`);
+    const handleJoinClass = (zoomJoinUrl?: string) => {
+        if (!zoomJoinUrl) return;
+        window.open(zoomJoinUrl, '_blank', 'noopener,noreferrer');
     };
 
     useEffect(() => {
@@ -354,12 +352,12 @@ export default function InstructorDashboard() {
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                {nextSession?.status === 'scheduled' && nextSession.liveClassId ? (
+                                {nextSession?.status === 'scheduled' && nextSession.zoomJoinUrl ? (
                                     <Button
                                         className="w-full h-14 bg-[#C8A96A] hover:bg-[#B69859] text-[#0B1F3A] font-black rounded-none shadow-xl text-[10px] uppercase tracking-widest"
-                                        onClick={() => handleStartClass(nextSession.liveClassId)}
+                                        onClick={() => handleJoinClass(nextSession.zoomJoinUrl)}
                                     >
-                                        <Video className="w-4 h-4 mr-2" /> Start Live Class
+                                        <Video className="w-4 h-4 mr-2" /> Join Class
                                     </Button>
                                 ) : (
                                     <Button disabled className="w-full h-14 bg-white/10 text-white/40 font-black rounded-none shadow-none text-[10px] uppercase tracking-widest cursor-not-allowed">

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api-client";
 import { Button } from "@/components/ui/button";
 import { Loader2, Radio, Video, AlertTriangle } from "lucide-react";
@@ -12,6 +11,7 @@ interface CurrentClass {
     courseTitle: string;
     startTime: string;
     durationMinutes: number;
+    zoomJoinUrl?: string;
 }
 
 interface MonitorStatus {
@@ -23,7 +23,6 @@ interface MonitorStatus {
 const POLL_MS = 20_000;
 
 export default function MonitorPage() {
-    const router = useRouter();
     const [status, setStatus] = useState<MonitorStatus | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
@@ -94,7 +93,8 @@ export default function MonitorPage() {
                         <p className="text-white/50 text-sm font-medium">{current.courseTitle}</p>
                     </div>
                     <Button
-                        onClick={() => router.push(`/live-classes/${current.liveClassId}`)}
+                        onClick={() => current.zoomJoinUrl && window.open(current.zoomJoinUrl, '_blank', 'noopener,noreferrer')}
+                        disabled={!current.zoomJoinUrl}
                         className="w-full h-14 bg-[#C8A96A] hover:bg-[#B69759] text-[#0B1F3A] font-black text-xs uppercase tracking-widest rounded-none"
                     >
                         <Video className="w-4 h-4 mr-2" /> Join Class
