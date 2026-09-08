@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { CalendarClock, Video, Hourglass, CheckCircle2 } from "lucide-react";
+import { CalendarClock, Video, Hourglass, CheckCircle2, Loader2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { apiFetch } from "@/lib/api-client";
 import { useToast } from "@/hooks/use-toast";
@@ -35,11 +35,25 @@ function fmtTimeRange(startIso: string, endIso: string) {
 export default function InstructorSchedulePage() {
     const [sessions, setSessions] = useState<TimetableSession[]>([]);
     const [loading, setLoading] = useState(true);
+    const [joiningId, setJoiningId] = useState<string | null>(null);
     const { toast } = useToast();
 
-    const handleJoinClass = (zoomJoinUrl?: string) => {
-        if (!zoomJoinUrl) return;
-        window.open(zoomJoinUrl, '_blank', 'noopener,noreferrer');
+    // Joining via the plain participant join_url leaves nobody holding the
+    // Zoom host role — the instructor needs a freshly-signed start URL to
+    // actually be host (screen-share controls, mute-all, etc. depend on it).
+    const handleJoinClass = async (liveClassId?: string) => {
+        if (!liveClassId) return;
+        setJoiningId(liveClassId);
+        try {
+            const res = await apiFetch(`/api/live-classes/${liveClassId}/start-url`);
+            const data = await res.json();
+            if (!res.ok || !data.success) throw new Error(data.error || 'Could not start this class.');
+            window.open(data.startUrl, '_blank', 'noopener,noreferrer');
+        } catch (err: any) {
+            toast({ variant: "destructive", title: "Could not join", description: err?.message || 'Try again.' });
+        } finally {
+            setJoiningId(null);
+        }
     };
 
     const fetchSessions = async () => {
@@ -118,9 +132,10 @@ export default function InstructorSchedulePage() {
                                     {session.status === 'scheduled' ? (
                                         <Button
                                             className="h-12 px-6 rounded-xl bg-[#1F7A5A] hover:bg-[#1F7A5A]/90 text-white font-black text-[10px] uppercase tracking-widest gap-2"
-                                            onClick={() => handleJoinClass(session.zoomJoinUrl)}
+                                            disabled={joiningId === session.liveClassId}
+                                            onClick={() => handleJoinClass(session.liveClassId)}
                                         >
-                                            <Video className="w-4 h-4" />
+                                            {joiningId === session.liveClassId ? <Loader2 className="w-4 h-4 animate-spin" /> : <Video className="w-4 h-4" />}
                                             Join
                                         </Button>
                                     ) : (

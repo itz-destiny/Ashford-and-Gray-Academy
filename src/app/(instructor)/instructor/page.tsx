@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
     Users, BookOpen, MessageSquare, ChevronRight,
-    Video, Clock, Calendar, ArrowUpRight,
+    Video, Clock, Calendar, ArrowUpRight, Loader2,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -27,11 +27,25 @@ export default function InstructorDashboard() {
     const [sessions, setSessions] = useState<any[]>([]);
     const [senderNames, setSenderNames] = useState<Record<string, string | null>>({});
     const [loading, setLoading] = useState(true);
+    const [joining, setJoining] = useState(false);
     const { toast } = useToast();
 
-    const handleJoinClass = (zoomJoinUrl?: string) => {
-        if (!zoomJoinUrl) return;
-        window.open(zoomJoinUrl, '_blank', 'noopener,noreferrer');
+    // Joining via the plain participant join_url leaves nobody holding the
+    // Zoom host role — the instructor needs a freshly-signed start URL to
+    // actually be host (screen-share controls, mute-all, etc. depend on it).
+    const handleJoinClass = async (liveClassId?: string) => {
+        if (!liveClassId) return;
+        setJoining(true);
+        try {
+            const res = await apiFetch(`/api/live-classes/${liveClassId}/start-url`);
+            const data = await res.json();
+            if (!res.ok || !data.success) throw new Error(data.error || 'Could not start this class.');
+            window.open(data.startUrl, '_blank', 'noopener,noreferrer');
+        } catch (err: any) {
+            toast({ variant: "destructive", title: "Could not join", description: err?.message || 'Try again.' });
+        } finally {
+            setJoining(false);
+        }
     };
 
     useEffect(() => {
@@ -352,12 +366,13 @@ export default function InstructorDashboard() {
                                 </div>
                             </div>
                             <div className="space-y-3">
-                                {nextSession?.status === 'scheduled' && nextSession.zoomJoinUrl ? (
+                                {nextSession?.status === 'scheduled' && nextSession.liveClassId ? (
                                     <Button
                                         className="w-full h-14 bg-[#C8A96A] hover:bg-[#B69859] text-[#0B1F3A] font-black rounded-none shadow-xl text-[10px] uppercase tracking-widest"
-                                        onClick={() => handleJoinClass(nextSession.zoomJoinUrl)}
+                                        disabled={joining}
+                                        onClick={() => handleJoinClass(nextSession.liveClassId)}
                                     >
-                                        <Video className="w-4 h-4 mr-2" /> Join Class
+                                        {joining ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Video className="w-4 h-4 mr-2" />} Join Class
                                     </Button>
                                 ) : (
                                     <Button disabled className="w-full h-14 bg-white/10 text-white/40 font-black rounded-none shadow-none text-[10px] uppercase tracking-widest cursor-not-allowed">
