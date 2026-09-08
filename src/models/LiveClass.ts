@@ -13,6 +13,12 @@ export interface ILiveClass extends Document {
     zoomHostEmail?: string;
     zoomAccountKey?: string;
     status: 'scheduled' | 'completed' | 'cancelled';
+    // Populated by the recording.completed Zoom webhook once cloud
+    // recording finishes processing — recordingUrl is Zoom's own hosted
+    // playback page, not a file we store ourselves.
+    recordingUrl?: string;
+    recordingPasscode?: string;
+    recordingReadyAt?: Date;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -33,6 +39,9 @@ const LiveClassSchema: Schema = new Schema({
     zoomHostEmail: { type: String },
     zoomAccountKey: { type: String },
     status: { type: String, enum: ['scheduled', 'completed', 'cancelled'], default: 'scheduled' },
+    recordingUrl: { type: String },
+    recordingPasscode: { type: String },
+    recordingReadyAt: { type: Date },
     // Attendee records written when a user clicks the class Join button.
     attendees: [
         {
