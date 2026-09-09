@@ -132,16 +132,28 @@ export const LEADERSHIP: LeadershipMember[] = [
     },
 
     {
-        slug: 'iminabo-vivian-yellowe-sekibo',
-        name: 'Iminabo Vivian Yellowe Sekibo',
+        slug: 'helen-ajubo',
+        name: 'Helen Ajubo',
         title: 'Academic Advisor',
-        photo: '/Iminabo Vivian Sekibo Yellowe.jpeg',
+        photo: '/Helen Ajubo.jpeg',
         bio: [
-            'Iminabo Vivian Yellowe Sekibo is a seasoned administrator, human resource professional, and technology-driven strategist with a strong passion for academic excellence, leadership development, and professional mentorship.',
-            'She holds a Master of Science (M.Sc.) degree in Human Resource Management and a Postgraduate Diploma in Management Sciences from Rivers State University, alongside a Bachelor of Science (B.Sc.) degree in Computing and Information Systems from Oxford Brookes University. She also obtained both the International Diploma and Advanced International Diploma in Computing from Informatics Academy Singapore. Her educational background combines management, technology, research, and organizational development, equipping her with a multidimensional approach to academic leadership.',
-            'With professional experience spanning banking operations, administration, accounting, customer relationship management, project coordination, and data systems management, Iminabo has built a reputation for excellence, integrity, and strategic problem-solving.',
-            'Beyond her corporate experience, she possesses a deep interest in research, human capital development, mentoring, and effective organizational management. Her academic research focused on employee commitment and incentive systems, reflecting her passion for institutional growth and people development.'
-        ]
+            'Mrs Helen Ajubo is the Academic Advisor at Ashford & Gray Fusion Academy and an accomplished tax professional and public-sector administrator. She currently serves as Head of Tax Policy and Legislation at the Rivers State Internal Revenue Service, with professional experience spanning tax policy, legislation, regulatory compliance and revenue administration.',
+            'Beyond her technical expertise, Mrs Ajubo has a strong interest in emotional intelligence, personal development and effective interpersonal relationships. She is passionate about knowledge sharing, mentoring and helping individuals develop the self-awareness, confidence and practical capabilities required to thrive personally and professionally.',
+            'As Academic Advisor, she brings to the Academy a valuable blend of professional experience, sound judgement, critical thinking, emotional intelligence and a people-centred approach to learning and development.',
+        ],
+    },
+
+    {
+        slug: 'victory-mishael-zorasi',
+        name: 'Victory Mishael Zorasi',
+        title: 'Admissions Officer',
+        photo: '/Victory Mishael Zorasi.jpeg',
+        bio: [
+            'Victory Mishael Zorasi is the Admissions Officer at Ashford & Gray Fusion Academy, bringing over six years of experience in office administration, operations management, customer relations, event coordination and team support.',
+            'She holds a Bachelor of Science degree in Office and Information Management from Rivers State University and has completed professional training in Executive Virtual Assistance. She is proficient in Microsoft Office, Google Workspace, data and records management, administrative coordination, client relations and organisational planning.',
+            'In her role at AGFA, Victory supports the admissions process, coordinates applicant information and communications, maintains accurate student records, and helps ensure that prospective and newly admitted students receive an organised and professional onboarding experience.',
+            'Highly organised, proactive and detail-oriented, she is recognised for her adaptability, effective communication and ability to manage multiple responsibilities with professionalism. Victory is committed to continuous learning, service excellence and contributing meaningfully to the growth and operational effectiveness of the Academy.',
+        ],
     },
 
     {
