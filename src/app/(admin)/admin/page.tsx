@@ -11,18 +11,22 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
     Users, DollarSign, TrendingUp, Activity,
     BookOpen, Shield, ChevronRight, Clock,
-    AlertTriangle, ArrowUpRight, BarChart3,
+    AlertTriangle, ArrowUpRight, BarChart3, Video, Loader2,
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AdminDashboard() {
     const { user, loading: userLoading } = useUser();
+    const { toast } = useToast();
     const [stats, setStats] = useState<any>(null);
     const [kpis, setKpis] = useState<any>(null);
     const [activities, setActivities] = useState<any[]>([]);
     const [systemStatus, setSystemStatus] = useState<any>(null);
+    const [mySessions, setMySessions] = useState<any[]>([]);
+    const [joining, setJoining] = useState(false);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -30,11 +34,12 @@ export default function AdminDashboard() {
 
         const fetchData = async () => {
             try {
-                const [statsRes, kpisRes, activityRes, healthRes] = await Promise.all([
+                const [statsRes, kpisRes, activityRes, healthRes, sessionsRes] = await Promise.all([
                     apiFetch('/api/admin/stats'),
                     apiFetch('/api/admin/kpis'),
                     apiFetch('/api/admin/activity-feed?limit=8'),
                     apiFetch('/api/admin/system-health'),
+                    apiFetch('/api/timetable/my-sessions'),
                 ]);
 
                 if (statsRes.ok) setStats(await statsRes.json());
@@ -50,6 +55,10 @@ export default function AdminDashboard() {
                     const d = await healthRes.json();
                     setSystemStatus(d.summary);
                 }
+                if (sessionsRes.ok) {
+                    const d = await sessionsRes.json();
+                    setMySessions(d.success ? d.sessions : []);
+                }
             } catch (err) {
                 console.error("Admin dashboard fetch error:", err);
             } finally {
@@ -61,6 +70,30 @@ export default function AdminDashboard() {
         const interval = setInterval(fetchData, 60_000);
         return () => clearInterval(interval);
     }, [user, userLoading]);
+
+    // Admins occasionally host a class themselves (e.g. covering orientation).
+    // Joining via the plain participant link leaves nobody holding the real
+    // Zoom host role, so this fetches a freshly-signed host start URL —
+    // same mechanism the instructor dashboard uses.
+    const now = Date.now();
+    const nextSession = mySessions
+        .filter((s: any) => s.status === 'scheduled' && s.liveClassId && new Date(s.endTime).getTime() >= now)
+        .sort((a: any, b: any) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())[0];
+
+    const handleJoinAsHost = async () => {
+        if (!nextSession?.liveClassId) return;
+        setJoining(true);
+        try {
+            const res = await apiFetch(`/api/live-classes/${nextSession.liveClassId}/start-url`);
+            const data = await res.json();
+            if (!res.ok || !data.success) throw new Error(data.error || 'Could not start this class.');
+            window.open(data.startUrl, '_blank', 'noopener,noreferrer');
+        } catch (err: any) {
+            toast({ variant: "destructive", title: "Could not join", description: err?.message || 'Try again.' });
+        } finally {
+            setJoining(false);
+        }
+    };
 
     if (userLoading || (loading && !stats)) {
         return (
@@ -327,6 +360,36 @@ export default function AdminDashboard() {
 
                 {/* Right — 1/3 */}
                 <div className="space-y-14">
+
+                    {/* My Live Classes — only shows when this admin is hosting something */}
+                    {nextSession && (
+                        <div className="space-y-6">
+                            <h2 className="text-xl font-serif text-[#0B1F3A] flex items-center gap-3">
+                                <div className="w-2 h-6 bg-[#C8A96A]" />
+                                My Live Classes
+                            </h2>
+                            <div className="bg-[#0B1F3A] shadow-2xl relative overflow-hidden">
+                                <div className="relative z-10 p-8 space-y-5">
+                                    <div>
+                                        <p className="text-[9px] font-black text-[#C8A96A] uppercase tracking-widest mb-1">
+                                            {nextSession.status === 'scheduled' ? 'Room Ready' : 'Upcoming'}
+                                        </p>
+                                        <p className="text-white font-black text-sm">{nextSession.module}</p>
+                                        <p className="text-white/50 text-xs font-medium mt-1">
+                                            {format(new Date(nextSession.startTime), 'MMM dd, hh:mm a')}
+                                        </p>
+                                    </div>
+                                    <Button
+                                        onClick={handleJoinAsHost}
+                                        disabled={joining}
+                                        className="w-full h-12 bg-[#C8A96A] hover:bg-[#B69859] text-[#0B1F3A] font-black rounded-none shadow-xl text-[10px] uppercase tracking-widest"
+                                    >
+                                        {joining ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Video className="w-4 h-4 mr-2" />} Join as Host
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Needs Attention */}
                     <div className="space-y-6">
