@@ -63,13 +63,24 @@ export async function getCurrentClassForSlot(slotNumber: number): Promise<
     return live[slot.indexOnHost] || null;
 }
 
+// Classes have join_before_host: true, so people can already be inside a
+// meeting before its scheduled start time — the monitor list should surface
+// a class shortly before its official start too, not only once the clock
+// hits it exactly.
+const MONITOR_EARLY_VISIBILITY_MINUTES = 15;
+
 /**
- * Every class currently live right now, across every Zoom account/host —
- * for the monitoring view, where any monitor account picks whichever class
- * it wants to watch instead of being bound to one fixed capacity slot.
+ * Every class currently live right now (plus any about to start), across
+ * every Zoom account/host — for the monitoring view, where any monitor
+ * account picks whichever class it wants to watch instead of being bound to
+ * one fixed capacity slot.
  */
 export async function getAllLiveClasses(): Promise<ILiveClass[]> {
     const now = Date.now();
     const candidates = await LiveClass.find({ status: 'scheduled' }).sort({ startTime: 1 });
-    return candidates.filter((c) => isCurrentlyLive(c, now));
+    return candidates.filter((c) => {
+        const start = new Date(c.startTime).getTime();
+        const end = start + (c.durationMinutes || 60) * 60_000;
+        return now >= start - MONITOR_EARLY_VISIBILITY_MINUTES * 60_000 && now <= end;
+    });
 }
