@@ -140,15 +140,19 @@ export async function getZoomMeetingPassword(account: ZoomAccountCredentials, zo
     return (data.password as string) || '';
 }
 
-// Every licensed Zoom host is a shared, generic seat rotated across whichever
-// instructor is teaching that time slot — never a per-instructor account. Left
-// alone, a class would open showing that seat's own registered name (e.g. the
-// school's Zoom account holder) as the host, not the instructor actually
-// teaching. Renaming the seat's profile to the instructor's name right before
-// each class is scheduled makes the in-meeting host name correct. Safe to
-// call repeatedly: `findAvailableZoomHost` never double-books a seat for
-// overlapping times, so a rename always belongs to whoever holds that seat
-// next, and the account owner's own real identity is never actually changed.
+// Every licensed Zoom host is a shared, generic seat (Myne Wilfred's own
+// account, the school's "admin" seat, Cecilia's seat, etc.) rotated across
+// whichever instructor is teaching that time slot. Left alone, a class would
+// show that seat owner's personal Zoom profile name as the host — the
+// Academy wants every class branded consistently as the institution, never
+// a private individual's name, regardless of which seat happened to host it.
+export const ACADEMY_HOST_DISPLAY_NAME = 'Ashford & Gray Fusion Academy';
+
+// Renames a licensed seat's Zoom profile so the in-meeting host name reads
+// correctly. Safe to call repeatedly: `findAvailableZoomHost` never
+// double-books a seat for overlapping times, and the account owner's own
+// real identity is never actually changed — only the display name shown
+// while that seat is hosting.
 export async function renameZoomHost(account: ZoomAccountCredentials, hostEmail: string, instructorName: string): Promise<void> {
     if (!hostEmail || hostEmail === 'me') return;
     const parts = instructorName.trim().split(/\s+/).filter(Boolean);

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import TimetableSession from '@/models/TimetableSession';
 import LiveClass from '@/models/LiveClass';
-import { createZoomMeeting, renameZoomHost, enableZoomVirtualBackground, setZoomHostPicture } from '@/lib/zoom';
+import { createZoomMeeting, renameZoomHost, enableZoomVirtualBackground, setZoomHostPicture, ACADEMY_HOST_DISPLAY_NAME } from '@/lib/zoom';
 import { findAvailableZoomHost } from '@/lib/zoom-scheduler';
 import { withAuth } from '@/lib/auth-server';
 
@@ -55,9 +55,7 @@ export const POST = withAuth<RouteParams>(async (_req, { auth, params }) => {
             );
         }
 
-        if (session.lecturerName) {
-            await renameZoomHost(assignment.account, assignment.hostEmail, session.lecturerName);
-        }
+        await renameZoomHost(assignment.account, assignment.hostEmail, ACADEMY_HOST_DISPLAY_NAME);
         await enableZoomVirtualBackground(assignment.account, assignment.hostEmail);
         await setZoomHostPicture(assignment.account, assignment.hostEmail);
 
