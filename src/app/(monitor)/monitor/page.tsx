@@ -116,7 +116,7 @@ export default function MonitorPage() {
                                             <>
                                                 <Clock className="w-3.5 h-3.5" />
                                                 <span className="text-[9px] font-black uppercase tracking-[0.3em]">
-                                                    Starts {new Date(cls.startTime).toLocaleString(undefined, { weekday: 'short', hour: 'numeric', minute: '2-digit' })}
+                                                    Starts {new Date(cls.startTime).toLocaleString('en-US', { timeZone: 'Africa/Lagos', weekday: 'short', hour: 'numeric', minute: '2-digit' })} WAT
                                                 </span>
                                             </>
                                         )}
