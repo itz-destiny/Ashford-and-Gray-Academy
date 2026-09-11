@@ -295,8 +295,8 @@ export default function ManageCoursePage() {
                                         size="sm"
                                         className="rounded-xl border-slate-200"
                                         onClick={() => {
-                                            navigator.clipboard.writeText(`${window.location.origin}/attend/${cls._id}`);
-                                            toast({ title: "Attendance link copied", description: "Paste it into the Zoom meeting chat so students can check themselves in." });
+                                            navigator.clipboard.writeText(`${window.location.origin}/attendance/${cls._id}`);
+                                            toast({ title: "Attendance link copied", description: "Paste it into the Zoom meeting chat — students just enter their email, no sign-in needed." });
                                         }}
                                     >
                                         <Link2 className="h-3.5 w-3.5 mr-1.5" /> Attendance

@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api-client";
 import { Button } from "@/components/ui/button";
-import { Loader2, Radio, Video, AlertTriangle, MonitorPlay, Clock } from "lucide-react";
+import { Loader2, Radio, Video, AlertTriangle, MonitorPlay, Clock, ClipboardCheck } from "lucide-react";
 
 interface LiveClassItem {
     liveClassId: string;
@@ -124,18 +124,28 @@ export default function MonitorPage() {
                                     <p className="text-white text-lg font-serif truncate">{cls.topic}</p>
                                     <p className="text-white/50 text-sm font-medium truncate">{cls.courseTitle}</p>
                                 </div>
-                                <Button
-                                    onClick={() => handleJoin(cls.liveClassId)}
-                                    disabled={joiningId === cls.liveClassId}
-                                    className="h-12 px-6 bg-[#C8A96A] hover:bg-[#B69759] text-[#0B1F3A] font-black text-xs uppercase tracking-widest rounded-none shrink-0"
-                                >
-                                    {joiningId === cls.liveClassId ? (
-                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                    ) : (
-                                        <Video className="w-4 h-4 mr-2" />
-                                    )}
-                                    Join
-                                </Button>
+                                <div className="flex items-center gap-3 shrink-0">
+                                    <Button
+                                        onClick={() => window.open(`/attendance/${cls.liveClassId}`, '_blank', 'noopener,noreferrer')}
+                                        variant="outline"
+                                        className="h-12 px-5 border-white/20 text-white hover:bg-white/10 font-black text-xs uppercase tracking-widest rounded-none"
+                                    >
+                                        <ClipboardCheck className="w-4 h-4 mr-2" />
+                                        Attendance
+                                    </Button>
+                                    <Button
+                                        onClick={() => handleJoin(cls.liveClassId)}
+                                        disabled={joiningId === cls.liveClassId}
+                                        className="h-12 px-6 bg-[#C8A96A] hover:bg-[#B69759] text-[#0B1F3A] font-black text-xs uppercase tracking-widest rounded-none"
+                                    >
+                                        {joiningId === cls.liveClassId ? (
+                                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                        ) : (
+                                            <Video className="w-4 h-4 mr-2" />
+                                        )}
+                                        Join
+                                    </Button>
+                                </div>
                             </div>
                         );
                     })}
