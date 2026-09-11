@@ -10,8 +10,10 @@ type RouteParams = { params: Promise<{ id: string }> };
 // =============================================================================
 // GET /api/live-classes/[id]/start-url — always issues a freshly-signed Zoom
 // start URL rather than a cached one, since the ZAK token embedded in a
-// stored start_url expires. Only the instructor who owns the class (or an
-// admin) may fetch it.
+// stored start_url expires. The instructor who owns the class, an admin, or
+// a live_monitor account may fetch it — a monitor joining via a start_url
+// after the instructor is already in gets Zoom's automatic co-host role
+// rather than displacing the real host.
 // =============================================================================
 export const GET = withAuth<RouteParams>(async (_req: NextRequest, { auth, params }) => {
     try {
@@ -22,7 +24,8 @@ export const GET = withAuth<RouteParams>(async (_req: NextRequest, { auth, param
         if (!liveClass) {
             return NextResponse.json({ error: 'Live class not found' }, { status: 404 });
         }
-        if (auth.role !== 'admin' && liveClass.instructorId !== auth.uid) {
+        const canStart = auth.role === 'admin' || auth.role === 'live_monitor' || liveClass.instructorId === auth.uid;
+        if (!canStart) {
             return NextResponse.json({ error: 'You can only start a class you are hosting.' }, { status: 403 });
         }
         if (!liveClass.zoomAccountKey) {
