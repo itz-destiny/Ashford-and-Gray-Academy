@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api-client";
 import { Button } from "@/components/ui/button";
 import { Loader2, Radio, Video, AlertTriangle, MonitorPlay, Clock, ClipboardCheck } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface LiveClassItem {
     liveClassId: string;
@@ -22,6 +23,7 @@ export default function MonitorPage() {
     const [loading, setLoading] = useState(true);
     const [joiningId, setJoiningId] = useState<string | null>(null);
     const [joinError, setJoinError] = useState<string | null>(null);
+    const { toast } = useToast();
 
     const fetchClasses = useCallback(async () => {
         try {
@@ -58,6 +60,12 @@ export default function MonitorPage() {
             setJoiningId(null);
         }
     }, []);
+
+    const handleCopyAttendanceLink = useCallback((liveClassId: string) => {
+        const url = `${window.location.origin}/attendance/${liveClassId}`;
+        navigator.clipboard.writeText(url);
+        toast({ title: "Attendance link copied", description: "Paste it into the Zoom meeting chat — students just enter their email, no sign-in needed." });
+    }, [toast]);
 
     useEffect(() => {
         fetchClasses();
@@ -126,7 +134,7 @@ export default function MonitorPage() {
                                 </div>
                                 <div className="flex items-center gap-3 shrink-0">
                                     <Button
-                                        onClick={() => window.open(`/attendance/${cls.liveClassId}`, '_blank', 'noopener,noreferrer')}
+                                        onClick={() => handleCopyAttendanceLink(cls.liveClassId)}
                                         variant="outline"
                                         className="h-12 px-5 bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white font-black text-xs uppercase tracking-widest rounded-none"
                                     >
