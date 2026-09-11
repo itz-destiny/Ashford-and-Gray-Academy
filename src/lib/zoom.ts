@@ -220,7 +220,7 @@ export async function setZoomHostPicture(account: ZoomAccountCredentials, hostEm
 
     try {
         const token = await getZoomAccessToken(account);
-        const imageBuffer = await readFile(path.join(process.cwd(), 'public', 'icon.png'));
+        const imageBuffer = await readFile(path.join(process.cwd(), 'public', 'zoom-host-crest.png'));
         const form = new FormData();
         form.append('pic_file', new Blob([imageBuffer], { type: 'image/png' }), 'academy-logo.png');
 
