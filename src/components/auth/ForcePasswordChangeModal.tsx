@@ -24,6 +24,12 @@ export function ForcePasswordChangeModal() {
     const [justChanged, setJustChanged] = useState(false);
     const [form, setForm] = useState({ current: "", next: "", confirm: "" });
     const [showPassword, setShowPassword] = useState({ current: false, next: false, confirm: false });
+    // A magic-link sign-in (or a fresh temp-password login) is always
+    // "recent" as far as Firebase is concerned, so updatePassword succeeds
+    // with no re-authentication step — no reason to make every new user dig
+    // their temp password back out of an email they may never have opened.
+    // Only ask for it if Firebase actually rejects the update as stale.
+    const [needsReauth, setNeedsReauth] = useState(false);
 
     // useUser() only refetches the Mongo profile on auth state changes, not
     // when this flag flips server-side mid-session — so track success locally
@@ -48,8 +54,11 @@ export function ForcePasswordChangeModal() {
             const { auth } = initializeFirebase();
             const fbUser = auth.currentUser;
             if (!fbUser || !fbUser.email) throw new Error("Not signed in.");
-            const credential = EmailAuthProvider.credential(fbUser.email, form.current);
-            await reauthenticateWithCredential(fbUser, credential);
+
+            if (needsReauth) {
+                const credential = EmailAuthProvider.credential(fbUser.email, form.current);
+                await reauthenticateWithCredential(fbUser, credential);
+            }
             await updatePassword(fbUser, form.next);
 
             await apiFetch("/api/users/password-changed", { method: "POST" });
@@ -59,6 +68,11 @@ export function ForcePasswordChangeModal() {
             setJustChanged(true);
         } catch (err: any) {
             const code = err?.code || "";
+            if (code === "auth/requires-recent-login" && !needsReauth) {
+                setNeedsReauth(true);
+                toast({ title: "One more step", description: "Enter the temporary password from your welcome email to confirm it's you." });
+                return;
+            }
             const message =
                 code === "auth/wrong-password" ? "That temporary password is incorrect."
                 : code === "auth/weak-password" ? "Choose a stronger password."
@@ -89,19 +103,21 @@ export function ForcePasswordChangeModal() {
                     </DialogHeader>
                 </div>
                 <form onSubmit={handleSubmit} className="px-8 py-8 space-y-5 bg-white">
-                    <div className="space-y-2">
-                        <Label htmlFor="fpc-current" className="text-[10px] font-black uppercase tracking-widest text-slate-400">Temporary Password</Label>
-                        <div className="relative">
-                            <Input id="fpc-current" type={showPassword.current ? "text" : "password"} required autoFocus value={form.current} onChange={(e) => setForm(f => ({ ...f, current: e.target.value }))} className="h-12 rounded-xl bg-slate-50 border-none px-5 pr-12" />
-                            <button type="button" onClick={() => setShowPassword(s => ({ ...s, current: !s.current }))} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#0B1F3A] transition-colors" tabIndex={-1}>
-                                {showPassword.current ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                            </button>
+                    {needsReauth && (
+                        <div className="space-y-2">
+                            <Label htmlFor="fpc-current" className="text-[10px] font-black uppercase tracking-widest text-slate-400">Temporary Password</Label>
+                            <div className="relative">
+                                <Input id="fpc-current" type={showPassword.current ? "text" : "password"} required autoFocus value={form.current} onChange={(e) => setForm(f => ({ ...f, current: e.target.value }))} className="h-12 rounded-xl bg-slate-50 border-none px-5 pr-12" />
+                                <button type="button" onClick={() => setShowPassword(s => ({ ...s, current: !s.current }))} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#0B1F3A] transition-colors" tabIndex={-1}>
+                                    {showPassword.current ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                </button>
+                            </div>
                         </div>
-                    </div>
+                    )}
                     <div className="space-y-2">
                         <Label htmlFor="fpc-next" className="text-[10px] font-black uppercase tracking-widest text-slate-400">New Password</Label>
                         <div className="relative">
-                            <Input id="fpc-next" type={showPassword.next ? "text" : "password"} required value={form.next} onChange={(e) => setForm(f => ({ ...f, next: e.target.value }))} className="h-12 rounded-xl bg-slate-50 border-none px-5 pr-12" />
+                            <Input id="fpc-next" type={showPassword.next ? "text" : "password"} required autoFocus={!needsReauth} value={form.next} onChange={(e) => setForm(f => ({ ...f, next: e.target.value }))} className="h-12 rounded-xl bg-slate-50 border-none px-5 pr-12" />
                             <button type="button" onClick={() => setShowPassword(s => ({ ...s, next: !s.next }))} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#0B1F3A] transition-colors" tabIndex={-1}>
                                 {showPassword.next ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                             </button>
