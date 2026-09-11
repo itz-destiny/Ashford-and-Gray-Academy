@@ -78,7 +78,7 @@ export default function MonitorPage() {
             <div className="flex-1 flex flex-col items-center justify-center gap-4 px-8 text-center">
                 <AlertTriangle className="w-10 h-10 text-rose-400" />
                 <p className="text-white font-serif text-lg max-w-sm">{error}</p>
-                <Button variant="outline" className="border-white/30 text-white hover:bg-white/10" onClick={fetchClasses}>
+                <Button variant="outline" className="bg-transparent border-white/30 text-white hover:bg-white/10 hover:text-white" onClick={fetchClasses}>
                     Try Again
                 </Button>
             </div>
@@ -128,7 +128,7 @@ export default function MonitorPage() {
                                     <Button
                                         onClick={() => window.open(`/attendance/${cls.liveClassId}`, '_blank', 'noopener,noreferrer')}
                                         variant="outline"
-                                        className="h-12 px-5 border-white/20 text-white hover:bg-white/10 font-black text-xs uppercase tracking-widest rounded-none"
+                                        className="h-12 px-5 bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white font-black text-xs uppercase tracking-widest rounded-none"
                                     >
                                         <ClipboardCheck className="w-4 h-4 mr-2" />
                                         Attendance
