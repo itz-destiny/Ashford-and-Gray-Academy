@@ -1,0 +1,912 @@
+[
+ {
+  "_id": "6a6d944d661c3993a8f83b0e",
+  "uid": "6jMI2MgZZkYyGPrPYsOLEHcrIUg1",
+  "displayName": "Charles Nwonu, FCA",
+  "email": "charles.nwonu@ashfordandgrayfusionacademy.com",
+  "role": "instructor"
+ },
+ {
+  "_id": "6a6d944e661c3993a8f83b0f",
+  "uid": "c5JARNFBYudL6UAkNShwZjoC1Kn1",
+  "displayName": "Dr. (Mrs.) Edughom I. Hanson",
+  "email": "edughom.hanson@ashfordandgrayfusionacademy.com",
+  "role": "instructor"
+ },
+ {
+  "_id": "6a6d9452661c3993a8f83b12",
+  "uid": "VArY9YQ6DPhVg5HYxZePnaYqN7o2",
+  "displayName": "Dr. Harry Orugba Ovharhe",
+  "email": "harry.ovharhe@ashfordandgrayfusionacademy.com",
+  "role": "instructor"
+ },
+ {
+  "_id": "6a6d9454661c3993a8f83b14",
+  "uid": "v7swrPqjY6cCcroCC4Z4hvQw38p2",
+  "displayName": "Dr. Steve Chukwuemeka John-N",
+  "email": "steve.john-n@ashfordandgrayfusionacademy.com",
+  "role": "instructor"
+ },
+ {
+  "_id": "6a6d9456661c3993a8f83b15",
+  "uid": "0oQ5vnEFhySJKWfBcGUtlhCAKag1",
+  "displayName": "Dr. Emmanuel Boma Woko",
+  "email": "emmanuel.woko@ashfordandgrayfusionacademy.com",
+  "role": "instructor"
+ },
+ {
+  "_id": "6a6d9457661c3993a8f83b16",
+  "uid": "m0bFlPty04NbIff1Y2RcpzxVwdG3",
+  "displayName": "Ewaoche Thomas Elaigwu",
+  "email": "ewaoche.elaigwu@ashfordandgrayfusionacademy.com",
+  "role": "instructor"
+ },
+ {
+  "_id": "6a6d9459661c3993a8f83b18",
+  "uid": "rv3FSs2puZfwcPAAAcgrEvB1i7y2",
+  "displayName": "Julia Oku Jacks",
+  "email": "julia.jacks@ashfordandgrayfusionacademy.com",
+  "role": "instructor"
+ },
+ {
+  "_id": "6a6d945a661c3993a8f83b19",
+  "uid": "wUxmAwqDTNNAtU8UkOSCkeiDcgg1",
+  "displayName": "Karibi T. George, Esq.",
+  "email": "karibi.george@ashfordandgrayfusionacademy.com",
+  "role": "instructor"
+ },
+ {
+  "_id": "6a6d945d661c3993a8f83b1b",
+  "uid": "wSVca0puwhhOT9a9NmERCntCQpn1",
+  "displayName": "Barrister Dandy T. I. Banigo",
+  "email": "dandy.banigo@ashfordandgrayfusionacademy.com",
+  "role": "instructor"
+ },
+ {
+  "_id": "6a6d945f661c3993a8f83b1d",
+  "uid": "ZjCMszmEMyT9zB0mRsWpY4ladvF2",
+  "displayName": "Napoleon Godfrey Koko",
+  "email": "napoleon.koko@ashfordandgrayfusionacademy.com",
+  "role": "instructor"
+ },
+ {
+  "_id": "6a6d9463661c3993a8f83b20",
+  "uid": "5jQaJnOMQtgKtystUG6d6pwvmTt1",
+  "displayName": "ThankGod Chimene Azubuike",
+  "email": "thankgod.azubuike@ashfordandgrayfusionacademy.com",
+  "role": "instructor"
+ },
+ {
+  "_id": "6a6e236f28e983ac1d4528a0",
+  "uid": "bJYdRuZn8xYgV71ncAHRzYeOLuE3",
+  "email": "directoroffinance@ashfordandgrayfusionacademy.com",
+  "displayName": "ThankGod Chimene Azubuike",
+  "role": "finance"
+ },
+ {
+  "_id": "6a6e237228e983ac1d4528a4",
+  "uid": "5Vp29T2RhRcG9NAFaOQb8fnxvtH3",
+  "email": "directorofacademicpartnership@ashfordandgrayfusionacademy.com",
+  "displayName": "Dr. Sunday Edum",
+  "role": "admin"
+ },
+ {
+  "_id": "6a6e237328e983ac1d4528a8",
+  "uid": "j0J2y7I5NHakxZ08w791nL2X8Ao1",
+  "email": "mediastrategist@ashfordandgrayfusionacademy.com",
+  "displayName": "Alaibi Nnana Joseph",
+  "role": "admin"
+ },
+ {
+  "_id": "6a6e237428e983ac1d4528aa",
+  "uid": "ZLnzDHMUriY3FcRsaGUjAYrzb2D2",
+  "email": "directorofqaqc@ashfordandgrayfusionacademy.com",
+  "displayName": "Christopher Etete Sobere",
+  "role": "admin"
+ },
+ {
+  "_id": "6a70eba33b69e6fb99339a4c",
+  "uid": "iPDaRg4UEUYTmrqmW4P1VbAhHRs1",
+  "email": "benedictaj001@gmail.com",
+  "displayName": "Benedicta Williams",
+  "role": "student"
+ },
+ {
+  "_id": "6a70eba93b69e6fb99339a58",
+  "uid": "6mq0d6LVjiXqicaa33n6Ln0zJSq1",
+  "email": "oelobright@gmail.com",
+  "displayName": "Oelo-monday Bright",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ebab3b69e6fb99339a5c",
+  "uid": "7rfK8RTtpsYij7KnLj3wnzvvJGO2",
+  "email": "johnsamuel7071@gmail.com",
+  "displayName": "John Samuel Godspower",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ebb13b69e6fb99339a68",
+  "uid": "QVkXiCYR9bSm7H9jiH2Z9z56U6x1",
+  "email": "ugboji7@gmail.com",
+  "displayName": "Ugboji Ogelenye",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ebbb3b69e6fb99339a7c",
+  "uid": "BXV7zsckHZMqL9T9m6pIrkUhlGt1",
+  "email": "reachwilfred8702@gmail.com",
+  "displayName": "Simon Wilfred Emmanuel",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ebbd3b69e6fb99339a80",
+  "uid": "vjuGVhC1WlU2Mdq2NeaB56PFm0D2",
+  "email": "dimkpavincent3@gmail.com",
+  "displayName": "Dimkpa Vincent Raphael",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ebbf3b69e6fb99339a84",
+  "uid": "oaR6Fsn2zoUR339XKk4YsTAfROM2",
+  "email": "dicksonngerebo@gmail.com",
+  "displayName": "Ngerebo Dickson Williamson",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ebc13b69e6fb99339a88",
+  "uid": "eC3CjuKgyiZWhXdCzPQB7Q8eQxl1",
+  "email": "michaelisrael200@gmail.com",
+  "displayName": "Michael Israel",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ebc43b69e6fb99339a90",
+  "uid": "9VQLoHLNbndQ8caGecZREF4wp5T2",
+  "email": "owuboobisike@gmail.com",
+  "displayName": "Obisike Owubo Asipara",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ebc63b69e6fb99339a94",
+  "uid": "REvgoHbJazcyoTctF7Sx8JY6g3A3",
+  "email": "amb.jonathanmanassehm@gmail.com",
+  "displayName": "Jonathan Manasseh Manasseh",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ebcf3b69e6fb99339aa6",
+  "uid": "sKdN98cMbEX1fvXI2D4zGZxYQU12",
+  "email": "luckygerenwi3@gmail.com",
+  "displayName": "Lucky Gospel Gerenwi",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ebd13b69e6fb99339aaa",
+  "uid": "40bhdl1QagOTdlMWp1SCkiN49gA2",
+  "email": "preciouschieke202@gmail.com",
+  "displayName": "Precious Oluchi Chieke",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ebd33b69e6fb99339aae",
+  "uid": "8yQmbI32IaPfMScQ28f4kLPHpdi2",
+  "email": "justiceiroegbu16@gmail.com",
+  "displayName": "Iroegbu Justice",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ebd53b69e6fb99339ab2",
+  "uid": "2ftrrrg8GETPOkUGpVxQL38p5Sx2",
+  "email": "baadomtoobari@gmail.com",
+  "displayName": "Baadom Toobari Charles",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ebd73b69e6fb99339ab6",
+  "uid": "Pso6e6ckR3RK6KZPt3kJvBKQPLl2",
+  "email": "sdchistella46@gmail.com",
+  "displayName": "Stella Chidera Ebere-smile",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ebd93b69e6fb99339aba",
+  "uid": "4YHzYGAHleNvrjoxRX1InjkCZPp1",
+  "email": "fidelisbadu12@gmail.com",
+  "displayName": ": Fidelis Chukwudi Badu",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ebe83b69e6fb99339adb",
+  "uid": "oTKLr6fpjqdTEaeZ5nbpwG6gVnf1",
+  "email": "fynechilee@gmail.com",
+  "displayName": "Chilee Fyness Ogechi",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ebea3b69e6fb99339adf",
+  "uid": "ftWbG0i8YCOmMs5fAQP76vdo5TE2",
+  "email": "successandrew81@gmail.com",
+  "displayName": "Success Ibiene Andrew",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ebf03b69e6fb99339aeb",
+  "uid": "dX8NvJD1YAZyY2zMhqCpJVDgE8N2",
+  "email": "evanskel84@gmail.com",
+  "displayName": "Kobani Evans Legborsi",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ebf13b69e6fb99339aef",
+  "uid": "WQ69jyeFOFNlBWmNReusRxF9gP43",
+  "email": "wisestluckybaridapdoo89@gmail.com",
+  "displayName": "Wisest Baridapdoo Lucky",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ebf33b69e6fb99339af3",
+  "uid": "3socZaHjPWdz0iCtSL4T1KDxhBv2",
+  "email": "gbarawis@gmail.com",
+  "displayName": "Stanley Lebara Gbarawi",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ebf63b69e6fb99339af7",
+  "uid": "1KiRdhrJ6FTnY1YuC9xCGXO8NjN2",
+  "email": "isaacbarry2050@gmail.com",
+  "displayName": "Isaac Bariledum Monday",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ebf93b69e6fb99339aff",
+  "uid": "gmIhCjtC0dfocC2DEcNO2yIn6nL2",
+  "email": "kefacommunication7@gmail.com",
+  "displayName": "Victor Obihele Amos",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ebfb3b69e6fb99339b03",
+  "uid": "0r7I7Vlk9TeuVXrGGGHcCGbiNK82",
+  "email": "wisdomgbupo@gmail.com",
+  "displayName": "Bupo Wisdom Nengia",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ebfd3b69e6fb99339b07",
+  "uid": "VMuTvgj4WNR7kP52FpBt1aLXGLS2",
+  "email": "adasiasuk716@gmail.co",
+  "displayName": "Asuk Adasi Gogo",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ec013b69e6fb99339b0f",
+  "uid": "fZe3wL24MYXUyQhg0f18N95pnZz2",
+  "email": "darryoung96@gmail.com",
+  "displayName": "Okubo Darlington Onisokien",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ec033b69e6fb99339b13",
+  "uid": "8q9bVHr1c5MH8WpykYVn18Asf8p2",
+  "email": "fubarabeatrice19@gmail.com",
+  "displayName": "Fubara Beatrice",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ec053b69e6fb99339b17",
+  "uid": "BFTV6Eyy7DPdtvi8U0aacJANxRA2",
+  "email": "queenkelly245@gmail.com",
+  "displayName": "Mark-ewa Queen Treasure",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ec083b69e6fb99339b1f",
+  "uid": "DqKxSRZV6aYhG8cTo5A0mmtZomR2",
+  "email": "jonathanugbanafavour@gmail.com",
+  "displayName": "Ugbana Favour Jonathan",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ec103b69e6fb99339b2f",
+  "uid": "YTLPsd58tYRBXPf8MSuSigExq1B3",
+  "email": "giftowilliams.gw@gmail.com",
+  "displayName": "Williams Gift Kachi",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ec143b69e6fb99339b37",
+  "uid": "uTXc3tXHoHf7B9rxHms2RN0WNWJ3",
+  "email": "ricia4real@gmail.com",
+  "displayName": "Matthew Uzoma Samuel",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ec163b69e6fb99339b3b",
+  "uid": "cs8pV9hmcbYLjekWezjoAEe0QEN2",
+  "email": "stellaworiamesi@gmail.com",
+  "displayName": "Stella Wori Opuruiche Amesi",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ec1a3b69e6fb99339b43",
+  "uid": "1Xc9imnu7mRiMJ9Z5mXlej60nS22",
+  "email": "igeyemmanuel7@gmail.com",
+  "displayName": "Emmanuel Igey",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ec1f3b69e6fb99339b4d",
+  "uid": "NWuiT1Doc9d1ovZxLy0P03W7lrm2",
+  "email": "chinwo120@gmail.com",
+  "displayName": "Chinwo Queen",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ec233b69e6fb99339b56",
+  "uid": "hp2WZxJx38hT90i5UJStpzN2jyo1",
+  "email": "fewiifortune@gmail.com",
+  "displayName": "Worgumati Fortune John",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ec253b69e6fb99339b5a",
+  "uid": "L1Rs0ZELgghyjw4APXUGAj5eUEt1",
+  "email": "sikoelija87@gmail.com",
+  "displayName": "Siko Elijahba Furotubo",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ec273b69e6fb99339b60",
+  "uid": "B6xMlk3TGbTo9IfJwOrFBES2JVn2",
+  "email": "wokemfavour@gmail.com",
+  "displayName": "Favour Ichebadu Wokem",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ec333b69e6fb99339b78",
+  "uid": "NZjEeBQf5XUgYWux8TSKERWrzmN2",
+  "email": "abbeyfidelis92@gmail.com",
+  "displayName": "Abbey, Fidelis Ekens",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ec363b69e6fb99339b80",
+  "uid": "bI7KMfYC3PYoaUWOFZStxCYthZf2",
+  "email": "awajionyiekang@gmail.com",
+  "displayName": "Ekang Awajionyi Paul",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ec383b69e6fb99339b84",
+  "uid": "OOnxEhc3adRDvNLihXd2h82mbTB3",
+  "email": "frosh4show@gmail.com",
+  "displayName": "Favour Ekpeye",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ec3a3b69e6fb99339b88",
+  "uid": "GthxyipBAYScoexlrTbjuWlA76K2",
+  "email": "greatmindconsultant@gmail.com",
+  "displayName": "Friday Barry Nkpurunee",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ec413b69e6fb99339b96",
+  "uid": "gaYN0SKe0idryzuzbpHv3YX9KvY2",
+  "email": "lot.lasburyibifaa@gmail.com",
+  "displayName": "Lot Ibifa-a Lasbury",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ec453b69e6fb99339b9e",
+  "uid": "OqQCDLUp3mgxwZ2vhf4VGDid3M42",
+  "email": "braideibiso72@gmail.com",
+  "displayName": "Braide Ibiso Ibiba",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ec473b69e6fb99339ba2",
+  "uid": "oQHJSm0PCXWW9cXnXpNbTTdlxu03",
+  "email": "ibiso0536@gmail.com",
+  "displayName": "Ibiso Opualapuye Dappa",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ec4c3b69e6fb99339bae",
+  "uid": "jQvMkMqVwJOZrYqTHGwxajmNOi63",
+  "email": "dorisdandyson@gmail.com",
+  "displayName": "Dandyson Ellisonba Braide",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ec563b69e6fb99339bc3",
+  "uid": "VpLm1Ph3D8Y2AM602znC2JQeOoX2",
+  "email": "stephenopurum73@gmail.com",
+  "displayName": "Stephen Opurum",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ec5d3b69e6fb99339bd0",
+  "uid": "CNyvglS3JTdFrhMXTq4JoSUaBQo2",
+  "email": "derefakaa@gmail.com",
+  "displayName": "Derefaka Israel Aggo",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ec633b69e6fb99339bdc",
+  "uid": "x2V218XmoGWNCCwyfMTFWBhHNDi1",
+  "email": "gbliss701@gmail.com",
+  "displayName": "Goodluck Paul Ogan",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ec753b69e6fb99339c00",
+  "uid": "2WU508erFEXtTijvwQnKhIkzevp2",
+  "email": "tegaefejevwie@gmail.com",
+  "displayName": "Oghenetega Peter Junior Efejevwie",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ec853b69e6fb99339c21",
+  "uid": "wu2TpNzY3qgCEfxNvAmtVD7RZVU2",
+  "email": "osodikilisa@gmail.com",
+  "displayName": "Sodiki Lisa Opuogulaya",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ec963b69e6fb99339c3d",
+  "uid": "h34Rxtk1dLh5G6OLQgzsHhxFvbH2",
+  "email": "favourchukwuma@gmail.com",
+  "displayName": "Favour Chukwuma",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ec983b69e6fb99339c41",
+  "uid": "M70U8VTHXNfukiMSaKZylkhAk423",
+  "email": "opurumpurity@gmail.com",
+  "displayName": "Purity Chiburuoma Opurum",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ec9a3b69e6fb99339c45",
+  "uid": "FilE70AsEyP2wC6gPEdGCuWSBv82",
+  "email": "peter.wigwe4real@gmail.com",
+  "displayName": "Peter Wigwe",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ec9c3b69e6fb99339c49",
+  "uid": "QKWCgkAVa7RAl1AzfKQtgMD7DvN2",
+  "email": "jovitajude1@gmail.com",
+  "displayName": "Jovita Jude",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ec9e3b69e6fb99339c4d",
+  "uid": "XKcuv81TVZP3OdfYnVdvnjyXLIz2",
+  "email": "janetizu5@gmail.com",
+  "displayName": "Janet Izu Mitoun",
+  "role": "student"
+ },
+ {
+  "_id": "6a70eca03b69e6fb99339c51",
+  "uid": "nR9Rje6Kt6WsNjix01C9QeQHcaR2",
+  "email": "charlesokien@gmail.com",
+  "displayName": "Charles Onisokien Gift",
+  "role": "student"
+ },
+ {
+  "_id": "6a70eca23b69e6fb99339c55",
+  "uid": "wspQXUT9uRWx6ZCLaMhbjD1qioz1",
+  "email": "speciallady081@gmail.com",
+  "displayName": "Mary Solomon",
+  "role": "student"
+ },
+ {
+  "_id": "6a70eca33b69e6fb99339c59",
+  "uid": "59xkCZsjNdUHUSL0Jg1n6KA4uj63",
+  "email": "garubafatimoh2017@gmail.com",
+  "displayName": "Garuba Fatimoh",
+  "role": "student"
+ },
+ {
+  "_id": "6a70eca53b69e6fb99339c5d",
+  "uid": "fO2hxcuDQHWlxsj36ppl4vf3BD12",
+  "email": "chimnodum@yahoo.com",
+  "displayName": "Jeff Chimnodum Collins-wegwu",
+  "role": "student"
+ },
+ {
+  "_id": "6a70eca83b69e6fb99339c61",
+  "uid": "73FNmnPmKvPl3xlR6ENyQofFa6c2",
+  "email": "romzy57@gmail.com",
+  "displayName": "Oroma Nnwoburoma Allen",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ecb23b69e6fb99339c75",
+  "uid": "PSgdR1dGZ0UhVekeTdhY9Ft8ica2",
+  "email": "starlovedinho@gmail.com",
+  "displayName": "Stanley Aloniogbo Richman",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ecb43b69e6fb99339c79",
+  "uid": "ePkZzVZTY2cCOG4QLgY08tyzGz42",
+  "email": "israelegbe172@gmail.com",
+  "displayName": "Israel Chimanim Egbe",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ecb63b69e6fb99339c7d",
+  "uid": "szfEoIugaphkHpX3J6BYpP1f72g1",
+  "email": "chachadix2378@gmail.com",
+  "displayName": "Odoyi Charity Dixon",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ecb83b69e6fb99339c81",
+  "uid": "8AuNXvVDv3crQawKRdsOoAAPMrv2",
+  "email": "plumiej13@gmail.com",
+  "displayName": "Osaide Jane Eyoh",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ecbd3b69e6fb99339c8d",
+  "uid": "eGuyNOOcTzZD5rWiXBZ6xpcxWWf2",
+  "email": "ephraimchigala@gmail.com",
+  "displayName": "Ephraim Chigala Agbulum",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ecbf3b69e6fb99339c91",
+  "uid": "wCI5aUxrEWNZPc2V24RVeo0m6Hq2",
+  "email": "reubenpeter98@gmail.com",
+  "displayName": "Reuben Peter Chioduye",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ecc13b69e6fb99339c95",
+  "uid": "25zhYO6puuc0yqONFaVBr6L2bxF3",
+  "email": "fabianchukwu48@gmail.com",
+  "displayName": "Amb Fabian Braide Chukwu",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ecc33b69e6fb99339c99",
+  "uid": "8s7tnwnLSUgQ3TPp5UGhozOz5bw1",
+  "email": "preciouschisa147@gmail.com",
+  "displayName": "Precious Chisa",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ecc73b69e6fb99339ca2",
+  "uid": "4yIPmmkx9kdvXOcDvgZUGdnrHtB2",
+  "email": "fredochena30@gmail.com",
+  "displayName": "Fred Ochena",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ecc93b69e6fb99339ca6",
+  "uid": "iNMT7MwZd4Y96YtRwzwIHTvC1e62",
+  "email": "greasegrease7@gmail.com",
+  "displayName": "Grace Siere",
+  "role": "student"
+ },
+ {
+  "_id": "6a70eccb3b69e6fb99339caa",
+  "uid": "OrYIRQSdH7WDYs2VKPhFMPVDgkY2",
+  "email": "wiruenabere@gmail.com",
+  "displayName": "Iruenabere M Wilson.",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ecd63b69e6fb99339cc2",
+  "uid": "qgLneq0WRAdwbABiHTxnQ3opYwk2",
+  "email": "ebieobarimimite49@gmail.com",
+  "displayName": "Mimite Eagfa-Bieobari",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ecda3b69e6fb99339cca",
+  "uid": "Ol02GKbhz7S3ffFXuNILXe6jv8F2",
+  "email": "godswilloscarolaka@gmail.com",
+  "displayName": "Godswill Oscar Olaka",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ecdc3b69e6fb99339cce",
+  "uid": "agnXCqcyJ6WKJ0t0khYvYj9orFv1",
+  "email": "wonderokonu@gmail.com",
+  "displayName": "Wonder Ebube Okonu",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ecdd3b69e6fb99339cd2",
+  "uid": "9pVuEs2LZghmJlgyXgWN24Q17FZ2",
+  "email": "okonuakachukwu@gmail.com",
+  "displayName": "Okonu Akachukwu David",
+  "role": "student"
+ },
+ {
+  "_id": "6a70eced3b69e6fb99339cf2",
+  "uid": "7k4ibhx3MxhXdcYDWOY7zD6DkrL2",
+  "email": "daisynwaeke@gmail.com",
+  "displayName": "Nwaeke, Daisy Ifeyinwa",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ecf23b69e6fb99339cfe",
+  "uid": "OU90mYJHqlRvyFwA1cDjwqLqo693",
+  "email": "iheanachomacdavid@gmail.com",
+  "displayName": "Mac-david Iheanacho David",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ecf43b69e6fb99339d02",
+  "uid": "iHSkEPawKbRiAyN6EFzufjP0GRq1",
+  "email": "williamschineye46@gmail.com",
+  "displayName": "Chinenye Williams",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ecf73b69e6fb99339d0a",
+  "uid": "2J4Y61AcFwfAvaT82r65xXOrYgc2",
+  "email": "tomlove2308@gmail.com",
+  "displayName": "Tom Ekenereawaji Love",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ecf93b69e6fb99339d0e",
+  "uid": "og15XF4YOremrYDGQEeIpFVpoYb2",
+  "email": "chimaqueen01@gmail.com",
+  "displayName": "Queen Chinwe Chima",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ecfb3b69e6fb99339d12",
+  "uid": "RcCeM22PQKaYjnwZlzT1n1Sa8m52",
+  "email": "deetakujames@gmail.com",
+  "displayName": "Redeemer James",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ecfd3b69e6fb99339d16",
+  "uid": "Mw63bUbBZMYYIDJQ73lpchPWU5e2",
+  "email": "winhenven@gmail.com",
+  "displayName": "Tamunosiki Tom Iniowu",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ed033b69e6fb99339d22",
+  "uid": "e6QCw12quQW1qygdwooycj5DH632",
+  "email": "adaezefortune29@gmail.com",
+  "displayName": "Agha Fortune Adaeze",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ed043b69e6fb99339d26",
+  "uid": "TU41VSDJOefCsQGEyIZX340erq42",
+  "email": "kevinuti912@gmail.com",
+  "displayName": "Uti Kevin Chidera.",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ed083b69e6fb99339d2e",
+  "uid": "HrO597XM0lPABQZXWSyj742M7qL2",
+  "email": "angeleffiong020@gmail.com",
+  "displayName": "Effiong Angel",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ed0f3b69e6fb99339d3e",
+  "uid": "BazhyJdJRgTnQ4utyCtQqaiqcSq2",
+  "email": "g68211181@gmail.com",
+  "displayName": "Godpower Goodness Chinemerem",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ed113b69e6fb99339d42",
+  "uid": "g7LNqnpdjlXvFj6niHWjEgOf7Wu1",
+  "email": "elielizabeth023@gmail.com",
+  "displayName": "Eli Elizabeth Ucheawaji",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ed1d3b69e6fb99339d52",
+  "uid": "IYQyO8OaS5b1F9kcJjmYemrWW4s2",
+  "email": "praiseorike69@gmail.com",
+  "displayName": "Orike Praise",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ed203b69e6fb99339d5a",
+  "uid": "BQoUe5mF9UUtmls6SRkkoBGWQey1",
+  "email": "samanthafranklin810@gmail.com",
+  "displayName": "Franklin Oruchi Samantha",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ed263b69e6fb99339d66",
+  "uid": "j4yaUCTTgwYAO3LEYn42NNqjQEA3",
+  "email": "samuelsarah018@gmail.com",
+  "displayName": "Samuel Sarah Ogechi",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ed283b69e6fb99339d6a",
+  "uid": "Dgf6WcV1G4WF0FSAZM4THgNifAv1",
+  "email": "anyanwuroyalty@gmail.com",
+  "displayName": "Anyanwu Onyedikachi Judith",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ed2a3b69e6fb99339d6e",
+  "uid": "0IDKQUgm9fT4gV7e3MFuzw4Znv82",
+  "email": "gj56836@gmail.com",
+  "displayName": "Lovegod Chimezunim",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ed303b69e6fb99339d7a",
+  "uid": "c4xkPJhLs0Wsnie6S40upIAQ3BC2",
+  "email": "laurettaololoma@gmail.com",
+  "displayName": "Lauretta Alaerebo Ololoma,",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ed333b69e6fb99339d82",
+  "uid": "zDYovRu3Med4L1eqJCJI3RkjXm82",
+  "email": "osuoabophillips07@gmail.com",
+  "displayName": "Osuoabo Emmanuel Phillips",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ed373b69e6fb99339d8a",
+  "uid": "1FArbwUbPzY0CCbDiWKZmsqtPAw2",
+  "email": "adielrukky@gmail.com",
+  "displayName": "Rukevwe Collins -eromonsele",
+  "role": "student"
+ },
+ {
+  "_id": "6a70eef73e0f39144b95fe58",
+  "uid": "klW1RdDR6idWcPKpBiW7HsuZ8IM2",
+  "email": "victorchukwuwikecharles@gmail.com",
+  "displayName": "Victor Chukwuwike Walter.",
+  "role": "student"
+ },
+ {
+  "_id": "6a70eefa3e0f39144b95fe5f",
+  "uid": "GhmPyRsbgXVUyrYK6s9AUtQaP5u1",
+  "email": "dicmatconcept@gmail.com",
+  "displayName": "Jinyebarimiema Daminabo Dickson.",
+  "role": "student"
+ },
+ {
+  "_id": "6a70ef3f58ff6e83f96c7e8a",
+  "uid": "Tk7P283XaUTAdFf7kBT77DVAHsq1",
+  "email": "ambapatrick00@gmail.com",
+  "displayName": "Atubonengi Patrick",
+  "role": "student"
+ },
+ {
+  "_id": "6a71faf236642a69a45337df",
+  "uid": "X6WLpAgy6dg7Br8spkSIx21tlG02",
+  "email": "presciouschibudo89@gmail.com",
+  "displayName": "Chibudo Precious",
+  "role": "student"
+ },
+ {
+  "_id": "6a71faf436642a69a45337e3",
+  "uid": "2EnLxwhaLEgqJMZLfAy8Qzeytjg1",
+  "email": "roseisaac2024@gmail.com",
+  "displayName": "Rose Isaac",
+  "role": "student"
+ },
+ {
+  "_id": "6a71faf536642a69a45337e7",
+  "uid": "TDNO4NVE9KVfCEWGFzss9mdtK7z2",
+  "email": "nwiaerewisdom@gmail.com",
+  "displayName": "Nwiaere Wisdom Mdanebari",
+  "role": "student"
+ },
+ {
+  "_id": "6a71fafb36642a69a45337f3",
+  "uid": "EkUuqyESxWdIYy4jSGISA2SHaZo2",
+  "email": "oluwasammy97@gmail.com",
+  "displayName": "Igbanor Samuel Chidera",
+  "role": "student"
+ },
+ {
+  "_id": "6a71fafc36642a69a45337f7",
+  "uid": "nwKdeAJAsYYmUXxu6BPyIi5BuoH3",
+  "email": "cfjflexy@gmail.com",
+  "displayName": "Jeremiah Favour Chimzieanyara",
+  "role": "student"
+ },
+ {
+  "_id": "6a75a5f06271d1492f9f5378",
+  "uid": "BCZV1k6VriOgJew1OtAjvxebDZi1",
+  "email": "dukobipicomfort2@gmail.com",
+  "displayName": "Comfort Dukobipi",
+  "role": "student"
+ },
+ {
+  "_id": "6a75a5f36271d1492f9f537f",
+  "uid": "wvHgWT8pIWbPe9l4J3ls74rZj4B3",
+  "email": "endurancejustineufot@gmail.com",
+  "displayName": "Endurance Justine Ufot",
+  "role": "student"
+ },
+ {
+  "_id": "6a75a5f76271d1492f9f5386",
+  "uid": "W6Zp0BfEknOCQALAawjptX2q1KH2",
+  "email": "esti.jane1988@gmail.com",
+  "displayName": "Esther J. Genesis",
+  "role": "student"
+ },
+ {
+  "_id": "6a8425209e42a13b6e73a347",
+  "uid": "nN4Asn4tS2aBRSaPn6RUPSQeGR53",
+  "email": "dtamdede@gmail.com",
+  "displayName": "Tekena Delphine Sosepriala",
+  "role": "student"
+ },
+ {
+  "_id": "6a8427136a7594121eba65fd",
+  "uid": "kNqouovTkgOSSSgpckTFkx7sgcK2",
+  "email": "successwokem@gmail.com",
+  "displayName": "Wokem Success Kelechi",
+  "role": "student"
+ },
+ {
+  "_id": "6a84272a6a7594121eba661f",
+  "uid": "U5SUxNRSHaTlwNF6RJQ2sE3ftaE3",
+  "email": "victorymishaelzorasi@gmail.com",
+  "displayName": "Victory Mishael Zorasi",
+  "role": "student"
+ },
+ {
+  "_id": "6a84272d6a7594121eba6623",
+  "uid": "0uMZrGiPHqVLDUBbJY7Dh1kq0Jh2",
+  "email": "giftivinabo@gmail.com",
+  "displayName": "Gift D.i.briggs",
+  "role": "student"
+ },
+ {
+  "_id": "6a842f08d2ba4c6ea37fb183",
+  "uid": "CtD63Myc7OhyboBfOKSP0V4LDE13",
+  "email": "praisedaniel707@gmail.com",
+  "displayName": "Daniel Praise Ebuoma",
+  "role": "student"
+ },
+ {
+  "_id": "6a8caa846244b82ffc7317a7",
+  "uid": "noq6NfKsERaZtFeYeucMvn5Jv9y2",
+  "email": "mokmivimoore9@gmail.com",
+  "displayName": "Mokmivi Moore",
+  "role": "student"
+ },
+ {
+  "_id": "6a8caad03c7d515f1f411128",
+  "uid": "wJZeKfa91HfvsFfO6brSf3sWSIk1",
+  "email": "ibitonia27@gmail.com",
+  "displayName": "Tonia Iboi",
+  "role": "student"
+ },
+ {
+  "_id": "6a8e9aff5a7124d0428ffdd0",
+  "uid": "Dyknh5ffNPTX202Kv8gOO2SDDMv1",
+  "displayName": "Ayibamie Afy Douglas",
+  "email": "afy.douglas@ashfordandgrayfusionacademy.com",
+  "role": "instructor"
+ },
+ {
+  "_id": "6a9fe05610d5fc302081b8e5",
+  "uid": "YAuuo3caloTxM40wd2Ofg2JhAR33",
+  "email": "steve.onyebuchi@ashfordandgrayfusionacademy.com",
+  "displayName": "Mr Steve Iyke Onyebuchi",
+  "role": "instructor"
+ }
+]
