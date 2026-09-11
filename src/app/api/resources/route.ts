@@ -2,9 +2,9 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import dbConnect from '@/lib/mongodb';
 import { Resource } from '@/models/Supports';
-import Course from '@/models/Course';
 import Enrollment from '@/models/Enrollment';
 import { AuthError, requireRole, withAuth } from '@/lib/auth-server';
+import { getInstructorCourseIds } from '@/lib/instructor-courses';
 
 export const GET = withAuth(async (req: NextRequest, { auth }) => {
     try {
@@ -16,8 +16,7 @@ export const GET = withAuth(async (req: NextRequest, { auth }) => {
         // An instructor may only ever see resources for courses they actually
         // teach — never the whole platform's library.
         if (auth.role === 'instructor') {
-            const myCourses = await Course.find({ instructorUid: auth.uid }).select('_id').lean();
-            const myCourseIds = myCourses.map((c: any) => c._id.toString());
+            const myCourseIds = await getInstructorCourseIds(auth.uid);
 
             if (courseId && !myCourseIds.includes(courseId)) {
                 return NextResponse.json({ error: 'You can only view resources for courses you teach.' }, { status: 403 });
@@ -93,8 +92,8 @@ export const POST = withAuth(async (req: NextRequest, { auth }) => {
             if (!parsed.data.courseId) {
                 return NextResponse.json({ error: 'A course is required to share a resource.' }, { status: 400 });
             }
-            const owns = await Course.findOne({ _id: parsed.data.courseId, instructorUid: auth.uid }).select('_id').lean();
-            if (!owns) {
+            const myCourseIds = await getInstructorCourseIds(auth.uid);
+            if (!myCourseIds.includes(parsed.data.courseId)) {
                 return NextResponse.json({ error: 'You can only share resources for courses you teach.' }, { status: 403 });
             }
         }

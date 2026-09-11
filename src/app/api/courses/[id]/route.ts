@@ -4,14 +4,17 @@ import Course from '@/models/Course';
 import Enrollment from '@/models/Enrollment';
 import { STATIC_COURSES } from '@/lib/courses-data';
 import { AuthError, requireRole, withAuth, type AuthContext } from '@/lib/auth-server';
+import { getInstructorCourseIds } from '@/lib/instructor-courses';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
 const ELEVATED_READ = ['admin', 'course_registrar', 'registrar'];
 
 /**
- * Ownership: prefer instructorUid (set on new courses); fall back to
- * display-name compare for legacy rows. Admins/course_registrars bypass.
+ * Ownership: Course.instructorUid/instructor-name are legacy fields, blank
+ * or stale for every course created via the timetable import — the
+ * timetable's own session assignments are the real source of truth for
+ * "does this instructor teach this course." Admins/course_registrars bypass.
  */
 async function assertCanEditCourse(courseId: string, auth: AuthContext) {
     if (auth.role === 'admin' || auth.role === 'course_registrar') return;
@@ -22,7 +25,9 @@ async function assertCanEditCourse(courseId: string, auth: AuthContext) {
     if (!course) throw new AuthError(404, 'Course not found');
     const ownsByUid = course.instructorUid && course.instructorUid === auth.uid;
     const ownsByName = !course.instructorUid && course.instructor?.name === auth.displayName;
-    if (!ownsByUid && !ownsByName) {
+    if (ownsByUid || ownsByName) return;
+    const myCourseIds = await getInstructorCourseIds(auth.uid);
+    if (!myCourseIds.includes(courseId)) {
         throw new AuthError(403, 'You can only edit your own courses.');
     }
 }
@@ -36,6 +41,8 @@ async function assertCanReadCourse(courseId: string, auth: AuthContext) {
             const ownsByName = !course.instructorUid && course.instructor?.name === auth.displayName;
             if (ownsByUid || ownsByName) return;
         }
+        const myCourseIds = await getInstructorCourseIds(auth.uid);
+        if (myCourseIds.includes(courseId)) return;
     }
     const enrolled = await Enrollment.findOne({ courseId, userId: auth.uid }).select('_id');
     if (!enrolled) {

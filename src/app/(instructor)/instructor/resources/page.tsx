@@ -58,10 +58,21 @@ export default function InstructorResourcesPage() {
         fetchResources();
         (async () => {
             try {
-                const res = await fetch('/api/courses');
+                const [res, sRes] = await Promise.all([
+                    fetch('/api/courses'),
+                    apiFetch('/api/timetable/my-sessions'),
+                ]);
                 const all = await res.json();
+                const sessionsBody = await sRes.json().catch(() => null);
+
+                // Course.instructorUid is a legacy field left blank for courses
+                // created via the timetable import — the timetable's own
+                // session assignments are the real source of truth.
+                const mySessions = sessionsBody?.success && Array.isArray(sessionsBody.sessions) ? sessionsBody.sessions : [];
+                const myCourseIdsFromTimetable = new Set(mySessions.map((s: any) => s.courseId).filter(Boolean));
+
                 if (Array.isArray(all)) {
-                    setCourses(all.filter((c: any) => c.instructorUid === user.uid));
+                    setCourses(all.filter((c: any) => c.instructorUid === user.uid || myCourseIdsFromTimetable.has(c.id)));
                 }
             } catch (error) {
                 console.error(error);
