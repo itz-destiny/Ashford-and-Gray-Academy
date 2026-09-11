@@ -7,6 +7,7 @@ import LiveClass from '@/models/LiveClass';
 import Assessment from '@/models/Assessment';
 import Attempt from '@/models/Attempt';
 import { withAuth, requireRole } from '@/lib/auth-server';
+import { getInstructorCourseIds } from '@/lib/instructor-courses';
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -20,8 +21,10 @@ export const GET = withAuth(async (_req: NextRequest, { auth }) => {
         requireRole(auth, ['instructor', 'admin']);
         await dbConnect();
 
-        const courses = await Course.find({ instructorUid: auth.uid }).select('_id title price').lean();
-        const courseIds = courses.map((c: any) => c._id.toString());
+        const courseIds = await getInstructorCourseIds(auth.uid);
+        const courses = courseIds.length
+            ? await Course.find({ _id: { $in: courseIds } }).select('_id title price').lean()
+            : [];
 
         if (courseIds.length === 0) {
             return NextResponse.json({

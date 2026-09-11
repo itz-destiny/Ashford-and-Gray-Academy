@@ -5,6 +5,7 @@ import Course from '@/models/Course';
 import Enrollment from '@/models/Enrollment';
 import { Module, Lesson } from '@/models/Supports';
 import { AuthError, withAuth, type AuthContext } from '@/lib/auth-server';
+import { getInstructorCourseIds } from '@/lib/instructor-courses';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -15,12 +16,18 @@ async function isEnrolled(courseId: string, uid: string): Promise<boolean> {
     return !!en;
 }
 
+// Course.instructorUid/instructor-name are legacy fields, blank or stale for
+// every course created via the timetable import — the timetable's own
+// session assignments are the real source of truth.
 async function isCourseOwner(courseId: string, auth: AuthContext): Promise<boolean> {
     if (auth.role !== 'instructor') return false;
     const course = await Course.findById(courseId).select('instructorUid instructor');
-    if (!course) return false;
-    if (course.instructorUid) return course.instructorUid === auth.uid;
-    return course.instructor?.name === auth.displayName;
+    if (course) {
+        if (course.instructorUid && course.instructorUid === auth.uid) return true;
+        if (!course.instructorUid && course.instructor?.name === auth.displayName) return true;
+    }
+    const myCourseIds = await getInstructorCourseIds(auth.uid);
+    return myCourseIds.includes(courseId);
 }
 
 async function assertCanRead(courseId: string, auth: AuthContext) {

@@ -1,8 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import { Resource } from '@/models/Supports';
-import Course from '@/models/Course';
 import { withAuth, requireRole, AuthError } from '@/lib/auth-server';
+import { getInstructorCourseIds } from '@/lib/instructor-courses';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -29,9 +29,11 @@ export const DELETE = withAuth<RouteParams>(async (_req: NextRequest, { auth, pa
         // attached to a course they teach — never anyone else's material.
         if (auth.role === 'instructor') {
             const isOwner = resource.createdBy === auth.uid;
-            const ownsCourse = resource.courseId
-                ? await Course.exists({ _id: resource.courseId, instructorUid: auth.uid })
-                : false;
+            let ownsCourse = false;
+            if (!isOwner && resource.courseId) {
+                const myCourseIds = await getInstructorCourseIds(auth.uid);
+                ownsCourse = myCourseIds.includes(String(resource.courseId));
+            }
             if (!isOwner && !ownsCourse) {
                 return NextResponse.json({ error: 'You can only delete resources you shared with your own cohort.' }, { status: 403 });
             }

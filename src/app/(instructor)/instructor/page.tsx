@@ -63,11 +63,18 @@ export default function InstructorDashboard() {
                 const [allCourses, studentsBody, allMessages, events, sessionsBody] = await Promise.all([
                     cRes.json(), stuRes.json().catch(() => null), mRes.json(), evRes.json(), sRes.json().catch(() => null),
                 ]);
-                if (sessionsBody?.success && Array.isArray(sessionsBody.sessions)) setSessions(sessionsBody.sessions);
+                const mySessions = sessionsBody?.success && Array.isArray(sessionsBody.sessions) ? sessionsBody.sessions : [];
+                if (mySessions.length) setSessions(mySessions);
 
+                // Course.instructorUid is a legacy field that's never set for
+                // courses created via the timetable import, where several
+                // lecturers can teach different modules of the same course —
+                // the timetable's own session assignments are the real source
+                // of truth for "do I teach this course."
+                const myCourseIdsFromTimetable = new Set(mySessions.map((s: any) => s.courseId).filter(Boolean));
                 const mine = Array.isArray(allCourses)
                     ? allCourses.filter((c: any) =>
-                        c.instructorUid === user.uid || c.instructor?.name === user.displayName
+                        c.instructorUid === user.uid || c.instructor?.name === user.displayName || myCourseIdsFromTimetable.has(c.id)
                     )
                     : [];
                 setCourses(mine);

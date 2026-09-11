@@ -23,11 +23,22 @@ export default function InstructorCoursesPage() {
             try {
                 // Authenticated GET returns all statuses for elevated callers, so
                 // instructor drafts come through. Filter to ones owned by this user.
-                const res = await apiFetch('/api/courses');
+                const [res, sRes] = await Promise.all([
+                    apiFetch('/api/courses'),
+                    apiFetch('/api/timetable/my-sessions'),
+                ]);
                 const data = await res.json();
+                const sessionsBody = await sRes.json().catch(() => null);
+
+                // Course.instructorUid is a legacy field left blank for courses
+                // created via the timetable import — the timetable's own
+                // session assignments are the real source of truth.
+                const mySessions = sessionsBody?.success && Array.isArray(sessionsBody.sessions) ? sessionsBody.sessions : [];
+                const myCourseIdsFromTimetable = new Set(mySessions.map((s: any) => s.courseId).filter(Boolean));
+
                 if (Array.isArray(data)) {
                     const mine = data.filter((c: any) =>
-                        c.instructorUid === user.uid || c.instructor?.name === user.displayName
+                        c.instructorUid === user.uid || c.instructor?.name === user.displayName || myCourseIdsFromTimetable.has(c.id)
                     );
                     setCourses(mine);
                 }

@@ -4,23 +4,25 @@ import Course from '@/models/Course';
 import Enrollment from '@/models/Enrollment';
 import User from '@/models/User';
 import { withAuth, requireRole } from '@/lib/auth-server';
+import { getInstructorCourseIds } from '@/lib/instructor-courses';
 
 // =============================================================================
 // GET /api/instructor/students — every real student enrolled in a course the
-// calling instructor actually teaches (matched by Course.instructorUid, not
-// by display-name string matching). This is the instructor's real cohort —
-// the same set messaging and resource-sharing are scoped to.
+// calling instructor actually teaches (matched via the timetable's real
+// lecturer assignments, not by display-name string matching). This is the
+// instructor's real cohort — the same set messaging and resource-sharing are
+// scoped to.
 // =============================================================================
 export const GET = withAuth(async (_req: NextRequest, { auth }) => {
     try {
         requireRole(auth, ['instructor', 'admin']);
         await dbConnect();
 
-        const courses = await Course.find({ instructorUid: auth.uid }).select('_id title').lean();
-        if (courses.length === 0) {
+        const courseIds = await getInstructorCourseIds(auth.uid);
+        if (courseIds.length === 0) {
             return NextResponse.json({ success: true, students: [] });
         }
-        const courseIds = courses.map((c: any) => c._id.toString());
+        const courses = await Course.find({ _id: { $in: courseIds } }).select('_id title').lean();
         const courseTitleById = new Map(courses.map((c: any) => [c._id.toString(), c.title]));
 
         const enrollments = await Enrollment.find({ courseId: { $in: courseIds } }).lean();
