@@ -66,6 +66,7 @@ interface StaffMember {
     photoURL?: string;
     role: string;
     title?: string;
+    zoomPersonalEmail?: string;
     createdAt: string;
 }
 
@@ -91,7 +92,7 @@ export default function RegistrarUsersPage() {
 
     // Edit Credentials Modal State
     const [editTarget, setEditTarget] = useState<StaffMember | null>(null);
-    const [editForm, setEditForm] = useState({ displayName: '', email: '', role: 'instructor' as (typeof ASSIGNABLE_ROLES)[number], title: '' });
+    const [editForm, setEditForm] = useState({ displayName: '', email: '', role: 'instructor' as (typeof ASSIGNABLE_ROLES)[number], title: '', zoomPersonalEmail: '' });
 
     useEffect(() => {
         fetchStaff();
@@ -173,6 +174,7 @@ export default function RegistrarUsersPage() {
             email: member.email,
             role: (ASSIGNABLE_ROLES as readonly string[]).includes(member.role) ? (member.role as any) : 'instructor',
             title: member.title || '',
+            zoomPersonalEmail: member.zoomPersonalEmail || '',
         });
     };
 
@@ -518,6 +520,22 @@ export default function RegistrarUsersPage() {
                                 />
                             </div>
                         </div>
+                        {editForm.role === 'instructor' && (
+                            <div className="space-y-2">
+                                <Label htmlFor="edit-zoom-email">Personal Zoom Account Email</Label>
+                                <Input
+                                    id="edit-zoom-email"
+                                    type="email"
+                                    placeholder="their.own@gmail.com"
+                                    value={editForm.zoomPersonalEmail}
+                                    onChange={(e) => setEditForm({ ...editForm, zoomPersonalEmail: e.target.value })}
+                                    className="h-11 rounded-none border-[#0B1F3A]/10 focus-visible:ring-[#C8A96A]"
+                                />
+                                <p className="text-xs text-slate-400">
+                                    If they join a class through their own Zoom account instead of the school's, this is what makes Zoom recognize them as host.
+                                </p>
+                            </div>
+                        )}
                     </div>
                     <DialogFooter>
                         <Button variant="ghost" onClick={() => setEditTarget(null)} className="rounded-none font-black uppercase text-[10px] tracking-widest">Cancel</Button>

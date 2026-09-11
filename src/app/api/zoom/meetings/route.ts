@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import LiveClass from '@/models/LiveClass';
+import Course from '@/models/Course';
+import User from '@/models/User';
 import { createZoomMeeting, renameZoomHost, enableZoomVirtualBackground, setZoomHostPicture, ACADEMY_HOST_DISPLAY_NAME } from '@/lib/zoom';
 import { findAvailableZoomHost } from '@/lib/zoom-scheduler';
 import { withAuth } from '@/lib/auth-server';
@@ -43,6 +45,14 @@ export const POST = withAuth(async (req, { auth }) => {
         await enableZoomVirtualBackground(assignment.account, assignment.hostEmail);
         await setZoomHostPicture(assignment.account, assignment.hostEmail);
 
+        // If the course's assigned instructor has their own personal Zoom
+        // account on file, register them as an alternative host — see the
+        // matching comment in timetable/[id]/schedule-zoom/route.ts.
+        const course = await Course.findById(parsed.courseId).select('instructorUid').lean<{ instructorUid?: string } | null>();
+        const instructor = course?.instructorUid
+            ? await User.findOne({ uid: course.instructorUid }).select('zoomPersonalEmail').lean<{ zoomPersonalEmail?: string } | null>()
+            : null;
+
         // Create Zoom meeting via API, under whichever host is free
         const zoomResponse = await createZoomMeeting({
             topic: parsed.topic,
@@ -51,6 +61,7 @@ export const POST = withAuth(async (req, { auth }) => {
             durationMinutes: parsed.durationMinutes,
             hostEmail: assignment.hostEmail,
             account: assignment.account,
+            alternativeHostEmail: instructor?.zoomPersonalEmail,
         });
 
         // Save to Database
