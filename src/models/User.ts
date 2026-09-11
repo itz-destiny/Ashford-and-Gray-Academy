@@ -28,6 +28,12 @@ export interface IUser extends Document {
     // Zoom capacity slots (1..totalMonitorSlots()) this dedicated account is
     // permanently bound to. See src/lib/monitor-slots.ts.
     monitorSlotIndex?: number;
+    // The instructor's own personal Zoom account email — distinct from their
+    // AGFA login email. When set, every class they're assigned is created
+    // with them as a Zoom "alternative host," so joining through their own
+    // personal Zoom account (not one of the school's shared seats) still
+    // grants them real host controls for that session. See src/lib/zoom.ts.
+    zoomPersonalEmail?: string;
     emailVerified?: boolean;
     emailVerifiedAt?: Date;
     welcomeEmailSentAt?: Date;
@@ -65,6 +71,7 @@ const UserSchema: Schema = new Schema({
     sponsor: { type: String, index: true },
     hasSeenTutorial: { type: Boolean, default: false },
     monitorSlotIndex: { type: Number, index: true },
+    zoomPersonalEmail: { type: String },
     emailVerified: { type: Boolean, default: false, index: true },
     emailVerifiedAt: { type: Date },
     welcomeEmailSentAt: { type: Date },

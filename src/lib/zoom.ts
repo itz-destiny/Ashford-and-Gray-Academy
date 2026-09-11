@@ -51,6 +51,12 @@ export interface CreateZoomMeetingParams {
     // Zoom account owner ("me") if not given.
     hostEmail?: string;
     account: ZoomAccountCredentials;
+    // The teaching instructor's own personal Zoom account email (see
+    // User.zoomPersonalEmail). Set as a Zoom "alternative host" so that if
+    // they end up joining via their own separate Zoom account instead of
+    // the school's shared seat — which their browser/desktop app may do on
+    // its own — Zoom still recognizes them and grants real host controls.
+    alternativeHostEmail?: string;
 }
 
 export async function createZoomMeeting(params: CreateZoomMeetingParams) {
@@ -89,6 +95,7 @@ export async function createZoomMeeting(params: CreateZoomMeetingParams) {
                 // webhook (see /api/webhooks/zoom) picks up the share link
                 // once Zoom finishes processing it.
                 auto_recording: 'cloud',
+                ...(params.alternativeHostEmail ? { alternative_hosts: params.alternativeHostEmail } : {}),
             }
         })
     });

@@ -26,6 +26,7 @@ const patchSchema = z.object({
     email: z.string().email().optional(),
     role: z.enum(ASSIGNABLE_ROLES).optional(),
     title: z.string().max(200).optional(),
+    zoomPersonalEmail: z.string().email().or(z.literal('')).optional(),
 });
 
 export const PATCH = withAuth<RouteParams>(async (request: NextRequest, { auth, params }) => {
@@ -51,7 +52,7 @@ export const PATCH = withAuth<RouteParams>(async (request: NextRequest, { auth, 
             return NextResponse.json({ error: 'Super Admin accounts cannot be edited here.' }, { status: 403 });
         }
 
-        const { displayName, email, role, title } = parsed.data;
+        const { displayName, email, role, title, zoomPersonalEmail } = parsed.data;
 
         if (email && email !== staff.email) {
             const emailTaken = await User.findOne({ email, uid: { $ne: uid } }).lean();
@@ -71,6 +72,7 @@ export const PATCH = withAuth<RouteParams>(async (request: NextRequest, { auth, 
         if (email !== undefined) staff.email = email;
         if (role !== undefined) staff.role = role;
         if (title !== undefined) staff.title = title;
+        if (zoomPersonalEmail !== undefined) staff.zoomPersonalEmail = zoomPersonalEmail || undefined;
         await staff.save();
 
         return NextResponse.json(staff);

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import TimetableSession from '@/models/TimetableSession';
 import LiveClass from '@/models/LiveClass';
+import User from '@/models/User';
 import { createZoomMeeting, renameZoomHost, enableZoomVirtualBackground, setZoomHostPicture, ACADEMY_HOST_DISPLAY_NAME } from '@/lib/zoom';
 import { findAvailableZoomHost } from '@/lib/zoom-scheduler';
 import { withAuth } from '@/lib/auth-server';
@@ -59,6 +60,13 @@ export const POST = withAuth<RouteParams>(async (_req, { auth, params }) => {
         await enableZoomVirtualBackground(assignment.account, assignment.hostEmail);
         await setZoomHostPicture(assignment.account, assignment.hostEmail);
 
+        // If the instructor has their own personal Zoom account on file,
+        // register them as an alternative host — that way, even if they end
+        // up joining through their own account instead of the school's
+        // shared seat, Zoom still recognizes them and grants real host
+        // controls for their own session.
+        const instructor = await User.findOne({ uid: session.instructorUid }).select('zoomPersonalEmail').lean<{ zoomPersonalEmail?: string } | null>();
+
         const zoomResponse = await createZoomMeeting({
             topic,
             agenda: session.programmeName,
@@ -66,6 +74,7 @@ export const POST = withAuth<RouteParams>(async (_req, { auth, params }) => {
             durationMinutes,
             hostEmail: assignment.hostEmail,
             account: assignment.account,
+            alternativeHostEmail: instructor?.zoomPersonalEmail,
         });
 
         const liveClass = await LiveClass.create({
