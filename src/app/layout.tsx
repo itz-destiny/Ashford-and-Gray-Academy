@@ -53,9 +53,9 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/icon.png",
-        width: 512,
-        height: 512,
+        url: "/og-image.png",
+        width: 4276,
+        height: 1939,
         alt: "Ashford & Gray Fusion Academy",
       },
     ],
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
     title: "Ashford & Gray Fusion Academy — Hospitality Training in Nigeria",
     description:
       "Nigeria's leading hospitality management academy. Certifications, diplomas & executive masterclass in hospitality, domestic service and event management.",
-    images: ["/icon.png"],
+    images: ["/og-image.png"],
     site: "@AshfordFusion",
     creator: "@AshfordFusion",
   },
