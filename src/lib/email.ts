@@ -495,6 +495,27 @@ export const emailTemplates = {
         }),
     }),
 
+    feedbackRequest: (data: {
+        recipientName: string;
+        feedbackUrl: string;
+    }) => ({
+        subject: 'Rate Your Facilitator — Ashford & Gray Fusion Academy',
+        html: brandedShell({
+            preheader: 'A few minutes of your time helps us improve your learning experience.',
+            title: 'We Value Your Feedback',
+            body: `
+                <p style="font-size:16px;line-height:1.6;color:#334155;margin:0 0 22px">Dear ${escapeHtml(data.recipientName)},</p>
+                <p style="font-size:16px;line-height:1.6;color:#334155;margin:0 0 28px">At Ashford &amp; Gray Fusion Academy, we value your feedback. Please take a few minutes to rate your facilitator and share any comments that will help us improve your learning experience.</p>
+
+                <div style="text-align:center;margin:0 0 28px">
+                    <a href="${data.feedbackUrl}" style="display:inline-block;background:#0B1F3A;color:#ffffff;text-decoration:none;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;font-size:11px;padding:17px 44px;border-radius:9999px;box-shadow:0 8px 20px rgba(11,31,58,0.25)">Share Your Feedback</a>
+                </div>
+
+                <p style="font-size:14px;line-height:1.6;color:#64748b;margin:0">Just enter the email your account uses — no sign-in required. It only takes a few minutes.</p>
+            `,
+        }),
+    }),
+
     courseChanged: (data: {
         recipientName: string;
         previousCourseName: string;
