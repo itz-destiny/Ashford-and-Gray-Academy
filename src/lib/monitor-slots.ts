@@ -63,20 +63,37 @@ export async function getCurrentClassForSlot(slotNumber: number): Promise<
     return live[slot.indexOnHost] || null;
 }
 
+const WAT_OFFSET_MS = 60 * 60 * 1000; // Africa/Lagos is UTC+1, no DST
+
+// Midnight-to-midnight bounds of "today" in WAT, expressed as UTC instants —
+// used to keep the monitor list to a single day's classes instead of every
+// class ever scheduled for the rest of the term.
+function todayWatBoundsUtc(): { start: Date; end: Date } {
+    const nowWat = new Date(Date.now() + WAT_OFFSET_MS);
+    const watMidnightUtcInstant = Date.UTC(nowWat.getUTCFullYear(), nowWat.getUTCMonth(), nowWat.getUTCDate());
+    const start = new Date(watMidnightUtcInstant - WAT_OFFSET_MS);
+    const end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
+    return { start, end };
+}
+
 /**
- * Every class a monitor can join right now — anything scheduled that hasn't
- * ended yet, regardless of how far away its start time is. Monitor accounts
- * join with real host/co-host access (see the start-url route), so there is
- * no reason to make them wait for the clock to hit the scheduled minute:
- * they should be able to get in as soon as they know a class exists, the
- * same way an instructor can open their own class early.
+ * Every class a monitor can join right now, scoped to today (WAT) only —
+ * otherwise, with the whole term already scheduled ahead of time, this
+ * would list every remaining class through the end of the cohort. Within
+ * today, a monitor can still join before the exact scheduled minute (real
+ * host/co-host access via the start-url route), so there is no lower-bound
+ * time gate — just the day boundary and "hasn't ended yet."
  */
 export async function getAllLiveClasses(): Promise<ILiveClass[]> {
     const now = Date.now();
-    const candidates = await LiveClass.find({ status: 'scheduled' }).sort({ startTime: 1 });
+    const { start, end: dayEnd } = todayWatBoundsUtc();
+    const candidates = await LiveClass.find({
+        status: 'scheduled',
+        startTime: { $gte: start, $lt: dayEnd },
+    }).sort({ startTime: 1 });
     return candidates.filter((c) => {
-        const start = new Date(c.startTime).getTime();
-        const end = start + (c.durationMinutes || 60) * 60_000;
-        return now <= end;
+        const classStart = new Date(c.startTime).getTime();
+        const classEnd = classStart + (c.durationMinutes || 60) * 60_000;
+        return now <= classEnd;
     });
 }
