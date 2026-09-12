@@ -13,7 +13,7 @@ export const organizationSchema = {
     name: "Ashford & Gray Fusion Academy",
     alternateName: "Ashford and Gray Fusion Academy",
     url: "https://www.ashfordandgrayfusionacademy.com",
-    logo: "https://www.ashfordandgrayfusionacademy.com/icon.png",
+    logo: "https://www.ashfordandgrayfusionacademy.com/apple-touch-icon.png",
     description:
         "Nigeria's leading hospitality management and luxury service academy offering professional certifications, diplomas, and executive masterclass programmes in hospitality, domestic service, event management, and business leadership.",
     foundingDate: "2024",
