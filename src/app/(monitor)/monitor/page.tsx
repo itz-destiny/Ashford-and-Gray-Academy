@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api-client";
 import { Button } from "@/components/ui/button";
-import { Loader2, Radio, Video, AlertTriangle, MonitorPlay, Clock, ClipboardCheck } from "lucide-react";
+import { Loader2, Radio, Video, AlertTriangle, MonitorPlay, Clock, ClipboardCheck, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface LiveClassItem {
@@ -69,6 +69,32 @@ export default function MonitorPage() {
         toast({ title: "Attendance link copied", description: "Paste it into the Zoom meeting chat — students just enter their email, no sign-in needed." });
     }, [toast]);
 
+    const handleCopyAllLinks = useCallback(() => {
+        if (!classes || classes.length === 0) return;
+        const sorted = [...classes].sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+        const lines = [
+            'ASHFORD & GRAY FUSION ACADEMY — LIVE CLASS SCHEDULE',
+            new Date().toLocaleDateString('en-US', { timeZone: 'Africa/Lagos', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }),
+            '='.repeat(56),
+            '',
+            ...sorted.flatMap((cls, i) => {
+                const time = new Date(cls.startTime).toLocaleString('en-US', { timeZone: 'Africa/Lagos', hour: 'numeric', minute: '2-digit' });
+                return [
+                    `${i + 1}. ${cls.topic}`,
+                    `   Course: ${cls.courseTitle}`,
+                    `   Time: ${time} WAT`,
+                    `   Join Link: ${cls.zoomJoinUrl || 'n/a'}`,
+                    cls.zoomMeetingId ? `   Meeting ID: ${cls.zoomMeetingId}` : '',
+                    cls.zoomPasscode ? `   Passcode: ${cls.zoomPasscode}` : '',
+                    `   Attendance: ${window.location.origin}/attendance/${cls.liveClassId}`,
+                    '',
+                ].filter(Boolean);
+            }),
+        ];
+        navigator.clipboard.writeText(lines.join('\n'));
+        toast({ title: "All class links copied", description: `${sorted.length} class${sorted.length === 1 ? '' : 'es'} — ready to paste anywhere.` });
+    }, [classes, toast]);
+
     useEffect(() => {
         fetchClasses();
         const t = setInterval(fetchClasses, POLL_MS);
@@ -101,6 +127,17 @@ export default function MonitorPage() {
                 <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#C8A96A]">Live Classes</p>
                 <p className="text-white/50 text-sm">Pick any class below to join as host/co-host and monitor it.</p>
             </div>
+
+            {classes && classes.length > 0 && (
+                <Button
+                    onClick={handleCopyAllLinks}
+                    variant="outline"
+                    className="h-11 px-6 bg-transparent border-[#C8A96A]/40 text-[#C8A96A] hover:bg-[#C8A96A]/10 hover:text-[#C8A96A] font-black text-[10px] uppercase tracking-widest rounded-none"
+                >
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copy All Links ({classes.length})
+                </Button>
+            )}
 
             {joinError && (
                 <p className="text-rose-400 text-sm max-w-md text-center">{joinError}</p>

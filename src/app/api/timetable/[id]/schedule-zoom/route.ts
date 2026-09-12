@@ -1,10 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import TimetableSession from '@/models/TimetableSession';
-import LiveClass from '@/models/LiveClass';
-import User from '@/models/User';
-import { createZoomMeeting, renameZoomHost, enableZoomVirtualBackground, setZoomHostPicture, ACADEMY_HOST_DISPLAY_NAME } from '@/lib/zoom';
-import { findAvailableZoomHost } from '@/lib/zoom-scheduler';
+import { scheduleClassForSession } from '@/lib/schedule-class';
 import { withAuth } from '@/lib/auth-server';
 
 type RouteParams = { params: Promise<{ id: string }> };
@@ -25,81 +22,13 @@ export const POST = withAuth<RouteParams>(async (_req, { auth, params }) => {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
         }
 
-        if (session.status === 'scheduled' && session.liveClassId) {
-            const existing = await LiveClass.findById(session.liveClassId);
-            if (existing) {
-                return NextResponse.json({ success: true, session, liveClass: existing, alreadyScheduled: true });
-            }
+        const result = await scheduleClassForSession(session);
+        if (!result.ok) {
+            const status = result.reason.includes('booked') ? 409 : 400;
+            return NextResponse.json({ error: result.reason }, { status });
         }
 
-        if (!session.courseId) {
-            return NextResponse.json(
-                { error: 'This session is not linked to a course yet. Ask an admin to fix the timetable mapping first.' },
-                { status: 400 }
-            );
-        }
-        if (!session.instructorUid) {
-            return NextResponse.json(
-                { error: 'Assign a lecturer to this session before creating its Zoom class.' },
-                { status: 400 }
-            );
-        }
-
-        const durationMinutes = Math.max(15, Math.round((session.endTime.getTime() - session.startTime.getTime()) / 60000));
-        const topic = `${session.courseTitle || session.programmeName}: ${session.module}`;
-
-        const assignment = await findAvailableZoomHost(session.startTime, durationMinutes);
-        if (!assignment) {
-            return NextResponse.json(
-                { error: 'Every licensed Zoom host is already booked for this time slot. Reschedule this session, or add another Zoom license.' },
-                { status: 409 }
-            );
-        }
-
-        await renameZoomHost(assignment.account, assignment.hostEmail, ACADEMY_HOST_DISPLAY_NAME);
-        await enableZoomVirtualBackground(assignment.account, assignment.hostEmail);
-        await setZoomHostPicture(assignment.account, assignment.hostEmail);
-
-        // If the instructor has their own personal Zoom account on file,
-        // register them as an alternative host — that way, even if they end
-        // up joining through their own account instead of the school's
-        // shared seat, Zoom still recognizes them and grants real host
-        // controls for their own session.
-        const instructor = await User.findOne({ uid: session.instructorUid }).select('zoomPersonalEmail').lean<{ zoomPersonalEmail?: string } | null>();
-
-        const zoomResponse = await createZoomMeeting({
-            topic,
-            agenda: session.programmeName,
-            startTime: session.startTime.toISOString(),
-            durationMinutes,
-            hostEmail: assignment.hostEmail,
-            account: assignment.account,
-            alternativeHostEmail: instructor?.zoomPersonalEmail,
-        });
-
-        const liveClass = await LiveClass.create({
-            courseId: session.courseId,
-            instructorId: session.instructorUid,
-            topic,
-            description: session.module,
-            startTime: session.startTime,
-            durationMinutes,
-            zoomMeetingId: zoomResponse.id.toString(),
-            zoomJoinUrl: zoomResponse.join_url,
-            zoomStartUrl: zoomResponse.start_url,
-            zoomPasscode: zoomResponse.password,
-            zoomHostEmail: assignment.hostEmail,
-            zoomAccountKey: assignment.account.key,
-            status: 'scheduled',
-        });
-
-        session.status = 'scheduled';
-        session.liveClassId = liveClass._id.toString();
-        session.zoomJoinUrl = zoomResponse.join_url;
-        session.zoomStartUrl = zoomResponse.start_url;
-        await session.save();
-
-        return NextResponse.json({ success: true, session, liveClass });
+        return NextResponse.json({ success: true, session: result.session, liveClass: result.liveClass, alreadyScheduled: result.alreadyScheduled });
     } catch (error: any) {
         console.error('Error scheduling Zoom class from timetable session:', error);
         return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
