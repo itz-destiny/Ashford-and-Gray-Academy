@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { Logo } from "@/components/logo";
 import {
     Users, ClipboardList, MessageSquare, Settings,
-    LayoutDashboard, LogOut, History, Sparkles, PlayCircle, ClipboardCheck,
+    LayoutDashboard, LogOut, History, Sparkles, PlayCircle, ClipboardCheck, Star,
 } from "lucide-react";
 import { useUser } from "@/firebase";
 import { signOut } from "@/firebase/auth";
@@ -17,6 +17,7 @@ const navItems = [
     { href: "/registrar",                label: "Enrolment Home",  icon: LayoutDashboard, tour: "nav-reg-home" },
     { href: "/registrar/users",          label: "Student Records", icon: Users, tour: "nav-reg-users" },
     { href: "/registrar/attendance",     label: "Attendance",      icon: ClipboardCheck, tour: "nav-reg-attendance" },
+    { href: "/registrar/feedback",       label: "Feedback",        icon: Star, tour: "nav-reg-feedback" },
     { href: "/registrar/audit",          label: "System History",  icon: History, tour: "nav-reg-audit" },
     { href: "/registrar/communications", label: "My Messages",     icon: MessageSquare, tour: "nav-reg-communications" },
     { href: "/registrar/reports",        label: "Academy Reports", icon: ClipboardList, tour: "nav-reg-reports" },
