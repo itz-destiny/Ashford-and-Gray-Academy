@@ -124,7 +124,9 @@ export default function MonitorPage() {
     return (
         <div className="flex-1 flex flex-col items-center px-6 py-12 gap-8">
             <div className="space-y-2 text-center">
-                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#C8A96A]">Live Classes</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#C8A96A]">
+                    {new Date().toLocaleDateString('en-US', { timeZone: 'Africa/Lagos', weekday: 'long', day: 'numeric', month: 'long' })}
+                </p>
                 <p className="text-white/50 text-sm">Pick any class below to join as host/co-host and monitor it.</p>
             </div>
 
