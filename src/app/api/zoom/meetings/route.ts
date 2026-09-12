@@ -75,6 +75,7 @@ export const POST = withAuth(async (req, { auth }) => {
             zoomMeetingId: zoomResponse.id.toString(),
             zoomJoinUrl: zoomResponse.join_url,
             zoomStartUrl: zoomResponse.start_url,
+            zoomPasscode: zoomResponse.password,
             zoomHostEmail: assignment.hostEmail,
             zoomAccountKey: assignment.account.key,
             status: 'scheduled'
