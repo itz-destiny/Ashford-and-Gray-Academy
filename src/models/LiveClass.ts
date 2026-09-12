@@ -10,6 +10,11 @@ export interface ILiveClass extends Document {
     zoomMeetingId: string;
     zoomJoinUrl: string;
     zoomStartUrl: string;
+    // The real plaintext passcode — for whoever needs to join by manually
+    // entering the Meeting ID + Passcode in the Zoom app instead of the
+    // direct join link. Distinct from the `pwd` query param on zoomJoinUrl,
+    // which is a URL-safe encoded token, not the real passcode.
+    zoomPasscode?: string;
     zoomHostEmail?: string;
     zoomAccountKey?: string;
     status: 'scheduled' | 'completed' | 'cancelled';
@@ -33,6 +38,7 @@ const LiveClassSchema: Schema = new Schema({
     zoomMeetingId: { type: String, required: true },
     zoomJoinUrl: { type: String, required: true },
     zoomStartUrl: { type: String, required: true },
+    zoomPasscode: { type: String },
     // Which licensed Zoom host (and which of the school's Zoom accounts)
     // this meeting was booked under — lets the scheduler compute how many
     // overlapping meetings a given license already has at a given time.

@@ -13,6 +13,8 @@ interface LiveClassItem {
     startTime: string;
     durationMinutes: number;
     zoomJoinUrl?: string;
+    zoomMeetingId?: string;
+    zoomPasscode?: string;
 }
 
 const POLL_MS = 20_000;
@@ -131,6 +133,13 @@ export default function MonitorPage() {
                                     </div>
                                     <p className="text-white text-lg font-serif truncate">{cls.topic}</p>
                                     <p className="text-white/50 text-sm font-medium truncate">{cls.courseTitle}</p>
+                                    {(cls.zoomMeetingId || cls.zoomPasscode) && (
+                                        <p className="text-white/40 text-xs font-medium">
+                                            {cls.zoomMeetingId && <>Meeting ID: <span className="text-white/70 font-mono">{cls.zoomMeetingId}</span></>}
+                                            {cls.zoomMeetingId && cls.zoomPasscode && <> &middot; </>}
+                                            {cls.zoomPasscode && <>Passcode: <span className="text-white/70 font-mono">{cls.zoomPasscode}</span></>}
+                                        </p>
+                                    )}
                                 </div>
                                 <div className="flex items-center gap-3 shrink-0">
                                     <Button

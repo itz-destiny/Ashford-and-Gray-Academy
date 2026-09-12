@@ -34,6 +34,8 @@ export const GET = withAuth(async (_req: NextRequest, { auth }) => {
                 startTime: c.startTime,
                 durationMinutes: c.durationMinutes,
                 zoomJoinUrl: c.zoomJoinUrl,
+                zoomMeetingId: c.zoomMeetingId,
+                zoomPasscode: c.zoomPasscode,
             })),
         });
     } catch (err) {
