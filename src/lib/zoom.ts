@@ -63,42 +63,58 @@ export async function createZoomMeeting(params: CreateZoomMeetingParams) {
     const token = await getZoomAccessToken(params.account);
     const hostEmail = params.hostEmail?.trim() || 'me';
 
-    const res = await fetch(`https://api.zoom.us/v2/users/${encodeURIComponent(hostEmail)}/meetings`, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            topic: params.topic,
-            type: 2, // 2 = Scheduled meeting
-            start_time: params.startTime,
-            duration: params.durationMinutes,
-            agenda: params.agenda,
-            settings: {
-                host_video: true,
-                participant_video: true,
-                // Nobody manually "starts" a class — once the scheduled time
-                // arrives, whoever joins first (instructor or student) just
-                // enters. No host gate, no waiting room to be manually admitted from.
-                join_before_host: true,
-                mute_upon_entry: true,
-                waiting_room: false,
-                approval_type: 2, // No registration required
-                // Without this, whether a plain join link requires a Zoom
-                // sign-in/account depends on the host account's own default —
-                // which can be "authenticated users only." Students should
-                // never need a Zoom account just to join a class link.
-                meeting_authentication: false,
-                // Every class is recorded to Zoom Cloud automatically — no one
-                // has to remember to press record. The recording.completed
-                // webhook (see /api/webhooks/zoom) picks up the share link
-                // once Zoom finishes processing it.
-                auto_recording: 'cloud',
-                ...(params.alternativeHostEmail ? { alternative_hosts: params.alternativeHostEmail } : {}),
-            }
-        })
+    const buildBody = (includeAlternativeHost: boolean) => JSON.stringify({
+        topic: params.topic,
+        type: 2, // 2 = Scheduled meeting
+        start_time: params.startTime,
+        duration: params.durationMinutes,
+        agenda: params.agenda,
+        settings: {
+            host_video: true,
+            participant_video: true,
+            // Nobody manually "starts" a class — once the scheduled time
+            // arrives, whoever joins first (instructor or student) just
+            // enters. No host gate, no waiting room to be manually admitted from.
+            join_before_host: true,
+            mute_upon_entry: true,
+            waiting_room: false,
+            approval_type: 2, // No registration required
+            // Without this, whether a plain join link requires a Zoom
+            // sign-in/account depends on the host account's own default —
+            // which can be "authenticated users only." Students should
+            // never need a Zoom account just to join a class link.
+            meeting_authentication: false,
+            // Every class is recorded to Zoom Cloud automatically — no one
+            // has to remember to press record. The recording.completed
+            // webhook (see /api/webhooks/zoom) picks up the share link
+            // once Zoom finishes processing it.
+            auto_recording: 'cloud',
+            ...(includeAlternativeHost && params.alternativeHostEmail ? { alternative_hosts: params.alternativeHostEmail } : {}),
+        }
     });
+
+    const post = (body: string) => fetch(`https://api.zoom.us/v2/users/${encodeURIComponent(hostEmail)}/meetings`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body,
+    });
+
+    let res = await post(buildBody(true));
+
+    // This Zoom account's plan doesn't support external/unrelated personal
+    // accounts as alternative hosts (error 1114) — never let that block the
+    // class itself from being scheduled. Falls back automatically; if the
+    // plan is ever upgraded to support it, this starts working with no code
+    // change needed.
+    if (!res.ok && params.alternativeHostEmail) {
+        const errorText = await res.text();
+        if (errorText.includes('"code":1114') || errorText.includes('alternative host')) {
+            console.warn(`Alternative host "${params.alternativeHostEmail}" rejected by Zoom, scheduling without it: ${errorText}`);
+            res = await post(buildBody(false));
+        } else {
+            throw new Error(`Failed to create Zoom meeting: ${errorText}`);
+        }
+    }
 
     if (!res.ok) {
         const errorText = await res.text();
