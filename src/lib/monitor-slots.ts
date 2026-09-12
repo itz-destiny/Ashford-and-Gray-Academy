@@ -1,5 +1,6 @@
 import LiveClass, { type ILiveClass } from '@/models/LiveClass';
 import { getZoomAccounts } from './zoom-hosts';
+import { watDayBoundsUtc } from './wat-time';
 
 // A "monitor slot" is one seat of the school's real concurrent Zoom capacity
 // (accounts × licensed hosts × concurrency-per-host), numbered 1..N in a
@@ -63,19 +64,6 @@ export async function getCurrentClassForSlot(slotNumber: number): Promise<
     return live[slot.indexOnHost] || null;
 }
 
-const WAT_OFFSET_MS = 60 * 60 * 1000; // Africa/Lagos is UTC+1, no DST
-
-// Midnight-to-midnight bounds of "today" in WAT, expressed as UTC instants —
-// used to keep the monitor list to a single day's classes instead of every
-// class ever scheduled for the rest of the term.
-function todayWatBoundsUtc(): { start: Date; end: Date } {
-    const nowWat = new Date(Date.now() + WAT_OFFSET_MS);
-    const watMidnightUtcInstant = Date.UTC(nowWat.getUTCFullYear(), nowWat.getUTCMonth(), nowWat.getUTCDate());
-    const start = new Date(watMidnightUtcInstant - WAT_OFFSET_MS);
-    const end = new Date(start.getTime() + 24 * 60 * 60 * 1000);
-    return { start, end };
-}
-
 /**
  * Every class a monitor can join right now, scoped to today (WAT) only —
  * otherwise, with the whole term already scheduled ahead of time, this
@@ -86,7 +74,7 @@ function todayWatBoundsUtc(): { start: Date; end: Date } {
  */
 export async function getAllLiveClasses(): Promise<ILiveClass[]> {
     const now = Date.now();
-    const { start, end: dayEnd } = todayWatBoundsUtc();
+    const { start, end: dayEnd } = watDayBoundsUtc();
     const candidates = await LiveClass.find({
         status: 'scheduled',
         startTime: { $gte: start, $lt: dayEnd },
