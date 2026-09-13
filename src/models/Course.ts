@@ -21,6 +21,11 @@ export interface ICourse extends Document {
     description: string;
     curriculum?: string[];
     status: 'draft' | 'pending' | 'published' | 'archived';
+    // A pseudo-course standing in for a whole-cohort event (orientation, a
+    // student-governance election, a town hall) — never actually enrolled
+    // in, but real students should be able to sign attendance for its live
+    // classes regardless of course enrollment. See getAllCohortWideCourseIds.
+    isCohortWide?: boolean;
     // Extended fields used by the public detail page. All optional; if a
     // course doesn't populate them, the page hides that section.
     whoFor?: string[];                  // bullet list of target audiences
@@ -53,6 +58,7 @@ const CourseSchema: Schema = new Schema({
     description: { type: String, required: true },
     curriculum: { type: [String], default: [] },
     status: { type: String, enum: ['draft', 'pending', 'published', 'archived'], default: 'draft' },
+    isCohortWide: { type: Boolean, default: false },
     whoFor: { type: [String], default: undefined },
     learningOutcomes: {
         type: [{
