@@ -17,10 +17,10 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import {
-    ArrowLeft, Video, Edit2, Send, Users, Loader2, Link2, PlayCircle,
+    ArrowLeft, Video, Edit2, Send, Users, Loader2, Link2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { RecordingsList } from "@/components/meeting/RecordingsList";
+import { WatchRecordingButton } from "@/components/meeting/WatchRecordingButton";
 
 type Course = {
     _id: string;
@@ -310,11 +310,14 @@ export default function ManageCoursePage() {
                                         {joiningId === cls._id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Join"}
                                     </Button>
                                     {cls.recordingUrl && (
-                                        <Button asChild variant="outline" size="sm" className="rounded-xl border-slate-200">
-                                            <a href={cls.recordingUrl} target="_blank" rel="noopener noreferrer">
-                                                <PlayCircle className="h-3.5 w-3.5 mr-1.5" /> Recording
-                                            </a>
-                                        </Button>
+                                        <WatchRecordingButton
+                                            recordingUrl={cls.recordingUrl}
+                                            passcode={cls.recordingPasscode}
+                                            variant="outline"
+                                            size="sm"
+                                            label="Recording"
+                                            className="rounded-xl border-slate-200"
+                                        />
                                     )}
                                 </div>
                             </div>
@@ -332,8 +335,6 @@ export default function ManageCoursePage() {
                     </div>
                 </CardContent>
             </Card>
-
-            <RecordingsList courseId={String(id)} />
         </div>
     );
 }
