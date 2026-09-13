@@ -16,6 +16,7 @@ import { PlayCircle, CheckCircle2, MessageSquare, Send, Calendar, Video, BookOpe
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { normalizeCourseContent } from '@/lib/course-content';
+import { WatchRecordingButton } from '@/components/meeting/WatchRecordingButton';
 
 const tabsListClass = "bg-slate-100/50 p-1.5 rounded-2xl h-auto border border-slate-200/50 w-full lg:w-fit flex-wrap";
 const tabsTriggerClass = "px-5 py-2.5 rounded-xl data-[state=active]:bg-[#0B1F3A] data-[state=active]:text-white data-[state=active]:shadow-none font-black text-[10px] uppercase tracking-widest gap-1.5";
@@ -359,19 +360,17 @@ export default function CourseViewerPage() {
                                     </div>
                                 ) : (
                                     recordings.map(rec => (
-                                        <div key={rec._id} className="flex flex-col md:flex-row md:items-center justify-between p-5 bg-white border border-slate-100 rounded-2xl gap-3">
+                                        <div key={rec._id} className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-white rounded-2xl border border-indigo-100/50 shadow-sm gap-4">
                                             <div>
-                                                <p className="font-bold text-[#0B1F3A]">{rec.topic}</p>
+                                                <h4 className="font-bold text-[#0B1F3A]">{rec.topic}</h4>
                                                 <p className="text-xs text-slate-500 font-medium">{new Date(rec.startTime).toLocaleString()}</p>
-                                                {rec.recordingPasscode && (
-                                                    <p className="text-xs text-slate-400 mt-1">Passcode: <span className="font-mono">{rec.recordingPasscode}</span></p>
-                                                )}
                                             </div>
-                                            <Button asChild size="sm" className="bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white rounded-xl">
-                                                <a href={rec.recordingUrl} target="_blank" rel="noopener noreferrer">
-                                                    <PlayCircle className="h-4 w-4 mr-1.5" /> Watch
-                                                </a>
-                                            </Button>
+                                            <WatchRecordingButton
+                                                recordingUrl={rec.recordingUrl}
+                                                passcode={rec.recordingPasscode}
+                                                size="sm"
+                                                className="bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white rounded-xl"
+                                            />
                                         </div>
                                     ))
                                 )}
