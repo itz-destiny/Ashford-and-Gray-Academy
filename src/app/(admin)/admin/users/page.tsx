@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Search, Trash, Plus } from "lucide-react";
+import { Loader2, Search, Trash, Plus, CheckCircle2, XCircle, RotateCcw } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 
@@ -45,6 +45,8 @@ interface User {
     school?: string;
     monitorSlotIndex?: number;
     createdAt: string;
+    lastSignInTime?: string | null;
+    hasLoggedIn?: boolean;
 }
 
 export default function UsersPage() {
@@ -52,6 +54,8 @@ export default function UsersPage() {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [filterRole, setFilterRole] = useState("All");
+    const [loginFilter, setLoginFilter] = useState("all");
+    const [resettingUid, setResettingUid] = useState<string | null>(null);
     const { toast } = useToast();
 
     // Create User State
@@ -84,10 +88,10 @@ export default function UsersPage() {
 
     const fetchUsers = async () => {
         try {
-            const res = await apiFetch('/api/users');
+            const res = await apiFetch('/api/admin/users/login-status?role=all');
             const data = await res.json();
-            if (Array.isArray(data)) {
-                setUsers(data);
+            if (data?.success && Array.isArray(data.users)) {
+                setUsers(data.users);
             }
         } catch (error) {
             console.error("Error fetching users:", error);
@@ -98,6 +102,20 @@ export default function UsersPage() {
             });
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleReset = async (uid: string, email: string) => {
+        setResettingUid(uid);
+        try {
+            const res = await apiFetch(`/api/admin/users/${uid}/reset`, { method: 'POST' });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.error || 'Reset failed');
+            toast({ title: "Reset & sent", description: `A new temporary password and magic login link were emailed to ${email}.` });
+        } catch (err: any) {
+            toast({ variant: "destructive", title: "Reset Failed", description: err.message });
+        } finally {
+            setResettingUid(null);
         }
     };
 
@@ -201,8 +219,13 @@ export default function UsersPage() {
         const matchesSearch = user.displayName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             user.email?.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesRole = filterRole === "All" || user.role === filterRole;
-        return matchesSearch && matchesRole;
+        const matchesLogin = loginFilter === "all"
+            || (loginFilter === "logged_in" && user.hasLoggedIn)
+            || (loginFilter === "not_logged_in" && !user.hasLoggedIn);
+        return matchesSearch && matchesRole && matchesLogin;
     });
+
+    const loggedInCount = users.filter(u => u.hasLoggedIn).length;
 
     const roles = ["All", "admin", "registrar", "course_registrar", "finance", "instructor", "student", "live_monitor"];
     const createRoles = [
@@ -327,6 +350,39 @@ export default function UsersPage() {
                 </Dialog>
             </div>
 
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <button
+                    onClick={() => setLoginFilter("all")}
+                    className={cn(
+                        "text-left p-6 bg-white border shadow-sm transition-colors",
+                        loginFilter === "all" ? "border-[#0B1F3A] border-t-4 border-t-[#0B1F3A]" : "border-[#0B1F3A]/10 border-t-4 border-t-transparent"
+                    )}
+                >
+                    <p className="text-3xl font-black text-[#0B1F3A]">{users.length}</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-1">Total Accounts</p>
+                </button>
+                <button
+                    onClick={() => setLoginFilter("logged_in")}
+                    className={cn(
+                        "text-left p-6 bg-white border shadow-sm transition-colors",
+                        loginFilter === "logged_in" ? "border-[#1F7A5A] border-t-4 border-t-[#1F7A5A]" : "border-[#0B1F3A]/10 border-t-4 border-t-transparent"
+                    )}
+                >
+                    <p className="text-3xl font-black text-[#1F7A5A]">{loggedInCount}</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-1 flex items-center gap-1.5"><CheckCircle2 className="w-3 h-3" /> Logged In</p>
+                </button>
+                <button
+                    onClick={() => setLoginFilter("not_logged_in")}
+                    className={cn(
+                        "text-left p-6 bg-white border shadow-sm transition-colors",
+                        loginFilter === "not_logged_in" ? "border-amber-600 border-t-4 border-t-amber-600" : "border-[#0B1F3A]/10 border-t-4 border-t-transparent"
+                    )}
+                >
+                    <p className="text-3xl font-black text-amber-600">{users.length - loggedInCount}</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mt-1 flex items-center gap-1.5"><XCircle className="w-3 h-3" /> Not Logged In</p>
+                </button>
+            </div>
+
             <div className="bg-white border border-[#0B1F3A]/10 border-t-4 border-t-[#C8A96A]">
                 <div className="px-8 py-6 border-b border-[#0B1F3A]/5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                     <div className="flex gap-4 items-center flex-wrap">
@@ -339,6 +395,15 @@ export default function UsersPage() {
                             {roles.map(role => (
                                 <option key={role} value={role}>{role.charAt(0).toUpperCase() + role.slice(1).replace('_', ' ')}</option>
                             ))}
+                        </select>
+                        <select
+                            className="h-11 px-3 bg-white border border-[#0B1F3A]/10 rounded-none text-sm text-[#0B1F3A] font-medium focus:outline-none focus:ring-1 focus:ring-[#C8A96A]"
+                            value={loginFilter}
+                            onChange={(e) => setLoginFilter(e.target.value)}
+                        >
+                            <option value="all">All Login Status</option>
+                            <option value="logged_in">Logged In</option>
+                            <option value="not_logged_in">Not Logged In</option>
                         </select>
                     </div>
                     <div className="flex gap-4 items-center">
@@ -366,6 +431,7 @@ export default function UsersPage() {
                             <TableRow className="hover:bg-transparent border-[#0B1F3A]/5">
                                 <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400 pl-8 py-5">User</TableHead>
                                 <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400">Role</TableHead>
+                                <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400">Login Status</TableHead>
                                 <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400">School / Org</TableHead>
                                 <TableHead className="text-[10px] font-black uppercase tracking-widest text-slate-400">Joined</TableHead>
                                 <TableHead className="text-right pr-8 text-[10px] font-black uppercase tracking-widest text-slate-400">Actions</TableHead>
@@ -402,6 +468,22 @@ export default function UsersPage() {
                                             {user.role?.replace('_', ' ').toUpperCase()}
                                         </Badge>
                                     </TableCell>
+                                    <TableCell>
+                                        {user.hasLoggedIn ? (
+                                            <div>
+                                                <Badge className="rounded-none font-black text-[9px] uppercase tracking-wider bg-emerald-50 text-emerald-700 border-none">
+                                                    <CheckCircle2 className="w-3 h-3 mr-1" /> Logged In
+                                                </Badge>
+                                                {user.lastSignInTime && (
+                                                    <p className="text-[10px] text-slate-400 mt-1">{new Date(user.lastSignInTime).toLocaleDateString()}</p>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <Badge className="rounded-none font-black text-[9px] uppercase tracking-wider bg-amber-50 text-amber-700 border-none">
+                                                <XCircle className="w-3 h-3 mr-1" /> Not Logged In
+                                            </Badge>
+                                        )}
+                                    </TableCell>
                                     <TableCell className="text-slate-600">
                                         {user.role === 'live_monitor'
                                             ? (user.monitorSlotIndex ? `Slot ${user.monitorSlotIndex}` : 'No slot assigned')
@@ -412,6 +494,16 @@ export default function UsersPage() {
                                     </TableCell>
                                     <TableCell className="text-right pr-8">
                                         <div className="flex justify-end gap-2">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                title="Reset password & send magic link"
+                                                onClick={() => handleReset(user.uid, user.email)}
+                                                disabled={resettingUid === user.uid}
+                                                className="rounded-none text-[#0B1F3A] hover:text-[#1F7A5A] hover:bg-[#1F7A5A]/5"
+                                            >
+                                                {resettingUid === user.uid ? <Loader2 className="h-4 w-4 animate-spin" /> : <RotateCcw className="h-4 w-4" />}
+                                            </Button>
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
