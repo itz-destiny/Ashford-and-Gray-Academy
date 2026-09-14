@@ -9,9 +9,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-    Users, DollarSign, TrendingUp, Activity,
+    Users, TrendingUp, Activity,
     BookOpen, Shield, ChevronRight, Clock,
-    AlertTriangle, ArrowUpRight, BarChart3, Video, Loader2,
+    AlertTriangle, BarChart3, Video, Loader2,
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -124,13 +124,6 @@ export default function AdminDashboard() {
             accent: "text-[#0B1F3A]",
         },
         {
-            label: "Monthly Revenue",
-            value: `₦${(kpis?.revenue?.month ?? 0).toLocaleString()}`,
-            sub: `₦${(kpis?.revenue?.week ?? 0).toLocaleString()} this week`,
-            icon: DollarSign,
-            accent: "text-[#1F7A5A]",
-        },
-        {
             label: "Completion Rate",
             value: `${kpis?.completionRate ?? stats?.stats?.completionRate ?? 0}%`,
             sub: `${kpis?.completedEnrollments ?? 0} of ${kpis?.totalEnrollments ?? 0} enrolments`,
@@ -188,7 +181,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* ── KPI Strip ── */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
                 {kpiCards.map((card, i) => (
                     <div key={i} className="flex items-center gap-4 p-4 pr-6 bg-white border border-[#0B1F3A]/10 shadow-sm border-t-4 border-t-[#C8A96A]">
                         <div className="w-14 h-14 bg-[#F6F4F2] border border-[#0B1F3A]/5 flex items-center justify-center flex-shrink-0">
@@ -411,40 +404,6 @@ export default function AdminDashboard() {
                                     <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1.5">{item.description}</p>
                                 </div>
                             ))}
-                        </div>
-                    </div>
-
-                    {/* Revenue Summary */}
-                    <div className="bg-[#0B1F3A] shadow-2xl relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full blur-3xl pointer-events-none" />
-                        <div className="relative z-10 p-10 space-y-8">
-                            <h2 className="text-xl font-serif text-white flex items-center gap-3">
-                                <div className="w-2 h-6 bg-[#C8A96A]" />
-                                Tuition &amp; Revenue
-                            </h2>
-
-                            <div className="space-y-4">
-                                <div className="p-6 bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
-                                    <p className="text-[9px] font-black text-[#C8A96A] uppercase tracking-widest mb-1">This Month</p>
-                                    <p className="text-3xl font-black text-white">₦{(kpis?.revenue?.month ?? 0).toLocaleString()}</p>
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="p-5 bg-white/5 border border-white/10">
-                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Pending</p>
-                                        <p className="text-2xl font-black text-white">{kpis?.pendingPayouts ?? 0}</p>
-                                    </div>
-                                    <div className="p-5 bg-rose-500/10 border border-rose-500/20">
-                                        <p className="text-[9px] font-black text-rose-400 uppercase tracking-widest mb-1">Failed</p>
-                                        <p className="text-2xl font-black text-rose-400">{kpis?.failedTransactions ?? 0}</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <Button asChild className="w-full h-14 bg-[#C8A96A] hover:bg-[#B69859] text-[#0B1F3A] font-black rounded-none shadow-xl text-[10px] uppercase tracking-widest">
-                                <Link href="/admin/reports">
-                                    Finance Report <ArrowUpRight className="ml-2 w-4 h-4" />
-                                </Link>
-                            </Button>
                         </div>
                     </div>
 
