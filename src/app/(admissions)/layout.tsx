@@ -13,7 +13,7 @@ import { admissionsTourSteps } from "@/lib/tutorial-steps/admissions";
 
 export default function AdmissionsLayout({ children }: { children: React.ReactNode }) {
     return (
-        <RoleGuard allowed={["admissions_officer"]}>
+        <RoleGuard allowed={["admissions_officer", "admin"]}>
             <PortalTutorial steps={admissionsTourSteps} />
             <div className="flex min-h-screen w-full bg-[#FAF9F6]">
                 <AdmissionsSidebar className="hidden md:flex" />

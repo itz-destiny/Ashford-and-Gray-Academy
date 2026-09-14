@@ -13,7 +13,8 @@ import { totalMonitorSlots } from '@/lib/monitor-slots';
 
 const ASSIGNABLE_ROLES = ['student', 'instructor', 'course_registrar', 'finance', 'registrar', 'admissions_officer', 'admin', 'live_monitor'] as const;
 
-const ROLE_TITLES: Record<string, string> = {
+export const ROLE_TITLES: Record<string, string> = {
+    student: 'Student',
     instructor: 'Instructor',
     course_registrar: 'Course Registrar',
     finance: 'Finance Officer',
@@ -35,6 +36,47 @@ function handleError(err: unknown): Response {
     console.error('admin/users route error:', err);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
 }
+
+// =============================================================================
+// GET /api/admin/users?email=... — look up any account by email with its
+// real Firebase sign-in status, for the IT lookup/reset tool. Admin only.
+// =============================================================================
+export const GET = withAuth(async (req: NextRequest, { auth }) => {
+    try {
+        requireRole(auth, ['admin']);
+        await dbConnect();
+
+        const email = req.nextUrl.searchParams.get('email')?.trim();
+        if (!email) {
+            return NextResponse.json({ error: 'Provide an email to search.' }, { status: 400 });
+        }
+
+        const user = await User.findOne({ email: new RegExp(`^${email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') }).lean();
+        if (!user) {
+            return NextResponse.json({ error: "No account found with that email." }, { status: 404 });
+        }
+
+        let lastSignInTime: string | null = null;
+        try {
+            const fbUser = await adminAuth().getUser((user as any).uid);
+            lastSignInTime = fbUser.metadata.lastSignInTime || null;
+        } catch {
+            // Firebase-side record missing — surface the Mongo profile anyway.
+        }
+
+        return NextResponse.json({
+            uid: (user as any).uid,
+            displayName: (user as any).displayName,
+            email: (user as any).email,
+            role: (user as any).role,
+            roleTitle: ROLE_TITLES[(user as any).role] || (user as any).role,
+            lastSignInTime,
+            hasLoggedIn: !!lastSignInTime,
+        });
+    } catch (err) {
+        return handleError(err);
+    }
+});
 
 // =============================================================================
 // POST /api/admin/users — create any-role account: real Firebase Auth user,
