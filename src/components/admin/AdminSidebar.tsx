@@ -20,6 +20,9 @@ import {
     Sparkles,
     CreditCard,
     PlayCircle,
+    GraduationCap,
+    Crown,
+    UserSquare2,
 } from "lucide-react";
 import { useUser } from "@/firebase";
 import { signOut } from "@/firebase/auth";
@@ -28,6 +31,9 @@ import { TOUR_QUERY_PARAM } from "@/components/tutorial/PortalTutorial";
 const navItems = [
     { href: "/admin", label: "Academy Overview", icon: LayoutDashboard, tour: "nav-admin-overview" },
     { href: "/admin/users", label: "Members & Staff", icon: Users, tour: "nav-admin-users" },
+    { href: "/admin/instructors", label: "Instructors", icon: UserSquare2 },
+    { href: "/admin/students", label: "Students", icon: GraduationCap },
+    { href: "/admin/emc", label: "EMC Leadership", icon: Crown },
     { href: "/admin/courses", label: "Course Catalog", icon: Book, tour: "nav-admin-courses" },
     { href: "/admin/timetable", label: "Timetable", icon: CalendarClock, tour: "nav-admin-timetable" },
     { href: "/admin/events", label: "Academy Events", icon: Calendar, tour: "nav-admin-events" },
