@@ -27,6 +27,7 @@ export default function MonitorLayout({ children }: { children: React.ReactNode 
                     {isAdmin && (
                         <nav className="hidden md:flex items-center gap-1">
                             <MonitorNavLink href="/monitor" active={pathname === "/monitor"}>Live Classes</MonitorNavLink>
+                            <MonitorNavLink href="/monitor/schedule" active={pathname === "/monitor/schedule"}>Schedule</MonitorNavLink>
                             <MonitorNavLink href="/monitor/users" active={pathname === "/monitor/users"}>User Lookup</MonitorNavLink>
                             <span className="mx-2 h-4 w-px bg-white/10" />
                             <MonitorNavLink href="/admissions">Admissions</MonitorNavLink>
