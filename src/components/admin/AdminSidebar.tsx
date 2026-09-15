@@ -23,6 +23,7 @@ import {
     GraduationCap,
     Crown,
     UserSquare2,
+    MonitorPlay,
 } from "lucide-react";
 import { useUser } from "@/firebase";
 import { signOut } from "@/firebase/auth";
@@ -30,6 +31,7 @@ import { TOUR_QUERY_PARAM } from "@/components/tutorial/PortalTutorial";
 
 const navItems = [
     { href: "/admin", label: "Academy Overview", icon: LayoutDashboard, tour: "nav-admin-overview" },
+    { href: "/monitor", label: "Live Monitor & IT", icon: MonitorPlay },
     { href: "/admin/users", label: "Members & Staff", icon: Users, tour: "nav-admin-users" },
     { href: "/admin/instructors", label: "Instructors", icon: UserSquare2 },
     { href: "/admin/students", label: "Students", icon: GraduationCap },
