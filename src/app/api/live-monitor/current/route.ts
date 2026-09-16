@@ -20,7 +20,7 @@ function handleError(err: unknown): Response {
 // =============================================================================
 export const GET = withAuth(async (_req: NextRequest, { auth }) => {
     try {
-        requireRole(auth, ['live_monitor']);
+        requireRole(auth, ['live_monitor', 'admin']);
         await dbConnect();
 
         const liveClasses = await getAllLiveClasses();
