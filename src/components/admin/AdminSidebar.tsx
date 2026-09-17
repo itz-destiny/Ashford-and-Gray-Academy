@@ -24,6 +24,7 @@ import {
     Crown,
     UserSquare2,
     MonitorPlay,
+    Link2,
 } from "lucide-react";
 import { useUser } from "@/firebase";
 import { signOut } from "@/firebase/auth";
@@ -32,6 +33,7 @@ import { TOUR_QUERY_PARAM } from "@/components/tutorial/PortalTutorial";
 const navItems = [
     { href: "/admin", label: "Academy Overview", icon: LayoutDashboard, tour: "nav-admin-overview" },
     { href: "/monitor", label: "Live Monitor & IT", icon: MonitorPlay },
+    { href: "/admin/zoom-links", label: "Zoom Links", icon: Link2 },
     { href: "/admin/users", label: "Members & Staff", icon: Users, tour: "nav-admin-users" },
     { href: "/admin/instructors", label: "Instructors", icon: UserSquare2 },
     { href: "/admin/students", label: "Students", icon: GraduationCap },
