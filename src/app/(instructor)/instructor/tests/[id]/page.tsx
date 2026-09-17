@@ -6,8 +6,8 @@ import { apiFetch } from "@/lib/api-client";
 import { logAudit, AUDIT_ACTIONS, AUDIT_RESOURCES } from "@/lib/audit";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, ClipboardCheck, Users, Trash2 } from "lucide-react";
 import {
@@ -242,20 +242,39 @@ export default function TestDetailPage() {
                                                     <div className="space-y-2">
                                                         {pending.map(a => {
                                                             const q = shortAnswerQs.find(q => q._id === a.questionId)!;
+                                                            const draft = gradingDrafts[attempt._id]?.[q._id];
+                                                            const setMark = (value: number) => setGradingDrafts(prev => ({
+                                                                ...prev,
+                                                                [attempt._id]: { ...prev[attempt._id], [q._id]: String(value) },
+                                                            }));
+                                                            const marks: { label: string; value: number }[] = [
+                                                                { label: 'Good', value: q.points },
+                                                                { label: 'Half', value: q.points / 2 },
+                                                                { label: 'Bad', value: 0 },
+                                                            ];
                                                             return (
-                                                                <div key={a.questionId} className="flex items-center gap-2">
+                                                                <div key={a.questionId} className="flex items-center gap-2 flex-wrap">
                                                                     <span className="text-xs text-slate-500 max-w-[200px] truncate" title={q.text}>{q.text}</span>
                                                                     <span className="text-xs text-slate-400">Ans: "{a.textAnswer || '—'}"</span>
-                                                                    <Input
-                                                                        type="number" min={0} max={q.points}
-                                                                        placeholder={`/ ${q.points}`}
-                                                                        className="h-8 w-20 rounded-lg text-xs"
-                                                                        value={gradingDrafts[attempt._id]?.[q._id] ?? ''}
-                                                                        onChange={e => setGradingDrafts(prev => ({
-                                                                            ...prev,
-                                                                            [attempt._id]: { ...prev[attempt._id], [q._id]: e.target.value },
-                                                                        }))}
-                                                                    />
+                                                                    <div className="flex gap-1">
+                                                                        {marks.map(m => (
+                                                                            <button
+                                                                                key={m.label}
+                                                                                type="button"
+                                                                                onClick={() => setMark(m.value)}
+                                                                                className={cn(
+                                                                                    "h-8 px-3 rounded-lg text-[11px] font-bold border transition-colors",
+                                                                                    draft === String(m.value)
+                                                                                        ? m.label === 'Good' ? "bg-emerald-600 text-white border-emerald-600"
+                                                                                            : m.label === 'Half' ? "bg-amber-500 text-white border-amber-500"
+                                                                                            : "bg-red-600 text-white border-red-600"
+                                                                                        : "bg-white text-slate-500 border-slate-200 hover:bg-slate-50"
+                                                                                )}
+                                                                            >
+                                                                                {m.label}
+                                                                            </button>
+                                                                        ))}
+                                                                    </div>
                                                                 </div>
                                                             );
                                                         })}
