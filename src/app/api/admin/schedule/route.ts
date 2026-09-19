@@ -16,12 +16,13 @@ function handleError(err: unknown): Response {
 // =============================================================================
 // GET /api/admin/schedule?date=YYYY-MM-DD — every class scheduled on that WAT
 // calendar day (defaults to today), with its real Zoom join link, meeting
-// ID, and passcode — so the IT dashboard can show (and let you copy) any
-// day's links in advance, not just today's. Admin only.
+// ID, and passcode — so the IT and Admissions dashboards can show (and let
+// you copy) any day's links in advance, not just today's. Admin and
+// admissions_officer only.
 // =============================================================================
 export const GET = withAuth(async (req: NextRequest, { auth }) => {
     try {
-        requireRole(auth, ['admin']);
+        requireRole(auth, ['admin', 'admissions_officer']);
         await dbConnect();
 
         const date = req.nextUrl.searchParams.get('date') || todayWatDateStr();
