@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/logo";
 import {
-    LayoutDashboard, LogOut, Sparkles, PlayCircle,
+    LayoutDashboard, LogOut, Sparkles, PlayCircle, Link2,
 } from "lucide-react";
 import { useUser } from "@/firebase";
 import { signOut } from "@/firebase/auth";
@@ -14,6 +14,7 @@ import { TOUR_QUERY_PARAM } from "@/components/tutorial/PortalTutorial";
 
 const navItems = [
     { href: "/admissions", label: "Admissions", icon: LayoutDashboard, tour: "nav-admissions-home" },
+    { href: "/admissions/zoom-links", label: "Zoom Links", icon: Link2 },
 ];
 
 export function AdmissionsSidebar({ className }: { className?: string }) {
