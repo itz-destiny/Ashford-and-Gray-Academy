@@ -65,23 +65,16 @@ export async function getCurrentClassForSlot(slotNumber: number): Promise<
 }
 
 /**
- * Every class a monitor can join right now, scoped to today (WAT) only —
- * otherwise, with the whole term already scheduled ahead of time, this
- * would list every remaining class through the end of the cohort. Within
- * today, a monitor can still join before the exact scheduled minute (real
- * host/co-host access via the start-url route), so there is no lower-bound
- * time gate — just the day boundary and "hasn't ended yet."
+ * Every one of today's classes, scoped to today (WAT) only — otherwise,
+ * with the whole term already scheduled ahead of time, this would list
+ * every remaining class through the end of the cohort. Covers the full
+ * day (already-ended classes included, so a monitor can still pull up an
+ * earlier link), not just what's joinable right now.
  */
 export async function getAllLiveClasses(): Promise<ILiveClass[]> {
-    const now = Date.now();
     const { start, end: dayEnd } = watDayBoundsUtc();
-    const candidates = await LiveClass.find({
+    return LiveClass.find({
         status: 'scheduled',
         startTime: { $gte: start, $lt: dayEnd },
     }).sort({ startTime: 1 });
-    return candidates.filter((c) => {
-        const classStart = new Date(c.startTime).getTime();
-        const classEnd = classStart + (c.durationMinutes || 60) * 60_000;
-        return now <= classEnd;
-    });
 }

@@ -148,18 +148,29 @@ export default function MonitorPage() {
             {classes && classes.length > 0 ? (
                 <div className="w-full max-w-2xl space-y-4">
                     {classes.map((cls) => {
-                        const isLive = new Date(cls.startTime).getTime() <= Date.now();
+                        const startMs = new Date(cls.startTime).getTime();
+                        const endMs = startMs + (cls.durationMinutes || 60) * 60_000;
+                        const nowMs = Date.now();
+                        const isLive = nowMs >= startMs && nowMs <= endMs;
+                        const isEnded = nowMs > endMs;
                         return (
                             <div
                                 key={cls.liveClassId}
                                 className="bg-white/[0.03] border border-white/10 border-t-2 border-t-[#C8A96A] p-6 flex flex-col md:flex-row md:items-center justify-between gap-4"
                             >
                                 <div className="space-y-1 min-w-0">
-                                    <div className={`flex items-center gap-2 ${isLive ? 'text-rose-400' : 'text-white/40'}`}>
+                                    <div className={`flex items-center gap-2 ${isLive ? 'text-rose-400' : isEnded ? 'text-white/25' : 'text-white/40'}`}>
                                         {isLive ? (
                                             <>
                                                 <Radio className="w-3.5 h-3.5 animate-pulse" />
                                                 <span className="text-[9px] font-black uppercase tracking-[0.3em]">Live Now</span>
+                                            </>
+                                        ) : isEnded ? (
+                                            <>
+                                                <Clock className="w-3.5 h-3.5" />
+                                                <span className="text-[9px] font-black uppercase tracking-[0.3em]">
+                                                    Ended {new Date(cls.startTime).toLocaleString('en-US', { timeZone: 'Africa/Lagos', hour: 'numeric', minute: '2-digit' })} WAT
+                                                </span>
                                             </>
                                         ) : (
                                             <>
