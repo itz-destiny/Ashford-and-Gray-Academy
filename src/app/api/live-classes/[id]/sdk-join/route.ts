@@ -1,12 +1,12 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import LiveClass from '@/models/LiveClass';
-import Enrollment from '@/models/Enrollment';
 import User from '@/models/User';
 import { getFreshZoomStartUrl, getZoomMeetingPassword } from '@/lib/zoom';
 import { getZoomAccounts } from '@/lib/zoom-hosts';
 import { generateZoomSdkSignature } from '@/lib/zoom-sdk-signature';
 import { getCurrentClassForSlot } from '@/lib/monitor-slots';
+import { isEligibleForLiveClass } from '@/lib/joint-session';
 import { withAuth } from '@/lib/auth-server';
 
 type RouteParams = { params: Promise<{ id: string }> };
@@ -41,8 +41,8 @@ export const GET = withAuth<RouteParams>(async (_req: NextRequest, { auth, param
                     return NextResponse.json({ error: 'This class is not currently live in your assigned monitor slot.' }, { status: 403 });
                 }
             } else {
-                const enrolled = await Enrollment.findOne({ userId: auth.uid, courseId: liveClass.courseId });
-                if (!enrolled) {
+                const eligible = await isEligibleForLiveClass(auth.uid, id, String(liveClass.courseId));
+                if (!eligible) {
                     return NextResponse.json({ error: 'You are not enrolled in this course.' }, { status: 403 });
                 }
             }

@@ -2,11 +2,11 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { z } from 'zod';
 import dbConnect from '@/lib/mongodb';
 import LiveClass from '@/models/LiveClass';
-import Enrollment from '@/models/Enrollment';
 import Course from '@/models/Course';
 import User from '@/models/User';
 import { resolveCourse } from '@/lib/resolve-course';
 import { rateLimit } from '@/lib/rate-limit';
+import { isEligibleForLiveClass } from '@/lib/joint-session';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -75,8 +75,8 @@ export const POST = async (req: NextRequest, { params }: RouteParams) => {
         if (student.role === 'student') {
             const course = await Course.findById(liveClass.courseId).select('isCohortWide').lean<{ isCohortWide?: boolean } | null>();
             if (!course?.isCohortWide) {
-                const enrolled = await Enrollment.findOne({ userId: student.uid, courseId: liveClass.courseId }).select('_id').lean();
-                if (!enrolled) {
+                const eligible = await isEligibleForLiveClass(student.uid, id, String(liveClass.courseId));
+                if (!eligible) {
                     return NextResponse.json({ error: "That email isn't enrolled in this class's course." }, { status: 403 });
                 }
             }
