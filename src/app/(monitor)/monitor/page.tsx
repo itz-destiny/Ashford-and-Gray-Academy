@@ -121,14 +121,39 @@ export default function MonitorPage() {
         );
     }
 
+    const liveCount = classes?.filter((cls) => {
+        const s = new Date(cls.startTime).getTime();
+        const e = s + (cls.durationMinutes || 60) * 60_000;
+        const now = Date.now();
+        return now >= s && now <= e;
+    }).length ?? 0;
+
     return (
         <div className="flex-1 flex flex-col items-center px-6 py-12 gap-8">
-            <div className="space-y-2 text-center">
+            <div className="space-y-3 text-center max-w-2xl">
+                <div className="flex items-center justify-center gap-3">
+                    <div className="w-1.5 h-6 bg-[#C8A96A]" />
+                    <h1 className="font-serif text-2xl text-white tracking-tight">Live Class Monitor</h1>
+                </div>
                 <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#C8A96A]">
                     {new Date().toLocaleDateString('en-US', { timeZone: 'Africa/Lagos', weekday: 'long', day: 'numeric', month: 'long' })}
                 </p>
                 <p className="text-white/50 text-sm">Pick any class below to join as host/co-host and monitor it.</p>
             </div>
+
+            {classes && classes.length > 0 && (
+                <div className="flex items-center gap-6 bg-white/[0.03] border border-white/10 border-t-2 border-t-[#C8A96A] px-8 py-4">
+                    <div className="text-center">
+                        <p className={`text-2xl font-serif ${liveCount > 0 ? 'text-rose-400' : 'text-white'}`}>{liveCount}</p>
+                        <p className="text-[9px] font-black uppercase tracking-[0.25em] text-white/40">Live Now</p>
+                    </div>
+                    <div className="h-8 w-px bg-white/10" />
+                    <div className="text-center">
+                        <p className="text-2xl font-serif text-white">{classes.length}</p>
+                        <p className="text-[9px] font-black uppercase tracking-[0.25em] text-white/40">Today</p>
+                    </div>
+                </div>
+            )}
 
             {classes && classes.length > 0 && (
                 <Button
@@ -142,7 +167,7 @@ export default function MonitorPage() {
             )}
 
             {joinError && (
-                <p className="text-rose-400 text-sm max-w-md text-center">{joinError}</p>
+                <p className="text-rose-400 text-sm max-w-md text-center border border-rose-400/30 bg-rose-400/5 px-4 py-2">{joinError}</p>
             )}
 
             {classes && classes.length > 0 ? (
@@ -191,7 +216,7 @@ export default function MonitorPage() {
                                         </p>
                                     )}
                                 </div>
-                                <div className="flex items-center gap-3 shrink-0">
+                                <div className="flex items-center gap-3 flex-wrap shrink-0">
                                     <Button
                                         onClick={() => handleCopyAttendanceLink(cls.liveClassId)}
                                         variant="outline"
@@ -218,7 +243,7 @@ export default function MonitorPage() {
                     })}
                 </div>
             ) : (
-                <div className="w-full max-w-md bg-white/[0.03] border border-white/10 p-8 space-y-2 text-center">
+                <div className="w-full max-w-md bg-white/[0.03] border border-white/10 border-t-2 border-t-[#C8A96A] p-8 space-y-2 text-center">
                     <MonitorPlay className="w-8 h-8 text-white/20 mx-auto mb-2" />
                     <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.3em]">Idle</p>
                     <p className="text-white/70 font-serif text-lg">No classes scheduled right now.</p>
