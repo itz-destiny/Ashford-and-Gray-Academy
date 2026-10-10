@@ -28,7 +28,7 @@ export const GET = withAuth(async (req: NextRequest, { auth }) => {
         const date = req.nextUrl.searchParams.get('date') || todayWatDateStr();
         const { start, end } = watDayBoundsUtc(date);
 
-        const classes = await LiveClass.find({ startTime: { $gte: start, $lt: end } })
+        const classes = await LiveClass.find({ startTime: { $gte: start, $lt: end }, status: { $ne: 'cancelled' } })
             .sort({ startTime: 1 })
             .lean<any[]>();
 
