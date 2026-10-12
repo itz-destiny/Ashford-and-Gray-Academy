@@ -123,22 +123,6 @@ export const FACILITATORS: Facilitator[] = [
         ],
     },
     {
-        slug: 'harry-orugba-ovharhe',
-        name: 'Dr. Harry Orugba Ovharhe',
-        postNominals: 'Ph.D.',
-        title: 'Facilitator – Entrepreneurship, Innovation and Business Development',
-        photo: '/facilitators/harry-ovharhe.jpeg',
-        bio: [
-            'Dr. Harry Orugba Ovharhe is a distinguished Entrepreneurship Scholar, Innovation Strategist, Research and Development Specialist, and Academic Leader with extensive experience in entrepreneurship education, business innovation, research development, and enterprise transformation. As a passionate advocate for entrepreneurial excellence, he has dedicated his career to equipping individuals and organisations with practical frameworks for innovation, sustainable business growth, and economic development.',
-            'A Senior Lecturer in the Department of Entrepreneurship, Research and Development at the University of Port Harcourt Teaching Hospital College, Dr. Ovharhe has built an impressive academic and professional career spanning teaching, research, consulting, and capacity development. His work integrates academic scholarship with practical business solutions, enabling entrepreneurs, institutions, and emerging business leaders to transform ideas into sustainable enterprises.',
-            'Dr. Ovharhe holds a Bachelor of Science (B.Sc.), Master of Business Administration (MBA), and Doctor of Philosophy (Ph.D.), alongside several distinguished professional fellowships and memberships, including FCIA, FICEPN, FCIHRSM, membership of the European Centre for Research Training and Development (ECRTD), and FMERU (USA). His commitment to lifelong learning and professional development continues to strengthen his contributions to entrepreneurship, innovation, and research excellence.',
-            'Widely recognised for his innovative thinking and research contributions, Dr. Ovharhe has facilitated conferences, executive workshops, seminars, symposiums, and professional development programmes at both national and international levels. He has received multiple recognitions for his contributions to entrepreneurship education, research, and innovation while serving as an author, editor, reviewer, and thought leader within the global academic community.',
-            'His research interests extend beyond conventional entrepreneurship into emerging models of enterprise development. He is the originator of the concepts of Champiopreneurship and Therapeutic Entrepreneurship, innovative approaches designed to empower entrepreneurs facing disabilities and adverse conditions. His ongoing scholarly work also explores contemporary entrepreneurial frameworks, including Seed Entrepreneurship, Agile Entrepreneurship, Lean Entrepreneurship, Entrepreneurship Code, Rainbow Entrepreneurship, Inclusive Entrepreneurship, Frugal Innovation, and Frugal Entrepreneurship, reflecting his commitment to developing practical solutions for today’s evolving business environment.',
-            'At Ashford & Gray Fusion Academy, Dr. Harry Orugba Ovharhe serves as Facilitator for Entrepreneurship, Innovation and Business Development, where he equips participants with practical knowledge in entrepreneurial thinking, business innovation, opportunity identification, enterprise creation, research-driven decision-making, and sustainable business growth. Drawing upon his extensive academic expertise, research experience, and practical consulting background, he prepares learners to develop innovative ventures, build resilient enterprises, and create meaningful economic and social impact.',
-            'Dr. Ovharhe’s professional philosophy is anchored in the belief that entrepreneurship is not merely the creation of businesses but the disciplined pursuit of innovative solutions that transform lives, strengthen communities, and drive sustainable national development.',
-        ],
-    },
-    {
         slug: 'maimoona-sheila-salim',
         name: 'Dr. Maimoona Salim',
         title: 'Facilitator – Leadership Development and Professional Ethics',
