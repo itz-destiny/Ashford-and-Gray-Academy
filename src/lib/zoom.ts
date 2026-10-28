@@ -59,6 +59,18 @@ export interface CreateZoomMeetingParams {
     alternativeHostEmail?: string;
 }
 
+// Every class runs on Nigerian time (WAT, UTC+1).
+export const ZOOM_TIMEZONE = 'Africa/Lagos';
+
+// Zoom only treats start_time as UTC in its exact "yyyy-MM-ddTHH:mm:ssZ"
+// form. A toISOString() value carries milliseconds (".000Z"), which Zoom
+// silently reads as wall-clock time in the *host's* own Zoom timezone —
+// so a 7pm WAT class showed up in Zoom as 6pm, or as 2am the next day on a
+// host set to Los Angeles time.
+export function toZoomStartTime(iso: string): string {
+    return iso.replace(/\.\d{3}Z$/, 'Z');
+}
+
 export async function createZoomMeeting(params: CreateZoomMeetingParams) {
     const token = await getZoomAccessToken(params.account);
     const hostEmail = params.hostEmail?.trim() || 'me';
@@ -66,7 +78,8 @@ export async function createZoomMeeting(params: CreateZoomMeetingParams) {
     const buildBody = (includeAlternativeHost: boolean) => JSON.stringify({
         topic: params.topic,
         type: 2, // 2 = Scheduled meeting
-        start_time: params.startTime,
+        start_time: toZoomStartTime(params.startTime),
+        timezone: ZOOM_TIMEZONE,
         duration: params.durationMinutes,
         agenda: params.agenda,
         settings: {

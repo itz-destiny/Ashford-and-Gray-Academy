@@ -77,15 +77,16 @@ describe('createZoomMeeting', () => {
         expect(body).toMatchObject({
             topic: 'Week 1: Introduction',
             type: 2,
-            start_time: '2026-08-01T09:00:00.000Z',
+            start_time: '2026-08-01T09:00:00Z',
+            timezone: 'Africa/Lagos',
             duration: 60,
             agenda: 'Course kickoff',
             settings: {
                 host_video: true,
                 participant_video: true,
-                join_before_host: false,
+                join_before_host: true,
                 mute_upon_entry: true,
-                waiting_room: true,
+                waiting_room: false,
                 approval_type: 2,
             },
         });
