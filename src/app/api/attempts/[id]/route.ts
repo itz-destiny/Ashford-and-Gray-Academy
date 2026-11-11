@@ -4,6 +4,7 @@ import dbConnect from '@/lib/mongodb';
 import Assessment from '@/models/Assessment';
 import Attempt from '@/models/Attempt';
 import { AuthError, requireRole, withAuth, type AuthContext } from '@/lib/auth-server';
+import { finalizeAttempt } from '@/lib/grade-attempt';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -52,13 +53,21 @@ export const GET = withAuth<RouteParams>(async (_req: NextRequest, { auth, param
     }
 });
 
+const answersSchema = z.array(z.object({
+    questionId: z.string().min(1),
+    selectedOptionIndex: z.number().optional(),
+    textAnswer: z.string().max(5000).optional(),
+}));
+
 const submitSchema = z.object({
     action: z.literal('submit'),
-    answers: z.array(z.object({
-        questionId: z.string().min(1),
-        selectedOptionIndex: z.number().optional(),
-        textAnswer: z.string().max(5000).optional(),
-    })),
+    answers: answersSchema,
+    reason: z.enum(['student', 'time_up']).optional(),
+});
+
+const saveSchema = z.object({
+    action: z.literal('save'),
+    answers: answersSchema,
 });
 
 const gradeSchema = z.object({
@@ -105,30 +114,26 @@ export const PATCH = withAuth<RouteParams>(async (req: NextRequest, { auth, para
                 return NextResponse.json({ error: 'Invalid request', details: parsed.error.flatten() }, { status: 400 });
             }
 
-            const questionMap = new Map((assessment.questions || []).map((q: any) => [String(q._id), q]));
-            let score = 0;
-            const answers = parsed.data.answers.map(a => {
-                const q: any = questionMap.get(a.questionId);
-                if (!q) return { ...a, pointsAwarded: null, isCorrect: null };
-
-                if (q.type === 'mcq' || q.type === 'true_false') {
-                    const correctIndex = (q.options || []).findIndex((o: any) => o.isCorrect);
-                    const isCorrect = a.selectedOptionIndex === correctIndex;
-                    const pointsAwarded = isCorrect ? q.points : 0;
-                    score += pointsAwarded;
-                    return { ...a, pointsAwarded, isCorrect };
-                }
-                // short_answer — pending manual grading.
-                return { ...a, pointsAwarded: null, isCorrect: null };
-            });
-
-            attempt.answers = answers as any;
-            attempt.score = score;
-            attempt.maxScore = assessment.totalPoints;
-            attempt.status = 'submitted';
-            attempt.submittedAt = new Date();
-            await attempt.save();
+            await finalizeAttempt(attempt, assessment, parsed.data.answers, parsed.data.reason || 'student');
             return NextResponse.json(attempt);
+        }
+
+        // Autosave while the test is in progress, so a reload restores the
+        // student's answers and a proctoring auto-submit grades real work.
+        if (actionGuess === 'save') {
+            if (attempt.userId !== auth.uid) {
+                return NextResponse.json({ error: 'Not your attempt.' }, { status: 403 });
+            }
+            if (attempt.status !== 'in_progress') {
+                return NextResponse.json({ error: 'This attempt has already been submitted.', status: attempt.status }, { status: 409 });
+            }
+            const parsed = saveSchema.safeParse(json);
+            if (!parsed.success) {
+                return NextResponse.json({ error: 'Invalid request', details: parsed.error.flatten() }, { status: 400 });
+            }
+            attempt.answers = parsed.data.answers.map(a => ({ ...a, pointsAwarded: null, isCorrect: null })) as any;
+            await attempt.save();
+            return NextResponse.json({ saved: true });
         }
 
         if (actionGuess === 'grade') {

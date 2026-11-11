@@ -5,6 +5,7 @@ import Attempt from '@/models/Attempt';
 import Enrollment from '@/models/Enrollment';
 import User from '@/models/User';
 import { AuthError, requireRole, withAuth, type AuthContext } from '@/lib/auth-server';
+import { isProctored } from '@/lib/proctoring';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -62,6 +63,7 @@ export const POST = withAuth<RouteParams>(async (_req: NextRequest, { auth, para
             maxScore: assessment.totalPoints,
             status: 'in_progress',
             startedAt: now,
+            ...(isProctored(assessment) ? { proctoring: { violations: [], events: [], snapshotCount: 0, lastSeenAt: now, autoSubmitted: false } } : {}),
         });
 
         return NextResponse.json(attempt, { status: 201 });

@@ -72,14 +72,31 @@ export const GET = withAuth<RouteParams>(async (_req: NextRequest, { auth, param
             }
         }
 
-        const myAttempt = await Attempt.findOne({ assessmentId: id, userId: auth.uid })
-            .select('_id status score maxScore startedAt')
+        const attemptDoc = await Attempt.findOne({ assessmentId: id, userId: auth.uid })
+            .select('_id status score maxScore startedAt submitReason answers proctoring.violations proctoring.autoSubmitted')
             .lean<any>();
+
+        // The student's own in-progress answers (autosave) come back so a
+        // reload restores their work; their violation count drives the
+        // proctored exam's warning banner.
+        const myAttempt = attemptDoc ? {
+            _id: attemptDoc._id,
+            status: attemptDoc.status,
+            score: attemptDoc.score,
+            maxScore: attemptDoc.maxScore,
+            startedAt: attemptDoc.startedAt,
+            submitReason: attemptDoc.submitReason,
+            savedAnswers: attemptDoc.status === 'in_progress'
+                ? (attemptDoc.answers || []).map((a: any) => ({ questionId: String(a.questionId), selectedOptionIndex: a.selectedOptionIndex, textAnswer: a.textAnswer }))
+                : undefined,
+            violationCount: attemptDoc.proctoring?.violations?.length || 0,
+            autoSubmitted: !!attemptDoc.proctoring?.autoSubmitted,
+        } : null;
 
         if (myAttempt && myAttempt.status !== 'in_progress') {
             return NextResponse.json({ ...assessment, myAttempt });
         }
-        return NextResponse.json({ ...stripAnswerKey(assessment), myAttempt: myAttempt || null });
+        return NextResponse.json({ ...stripAnswerKey(assessment), myAttempt });
     } catch (err) {
         return handleError(err);
     }

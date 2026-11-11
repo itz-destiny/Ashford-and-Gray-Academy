@@ -9,7 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ClipboardCheck, Users, Trash2 } from "lucide-react";
+import { Loader2, ClipboardCheck, Users, Trash2, ShieldAlert } from "lucide-react";
+import Link from "next/link";
+import { MAX_VIOLATIONS, isProctored } from "@/lib/proctoring";
 import {
     Table,
     TableBody,
@@ -58,6 +60,8 @@ interface Attempt {
     maxScore: number;
     status: 'in_progress' | 'submitted' | 'graded';
     student: { displayName: string; email: string } | null;
+    submitReason?: 'student' | 'time_up' | 'violations';
+    proctoring?: { violations: { type: string; at: string }[]; snapshotCount: number };
 }
 
 export default function TestDetailPage() {
@@ -150,6 +154,7 @@ export default function TestDetailPage() {
         return <div className="p-10 text-center text-slate-400">Test not found.</div>;
     }
 
+    const proctored = isProctored(assessment);
     const submittedAttempts = attempts.filter(a => a.status !== 'in_progress');
     const averageScore = submittedAttempts.length
         ? Math.round((submittedAttempts.reduce((s, a) => s + a.score, 0) / submittedAttempts.length) * 10) / 10
@@ -168,6 +173,13 @@ export default function TestDetailPage() {
                     <p className="text-slate-500 font-medium">{assessment.questions.length} questions · {assessment.totalPoints} pts · {assessment.durationMinutes} min</p>
                 </div>
                 <div className="flex gap-3">
+                    {proctored && (
+                        <Button asChild className="bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold">
+                            <Link href={`/instructor/tests/${id}/proctor`}>
+                                <ShieldAlert className="w-4 h-4 mr-2" /> Live Proctoring
+                            </Link>
+                        </Button>
+                    )}
                     {assessment.status === 'draft' && (
                         <Button onClick={handlePublish} disabled={publishing} className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold">
                             {publishing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null} Publish
@@ -211,12 +223,13 @@ export default function TestDetailPage() {
                                 <TableHead className="pl-8">Student</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead>Score</TableHead>
+                                {proctored && <TableHead>Proctoring</TableHead>}
                                 <TableHead className="pr-8">Pending Grading</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {attempts.length === 0 ? (
-                                <TableRow><TableCell colSpan={4} className="h-32 text-center text-slate-400">No attempts yet.</TableCell></TableRow>
+                                <TableRow><TableCell colSpan={proctored ? 5 : 4} className="h-32 text-center text-slate-400">No attempts yet.</TableCell></TableRow>
                             ) : (
                                 attempts.map(attempt => {
                                     const shortAnswerQs = assessment.questions.filter(q => q.type === 'short_answer');
@@ -233,6 +246,24 @@ export default function TestDetailPage() {
                                                 <Badge variant="outline" className="capitalize">{attempt.status.replace('_', ' ')}</Badge>
                                             </TableCell>
                                             <TableCell className="font-bold">{attempt.score} / {attempt.maxScore}</TableCell>
+                                            {proctored && (
+                                                <TableCell>
+                                                    {(() => {
+                                                        const v = attempt.proctoring?.violations?.length || 0;
+                                                        return (
+                                                            <div className="space-y-1">
+                                                                <Badge className={cn("border-none", v === 0 ? "bg-emerald-50 text-emerald-700" : v < MAX_VIOLATIONS ? "bg-amber-50 text-amber-700" : "bg-red-50 text-red-700")}>
+                                                                    {v}/{MAX_VIOLATIONS} warnings
+                                                                </Badge>
+                                                                {attempt.submitReason === 'violations' && (
+                                                                    <div className="text-[11px] font-bold text-red-700">Auto-submitted</div>
+                                                                )}
+                                                                <div className="text-[11px] text-slate-400">{attempt.proctoring?.snapshotCount || 0} photos</div>
+                                                            </div>
+                                                        );
+                                                    })()}
+                                                </TableCell>
+                                            )}
                                             <TableCell className="pr-8">
                                                 {attempt.status === 'in_progress' ? (
                                                     <span className="text-xs text-slate-400">Not submitted</span>

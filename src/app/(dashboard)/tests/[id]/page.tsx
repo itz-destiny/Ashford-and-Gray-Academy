@@ -1,13 +1,15 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from "next/navigation";
 import { apiFetch } from "@/lib/api-client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Clock, ClipboardCheck, CheckCircle2 } from "lucide-react";
+import { Loader2, Clock, ClipboardCheck, CheckCircle2, ShieldAlert, Camera, AlertTriangle } from "lucide-react";
+import { MAX_VIOLATIONS, isProctored } from "@/lib/proctoring";
+import { enterFullscreen } from "@/components/tests/useExamProctor";
 
 interface Assessment {
     _id: string;
@@ -19,7 +21,7 @@ interface Assessment {
     closesAt: string;
     questions: any[];
     totalPoints: number;
-    myAttempt: { _id: string; status: string; score: number; maxScore: number } | null;
+    myAttempt: { _id: string; status: string; score: number; maxScore: number; submitReason?: string } | null;
 }
 
 export default function TestIntroPage() {
@@ -29,6 +31,10 @@ export default function TestIntroPage() {
     const [assessment, setAssessment] = useState<Assessment | null>(null);
     const [loading, setLoading] = useState(true);
     const [starting, setStarting] = useState(false);
+    const [cameraStatus, setCameraStatus] = useState<'idle' | 'checking' | 'ok' | 'denied' | 'unsupported'>('idle');
+    const [agreed, setAgreed] = useState(false);
+    const videoRef = useRef<HTMLVideoElement | null>(null);
+    const streamRef = useRef<MediaStream | null>(null);
 
     useEffect(() => {
         apiFetch(`/api/assessments/${id}`).then(async res => {
@@ -37,8 +43,38 @@ export default function TestIntroPage() {
         }).catch(() => setLoading(false));
     }, [id]);
 
+    const proctored = isProctored(assessment);
+
+    const checkCamera = async () => {
+        if (!navigator.mediaDevices?.getUserMedia) {
+            setCameraStatus('unsupported');
+            return;
+        }
+        setCameraStatus('checking');
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+            streamRef.current?.getTracks().forEach(t => t.stop());
+            streamRef.current = stream;
+            if (videoRef.current) {
+                videoRef.current.srcObject = stream;
+                await videoRef.current.play().catch(() => {});
+            }
+            setCameraStatus('ok');
+        } catch {
+            setCameraStatus('denied');
+        }
+    };
+
+    useEffect(() => () => { streamRef.current?.getTracks().forEach(t => t.stop()); }, []);
+
     const handleStart = async () => {
         setStarting(true);
+        if (proctored) {
+            // Must run inside the click so the browser allows full screen.
+            await enterFullscreen();
+            streamRef.current?.getTracks().forEach(t => t.stop());
+            streamRef.current = null;
+        }
         try {
             const res = await apiFetch(`/api/assessments/${id}/attempts`, { method: 'POST' });
             if (!res.ok) {
@@ -47,9 +83,15 @@ export default function TestIntroPage() {
             }
             router.push(`/tests/${id}/take`);
         } catch (err: any) {
+            if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
             toast({ variant: "destructive", title: "Can't start test", description: err.message });
             setStarting(false);
         }
+    };
+
+    const continueTest = async () => {
+        if (proctored) await enterFullscreen();
+        router.push(`/tests/${id}/take`);
     };
 
     if (loading) {
@@ -86,6 +128,51 @@ export default function TestIntroPage() {
                         </div>
                     </div>
 
+                    {proctored && (!attempt || attempt.status === 'in_progress') && isOpen && (
+                        <div className="space-y-4 pt-4 border-t border-slate-100">
+                            <div className="flex items-center gap-2 text-slate-900 font-black">
+                                <ShieldAlert className="w-5 h-5 text-indigo-600" /> This is a proctored exam
+                            </div>
+                            <ul className="text-sm text-slate-600 font-medium space-y-2 list-disc pl-5">
+                                <li>Your <strong>camera stays on</strong> for the whole exam and takes a photo of you every minute and whenever a warning is recorded.</li>
+                                <li>The exam runs in <strong>full screen</strong>. Leaving full screen, switching tabs, minimising or opening another app or window is a <strong>warning</strong>.</li>
+                                <li>On warning <strong>{MAX_VIOLATIONS}</strong>, your exam is <strong>submitted automatically</strong> with the answers saved so far.</li>
+                                <li>Copy, paste and right-click are disabled and recorded.</li>
+                                <li>Your answers save automatically. If your connection drops, reopen the exam and continue — the timer keeps running.</li>
+                                <li>Sit somewhere quiet and well lit, with your face clearly visible, and close other apps before you start.</li>
+                            </ul>
+
+                            <div className="rounded-2xl border border-slate-200 p-4 flex flex-col sm:flex-row items-center gap-4">
+                                <div className="w-40 h-28 rounded-xl bg-slate-900 overflow-hidden shrink-0 flex items-center justify-center">
+                                    <video ref={videoRef} muted playsInline autoPlay className={cameraStatus === 'ok' ? "w-full h-full object-cover -scale-x-100" : "hidden"} />
+                                    {cameraStatus !== 'ok' && <Camera className="w-8 h-8 text-slate-500" />}
+                                </div>
+                                <div className="flex-1 space-y-2 text-center sm:text-left">
+                                    {cameraStatus === 'ok' ? (
+                                        <p className="text-sm font-bold text-emerald-700 flex items-center gap-1.5 justify-center sm:justify-start"><CheckCircle2 className="w-4 h-4" /> Camera working — make sure your face is clearly visible.</p>
+                                    ) : cameraStatus === 'denied' ? (
+                                        <p className="text-sm font-bold text-red-700 flex items-start gap-1.5"><AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" /> Camera blocked. Click the camera or lock icon in your address bar, allow the camera for this site, then try again.</p>
+                                    ) : cameraStatus === 'unsupported' ? (
+                                        <p className="text-sm font-bold text-red-700">This browser can't use a camera. Use Chrome, Edge or Safari on a device with a camera.</p>
+                                    ) : (
+                                        <p className="text-sm font-medium text-slate-600">Check your camera before starting. Your browser will ask for permission — choose <strong>Allow</strong>.</p>
+                                    )}
+                                    {cameraStatus !== 'ok' && cameraStatus !== 'unsupported' && (
+                                        <Button onClick={checkCamera} disabled={cameraStatus === 'checking'} variant="outline" className="rounded-xl font-bold">
+                                            {cameraStatus === 'checking' ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Camera className="w-4 h-4 mr-2" />}
+                                            {cameraStatus === 'denied' ? 'Try again' : 'Check my camera'}
+                                        </Button>
+                                    )}
+                                </div>
+                            </div>
+
+                            <label className="flex items-start gap-3 text-sm font-medium text-slate-700 cursor-pointer">
+                                <input type="checkbox" checked={agreed} onChange={e => setAgreed(e.target.checked)} className="mt-0.5 w-4 h-4 accent-indigo-600" />
+                                I understand that this exam is monitored by camera and that leaving the exam screen is recorded and can end my exam.
+                            </label>
+                        </div>
+                    )}
+
                     {attempt && attempt.status !== 'in_progress' ? (
                         <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-6 flex items-center gap-4">
                             <CheckCircle2 className="w-8 h-8 text-emerald-500 shrink-0" />
@@ -94,16 +181,30 @@ export default function TestIntroPage() {
                                     {attempt.status === 'graded' ? 'Graded' : 'Submitted — pending final grading'}
                                 </p>
                                 <p className="text-emerald-600 font-bold text-lg">{attempt.score} / {attempt.maxScore} pts</p>
+                                {attempt.submitReason === 'violations' && (
+                                    <p className="text-sm font-bold text-red-700 mt-1">Submitted automatically after {MAX_VIOLATIONS} proctoring warnings.</p>
+                                )}
+                                {attempt.submitReason === 'time_up' && (
+                                    <p className="text-sm font-bold text-amber-700 mt-1">Submitted automatically when time ran out.</p>
+                                )}
                             </div>
                         </div>
                     ) : attempt && attempt.status === 'in_progress' ? (
-                        <Button onClick={() => router.push(`/tests/${id}/take`)} className="w-full h-14 rounded-xl bg-indigo-600 hover:bg-indigo-700 font-black">
-                            Continue Test
+                        <Button
+                            onClick={continueTest}
+                            disabled={proctored && (cameraStatus !== 'ok' || !agreed)}
+                            className="w-full h-14 rounded-xl bg-indigo-600 hover:bg-indigo-700 font-black"
+                        >
+                            Continue {proctored ? 'Exam' : 'Test'}
                         </Button>
                     ) : isOpen ? (
-                        <Button onClick={handleStart} disabled={starting} className="w-full h-14 rounded-xl bg-indigo-600 hover:bg-indigo-700 font-black">
+                        <Button
+                            onClick={handleStart}
+                            disabled={starting || (proctored && (cameraStatus !== 'ok' || !agreed))}
+                            className="w-full h-14 rounded-xl bg-indigo-600 hover:bg-indigo-700 font-black"
+                        >
                             {starting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <ClipboardCheck className="w-4 h-4 mr-2" />}
-                            Start Test
+                            Start {proctored ? 'Exam' : 'Test'}
                         </Button>
                     ) : now < new Date(assessment.opensAt).getTime() ? (
                         <div className="bg-amber-50 border border-amber-100 rounded-2xl p-6 flex items-center gap-3">
