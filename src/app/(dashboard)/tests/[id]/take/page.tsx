@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, ShieldAlert, Camera, Maximize, AlertTriangle } from "lucide-react";
 import { CountdownTimer } from "@/components/tests/CountdownTimer";
 import { useExamProctor, enterFullscreen, fullscreenSupported } from "@/components/tests/useExamProctor";
-import { ExamRoomPanel } from "@/components/tests/ExamRoomPanel";
+import { ExamRoomStatus } from "@/components/tests/ExamRoomStatus";
 import { INCIDENT_LABELS, isProctored } from "@/lib/proctoring";
 import { cn } from "@/lib/utils";
 
@@ -78,10 +78,13 @@ export default function TakeTestPage() {
 
     const attemptId = assessment?.myAttempt?._id || null;
     const proctored = isProctored(assessment);
+    // With a live Zoom exam room, Zoom is the camera — the browser's own camera stays off.
+    const hasRoom = !!assessment?.proctorLiveClassId;
 
     const proctor = useExamProctor({
         attemptId,
         enabled: proctored && !!attemptId,
+        useCamera: !hasRoom,
         initialViolations: assessment?.myAttempt?.violationCount || 0,
         onAutoSubmitted: () => {
             submittingRef.current = true;
@@ -224,16 +227,13 @@ export default function TakeTestPage() {
                 </Card>
             ))}
 
-            {proctored && assessment.proctorLiveClassId ? (
-                <>
-                    {/* Kept rendered (off-screen, not display:none) so photo snapshots keep getting frames. */}
-                    <video ref={proctor.videoRef} muted playsInline autoPlay aria-hidden className="fixed -left-[9999px] top-0 w-40 h-32 opacity-0 pointer-events-none" />
-                    <ExamRoomPanel
-                        liveClassId={assessment.proctorLiveClassId}
-                        disabled={submitting}
-                        onLeft={() => void proctor.reportViolation('left_exam_room')}
-                    />
-                </>
+            {proctored && hasRoom ? (
+                <ExamRoomStatus
+                    assessmentId={assessment._id}
+                    disabled={submitting}
+                    onLeft={() => void proctor.reportViolation('left_exam_room')}
+                    onAwayChange={away => (away ? proctor.pause() : proctor.resume())}
+                />
             ) : proctored && (
                 <div className="fixed bottom-20 left-4 md:left-[19rem] z-20 rounded-xl overflow-hidden shadow-lg border-2 border-white bg-slate-900 w-32 h-24">
                     <video ref={proctor.videoRef} muted playsInline autoPlay className="w-full h-full object-cover -scale-x-100" />

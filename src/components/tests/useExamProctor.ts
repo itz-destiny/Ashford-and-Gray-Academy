@@ -19,6 +19,12 @@ interface Options {
     initialViolations: number;
     /** The server closed the attempt (violation limit reached). */
     onAutoSubmitted: () => void;
+    /**
+     * Use the browser camera for photo snapshots. Off when the exam has a
+     * live Zoom exam room — Zoom is the camera then, and some laptops can't
+     * share one camera between Zoom and the browser.
+     */
+    useCamera?: boolean;
 }
 
 export function fullscreenSupported(): boolean {
@@ -41,7 +47,7 @@ export async function enterFullscreen(): Promise<boolean> {
  * heartbeat. Violations are counted by the server; this hook only reports
  * them and reflects the server's count back.
  */
-export function useExamProctor({ attemptId, enabled, initialViolations, onAutoSubmitted }: Options) {
+export function useExamProctor({ attemptId, enabled, initialViolations, onAutoSubmitted, useCamera = true }: Options) {
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [camera, setCamera] = useState<CameraState>('pending');
     const [violationCount, setViolationCount] = useState(initialViolations);
@@ -55,6 +61,9 @@ export function useExamProctor({ attemptId, enabled, initialViolations, onAutoSu
     // the browser's own camera-permission prompt (which takes focus) never
     // counts against the student.
     const armedAtRef = useRef(Number.POSITIVE_INFINITY);
+    // While paused (the student was sent back to Zoom to rejoin the exam
+    // room), leaving the page is expected and not counted.
+    const pausedRef = useRef(false);
     const onAutoSubmittedRef = useRef(onAutoSubmitted);
     onAutoSubmittedRef.current = onAutoSubmitted;
 
@@ -101,7 +110,7 @@ export function useExamProctor({ attemptId, enabled, initialViolations, onAutoSu
     }, [attemptId]);
 
     const reportViolation = useCallback(async (type: ViolationType, detail?: string) => {
-        if (!activeRef.current) return;
+        if (!activeRef.current || pausedRef.current) return;
         const now = Date.now();
         if (now < armedAtRef.current) return;
         if (now - lastViolationAtRef.current < VIOLATION_DEDUPE_MS) return;
@@ -159,6 +168,10 @@ export function useExamProctor({ attemptId, enabled, initialViolations, onAutoSu
     // Start the camera and take the opening photo.
     useEffect(() => {
         if (!enabled || !attemptId) return;
+        if (!useCamera) {
+            armedAtRef.current = Date.now() + 3000;
+            return;
+        }
         let cancelled = false;
         (async () => {
             const ok = await startCamera();
@@ -167,7 +180,7 @@ export function useExamProctor({ attemptId, enabled, initialViolations, onAutoSu
         })();
         return () => { cancelled = true; };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [enabled, attemptId]);
+    }, [enabled, attemptId, useCamera]);
 
     // Record a reload of the exam page (it re-opens outside full screen).
     useEffect(() => {
@@ -249,13 +262,13 @@ export function useExamProctor({ attemptId, enabled, initialViolations, onAutoSu
     useEffect(() => {
         if (!enabled || !attemptId) return;
         const hb = setInterval(() => {
-            if (activeRef.current) void post({ kind: 'heartbeat', cameraOk: !!streamRef.current?.active });
+            if (activeRef.current) void post(useCamera ? { kind: 'heartbeat', cameraOk: !!streamRef.current?.active } : { kind: 'heartbeat' });
         }, HEARTBEAT_INTERVAL_MS);
         const snap = setInterval(() => {
-            if (activeRef.current) void captureSnapshot('interval');
+            if (activeRef.current && useCamera) void captureSnapshot('interval');
         }, SNAPSHOT_INTERVAL_MS);
         return () => { clearInterval(hb); clearInterval(snap); };
-    }, [enabled, attemptId, post, captureSnapshot]);
+    }, [enabled, attemptId, post, captureSnapshot, useCamera]);
 
     // Release the camera when leaving the page.
     useEffect(() => () => {
@@ -273,5 +286,12 @@ export function useExamProctor({ attemptId, enabled, initialViolations, onAutoSu
         startCamera,
         stop,
         reportViolation,
+        /** Stop counting violations (student sent to Zoom to rejoin). */
+        pause: () => { pausedRef.current = true; },
+        /** Count violations again, after a short grace for returning to full screen. */
+        resume: () => {
+            pausedRef.current = false;
+            armedAtRef.current = Date.now() + 3000;
+        },
     };
 }

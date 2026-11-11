@@ -33,6 +33,8 @@ interface Row {
     lastSeenAt?: string;
     autoSubmitted: boolean;
     latestSnapshot: { _id: string; takenAt: string } | null;
+    /** Whether Zoom shows this student in the live exam room (null = unknown / no room). */
+    inRoom?: boolean | null;
 }
 
 interface Room {
@@ -201,6 +203,14 @@ export default function LiveProctorPage() {
                                     {state !== 'done' && r.cameraOk === false && (
                                         <span className="absolute bottom-2 right-2 text-[10px] font-black text-white bg-red-600 rounded px-1.5 py-0.5">Camera off</span>
                                     )}
+                                    {state !== 'done' && feed.room && r.inRoom !== undefined && r.inRoom !== null && (
+                                        <span className={cn(
+                                            "absolute bottom-2 right-2 text-[10px] font-black rounded px-1.5 py-0.5",
+                                            r.inRoom ? "bg-emerald-500 text-white" : "bg-red-600 text-white"
+                                        )}>
+                                            {r.inRoom ? 'In Zoom room' : 'Not in Zoom room'}
+                                        </span>
+                                    )}
                                 </div>
                                 <div className="p-4 space-y-1.5">
                                     <p className="font-black text-slate-900 truncate">{r.student?.displayName || 'Unknown student'}</p>
@@ -297,9 +307,6 @@ function ExamRoomCard({ feed, onChanged }: { feed: Feed; onChanged: () => void }
                         <>
                             <Button onClick={openInZoom} disabled={busy !== null} className="bg-[#C8A96A] hover:bg-[#b8995a] text-[#0B1F3A] rounded-xl font-black">
                                 {busy === 'zoom' ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Video className="w-4 h-4 mr-2" />} Open Exam Room in Zoom
-                            </Button>
-                            <Button asChild variant="outline" className="rounded-xl font-bold bg-transparent text-white border-white/30 hover:bg-white/10 hover:text-white">
-                                <Link href={`/live-classes/${room.liveClassId}`} target="_blank">Watch in browser</Link>
                             </Button>
                             {room.recordingUrl && (
                                 <Button asChild variant="outline" className="rounded-xl font-bold bg-transparent text-white border-white/30 hover:bg-white/10 hover:text-white">

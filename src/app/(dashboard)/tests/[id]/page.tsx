@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Clock, ClipboardCheck, CheckCircle2, ShieldAlert, Camera, AlertTriangle } from "lucide-react";
+import { Loader2, Clock, ClipboardCheck, CheckCircle2, ShieldAlert, Camera, AlertTriangle, Video } from "lucide-react";
 import { MAX_VIOLATIONS, isProctored } from "@/lib/proctoring";
 import { enterFullscreen } from "@/components/tests/useExamProctor";
 
@@ -22,7 +22,10 @@ interface Assessment {
     questions: any[];
     totalPoints: number;
     myAttempt: { _id: string; status: string; score: number; maxScore: number; submitReason?: string } | null;
+    proctorLiveClassId?: string;
 }
+
+interface RoomInfo { joinUrl: string; zoomName: string; inRoom: boolean | null }
 
 export default function TestIntroPage() {
     const { id } = useParams<{ id: string }>();
@@ -44,6 +47,30 @@ export default function TestIntroPage() {
     }, [id]);
 
     const proctored = isProctored(assessment);
+    // Exams with a live Zoom exam room: the student joins it with the normal
+    // Zoom link, and Zoom (not the browser) is the camera.
+    const hasRoom = proctored && !!assessment?.proctorLiveClassId;
+    const [room, setRoom] = useState<RoomInfo | null>(null);
+    const [roomChecking, setRoomChecking] = useState(false);
+    const [roomChecked, setRoomChecked] = useState(false);
+
+    const checkRoom = async () => {
+        setRoomChecking(true);
+        try {
+            const res = await apiFetch(`/api/assessments/${id}/exam-room/presence`);
+            const data = await res.json();
+            if (res.ok && data.hasRoom) setRoom({ joinUrl: data.joinUrl, zoomName: data.zoomName, inRoom: data.inRoom });
+        } finally {
+            setRoomChecking(false);
+        }
+    };
+
+    useEffect(() => {
+        if (hasRoom) void checkRoom();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [hasRoom]);
+
+    const ready = hasRoom ? room?.inRoom === true : cameraStatus === 'ok';
 
     const checkCamera = async () => {
         if (!navigator.mediaDevices?.getUserMedia) {
@@ -134,8 +161,14 @@ export default function TestIntroPage() {
                                 <ShieldAlert className="w-5 h-5 text-indigo-600" /> This is a proctored exam
                             </div>
                             <ul className="text-sm text-slate-600 font-medium space-y-2 list-disc pl-5">
-                                <li>You sit the exam in a <strong>live Zoom exam room</strong>: your proctor <strong>watches you live</strong> on camera and the room is recorded. You join automatically, muted. Leaving the room is a warning.</li>
-                                <li>Your <strong>camera stays on</strong> for the whole exam. A photo is also taken every minute and whenever a warning is recorded.</li>
+                                {hasRoom ? (
+                                    <>
+                                        <li>You sit the exam in a <strong>live Zoom exam room</strong>: your proctor <strong>watches you live</strong> on camera and the room is <strong>recorded</strong>. Join it below before you start, with your <strong>camera on</strong>, and keep Zoom open (you may minimise it) until you submit.</li>
+                                        <li>The site checks with Zoom every 30 seconds that you are still in the room. <strong>Leaving the room is a warning</strong> and pauses your exam until you rejoin.</li>
+                                    </>
+                                ) : (
+                                    <li>Your <strong>camera stays on</strong> for the whole exam and takes a photo of you every minute and whenever a warning is recorded.</li>
+                                )}
                                 <li>The exam runs in <strong>full screen</strong>. Leaving full screen, switching tabs, minimising or opening another app or window is a <strong>warning</strong>.</li>
                                 <li>On warning <strong>{MAX_VIOLATIONS}</strong>, your exam is <strong>submitted automatically</strong> with the answers saved so far.</li>
                                 <li>Copy, paste and right-click are disabled and recorded.</li>
@@ -143,6 +176,45 @@ export default function TestIntroPage() {
                                 <li>Sit somewhere quiet and well lit, with your face clearly visible, and close other apps before you start.</li>
                             </ul>
 
+                            {hasRoom ? (
+                            <div className="rounded-2xl border border-slate-200 p-4 space-y-4">
+                                <div className="flex items-start gap-3">
+                                    <span className="w-7 h-7 rounded-full bg-[#0B1F3A] text-white text-sm font-black flex items-center justify-center shrink-0">1</span>
+                                    <div className="space-y-2 min-w-0">
+                                        <p className="text-sm font-bold text-slate-900">Join the Zoom exam room with your camera on</p>
+                                        <p className="text-sm text-slate-600">Zoom opens in a new window or the Zoom app. {room?.zoomName ? <>Join as <strong className="text-slate-900">{room.zoomName}</strong> — keep the code in brackets so we can see it&apos;s you.</> : null} Then come back to this page.</p>
+                                        {room?.joinUrl ? (
+                                            <Button asChild className="rounded-xl font-bold bg-[#0B1F3A] hover:bg-[#13294a]">
+                                                <a href={room.joinUrl} target="_blank" rel="noreferrer"><Video className="w-4 h-4 mr-2" /> Join exam room</a>
+                                            </Button>
+                                        ) : (
+                                            <p className="text-sm text-slate-400 flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> Getting your exam room link…</p>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-3">
+                                    <span className="w-7 h-7 rounded-full bg-[#0B1F3A] text-white text-sm font-black flex items-center justify-center shrink-0">2</span>
+                                    <div className="space-y-2 min-w-0">
+                                        <p className="text-sm font-bold text-slate-900">Confirm you&apos;re in the room</p>
+                                        {room?.inRoom === true ? (
+                                            <p className="text-sm font-bold text-emerald-700 flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4" /> Zoom shows you in the exam room. You can start.</p>
+                                        ) : (
+                                            <>
+                                                {roomChecked && room?.inRoom === false && (
+                                                    <p className="text-sm font-bold text-red-700">Zoom doesn&apos;t show you in the room yet. Join with your camera on, wait a few seconds, then check again.</p>
+                                                )}
+                                                {roomChecked && room?.inRoom === null && (
+                                                    <p className="text-sm font-bold text-amber-700">We couldn&apos;t reach Zoom to check. Try again in a moment.</p>
+                                                )}
+                                                <Button onClick={async () => { await checkRoom(); setRoomChecked(true); }} disabled={roomChecking} variant="outline" className="rounded-xl font-bold">
+                                                    {roomChecking ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <CheckCircle2 className="w-4 h-4 mr-2" />} I&apos;ve joined — check
+                                                </Button>
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                            ) : (
                             <div className="rounded-2xl border border-slate-200 p-4 flex flex-col sm:flex-row items-center gap-4">
                                 <div className="w-40 h-28 rounded-xl bg-slate-900 overflow-hidden shrink-0 flex items-center justify-center">
                                     <video ref={videoRef} muted playsInline autoPlay className={cameraStatus === 'ok' ? "w-full h-full object-cover -scale-x-100" : "hidden"} />
@@ -166,6 +238,7 @@ export default function TestIntroPage() {
                                     )}
                                 </div>
                             </div>
+                            )}
 
                             <label className="flex items-start gap-3 text-sm font-medium text-slate-700 cursor-pointer">
                                 <input type="checkbox" checked={agreed} onChange={e => setAgreed(e.target.checked)} className="mt-0.5 w-4 h-4 accent-indigo-600" />
@@ -193,7 +266,7 @@ export default function TestIntroPage() {
                     ) : attempt && attempt.status === 'in_progress' ? (
                         <Button
                             onClick={continueTest}
-                            disabled={proctored && (cameraStatus !== 'ok' || !agreed)}
+                            disabled={proctored && (!ready || !agreed)}
                             className="w-full h-14 rounded-xl bg-indigo-600 hover:bg-indigo-700 font-black"
                         >
                             Continue {proctored ? 'Exam' : 'Test'}
@@ -201,7 +274,7 @@ export default function TestIntroPage() {
                     ) : isOpen ? (
                         <Button
                             onClick={handleStart}
-                            disabled={starting || (proctored && (cameraStatus !== 'ok' || !agreed))}
+                            disabled={starting || (proctored && (!ready || !agreed))}
                             className="w-full h-14 rounded-xl bg-indigo-600 hover:bg-indigo-700 font-black"
                         >
                             {starting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <ClipboardCheck className="w-4 h-4 mr-2" />}

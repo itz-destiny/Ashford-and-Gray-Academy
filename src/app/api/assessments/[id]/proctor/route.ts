@@ -4,6 +4,7 @@ import Assessment from '@/models/Assessment';
 import Attempt from '@/models/Attempt';
 import ProctorSnapshot from '@/models/ProctorSnapshot';
 import LiveClass from '@/models/LiveClass';
+import { isStudentInRoom, liveParticipantNames, studentRoomCode } from '@/lib/exam-room-presence';
 import User from '@/models/User';
 import { AuthError, requireRole, withAuth } from '@/lib/auth-server';
 import { MAX_VIOLATIONS } from '@/lib/proctoring';
@@ -73,9 +74,19 @@ export const GET = withAuth<RouteParams>(async (_req: NextRequest, { auth, param
 
         const roomDoc: any = assessment.proctorLiveClassId
             ? await LiveClass.findById(assessment.proctorLiveClassId)
-                .select('status startTime durationMinutes zoomMeetingId zoomPasscode recordingUrl recordingPasscode')
+                .select('status startTime durationMinutes zoomMeetingId zoomPasscode zoomAccountKey recordingUrl recordingPasscode')
                 .lean()
             : null;
+
+        // Who Zoom currently shows in the live exam room.
+        if (roomDoc && roomDoc.status !== 'cancelled') {
+            const names = await liveParticipantNames(roomDoc.zoomMeetingId, roomDoc.zoomAccountKey);
+            for (const row of rows as any[]) {
+                const a = attempts.find(x => String(x._id) === row.attemptId);
+                row.inRoom = names === null || !a ? null
+                    : isStudentInRoom(names, row.student?.displayName || '', studentRoomCode(a.userId));
+            }
+        }
         const room = roomDoc && roomDoc.status !== 'cancelled' ? {
             liveClassId: String(roomDoc._id),
             startTime: roomDoc.startTime,
