@@ -3,6 +3,7 @@ import dbConnect from '@/lib/mongodb';
 import Assessment from '@/models/Assessment';
 import Attempt from '@/models/Attempt';
 import ProctorSnapshot from '@/models/ProctorSnapshot';
+import LiveClass from '@/models/LiveClass';
 import User from '@/models/User';
 import { AuthError, requireRole, withAuth } from '@/lib/auth-server';
 import { MAX_VIOLATIONS } from '@/lib/proctoring';
@@ -22,7 +23,7 @@ export const GET = withAuth<RouteParams>(async (_req: NextRequest, { auth, param
         const { id } = await params;
         await dbConnect();
 
-        const assessment = await Assessment.findById(id).select('title type durationMinutes questions createdBy').lean<any>();
+        const assessment = await Assessment.findById(id).select('title type status durationMinutes questions createdBy opensAt closesAt proctorLiveClassId').lean<any>();
         if (!assessment) return NextResponse.json({ error: 'Assessment not found' }, { status: 404 });
         const allowed = auth.role === 'admin' || auth.role === 'course_registrar' || assessment.createdBy === auth.uid;
         if (!allowed) return NextResponse.json({ error: 'You did not create this assessment.' }, { status: 403 });
@@ -70,8 +71,27 @@ export const GET = withAuth<RouteParams>(async (_req: NextRequest, { auth, param
             };
         });
 
+        const roomDoc: any = assessment.proctorLiveClassId
+            ? await LiveClass.findById(assessment.proctorLiveClassId)
+                .select('status startTime durationMinutes zoomMeetingId zoomPasscode recordingUrl recordingPasscode')
+                .lean()
+            : null;
+        const room = roomDoc && roomDoc.status !== 'cancelled' ? {
+            liveClassId: String(roomDoc._id),
+            startTime: roomDoc.startTime,
+            durationMinutes: roomDoc.durationMinutes,
+            meetingId: roomDoc.zoomMeetingId,
+            passcode: roomDoc.zoomPasscode,
+            recordingUrl: roomDoc.recordingUrl || null,
+            recordingPasscode: roomDoc.recordingPasscode || null,
+        } : null;
+
         return NextResponse.json({
-            assessment: { _id: String(assessment._id), title: assessment.title, type: assessment.type, durationMinutes: assessment.durationMinutes },
+            assessment: {
+                _id: String(assessment._id), title: assessment.title, type: assessment.type, status: assessment.status,
+                durationMinutes: assessment.durationMinutes, opensAt: assessment.opensAt, closesAt: assessment.closesAt,
+            },
+            room,
             maxViolations: MAX_VIOLATIONS,
             serverTime: new Date(),
             attempts: rows,

@@ -5,6 +5,7 @@ import Assessment from '@/models/Assessment';
 import Enrollment from '@/models/Enrollment';
 import { AuthError, requireRole, withAuth, type AuthContext } from '@/lib/auth-server';
 import { rateLimit } from '@/lib/rate-limit';
+import { examRoomProblem } from '@/lib/exam-room';
 
 const STAFF_ROLES = ['admin', 'instructor', 'course_registrar'] as const;
 
@@ -121,6 +122,11 @@ export const POST = withAuth(async (req: NextRequest, { auth }) => {
                     );
                 }
             }
+        }
+
+        const roomProblem = examRoomProblem({ type: data.type, courseId: data.courseId, opensAt: data.opensAt, closesAt: data.closesAt });
+        if (roomProblem) {
+            return NextResponse.json({ error: roomProblem }, { status: 400 });
         }
 
         await dbConnect();

@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { ProctorPhoto } from "@/components/tests/ProctorPhoto";
 import { INCIDENT_LABELS, OFFLINE_AFTER_MS } from "@/lib/proctoring";
 import { cn } from "@/lib/utils";
-import { ArrowLeft, Loader2, ShieldAlert, Users, Radio, AlertTriangle, CheckCircle2, WifiOff } from "lucide-react";
+import { ArrowLeft, Loader2, ShieldAlert, Users, Radio, AlertTriangle, CheckCircle2, WifiOff, Video, PlayCircle } from "lucide-react";
 
 interface Incident { type: string; at: string; detail?: string }
 
@@ -35,8 +35,19 @@ interface Row {
     latestSnapshot: { _id: string; takenAt: string } | null;
 }
 
+interface Room {
+    liveClassId: string;
+    startTime: string;
+    durationMinutes: number;
+    meetingId: string;
+    passcode?: string;
+    recordingUrl: string | null;
+    recordingPasscode: string | null;
+}
+
 interface Feed {
-    assessment: { _id: string; title: string; type: string; durationMinutes: number };
+    assessment: { _id: string; title: string; type: string; status: string; durationMinutes: number; opensAt: string; closesAt: string };
+    room: Room | null;
     maxViolations: number;
     serverTime: string;
     attempts: Row[];
@@ -121,6 +132,8 @@ export default function LiveProctorPage() {
                     Updates every {POLL_MS / 1000} seconds · {feed.assessment.durationMinutes} min exam · auto-submit at {max} warnings
                 </p>
             </div>
+
+            <ExamRoomCard feed={feed} onChanged={load} />
 
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                 {[
@@ -214,6 +227,96 @@ export default function LiveProctorPage() {
                 </DialogContent>
             </Dialog>
         </div>
+    );
+}
+
+function ExamRoomCard({ feed, onChanged }: { feed: Feed; onChanged: () => void }) {
+    const [busy, setBusy] = useState<'zoom' | 'create' | null>(null);
+    const [err, setErr] = useState<string | null>(null);
+    const room = feed.room;
+    const when = (d: string) => new Date(d).toLocaleString([], { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
+
+    // The Zoom app's gallery view is the way to watch a whole exam at once
+    // (up to 49 students per screen). Open the tab inside the click so the
+    // browser doesn't block it, then point it at a freshly-signed start link.
+    const openInZoom = async () => {
+        if (!room) return;
+        setErr(null);
+        setBusy('zoom');
+        const win = window.open('about:blank', '_blank');
+        try {
+            const res = await apiFetch(`/api/live-classes/${room.liveClassId}/start-url`);
+            const data = await res.json();
+            if (!res.ok || !data.startUrl) throw new Error(data.error || 'Could not open the exam room.');
+            if (win) win.location.href = data.startUrl; else window.location.href = data.startUrl;
+        } catch (e: any) {
+            win?.close();
+            setErr(e.message);
+        } finally {
+            setBusy(null);
+        }
+    };
+
+    const createRoom = async () => {
+        setErr(null);
+        setBusy('create');
+        try {
+            const res = await apiFetch(`/api/assessments/${feed.assessment._id}/exam-room`, { method: 'POST' });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Could not create the exam room.');
+            onChanged();
+        } catch (e: any) {
+            setErr(e.message);
+        } finally {
+            setBusy(null);
+        }
+    };
+
+    return (
+        <Card className="border-none shadow-lg shadow-slate-100 rounded-2xl bg-[#0B1F3A] text-white">
+            <CardContent className="p-5 flex flex-col lg:flex-row lg:items-center gap-4 justify-between">
+                <div className="space-y-1 min-w-0">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-[#C8A96A]">Live exam room</p>
+                    {room ? (
+                        <>
+                            <p className="font-bold">Watch every student live on camera in Zoom&apos;s gallery view.</p>
+                            <p className="text-sm text-white/70">
+                                Sitting: {when(feed.assessment.opensAt)} · students can start until {new Date(feed.assessment.closesAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} · Meeting ID {room.meetingId}
+                            </p>
+                            <p className="text-xs text-white/60">Tip: in Zoom choose <strong>View → Gallery</strong> to see up to 49 students at once. The room records automatically.</p>
+                        </>
+                    ) : feed.assessment.status === 'published' ? (
+                        <p className="font-bold">This exam has no live room yet.</p>
+                    ) : (
+                        <p className="font-bold">The live exam room is created when you publish the exam.</p>
+                    )}
+                    {err && <p className="text-sm font-bold text-red-300">{err}</p>}
+                </div>
+                <div className="flex flex-wrap gap-2 shrink-0">
+                    {room ? (
+                        <>
+                            <Button onClick={openInZoom} disabled={busy !== null} className="bg-[#C8A96A] hover:bg-[#b8995a] text-[#0B1F3A] rounded-xl font-black">
+                                {busy === 'zoom' ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Video className="w-4 h-4 mr-2" />} Open Exam Room in Zoom
+                            </Button>
+                            <Button asChild variant="outline" className="rounded-xl font-bold bg-transparent text-white border-white/30 hover:bg-white/10 hover:text-white">
+                                <Link href={`/live-classes/${room.liveClassId}`} target="_blank">Watch in browser</Link>
+                            </Button>
+                            {room.recordingUrl && (
+                                <Button asChild variant="outline" className="rounded-xl font-bold bg-transparent text-white border-white/30 hover:bg-white/10 hover:text-white">
+                                    <a href={room.recordingUrl} target="_blank" rel="noreferrer">
+                                        <PlayCircle className="w-4 h-4 mr-2" /> Recording{room.recordingPasscode ? ` (passcode ${room.recordingPasscode})` : ''}
+                                    </a>
+                                </Button>
+                            )}
+                        </>
+                    ) : feed.assessment.status === 'published' && (
+                        <Button onClick={createRoom} disabled={busy !== null} className="bg-[#C8A96A] hover:bg-[#b8995a] text-[#0B1F3A] rounded-xl font-black">
+                            {busy === 'create' ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Video className="w-4 h-4 mr-2" />} Create exam room
+                        </Button>
+                    )}
+                </div>
+            </CardContent>
+        </Card>
     );
 }
 

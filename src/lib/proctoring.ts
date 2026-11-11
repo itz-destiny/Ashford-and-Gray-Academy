@@ -18,7 +18,7 @@ export const HEARTBEAT_INTERVAL_MS = 15_000;
 export const OFFLINE_AFTER_MS = 45_000;
 export const MAX_SNAPSHOT_BYTES = 200 * 1024;
 
-export const VIOLATION_TYPES = ['fullscreen_exit', 'tab_hidden', 'window_blur', 'camera_off'] as const;
+export const VIOLATION_TYPES = ['fullscreen_exit', 'tab_hidden', 'window_blur', 'camera_off', 'left_exam_room'] as const;
 export type ViolationType = (typeof VIOLATION_TYPES)[number];
 
 export const EVENT_TYPES = ['copy', 'cut', 'paste', 'right_click', 'blocked_shortcut', 'page_reload'] as const;
@@ -29,6 +29,7 @@ export const INCIDENT_LABELS: Record<string, string> = {
     tab_hidden: 'Switched tab or minimised',
     window_blur: 'Switched to another window',
     camera_off: 'Camera turned off',
+    left_exam_room: 'Left the live exam room',
     copy: 'Tried to copy',
     cut: 'Tried to cut',
     paste: 'Tried to paste',

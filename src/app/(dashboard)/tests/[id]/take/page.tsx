@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, ShieldAlert, Camera, Maximize, AlertTriangle } from "lucide-react";
 import { CountdownTimer } from "@/components/tests/CountdownTimer";
 import { useExamProctor, enterFullscreen, fullscreenSupported } from "@/components/tests/useExamProctor";
+import { ExamRoomPanel } from "@/components/tests/ExamRoomPanel";
 import { INCIDENT_LABELS, isProctored } from "@/lib/proctoring";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +26,7 @@ interface Assessment {
     _id: string;
     title: string;
     type: 'test' | 'exam';
+    proctorLiveClassId?: string;
     durationMinutes: number;
     questions: Question[];
     myAttempt: {
@@ -222,7 +224,17 @@ export default function TakeTestPage() {
                 </Card>
             ))}
 
-            {proctored && (
+            {proctored && assessment.proctorLiveClassId ? (
+                <>
+                    {/* Kept rendered (off-screen, not display:none) so photo snapshots keep getting frames. */}
+                    <video ref={proctor.videoRef} muted playsInline autoPlay aria-hidden className="fixed -left-[9999px] top-0 w-40 h-32 opacity-0 pointer-events-none" />
+                    <ExamRoomPanel
+                        liveClassId={assessment.proctorLiveClassId}
+                        disabled={submitting}
+                        onLeft={() => void proctor.reportViolation('left_exam_room')}
+                    />
+                </>
+            ) : proctored && (
                 <div className="fixed bottom-20 left-4 md:left-[19rem] z-20 rounded-xl overflow-hidden shadow-lg border-2 border-white bg-slate-900 w-32 h-24">
                     <video ref={proctor.videoRef} muted playsInline autoPlay className="w-full h-full object-cover -scale-x-100" />
                     <span className="absolute top-1.5 left-1.5 flex items-center gap-1 text-[9px] font-black text-white bg-black/50 rounded px-1.5 py-0.5">

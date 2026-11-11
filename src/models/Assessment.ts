@@ -27,6 +27,9 @@ export interface IAssessment extends Document {
     closesAt: Date;
     status: 'draft' | 'published';
     totalPoints: number;
+    // Exams only: the LiveClass (Zoom meeting) used as the live exam room
+    // for the fixed sitting — see lib/exam-room.ts.
+    proctorLiveClassId?: string;
 }
 
 const QuestionOptionSchema = new Schema<IQuestionOption>({
@@ -55,6 +58,7 @@ const AssessmentSchema: Schema = new Schema({
     closesAt: { type: Date, required: true },
     status: { type: String, enum: ['draft', 'published'], default: 'draft', index: true },
     totalPoints: { type: Number, default: 0 },
+    proctorLiveClassId: { type: String },
 }, { timestamps: true });
 
 AssessmentSchema.pre('save', function (next) {

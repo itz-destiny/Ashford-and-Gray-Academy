@@ -6,6 +6,7 @@ import Enrollment from '@/models/Enrollment';
 import User from '@/models/User';
 import { AuthError, requireRole, withAuth, type AuthContext } from '@/lib/auth-server';
 import { isProctored } from '@/lib/proctoring';
+import { ensureExamRoom } from '@/lib/exam-room';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -54,6 +55,13 @@ export const POST = withAuth<RouteParams>(async (_req: NextRequest, { auth, para
         const existing = await Attempt.findOne({ assessmentId: id, userId: auth.uid }).lean();
         if (existing) {
             return NextResponse.json({ error: 'You have already attempted this assessment.' }, { status: 409 });
+        }
+
+        // Fallback: an exam published before its room could be made gets one now.
+        if (isProctored(assessment) && !assessment.proctorLiveClassId) {
+            const doc = await Assessment.findById(id);
+            const room = doc ? await ensureExamRoom(doc).catch((e: any) => ({ ok: false, reason: e?.message })) : null;
+            if (room && !room.ok) console.warn('exam room unavailable at attempt start:', (room as any).reason);
         }
 
         const attempt = await Attempt.create({

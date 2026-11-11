@@ -5,6 +5,8 @@ import Assessment from '@/models/Assessment';
 import Attempt from '@/models/Attempt';
 import Enrollment from '@/models/Enrollment';
 import { AuthError, requireRole, withAuth, type AuthContext } from '@/lib/auth-server';
+import { cancelExamRoom, ensureExamRoom, examRoomProblem } from '@/lib/exam-room';
+import { isProctored } from '@/lib/proctoring';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -164,6 +166,14 @@ export const PATCH = withAuth<RouteParams>(async (req: NextRequest, { auth, para
             }
             assessment.questions = data.questions as any;
         }
+        const before = {
+            type: assessment.type,
+            status: assessment.status,
+            opensAt: assessment.opensAt?.getTime(),
+            closesAt: assessment.closesAt?.getTime(),
+            durationMinutes: assessment.durationMinutes,
+            courseId: String(assessment.courseId || ''),
+        };
         if (data.title !== undefined) assessment.title = data.title;
         if (data.description !== undefined) assessment.description = data.description;
         if (data.type !== undefined) assessment.type = data.type;
@@ -173,8 +183,30 @@ export const PATCH = withAuth<RouteParams>(async (req: NextRequest, { auth, para
         if (data.closesAt !== undefined) assessment.closesAt = new Date(data.closesAt);
         if (data.status !== undefined) assessment.status = data.status;
 
+        const roomProblem = examRoomProblem(assessment);
+        if (roomProblem) {
+            return NextResponse.json({ error: roomProblem }, { status: 400 });
+        }
+
         await assessment.save();
-        return NextResponse.json(assessment);
+
+        // Keep the live exam room in step with the exam: created on publish,
+        // rebuilt when the sitting time/course changes, removed when it's no
+        // longer a published exam.
+        let examRoom: { ok: boolean; reason?: string } | null = null;
+        if (isProctored(assessment) && assessment.status === 'published') {
+            const timesChanged = before.opensAt !== assessment.opensAt.getTime()
+                || before.closesAt !== assessment.closesAt.getTime()
+                || before.durationMinutes !== assessment.durationMinutes
+                || before.courseId !== String(assessment.courseId || '');
+            examRoom = await ensureExamRoom(assessment, { recreate: !!assessment.proctorLiveClassId && timesChanged });
+        } else if (assessment.proctorLiveClassId) {
+            await cancelExamRoom(assessment);
+            assessment.proctorLiveClassId = undefined;
+            await assessment.save();
+        }
+
+        return NextResponse.json({ ...assessment.toObject(), examRoom });
     } catch (err) {
         return handleError(err);
     }
@@ -197,6 +229,7 @@ export const DELETE = withAuth<RouteParams>(async (_req: NextRequest, { auth, pa
             return NextResponse.json({ error: 'You did not create this assessment.' }, { status: 403 });
         }
 
+        await cancelExamRoom(assessment);
         await Attempt.deleteMany({ assessmentId: id });
         await Assessment.findByIdAndDelete(id);
         return NextResponse.json({ message: 'Assessment deleted successfully' });

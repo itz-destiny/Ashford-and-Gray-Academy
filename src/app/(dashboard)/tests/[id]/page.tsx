@@ -134,7 +134,8 @@ export default function TestIntroPage() {
                                 <ShieldAlert className="w-5 h-5 text-indigo-600" /> This is a proctored exam
                             </div>
                             <ul className="text-sm text-slate-600 font-medium space-y-2 list-disc pl-5">
-                                <li>Your <strong>camera stays on</strong> for the whole exam and takes a photo of you every minute and whenever a warning is recorded.</li>
+                                <li>You sit the exam in a <strong>live Zoom exam room</strong>: your proctor <strong>watches you live</strong> on camera and the room is recorded. You join automatically, muted. Leaving the room is a warning.</li>
+                                <li>Your <strong>camera stays on</strong> for the whole exam. A photo is also taken every minute and whenever a warning is recorded.</li>
                                 <li>The exam runs in <strong>full screen</strong>. Leaving full screen, switching tabs, minimising or opening another app or window is a <strong>warning</strong>.</li>
                                 <li>On warning <strong>{MAX_VIOLATIONS}</strong>, your exam is <strong>submitted automatically</strong> with the answers saved so far.</li>
                                 <li>Copy, paste and right-click are disabled and recorded.</li>

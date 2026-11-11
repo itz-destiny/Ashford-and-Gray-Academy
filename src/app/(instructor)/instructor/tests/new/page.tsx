@@ -63,6 +63,10 @@ export default function NewTestPage() {
     const [durationMinutes, setDurationMinutes] = useState(30);
     const [opensAt, setOpensAt] = useState(toLocalInputValue(new Date()));
     const [closesAt, setClosesAt] = useState(toLocalInputValue(new Date(Date.now() + 7 * 24 * 3600 * 1000)));
+    // Exams are sat at a fixed time: students may start up to this many
+    // minutes after the start, and the live exam room covers that sitting.
+    const [lateStartMinutes, setLateStartMinutes] = useState(15);
+    const isExam = type === 'exam';
     const [questions, setQuestions] = useState<QuestionDraft[]>([newQuestion()]);
 
     useEffect(() => {
@@ -99,6 +103,8 @@ export default function NewTestPage() {
 
     const validate = (): string | null => {
         if (!title.trim()) return 'Give the test a title.';
+        if (isExam && courseId === 'cohort') return 'An exam must be for one course, so its students can join the live exam room.';
+        if (isExam && (lateStartMinutes < 0 || lateStartMinutes > 180)) return 'Late start must be between 0 and 180 minutes.';
         if (questions.length === 0) return 'Add at least one question.';
         for (const q of questions) {
             if (!q.text.trim()) return 'Every question needs its text filled in.';
@@ -126,7 +132,9 @@ export default function NewTestPage() {
                 courseId: courseId === 'cohort' ? null : courseId,
                 durationMinutes,
                 opensAt: new Date(opensAt).toISOString(),
-                closesAt: new Date(closesAt).toISOString(),
+                closesAt: isExam
+                    ? new Date(new Date(opensAt).getTime() + lateStartMinutes * 60_000).toISOString()
+                    : new Date(closesAt).toISOString(),
                 questions: questions.map((q, i) => ({
                     type: q.type,
                     text: q.text,
@@ -148,6 +156,10 @@ export default function NewTestPage() {
                 const pubRes = await apiFetch(`/api/assessments/${created._id}`, { method: 'PATCH', body: JSON.stringify({ status: 'published' }) });
                 if (pubRes.ok) {
                     await logAudit({ action: AUDIT_ACTIONS.ASSESSMENT_PUBLISHED, resource: AUDIT_RESOURCES.ASSESSMENT, resourceId: created._id, metadata: { title } });
+                    const pub = await pubRes.json().catch(() => ({}));
+                    if (pub?.examRoom && !pub.examRoom.ok) {
+                        toast({ variant: "destructive", title: "Exam published, but its live room couldn't be created", description: `${pub.examRoom.reason} You can retry from the exam's Live Proctoring page.` });
+                    }
                 }
             }
 
@@ -177,7 +189,7 @@ export default function NewTestPage() {
                         </div>
                         <div className="space-y-2">
                             <Label>Type</Label>
-                            <Select value={type} onValueChange={(v: any) => setType(v)}>
+                            <Select value={type} onValueChange={(v: any) => { setType(v); if (v === 'exam' && courseId === 'cohort' && courses[0]) setCourseId(courses[0].id); }}>
                                 <SelectTrigger className="h-11 rounded-xl"><SelectValue /></SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="test">Test</SelectItem>
@@ -196,7 +208,7 @@ export default function NewTestPage() {
                             <Select value={courseId} onValueChange={setCourseId}>
                                 <SelectTrigger className="h-11 rounded-xl"><SelectValue /></SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="cohort">Whole Cohort (all students)</SelectItem>
+                                    {!isExam && <SelectItem value="cohort">Whole Cohort (all students)</SelectItem>}
                                     {courses.map(c => <SelectItem key={c.id} value={c.id}>{c.title}</SelectItem>)}
                                 </SelectContent>
                             </Select>
@@ -206,16 +218,35 @@ export default function NewTestPage() {
                             <Input type="number" min={1} value={durationMinutes} onChange={e => setDurationMinutes(Number(e.target.value))} className="h-11 rounded-xl" />
                         </div>
                     </div>
-                    <div className="grid md:grid-cols-2 gap-6">
-                        <div className="space-y-2">
-                            <Label>Opens</Label>
-                            <Input type="datetime-local" value={opensAt} onChange={e => setOpensAt(e.target.value)} className="h-11 rounded-xl" />
+                    {isExam ? (
+                        <>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <Label>Exam starts at</Label>
+                                    <Input type="datetime-local" value={opensAt} onChange={e => setOpensAt(e.target.value)} className="h-11 rounded-xl" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>Students can start up to (minutes late)</Label>
+                                    <Input type="number" min={0} max={180} value={lateStartMinutes} onChange={e => setLateStartMinutes(Number(e.target.value))} className="h-11 rounded-xl" />
+                                </div>
+                            </div>
+                            <p className="text-sm text-slate-500 bg-indigo-50 border border-indigo-100 rounded-xl p-3">
+                                <strong className="text-slate-700">Proctored exam.</strong> Everyone sits it at the same time. When you publish, a live Zoom exam room is created for this sitting:
+                                students join it automatically with their camera on, and you watch them live from the exam&apos;s <strong>Live Proctoring</strong> page. The room is recorded.
+                            </p>
+                        </>
+                    ) : (
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <Label>Opens</Label>
+                                <Input type="datetime-local" value={opensAt} onChange={e => setOpensAt(e.target.value)} className="h-11 rounded-xl" />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Closes</Label>
+                                <Input type="datetime-local" value={closesAt} onChange={e => setClosesAt(e.target.value)} className="h-11 rounded-xl" />
+                            </div>
                         </div>
-                        <div className="space-y-2">
-                            <Label>Closes</Label>
-                            <Input type="datetime-local" value={closesAt} onChange={e => setClosesAt(e.target.value)} className="h-11 rounded-xl" />
-                        </div>
-                    </div>
+                    )}
                 </CardContent>
             </Card>
 

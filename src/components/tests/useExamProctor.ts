@@ -192,7 +192,12 @@ export function useExamProctor({ attemptId, enabled, initialViolations, onAutoSu
             if (document.visibilityState === 'hidden') void reportViolation('tab_hidden');
         };
         const onBlur = () => {
-            if (document.visibilityState === 'visible') void reportViolation('window_blur');
+            // Clicking into the embedded Zoom exam room moves focus into its
+            // iframe, which fires a window blur too — that isn't leaving.
+            setTimeout(() => {
+                if (document.activeElement?.tagName === 'IFRAME') return;
+                if (document.visibilityState === 'visible') void reportViolation('window_blur');
+            }, 0);
         };
         const block = (type: EventType) => (e: Event) => {
             e.preventDefault();
@@ -267,5 +272,6 @@ export function useExamProctor({ attemptId, enabled, initialViolations, onAutoSu
         dismissWarning: () => setWarning(null),
         startCamera,
         stop,
+        reportViolation,
     };
 }

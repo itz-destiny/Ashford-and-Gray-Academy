@@ -98,12 +98,17 @@ export default function TestDetailPage() {
         setPublishing(true);
         try {
             const res = await apiFetch(`/api/assessments/${id}`, { method: 'PATCH', body: JSON.stringify({ status: 'published' }) });
-            if (!res.ok) throw new Error();
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.error);
             await logAudit({ action: AUDIT_ACTIONS.ASSESSMENT_PUBLISHED, resource: AUDIT_RESOURCES.ASSESSMENT, resourceId: id, metadata: { title: assessment.title } });
-            toast({ title: "Test published", description: "Eligible students can now see and take it." });
+            if (data.examRoom && !data.examRoom.ok) {
+                toast({ variant: "destructive", title: "Exam published, but its live room couldn't be created", description: `${data.examRoom.reason} You can retry from Live Proctoring.` });
+            } else {
+                toast({ title: "Test published", description: "Eligible students can now see and take it." });
+            }
             fetchAll();
-        } catch {
-            toast({ variant: "destructive", title: "Failed to publish" });
+        } catch (err: any) {
+            toast({ variant: "destructive", title: "Failed to publish", description: err?.message || undefined });
         } finally {
             setPublishing(false);
         }
