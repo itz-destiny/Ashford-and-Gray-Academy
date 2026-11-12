@@ -34,6 +34,8 @@ export interface IAssessment extends Document {
     slug?: string;
     /** Only the admin may monitor this exam (Live Proctoring, photos, exam room). */
     adminOnly?: boolean;
+    /** Exam link accepts ANY email: a student account is made for new emails (pilot/test runs). */
+    openToAnyEmail?: boolean;
 }
 
 const QuestionOptionSchema = new Schema<IQuestionOption>({
@@ -65,6 +67,7 @@ const AssessmentSchema: Schema = new Schema({
     proctorLiveClassId: { type: String },
     slug: { type: String, lowercase: true, trim: true, unique: true, sparse: true },
     adminOnly: { type: Boolean, default: false },
+    openToAnyEmail: { type: Boolean, default: false },
 }, { timestamps: true });
 
 AssessmentSchema.pre('save', function (next) {

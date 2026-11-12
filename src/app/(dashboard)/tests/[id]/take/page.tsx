@@ -305,7 +305,7 @@ export default function TakeTestPage() {
                 {assessment.questions.map((q, idx) => {
                     const done = (() => { const a = answers[q._id]; return !!a && (a.selectedOptionIndex !== undefined || (a.textAnswer || '').trim() !== ''); })();
                     return (
-                        <Card key={q._id} className={cn("rounded-none border-0 border-l-4 shadow-sm bg-white", done ? "border-l-[#C8A96A]" : "border-l-[#0B1F3A]/15")}>
+                        <Card key={q._id} id={`q-${q._id}`} className={cn("rounded-none border-0 border-l-4 shadow-sm bg-white scroll-mt-40", done ? "border-l-[#C8A96A]" : "border-l-[#0B1F3A]/15")}>
                             <CardContent className="p-5 sm:p-6 space-y-4">
                                 <div className="flex items-start justify-between gap-4">
                                     <div className="flex items-start gap-3 min-w-0">
@@ -376,14 +376,23 @@ export default function TakeTestPage() {
             <div className={cn("fixed bottom-0 left-0 right-0 z-20 bg-white border-t-2 border-[#C8A96A] px-4 py-3 flex items-center justify-between gap-4", !standalone && "md:left-72")}>
                 <p className="text-xs text-slate-600 min-w-0">
                     {answeredCount < totalQ
-                        ? <><strong className="text-[#0B1F3A]">{totalQ - answeredCount}</strong> unanswered</>
+                        ? <><strong className="text-[#0B1F3A]">{totalQ - answeredCount}</strong> unanswered · answer all to submit</>
                         : <span className="text-[#1F7A5A] font-bold">All questions answered</span>}
                     {offline && <span className="ml-2 inline-flex items-center gap-1 text-amber-700 font-bold"><WifiOff className="w-3 h-3" /> Offline</span>}
                 </p>
                 <Button
-                    onClick={() => void handleSubmit('student')}
+                    onClick={() => {
+                        if (answeredCount < totalQ) {
+                            toast({ variant: "destructive", title: "Answer every question first", description: `${totalQ - answeredCount} question${totalQ - answeredCount === 1 ? '' : 's'} still unanswered.` });
+                            const firstOpen = assessment.questions.find(q => { const a = answers[q._id]; return !a || (a.selectedOptionIndex === undefined && !(a.textAnswer || '').trim()); });
+                            if (firstOpen) document.getElementById(`q-${firstOpen._id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            return;
+                        }
+                        void handleSubmit('student');
+                    }}
                     disabled={submitting}
-                    className="h-12 px-6 sm:px-8 rounded-none bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black text-xs uppercase tracking-widest shrink-0"
+                    aria-disabled={answeredCount < totalQ}
+                    className={cn("h-12 px-6 sm:px-8 rounded-none text-white font-black text-xs uppercase tracking-widest shrink-0", answeredCount < totalQ ? "bg-slate-400 hover:bg-slate-400 cursor-not-allowed" : "bg-[#0B1F3A] hover:bg-[#1F7A5A]")}
                 >
                     {submitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null} Submit {proctored ? 'Exam' : 'Test'}
                 </Button>

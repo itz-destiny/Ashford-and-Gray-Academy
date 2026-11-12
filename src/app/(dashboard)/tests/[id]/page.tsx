@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter, usePathname } from "next/navigation";
 import { examBase } from "@/lib/exam-link";
+import { ExamResult } from "@/components/tests/ExamResult";
 import { apiFetch } from "@/lib/api-client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -155,6 +156,12 @@ export default function TestIntroPage() {
     const now = Date.now();
     const isOpen = now >= new Date(assessment.opensAt).getTime() && now <= new Date(assessment.closesAt).getTime();
     const attempt = assessment.myAttempt;
+
+    // Exam link: after submitting, show the score reveal.
+    if (standalone && attempt && attempt.status !== 'in_progress') {
+        const pendingMarking = assessment.questions.some((q: any) => q.type === 'short_answer') && attempt.status !== 'graded';
+        return <ExamResult title={assessment.title} score={attempt.score} maxScore={attempt.maxScore} submitReason={attempt.submitReason as any} pendingMarking={pendingMarking} />;
+    }
 
     // Exam link: straight into the exam once it's open (no instructions page).
     if (standalone && isOpen && (!attempt || attempt.status === 'in_progress')) {
