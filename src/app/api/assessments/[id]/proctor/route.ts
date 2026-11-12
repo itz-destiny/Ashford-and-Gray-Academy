@@ -66,6 +66,7 @@ export const GET = withAuth<RouteParams>(async (_req: NextRequest, { auth, param
                 events: p.events || [],
                 snapshotCount: p.snapshotCount || 0,
                 cameraOk: p.cameraOk,
+                device: p.device ?? null,
                 lastSeenAt: p.lastSeenAt,
                 autoSubmitted: !!p.autoSubmitted,
                 latestSnapshot: snap ? { _id: String(snap.snapshotId), takenAt: snap.takenAt } : null,

@@ -18,7 +18,7 @@ function handleError(err: unknown): Response {
 }
 
 const bodySchema = z.discriminatedUnion('kind', [
-    z.object({ kind: z.literal('heartbeat'), cameraOk: z.boolean().optional() }),
+    z.object({ kind: z.literal('heartbeat'), cameraOk: z.boolean().optional(), device: z.enum(['phone', 'computer']).optional() }),
     z.object({ kind: z.literal('violation'), type: z.enum(VIOLATION_TYPES), detail: z.string().max(200).optional() }),
     z.object({ kind: z.literal('event'), type: z.enum(EVENT_TYPES), detail: z.string().max(200).optional() }),
 ]);
@@ -66,6 +66,7 @@ export const POST = withAuth<RouteParams>(async (req: NextRequest, { auth, param
         if (body.kind === 'heartbeat') {
             const set: Record<string, unknown> = { 'proctoring.lastSeenAt': now };
             if (body.cameraOk !== undefined) set['proctoring.cameraOk'] = body.cameraOk;
+            if (body.device) set['proctoring.device'] = body.device;
             await Attempt.updateOne({ _id: id }, { $set: set });
             return NextResponse.json(stateOf(attempt));
         }

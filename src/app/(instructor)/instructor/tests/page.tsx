@@ -1,7 +1,9 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import React, { useState, useEffect } from 'react';
 import Link from "next/link";
+import { staffTestsBase } from "@/lib/exam-link";
 import { apiFetch } from "@/lib/api-client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,6 +23,7 @@ interface Assessment {
 }
 
 export default function InstructorTestsPage() {
+    const testsBase = staffTestsBase(usePathname());
     const [assessments, setAssessments] = useState<Assessment[]>([]);
     const [loading, setLoading] = useState(true);
     const { toast } = useToast();
@@ -52,7 +55,7 @@ export default function InstructorTestsPage() {
                     <p className="text-slate-500 font-medium">Author tests, assign them to a course or the whole cohort, and grade results.</p>
                 </div>
                 <Button asChild className="bg-indigo-600 hover:bg-indigo-700 text-white font-black h-11 px-6 rounded-xl shadow-lg shadow-indigo-100">
-                    <Link href="/instructor/tests/new"><Plus className="w-4 h-4 mr-2" /> Create Test</Link>
+                    <Link href={`${testsBase}/new`}><Plus className="w-4 h-4 mr-2" /> Create Test</Link>
                 </Button>
             </div>
 
@@ -69,7 +72,7 @@ export default function InstructorTestsPage() {
             ) : (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {assessments.map(a => (
-                        <Link key={a._id} href={`/instructor/tests/${a._id}`}>
+                        <Link key={a._id} href={`${testsBase}/${a._id}`}>
                             <Card className="border-none shadow-lg shadow-slate-100 rounded-2xl hover:shadow-xl transition-shadow h-full">
                                 <CardContent className="p-6 space-y-4">
                                     <div className="flex items-start justify-between">

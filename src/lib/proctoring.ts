@@ -13,6 +13,8 @@ export const MAX_VIOLATIONS = 3;
 export const VIOLATION_DEDUPE_MS = 2000;
 
 export const SNAPSHOT_INTERVAL_MS = 60_000;
+/** Phones have no Zoom room watching them, so the phone camera photographs the student more often. */
+export const PHONE_SNAPSHOT_INTERVAL_MS = 20_000;
 export const HEARTBEAT_INTERVAL_MS = 15_000;
 /** A student with no heartbeat for this long shows as offline on the live proctor view. */
 export const OFFLINE_AFTER_MS = 45_000;

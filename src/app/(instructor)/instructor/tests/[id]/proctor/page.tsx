@@ -2,7 +2,8 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
+import { staffTestsBase } from "@/lib/exam-link";
 import { apiFetch } from "@/lib/api-client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -35,6 +36,8 @@ interface Row {
     latestSnapshot: { _id: string; takenAt: string } | null;
     /** Whether Zoom shows this student in the live exam room (null = unknown / no room). */
     inRoom?: boolean | null;
+    /** Taking the exam on a phone — proctored by the phone camera, not Zoom. */
+    device?: 'phone' | 'computer' | null;
 }
 
 interface Room {
@@ -66,6 +69,7 @@ function liveState(row: Row, now: number): 'live' | 'offline' | 'done' {
 }
 
 export default function LiveProctorPage() {
+    const testsBase = staffTestsBase(usePathname());
     const { id } = useParams<{ id: string }>();
     const [feed, setFeed] = useState<Feed | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -123,7 +127,7 @@ export default function LiveProctorPage() {
     return (
         <div className="space-y-6 p-6 md:p-10 max-w-7xl mx-auto animate-in fade-in duration-700">
             <div className="space-y-2">
-                <Link href={`/instructor/tests/${id}`} className="text-sm font-bold text-slate-500 hover:text-slate-800 inline-flex items-center gap-1.5">
+                <Link href={`${testsBase}/${id}`} className="text-sm font-bold text-slate-500 hover:text-slate-800 inline-flex items-center gap-1.5">
                     <ArrowLeft className="w-4 h-4" /> Back to results
                 </Link>
                 <div className="flex flex-wrap items-center gap-3">
@@ -213,7 +217,10 @@ export default function LiveProctorPage() {
                                     )}
                                 </div>
                                 <div className="p-4 space-y-1.5">
-                                    <p className="font-black text-slate-900 truncate">{r.student?.displayName || 'Unknown student'}</p>
+                                    <p className="font-black text-slate-900 truncate flex items-center gap-1.5">
+                                        {r.student?.displayName || 'Unknown student'}
+                                        {r.device === 'phone' && <span className="shrink-0 text-[10px] font-black text-indigo-700 bg-indigo-50 rounded px-1.5 py-0.5">PHONE</span>}
+                                    </p>
                                     <p className="text-xs text-slate-400 truncate">{r.student?.email}</p>
                                     <div className="flex items-center justify-between text-xs font-bold text-slate-500 pt-1">
                                         <span>{r.answered}/{r.totalQuestions} answered</span>
@@ -290,6 +297,7 @@ function ExamRoomCard({ feed, onChanged }: { feed: Feed; onChanged: () => void }
                     {room ? (
                         <>
                             <p className="font-bold">Watch every student live on camera in Zoom&apos;s gallery view.</p>
+                            <p className="text-xs text-white/60">Students on a phone join Zoom too, but Zoom pauses their video while they write — their phone camera sends a photo every 20 seconds instead, shown on their card below (marked PHONE).</p>
                             <p className="text-sm text-white/70">
                                 Sitting: {when(feed.assessment.opensAt)} · students can start until {new Date(feed.assessment.closesAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} · Meeting ID {room.meetingId}
                             </p>

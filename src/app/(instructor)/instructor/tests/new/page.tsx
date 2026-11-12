@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from 'next/navigation';
+import { staffTestsBase } from "@/lib/exam-link";
 import { apiFetch } from "@/lib/api-client";
 import { logAudit, AUDIT_ACTIONS, AUDIT_RESOURCES } from "@/lib/audit";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,6 +52,7 @@ function toLocalInputValue(d: Date): string {
 }
 
 export default function NewTestPage() {
+    const testsBase = staffTestsBase(usePathname());
     const router = useRouter();
     const { toast } = useToast();
     const [courses, setCourses] = useState<CourseOption[]>([]);
@@ -164,7 +166,7 @@ export default function NewTestPage() {
             }
 
             toast({ title: publish ? "Test published" : "Draft saved", description: publish ? "Students can now see and take this test." : "You can publish it whenever it's ready." });
-            router.push(`/instructor/tests/${created._id}`);
+            router.push(`${testsBase}/${created._id}`);
         } catch (err: any) {
             toast({ variant: "destructive", title: "Save failed", description: err.message || "Could not save the test." });
         } finally {

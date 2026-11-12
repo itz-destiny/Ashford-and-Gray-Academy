@@ -11,3 +11,12 @@ export function examBase(pathname: string | null | undefined): '/exam' | '/tests
 export function examLinkPath(assessmentId: string): string {
     return `/exam/${assessmentId}`;
 }
+
+/**
+ * The staff test pages (list, create, results, live proctoring) are shared by
+ * the instructor portal and the admin portal; links stay inside whichever
+ * portal the page was opened from.
+ */
+export function staffTestsBase(pathname: string | null | undefined): '/admin/tests' | '/instructor/tests' {
+    return pathname?.startsWith('/admin/') ? '/admin/tests' : '/instructor/tests';
+}

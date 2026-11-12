@@ -6,6 +6,7 @@ import {
     HEARTBEAT_INTERVAL_MS,
     MAX_VIOLATIONS,
     SNAPSHOT_INTERVAL_MS,
+    PHONE_SNAPSHOT_INTERVAL_MS,
     VIOLATION_DEDUPE_MS,
     type EventType,
     type ViolationType,
@@ -25,6 +26,12 @@ interface Options {
      * share one camera between Zoom and the browser.
      */
     useCamera?: boolean;
+    /**
+     * Taking the exam on a phone: the phone camera is the proctor (photos
+     * every 20s), switching apps is the main thing watched, and full screen
+     * isn't required (iPhones don't support it).
+     */
+    phone?: boolean;
 }
 
 export function fullscreenSupported(): boolean {
@@ -47,7 +54,7 @@ export async function enterFullscreen(): Promise<boolean> {
  * heartbeat. Violations are counted by the server; this hook only reports
  * them and reflects the server's count back.
  */
-export function useExamProctor({ attemptId, enabled, initialViolations, onAutoSubmitted, useCamera = true }: Options) {
+export function useExamProctor({ attemptId, enabled, initialViolations, onAutoSubmitted, useCamera = true, phone = false }: Options) {
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [camera, setCamera] = useState<CameraState>('pending');
     const [violationCount, setViolationCount] = useState(initialViolations);
@@ -202,9 +209,20 @@ export function useExamProctor({ attemptId, enabled, initialViolations, onAutoSu
             if (!fs) void reportViolation('fullscreen_exit');
         };
         const onVisibility = () => {
-            if (document.visibilityState === 'hidden') void reportViolation('tab_hidden');
+            if (document.visibilityState === 'hidden') {
+                void reportViolation('tab_hidden');
+                return;
+            }
+            // Phones pause the camera while the browser is in the background.
+            const stream = streamRef.current;
+            if (useCamera && (!stream || !stream.active || stream.getVideoTracks().some(t => t.readyState === 'ended'))) {
+                void startCamera();
+            } else if (videoRef.current?.paused) {
+                void videoRef.current.play().catch(() => {});
+            }
         };
         const onBlur = () => {
+            if (phone) return;
             // Clicking into the embedded Zoom exam room moves focus into its
             // iframe, which fires a window blur too — that isn't leaving.
             setTimeout(() => {
@@ -256,19 +274,23 @@ export function useExamProctor({ attemptId, enabled, initialViolations, onAutoSu
             document.removeEventListener('keydown', onKeyDown);
             window.removeEventListener('beforeunload', onBeforeUnload);
         };
-    }, [enabled, attemptId, reportViolation, reportEvent]);
+    }, [enabled, attemptId, reportViolation, reportEvent, phone, useCamera, startCamera]);
 
     // Heartbeat and periodic photos.
     useEffect(() => {
         if (!enabled || !attemptId) return;
-        const hb = setInterval(() => {
-            if (activeRef.current) void post(useCamera ? { kind: 'heartbeat', cameraOk: !!streamRef.current?.active } : { kind: 'heartbeat' });
-        }, HEARTBEAT_INTERVAL_MS);
+        const beat = () => {
+            if (!activeRef.current) return;
+            const device = phone ? 'phone' : 'computer';
+            void post(useCamera ? { kind: 'heartbeat', cameraOk: !!streamRef.current?.active, device } : { kind: 'heartbeat', device });
+        };
+        const first = setTimeout(beat, 2000);
+        const hb = setInterval(beat, HEARTBEAT_INTERVAL_MS);
         const snap = setInterval(() => {
-            if (activeRef.current && useCamera) void captureSnapshot('interval');
-        }, SNAPSHOT_INTERVAL_MS);
-        return () => { clearInterval(hb); clearInterval(snap); };
-    }, [enabled, attemptId, post, captureSnapshot, useCamera]);
+            if (activeRef.current && useCamera && document.visibilityState === 'visible') void captureSnapshot('interval');
+        }, phone ? PHONE_SNAPSHOT_INTERVAL_MS : SNAPSHOT_INTERVAL_MS);
+        return () => { clearTimeout(first); clearInterval(hb); clearInterval(snap); };
+    }, [enabled, attemptId, post, captureSnapshot, useCamera, phone]);
 
     // Release the camera when leaving the page.
     useEffect(() => () => {

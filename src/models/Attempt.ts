@@ -26,6 +26,8 @@ export interface IProctoring {
     lastSeenAt?: Date;
     lastViolationAt?: Date;
     cameraOk?: boolean;
+    /** What the student sat the exam on — phones are proctored by the phone's own camera instead of the Zoom room. */
+    device?: 'phone' | 'computer';
     autoSubmitted: boolean;
 }
 
@@ -57,6 +59,7 @@ const ProctoringSchema = new Schema<IProctoring>({
     lastSeenAt: { type: Date },
     lastViolationAt: { type: Date },
     cameraOk: { type: Boolean },
+    device: { type: String, enum: ['phone', 'computer'] },
     autoSubmitted: { type: Boolean, default: false },
 }, { _id: false });
 

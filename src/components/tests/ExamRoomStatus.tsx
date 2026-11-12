@@ -18,6 +18,8 @@ interface Props {
     /** True while the student is being sent back to Zoom (violations should pause). */
     onAwayChange: (away: boolean) => void;
     disabled?: boolean;
+    /** No dashboard sidebar on the page (direct exam link). */
+    standalone?: boolean;
 }
 
 /**
@@ -26,7 +28,7 @@ interface Props {
  * with Zoom every 30s that they're still in it. If they leave, the exam is
  * blocked until they rejoin.
  */
-export function ExamRoomStatus({ assessmentId, onLeft, onAwayChange, disabled }: Props) {
+export function ExamRoomStatus({ assessmentId, onLeft, onAwayChange, disabled, standalone }: Props) {
     const [inRoom, setInRoom] = useState<boolean | null>(null);
     const [away, setAway] = useState(false);
     const [checking, setChecking] = useState(false);
@@ -89,7 +91,8 @@ export function ExamRoomStatus({ assessmentId, onLeft, onAwayChange, disabled }:
     return (
         <>
             <div className={cn(
-                "fixed bottom-20 left-4 md:left-[19rem] z-20 rounded-xl shadow-lg border px-3 py-2 text-xs font-bold flex items-center gap-2 bg-white",
+                "fixed bottom-20 left-4 z-20 rounded-xl shadow-lg border px-3 py-2 text-xs font-bold flex items-center gap-2 bg-white",
+                !standalone && "md:left-[19rem]",
                 inRoom === false ? "border-red-200 text-red-700" : inRoom ? "border-emerald-200 text-emerald-700" : "border-slate-200 text-slate-500"
             )}>
                 {inRoom === false ? <VideoOff className="w-4 h-4" /> : <Video className="w-4 h-4" />}

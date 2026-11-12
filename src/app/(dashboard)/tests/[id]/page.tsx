@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, Clock, ClipboardCheck, CheckCircle2, ShieldAlert, Camera, AlertTriangle, Video } from "lucide-react";
 import { MAX_VIOLATIONS, isProctored } from "@/lib/proctoring";
 import { enterFullscreen } from "@/components/tests/useExamProctor";
+import { isPhoneDevice } from "@/lib/device";
 
 interface Assessment {
     _id: string;
@@ -51,6 +52,11 @@ export default function TestIntroPage() {
     const proctored = isProctored(assessment);
     // Exams with a live Zoom exam room: the student joins it with the normal
     // Zoom link, and Zoom (not the browser) is the camera.
+    // On a phone the student joins the Zoom room first, then comes back to
+    // the browser: Zoom keeps them in the room in the background (its video
+    // pauses), so the phone's own front camera takes photos too.
+    const [phone, setPhone] = useState(false);
+    useEffect(() => { setPhone(isPhoneDevice()); }, []);
     const hasRoom = proctored && !!assessment?.proctorLiveClassId;
     const [room, setRoom] = useState<RoomInfo | null>(null);
     const [roomChecking, setRoomChecking] = useState(false);
@@ -72,7 +78,9 @@ export default function TestIntroPage() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [hasRoom]);
 
-    const ready = hasRoom ? room?.inRoom === true : cameraStatus === 'ok';
+    const ready = hasRoom
+        ? room?.inRoom === true && (!phone || cameraStatus === 'ok')
+        : cameraStatus === 'ok';
 
     const checkCamera = async () => {
         if (!navigator.mediaDevices?.getUserMedia) {
@@ -100,7 +108,7 @@ export default function TestIntroPage() {
         setStarting(true);
         if (proctored) {
             // Must run inside the click so the browser allows full screen.
-            await enterFullscreen();
+            if (!phone) await enterFullscreen();
             streamRef.current?.getTracks().forEach(t => t.stop());
             streamRef.current = null;
         }
@@ -119,7 +127,7 @@ export default function TestIntroPage() {
     };
 
     const continueTest = async () => {
-        if (proctored) await enterFullscreen();
+        if (proctored && !phone) await enterFullscreen();
         router.push(`${examBase(pathname)}/${id}/take`);
     };
 
@@ -163,15 +171,29 @@ export default function TestIntroPage() {
                                 <ShieldAlert className="w-5 h-5 text-indigo-600" /> This is a proctored exam
                             </div>
                             <ul className="text-sm text-slate-600 font-medium space-y-2 list-disc pl-5">
-                                {hasRoom ? (
+                                {hasRoom && phone ? (
+                                    <>
+                                        <li>You&apos;re taking this exam <strong>on your phone</strong>. First <strong>join the live Zoom exam room</strong> in the Zoom app with your camera on, then come back to this page in your browser. <strong>Do not leave the Zoom meeting</strong> — it keeps running in the background while you write.</li>
+                                        <li>Your phone&apos;s <strong>front camera</strong> also stays on in this page and photographs you every 20 seconds; your proctor sees these photos live. The site checks with Zoom every 30 seconds that you are still in the room — <strong>leaving the room is a warning</strong>.</li>
+                                        <li>Once you start, <strong>stay on this page</strong>. Switching to Zoom, WhatsApp or any other app, answering a call or locking your screen is a <strong>warning</strong>. Turn on <strong>Do Not Disturb</strong>, charge your phone, and prop it up so your <strong>face is clearly visible</strong>.</li>
+                                    </>
+                                ) : hasRoom ? (
                                     <>
                                         <li>You sit the exam in a <strong>live Zoom exam room</strong>: your proctor <strong>watches you live</strong> on camera and the room is <strong>recorded</strong>. Join it below before you start, with your <strong>camera on</strong>, and keep Zoom open (you may minimise it) until you submit.</li>
                                         <li>The site checks with Zoom every 30 seconds that you are still in the room. <strong>Leaving the room is a warning</strong> and pauses your exam until you rejoin.</li>
                                     </>
+                                ) : phone ? (
+                                    <>
+                                        <li>You&apos;re taking this exam <strong>on your phone</strong>. Your <strong>front camera stays on</strong> for the whole exam and photographs you every 20 seconds and whenever a warning is recorded. Your proctor sees these photos live.</li>
+                                        <li><strong>Stay on this page.</strong> Leaving the browser, switching to another app or tab, opening WhatsApp, answering a call or locking your screen is a <strong>warning</strong>.</li>
+                                        <li>Before you start: turn on <strong>Do Not Disturb</strong> (or airplane mode with Wi-Fi on) so calls and notifications don&apos;t interrupt you, charge your phone, and prop it up so your <strong>face is clearly visible</strong>.</li>
+                                    </>
                                 ) : (
                                     <li>Your <strong>camera stays on</strong> for the whole exam and takes a photo of you every minute and whenever a warning is recorded.</li>
                                 )}
-                                <li>The exam runs in <strong>full screen</strong>. Leaving full screen, switching tabs, minimising or opening another app or window is a <strong>warning</strong>.</li>
+                                {!phone && (
+                                    <li>The exam runs in <strong>full screen</strong>. Leaving full screen, switching tabs, minimising or opening another app or window is a <strong>warning</strong>.</li>
+                                )}
                                 <li>On warning <strong>{MAX_VIOLATIONS}</strong>, your exam is <strong>submitted automatically</strong> with the answers saved so far.</li>
                                 <li>Copy, paste and right-click are disabled and recorded.</li>
                                 <li>Your answers save automatically. If your connection drops, reopen the exam and continue — the timer keeps running.</li>
@@ -216,7 +238,8 @@ export default function TestIntroPage() {
                                     </div>
                                 </div>
                             </div>
-                            ) : (
+                            ) : null}
+                            {(!hasRoom || phone) && (
                             <div className="rounded-2xl border border-slate-200 p-4 flex flex-col sm:flex-row items-center gap-4">
                                 <div className="w-40 h-28 rounded-xl bg-slate-900 overflow-hidden shrink-0 flex items-center justify-center">
                                     <video ref={videoRef} muted playsInline autoPlay className={cameraStatus === 'ok' ? "w-full h-full object-cover -scale-x-100" : "hidden"} />
@@ -226,7 +249,7 @@ export default function TestIntroPage() {
                                     {cameraStatus === 'ok' ? (
                                         <p className="text-sm font-bold text-emerald-700 flex items-center gap-1.5 justify-center sm:justify-start"><CheckCircle2 className="w-4 h-4" /> Camera working — make sure your face is clearly visible.</p>
                                     ) : cameraStatus === 'denied' ? (
-                                        <p className="text-sm font-bold text-red-700 flex items-start gap-1.5"><AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" /> Camera blocked. Click the camera or lock icon in your address bar, allow the camera for this site, then try again.</p>
+                                        <p className="text-sm font-bold text-red-700 flex items-start gap-1.5"><AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" /> Camera blocked. {phone ? 'Tap the icon next to the web address, allow the camera for this site' : 'Click the camera or lock icon in your address bar, allow the camera for this site'}, then try again.</p>
                                     ) : cameraStatus === 'unsupported' ? (
                                         <p className="text-sm font-bold text-red-700">This browser can't use a camera. Use Chrome, Edge or Safari on a device with a camera.</p>
                                     ) : (

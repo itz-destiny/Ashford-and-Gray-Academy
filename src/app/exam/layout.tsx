@@ -75,7 +75,7 @@ export default function ExamLinkLayout({ children }: { children: React.ReactNode
                     </p>
                     {role === "instructor" || role === "admin" ? (
                         <Button asChild variant="outline" className="rounded-none">
-                            <Link href={`/instructor/tests/${id}/proctor`}>Go to Live Proctoring</Link>
+                            <Link href={role === "admin" ? `/admin/tests/${id}/proctor` : `/instructor/tests/${id}/proctor`}>Go to Live Proctoring</Link>
                         </Button>
                     ) : null}
                 </div>

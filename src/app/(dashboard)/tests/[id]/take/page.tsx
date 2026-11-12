@@ -14,6 +14,7 @@ import { useExamProctor, enterFullscreen, fullscreenSupported } from "@/componen
 import { ExamRoomStatus } from "@/components/tests/ExamRoomStatus";
 import { INCIDENT_LABELS, isProctored } from "@/lib/proctoring";
 import { cn } from "@/lib/utils";
+import { isPhoneDevice } from "@/lib/device";
 
 interface Question {
     _id: string;
@@ -80,13 +81,21 @@ export default function TakeTestPage() {
 
     const attemptId = assessment?.myAttempt?._id || null;
     const proctored = isProctored(assessment);
-    // With a live Zoom exam room, Zoom is the camera — the browser's own camera stays off.
+    // With a live Zoom exam room the student stays in Zoom for the whole
+    // exam. On a computer Zoom is the camera and the browser's stays off; on
+    // a phone Zoom runs in the background (its video pauses there), so the
+    // phone's own camera takes photos as well.
+    const [phone, setPhone] = useState(false);
+    useEffect(() => { setPhone(isPhoneDevice()); }, []);
     const hasRoom = !!assessment?.proctorLiveClassId;
+    // Opened from a direct exam link: there's no dashboard sidebar to make room for.
+    const standalone = examBase(pathname) === '/exam';
 
     const proctor = useExamProctor({
         attemptId,
         enabled: proctored && !!attemptId,
-        useCamera: !hasRoom,
+        useCamera: !hasRoom || phone,
+        phone,
         initialViolations: assessment?.myAttempt?.violationCount || 0,
         onAutoSubmitted: () => {
             submittingRef.current = true;
@@ -161,13 +170,13 @@ export default function TakeTestPage() {
     }
 
     const deadline = new Date(new Date(assessment.myAttempt.startedAt).getTime() + assessment.durationMinutes * 60 * 1000);
-    const needsFullscreen = proctored && fullscreenSupported() && !proctor.isFullscreen;
+    const needsFullscreen = proctored && !phone && fullscreenSupported() && !proctor.isFullscreen;
     const cameraBlocked = proctored && proctor.camera !== 'ok' && proctor.camera !== 'pending';
     const gate = proctored && !submitting && (needsFullscreen || cameraBlocked || !!proctor.warning);
 
     return (
         <div className="max-w-3xl mx-auto p-6 md:p-10 space-y-6 animate-in fade-in duration-700 pb-32 select-none">
-            <div className="sticky top-0 z-10 bg-[#FAF9F6]/95 backdrop-blur-sm py-4 flex items-center justify-between gap-4 border-b border-slate-200">
+            <div className={cn("sticky z-10 bg-[#FAF9F6]/95 backdrop-blur-sm py-4 flex items-center justify-between gap-4 border-b border-slate-200", standalone ? "top-16" : "top-0")}>
                 <div className="min-w-0">
                     <h1 className="text-xl font-black text-slate-900 truncate">{assessment.title}</h1>
                     {proctored && (
@@ -232,12 +241,14 @@ export default function TakeTestPage() {
             {proctored && hasRoom ? (
                 <ExamRoomStatus
                     assessmentId={assessment._id}
+                    standalone={standalone}
                     disabled={submitting}
                     onLeft={() => void proctor.reportViolation('left_exam_room')}
                     onAwayChange={away => (away ? proctor.pause() : proctor.resume())}
                 />
-            ) : proctored && (
-                <div className="fixed bottom-20 left-4 md:left-[19rem] z-20 rounded-xl overflow-hidden shadow-lg border-2 border-white bg-slate-900 w-32 h-24">
+            ) : null}
+            {proctored && (!hasRoom || phone) && (
+                <div className={cn("fixed z-20 rounded-xl overflow-hidden shadow-lg border-2 border-white bg-slate-900", phone ? "bottom-24 right-3 w-20 h-28" : cn("bottom-20 left-4 w-32 h-24", !standalone && "md:left-[19rem]"))}>
                     <video ref={proctor.videoRef} muted playsInline autoPlay className="w-full h-full object-cover -scale-x-100" />
                     <span className="absolute top-1.5 left-1.5 flex items-center gap-1 text-[9px] font-black text-white bg-black/50 rounded px-1.5 py-0.5">
                         <span className={cn("w-1.5 h-1.5 rounded-full", proctor.camera === 'ok' ? "bg-red-500 animate-pulse" : "bg-slate-400")} />
@@ -246,7 +257,7 @@ export default function TakeTestPage() {
                 </div>
             )}
 
-            <div className="fixed bottom-0 left-0 right-0 md:left-72 bg-white border-t border-slate-200 p-4 flex justify-end">
+            <div className={cn("fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 flex justify-end", !standalone && "md:left-72")}>
                 <Button onClick={() => void handleSubmit('student')} disabled={submitting} className="h-12 px-8 rounded-xl bg-indigo-600 hover:bg-indigo-700 font-black">
                     {submitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null} Submit {proctored ? 'Exam' : 'Test'}
                 </Button>
@@ -272,7 +283,7 @@ export default function TakeTestPage() {
                                         : `Your exam will be submitted automatically on warning ${proctor.maxViolations}.`}
                                 </p>
                                 <Button
-                                    onClick={async () => { await enterFullscreen(); proctor.dismissWarning(); }}
+                                    onClick={async () => { if (!phone) await enterFullscreen(); proctor.dismissWarning(); }}
                                     className="w-full h-12 rounded-xl bg-indigo-600 hover:bg-indigo-700 font-black"
                                 >
                                     I understand — return to exam
@@ -289,11 +300,13 @@ export default function TakeTestPage() {
                                         ? 'This browser cannot use a camera. Please take the exam in Chrome, Edge or Safari on a device with a camera.'
                                         : proctor.camera === 'lost'
                                         ? 'Your camera was turned off. Turn it back on to continue your exam.'
+                                        : phone
+                                        ? 'Camera access was blocked. Tap the icon next to the web address, allow the camera for this site, then tap the button below.'
                                         : 'Camera access was blocked. Click the camera or lock icon in your address bar, allow the camera for this site, then try again.'}
                                 </p>
                                 {proctor.camera !== 'unsupported' && (
                                     <Button
-                                        onClick={async () => { await proctor.startCamera(); await enterFullscreen(); }}
+                                        onClick={async () => { await proctor.startCamera(); if (!phone) await enterFullscreen(); }}
                                         className="w-full h-12 rounded-xl bg-indigo-600 hover:bg-indigo-700 font-black"
                                     >
                                         Turn camera on

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
 import { apiFetch } from "@/lib/api-client";
 import { logAudit, AUDIT_ACTIONS, AUDIT_RESOURCES } from "@/lib/audit";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, ClipboardCheck, Users, Trash2, ShieldAlert, Link2 } from "lucide-react";
 import { examLinkPath } from "@/lib/exam-link";
 import Link from "next/link";
+import { staffTestsBase } from "@/lib/exam-link";
 import { MAX_VIOLATIONS, isProctored } from "@/lib/proctoring";
 import {
     Table,
@@ -66,6 +67,7 @@ interface Attempt {
 }
 
 export default function TestDetailPage() {
+    const testsBase = staffTestsBase(usePathname());
     const { id } = useParams<{ id: string }>();
     const { toast } = useToast();
     const [assessment, setAssessment] = useState<Assessment | null>(null);
@@ -124,7 +126,7 @@ export default function TestDetailPage() {
             if (!res.ok) throw new Error();
             await logAudit({ action: AUDIT_ACTIONS.ASSESSMENT_DELETED, resource: AUDIT_RESOURCES.ASSESSMENT, resourceId: id, metadata: { title: assessment.title } });
             toast({ title: "Test deleted" });
-            window.location.href = '/instructor/tests';
+            window.location.href = testsBase;
         } catch {
             toast({ variant: "destructive", title: "Failed to delete" });
             setDeleting(false);
@@ -198,7 +200,7 @@ export default function TestDetailPage() {
                     )}
                     {proctored && (
                         <Button asChild className="bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold">
-                            <Link href={`/instructor/tests/${id}/proctor`}>
+                            <Link href={`${testsBase}/${id}/proctor`}>
                                 <ShieldAlert className="w-4 h-4 mr-2" /> Live Proctoring
                             </Link>
                         </Button>
