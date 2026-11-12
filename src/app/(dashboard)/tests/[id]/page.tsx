@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, usePathname } from "next/navigation";
+import { examBase } from "@/lib/exam-link";
 import { apiFetch } from "@/lib/api-client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -30,6 +31,7 @@ interface RoomInfo { joinUrl: string; zoomName: string; inRoom: boolean | null }
 export default function TestIntroPage() {
     const { id } = useParams<{ id: string }>();
     const router = useRouter();
+    const pathname = usePathname();
     const { toast } = useToast();
     const [assessment, setAssessment] = useState<Assessment | null>(null);
     const [loading, setLoading] = useState(true);
@@ -108,7 +110,7 @@ export default function TestIntroPage() {
                 const data = await res.json().catch(() => ({}));
                 throw new Error(data.error || 'Could not start the test.');
             }
-            router.push(`/tests/${id}/take`);
+            router.push(`${examBase(pathname)}/${id}/take`);
         } catch (err: any) {
             if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
             toast({ variant: "destructive", title: "Can't start test", description: err.message });
@@ -118,7 +120,7 @@ export default function TestIntroPage() {
 
     const continueTest = async () => {
         if (proctored) await enterFullscreen();
-        router.push(`/tests/${id}/take`);
+        router.push(`${examBase(pathname)}/${id}/take`);
     };
 
     if (loading) {

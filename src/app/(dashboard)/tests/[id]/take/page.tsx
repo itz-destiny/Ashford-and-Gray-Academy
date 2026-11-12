@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, usePathname } from "next/navigation";
+import { examBase } from "@/lib/exam-link";
 import { apiFetch } from "@/lib/api-client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -46,6 +47,7 @@ const toPayload = (answers: AnswerMap) =>
 export default function TakeTestPage() {
     const { id } = useParams<{ id: string }>();
     const router = useRouter();
+    const pathname = usePathname();
     const { toast } = useToast();
     const [assessment, setAssessment] = useState<Assessment | null>(null);
     const [loading, setLoading] = useState(true);
@@ -60,7 +62,7 @@ export default function TakeTestPage() {
             if (res.ok) {
                 const data: Assessment = await res.json();
                 if (!data.myAttempt || data.myAttempt.status !== 'in_progress') {
-                    router.replace(`/tests/${id}`);
+                    router.replace(`${examBase(pathname)}/${id}`);
                     return;
                 }
                 const restored: AnswerMap = {};
@@ -94,7 +96,7 @@ export default function TakeTestPage() {
                 title: "Exam submitted automatically",
                 description: "You reached the maximum number of warnings, so your exam was submitted with the answers saved so far.",
             });
-            router.push(`/tests/${id}`);
+            router.push(`${examBase(pathname)}/${id}`);
         },
     });
 
@@ -135,13 +137,13 @@ export default function TakeTestPage() {
             if (!res.ok) {
                 const data = await res.json().catch(() => ({}));
                 if (res.status === 409) {
-                    router.push(`/tests/${id}`);
+                    router.push(`${examBase(pathname)}/${id}`);
                     return;
                 }
                 throw new Error(data.error || 'Failed to submit');
             }
             toast({ title: proctored ? "Exam submitted" : "Test submitted", description: reason === 'time_up' ? "Time is up — your answers were submitted." : "Your score is ready." });
-            router.push(`/tests/${id}`);
+            router.push(`${examBase(pathname)}/${id}`);
         } catch (err: any) {
             toast({ variant: "destructive", title: "Submit failed", description: err.message });
             submittingRef.current = false;

@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ClipboardCheck, Users, Trash2, ShieldAlert } from "lucide-react";
+import { Loader2, ClipboardCheck, Users, Trash2, ShieldAlert, Link2 } from "lucide-react";
+import { examLinkPath } from "@/lib/exam-link";
 import Link from "next/link";
 import { MAX_VIOLATIONS, isProctored } from "@/lib/proctoring";
 import {
@@ -177,7 +178,24 @@ export default function TestDetailPage() {
                     </div>
                     <p className="text-slate-500 font-medium">{assessment.questions.length} questions · {assessment.totalPoints} pts · {assessment.durationMinutes} min</p>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3">
+                    {assessment.status === 'published' && (
+                        <Button
+                            variant="outline"
+                            className="rounded-xl font-bold"
+                            onClick={async () => {
+                                const url = `${window.location.origin}${examLinkPath(id)}`;
+                                try {
+                                    await navigator.clipboard.writeText(url);
+                                    toast({ title: "Exam link copied", description: "Send it to students. They sign in with their email and password and go straight to this exam." });
+                                } catch {
+                                    toast({ title: "Exam link", description: url });
+                                }
+                            }}
+                        >
+                            <Link2 className="w-4 h-4 mr-2" /> Copy exam link
+                        </Button>
+                    )}
                     {proctored && (
                         <Button asChild className="bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold">
                             <Link href={`/instructor/tests/${id}/proctor`}>
