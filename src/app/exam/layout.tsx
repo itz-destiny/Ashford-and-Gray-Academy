@@ -5,9 +5,9 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, AlertTriangle, Eye, EyeOff, LogOut, Clock } from "lucide-react";
+import { Loader2, AlertTriangle, LogOut, Clock } from "lucide-react";
 import { useUser } from "@/firebase";
-import { signInWithEmail, signOut } from "@/firebase/auth";
+import { signInWithToken, signOut } from "@/firebase/auth";
 import "../globals.css";
 
 interface ExamInfo {
@@ -58,7 +58,7 @@ export default function ExamLinkLayout({ children }: { children: React.ReactNode
     }
 
     if (!user) {
-        return <SignIn info={info} infoError={infoError} />;
+        return <SignIn examId={String(id)} info={info} infoError={infoError} />;
     }
 
     const role = (user as any).role as string | undefined;
@@ -111,10 +111,8 @@ function Shell({ info, name, children }: { info: ExamInfo | null; name: string; 
     );
 }
 
-function SignIn({ info, infoError }: { info: ExamInfo | null; infoError: string | null }) {
+function SignIn({ examId, info, infoError }: { examId: string; info: ExamInfo | null; infoError: string | null }) {
     const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [show, setShow] = useState(false);
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -122,18 +120,29 @@ function SignIn({ info, infoError }: { info: ExamInfo | null; infoError: string 
         e.preventDefault();
         setError(null);
         setBusy(true);
-        const { error: err } = await signInWithEmail(email.trim(), password);
-        setBusy(false);
-        if (err) setError(friendlyAuthError(err));
-        // On success useUser picks up the session and the exam renders.
+        try {
+            const res = await fetch(`/api/assessments/${encodeURIComponent(examId)}/email-access`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: email.trim() }),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || !data.token) throw new Error(data.error || "Could not sign you in. Please try again.");
+            const { error: err } = await signInWithToken(data.token);
+            if (err) throw new Error(friendlyAuthError(err));
+            // useUser picks up the session and the exam renders.
+        } catch (err: any) {
+            setError(/fetch|network/i.test(err?.message || "") ? "No internet connection. Check your connection and try again." : err?.message);
+            setBusy(false);
+        }
     };
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#0B1F3A] px-4 py-10">
-            <div className="w-full max-w-sm bg-white p-8 space-y-6">
+            <div className="w-full max-w-sm bg-white p-8 space-y-6 border-t-4 border-[#C8A96A]">
                 <div className="text-center space-y-2">
                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#C8A96A]">
-                        {info?.type === "exam" ? "Examination" : "Assessment"} Sign-In
+                        {info?.type === "exam" ? "Examination" : "Assessment"}
                     </p>
                     {info ? (
                         <>
@@ -155,31 +164,14 @@ function SignIn({ info, infoError }: { info: ExamInfo | null; infoError: string 
                     <Input
                         type="email"
                         required
+                        autoFocus
                         autoComplete="email"
+                        inputMode="email"
                         placeholder="Your academy email"
                         value={email}
                         onChange={e => setEmail(e.target.value)}
                         className="h-12 rounded-none"
                     />
-                    <div className="relative">
-                        <Input
-                            type={show ? "text" : "password"}
-                            required
-                            autoComplete="current-password"
-                            placeholder="Password"
-                            value={password}
-                            onChange={e => setPassword(e.target.value)}
-                            className="h-12 rounded-none pr-12"
-                        />
-                        <button
-                            type="button"
-                            onClick={() => setShow(s => !s)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
-                            aria-label={show ? "Hide password" : "Show password"}
-                        >
-                            {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                        </button>
-                    </div>
                     {error && (
                         <div className="flex items-start gap-2 text-rose-600 text-sm">
                             <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
@@ -191,14 +183,11 @@ function SignIn({ info, infoError }: { info: ExamInfo | null; infoError: string 
                         disabled={busy}
                         className="w-full h-12 bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black text-xs uppercase tracking-widest rounded-none"
                     >
-                        {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : "Sign in to my exam"}
+                        {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : "Go to my exam"}
                     </Button>
                 </form>
 
-                <p className="text-center text-xs text-slate-500">
-                    Use the same email and password as the academy portal.{" "}
-                    <Link href="/login/reset" className="underline text-[#0B1F3A]">Forgot password?</Link>
-                </p>
+                <p className="text-center text-xs text-slate-500">Enter the email you registered with the academy.</p>
             </div>
         </div>
     );
