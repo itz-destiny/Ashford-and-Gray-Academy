@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { adminOnlyRoomIds } from '@/lib/exam-access';
 import dbConnect from '@/lib/mongodb';
 import LiveClass from '@/models/LiveClass';
 import { getFreshZoomStartUrl } from '@/lib/zoom';
@@ -23,6 +24,9 @@ export const GET = withAuth<RouteParams>(async (_req: NextRequest, { auth, param
         const liveClass = await LiveClass.findById(id);
         if (!liveClass) {
             return NextResponse.json({ error: 'Live class not found' }, { status: 404 });
+        }
+        if (auth.role !== 'admin' && auth.role !== 'student' && (await adminOnlyRoomIds()).has(String(liveClass._id))) {
+            return NextResponse.json({ error: 'Only the admin can monitor this exam room.' }, { status: 403 });
         }
         const canStart = auth.role === 'admin' || auth.role === 'live_monitor' || liveClass.instructorId === auth.uid;
         if (!canStart) {

@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { canMonitorExam, MONITOR_ROLES } from '@/lib/exam-access';
 import { resolveAssessmentId } from '@/lib/assessment-slug';
 import dbConnect from '@/lib/mongodb';
 import Assessment from '@/models/Assessment';
@@ -12,7 +13,6 @@ import { MAX_VIOLATIONS } from '@/lib/proctoring';
 
 type RouteParams = { params: Promise<{ id: string }> };
 
-const STAFF_ROLES = ['admin', 'instructor', 'course_registrar'] as const;
 
 // =============================================================================
 // GET /api/assessments/[id]/proctor — live proctoring feed for staff who
@@ -21,14 +21,15 @@ const STAFF_ROLES = ['admin', 'instructor', 'course_registrar'] as const;
 // =============================================================================
 export const GET = withAuth<RouteParams>(async (_req: NextRequest, { auth, params }) => {
     try {
-        requireRole(auth, STAFF_ROLES);
+        requireRole(auth, MONITOR_ROLES);
         const id = await resolveAssessmentId((await params).id);
         await dbConnect();
 
-        const assessment = await Assessment.findById(id).select('title type status durationMinutes questions createdBy opensAt closesAt proctorLiveClassId').lean<any>();
+        const assessment = await Assessment.findById(id).select('title type status durationMinutes questions createdBy opensAt closesAt proctorLiveClassId adminOnly').lean<any>();
         if (!assessment) return NextResponse.json({ error: 'Assessment not found' }, { status: 404 });
-        const allowed = auth.role === 'admin' || auth.role === 'course_registrar' || assessment.createdBy === auth.uid;
-        if (!allowed) return NextResponse.json({ error: 'You did not create this assessment.' }, { status: 403 });
+        if (!canMonitorExam(assessment, auth)) {
+            return NextResponse.json({ error: assessment.adminOnly ? 'Only the admin can monitor this exam.' : 'You can only monitor exams you manage.' }, { status: 403 });
+        }
 
         const attempts = await Attempt.find({ assessmentId: id })
             .select('userId status startedAt submittedAt submitReason score maxScore answers proctoring')

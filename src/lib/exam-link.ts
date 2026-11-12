@@ -17,6 +17,7 @@ export function examLinkPath(assessmentId: string): string {
  * the instructor portal and the admin portal; links stay inside whichever
  * portal the page was opened from.
  */
-export function staffTestsBase(pathname: string | null | undefined): '/admin/tests' | '/instructor/tests' {
+export function staffTestsBase(pathname: string | null | undefined): '/admin/tests' | '/instructor/tests' | '/monitor/exams' {
+    if (pathname?.startsWith('/monitor/')) return '/monitor/exams';
     return pathname?.startsWith('/admin/') ? '/admin/tests' : '/instructor/tests';
 }

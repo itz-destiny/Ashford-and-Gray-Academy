@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { canMonitorExam } from '@/lib/exam-access';
 import dbConnect from '@/lib/mongodb';
 import Assessment from '@/models/Assessment';
 import Attempt from '@/models/Attempt';
@@ -16,10 +17,6 @@ function handleError(err: unknown): Response {
     }
     console.error('attempts/[id]/proctor/snapshots route error:', err);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
-}
-
-function canManage(assessment: any, auth: AuthContext): boolean {
-    return auth.role === 'admin' || auth.role === 'course_registrar' || assessment.createdBy === auth.uid;
 }
 
 // =============================================================================
@@ -90,8 +87,8 @@ export const GET = withAuth<RouteParams>(async (_req: NextRequest, { auth, param
         await dbConnect();
         const attempt = await Attempt.findById(id).select('assessmentId').lean<any>();
         if (!attempt) return NextResponse.json({ error: 'Attempt not found' }, { status: 404 });
-        const assessment = await Assessment.findById(attempt.assessmentId).select('createdBy').lean<any>();
-        if (!assessment || !canManage(assessment, auth)) {
+        const assessment = await Assessment.findById(attempt.assessmentId).select('createdBy adminOnly').lean<any>();
+        if (!assessment || !canMonitorExam(assessment, auth)) {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
 

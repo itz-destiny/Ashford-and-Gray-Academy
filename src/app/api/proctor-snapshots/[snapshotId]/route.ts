@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { canMonitorExam } from '@/lib/exam-access';
 import dbConnect from '@/lib/mongodb';
 import Assessment from '@/models/Assessment';
 import ProctorSnapshot from '@/models/ProctorSnapshot';
@@ -17,8 +18,8 @@ export const GET = withAuth<RouteParams>(async (_req: NextRequest, { auth, param
         const snap = await ProctorSnapshot.findById(snapshotId).lean<any>();
         if (!snap) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
-        const assessment = await Assessment.findById(snap.assessmentId).select('createdBy').lean<any>();
-        const allowed = auth.role === 'admin' || auth.role === 'course_registrar' || assessment?.createdBy === auth.uid;
+        const assessment = await Assessment.findById(snap.assessmentId).select('createdBy adminOnly').lean<any>();
+        const allowed = canMonitorExam(assessment, auth);
         if (!allowed) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
         const bytes = snap.data?.buffer ? Buffer.from(snap.data.buffer) : Buffer.from(snap.data);

@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { adminOnlyRoomIds } from '@/lib/exam-access';
 import dbConnect from '@/lib/mongodb';
 import LiveClass from '@/models/LiveClass';
 import { getFreshZoomStartUrl } from '@/lib/zoom';
@@ -28,6 +29,9 @@ export const GET = withAuth<RouteParams>(async (_req: NextRequest, { auth, param
             return NextResponse.json({ error: 'This class was cancelled. Check the timetable for the new time.' }, { status: 410 });
         }
 
+        if (auth.role !== 'admin' && auth.role !== 'student' && (await adminOnlyRoomIds()).has(String(liveClass._id))) {
+            return NextResponse.json({ error: 'Only the admin can monitor this exam room.' }, { status: 403 });
+        }
         const isHost = auth.role === 'admin' || liveClass.instructorId === auth.uid;
         if (isHost) {
             const account = getZoomAccounts().find((a) => a.key === liveClass.zoomAccountKey);

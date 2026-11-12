@@ -32,6 +32,8 @@ export interface IAssessment extends Document {
     proctorLiveClassId?: string;
     /** Readable link name: /exam/<slug>. */
     slug?: string;
+    /** Only the admin may monitor this exam (Live Proctoring, photos, exam room). */
+    adminOnly?: boolean;
 }
 
 const QuestionOptionSchema = new Schema<IQuestionOption>({
@@ -62,6 +64,7 @@ const AssessmentSchema: Schema = new Schema({
     totalPoints: { type: Number, default: 0 },
     proctorLiveClassId: { type: String },
     slug: { type: String, lowercase: true, trim: true, unique: true, sparse: true },
+    adminOnly: { type: Boolean, default: false },
 }, { timestamps: true });
 
 AssessmentSchema.pre('save', function (next) {

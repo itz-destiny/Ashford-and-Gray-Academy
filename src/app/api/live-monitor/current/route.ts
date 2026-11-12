@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { adminOnlyRoomIds } from '@/lib/exam-access';
 import dbConnect from '@/lib/mongodb';
 import { AuthError, requireRole, withAuth } from '@/lib/auth-server';
 import { getAllLiveClasses } from '@/lib/monitor-slots';
@@ -23,7 +24,9 @@ export const GET = withAuth(async (_req: NextRequest, { auth }) => {
         requireRole(auth, ['live_monitor', 'admin']);
         await dbConnect();
 
-        const liveClasses = await getAllLiveClasses();
+        // Admin-only exam rooms are hidden from monitor accounts.
+        const hidden = auth.role === 'admin' ? new Set<string>() : await adminOnlyRoomIds();
+        const liveClasses = (await getAllLiveClasses()).filter((c) => !hidden.has(String(c._id)));
         const courses = await resolveCourses(liveClasses.map((c) => String(c.courseId)));
 
         return NextResponse.json({

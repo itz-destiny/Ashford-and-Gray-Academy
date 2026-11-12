@@ -127,8 +127,8 @@ export default function LiveProctorPage() {
     return (
         <div className="space-y-6 p-6 md:p-10 max-w-7xl mx-auto animate-in fade-in duration-700">
             <div className="space-y-2">
-                <Link href={`${testsBase}/${id}`} className="text-sm font-bold text-slate-500 hover:text-slate-800 inline-flex items-center gap-1.5">
-                    <ArrowLeft className="w-4 h-4" /> Back to results
+                <Link href={testsBase === '/monitor/exams' ? '/monitor' : `${testsBase}/${id}`} className="text-sm font-bold text-slate-500 hover:text-slate-800 inline-flex items-center gap-1.5">
+                    <ArrowLeft className="w-4 h-4" /> {testsBase === '/monitor/exams' ? 'Back to monitor' : 'Back to results'}
                 </Link>
                 <div className="flex flex-wrap items-center gap-3">
                     <h1 className="text-3xl font-black text-slate-900 tracking-tight">{feed.assessment.title}</h1>
