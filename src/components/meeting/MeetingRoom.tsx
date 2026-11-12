@@ -16,6 +16,11 @@ export default function MeetingRoom({ roomId }: Props) {
     const { toast } = useToast();
     const [zoomSession, setZoomSession] = useState<{ liveClassId?: string; joinUrl?: string } | null>(null);
 
+    // Course rooms open Zoom directly via the live-class page (no extra click).
+    useEffect(() => {
+        if (roomId.startsWith('course-')) router.replace(`/live-classes/${roomId}`);
+    }, [roomId, router]);
+
     useEffect(() => {
         (async () => {
             try {
