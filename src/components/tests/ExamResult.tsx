@@ -2,8 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { Share2, Copy, Check, Clock, ShieldAlert } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Clock, ShieldAlert } from "lucide-react";
 
 interface Props {
     title: string;
@@ -28,7 +27,6 @@ export function ExamResult({ title, score, maxScore, submitReason, pendingMarkin
     const pct = maxScore > 0 ? Math.round((score / maxScore) * 100) : 0;
     const [shown, setShown] = useState(0);
     const [ring, setRing] = useState(0);
-    const [copied, setCopied] = useState(false);
     const v = verdict(pct);
     const celebrate = pct >= 50 && !pendingMarking;
 
@@ -52,26 +50,6 @@ export function ExamResult({ title, score, maxScore, submitReason, pendingMarkin
 
     const R = 88;
     const C = 2 * Math.PI * R;
-    const shareText = `I scored ${score}/${maxScore} (${pct}%) on "${title}" at Ashford & Gray Fusion Academy.`;
-    const shareUrl = typeof window !== "undefined" ? window.location.origin : "https://www.ashfordandgrayfusionacademy.com";
-
-    const share = async () => {
-        try {
-            if (navigator.share) {
-                await navigator.share({ title: "My exam result", text: shareText, url: shareUrl });
-                return;
-            }
-        } catch { /* cancelled: fall through to WhatsApp */ }
-        window.open(`https://wa.me/?text=${encodeURIComponent(`${shareText} ${shareUrl}`)}`, "_blank", "noopener,noreferrer");
-    };
-    const copy = async () => {
-        try {
-            await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        } catch { /* ignore */ }
-    };
-
     return (
         <div className="relative overflow-hidden min-h-[calc(100vh-8rem)] flex items-center justify-center py-8">
             {celebrate && (
@@ -111,9 +89,8 @@ export function ExamResult({ title, score, maxScore, submitReason, pendingMarkin
                         />
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <p className="font-serif text-6xl leading-none text-[#0B1F3A] tabular-nums">{shown}</p>
-                        <p className="mt-1 text-sm font-bold text-slate-500 tabular-nums">out of {maxScore}</p>
-                        <p className="mt-2 text-xs font-black uppercase tracking-widest text-[#1F7A5A] tabular-nums">{Math.round(ring)}%</p>
+                        <p className="font-serif text-6xl leading-none text-[#0B1F3A] tabular-nums">{Math.round(ring)}<span className="text-3xl align-top">%</span></p>
+                        <p className="mt-2 text-sm font-bold text-slate-500 tabular-nums">{shown} out of {maxScore}</p>
                     </div>
                 </div>
 
@@ -126,14 +103,6 @@ export function ExamResult({ title, score, maxScore, submitReason, pendingMarkin
                     <p className="mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-red-700 bg-red-50 px-3 py-1.5"><ShieldAlert className="w-3.5 h-3.5" /> Submitted automatically after 3 warnings</p>
                 )}
 
-                <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <button onClick={share} className={cn("h-12 flex items-center justify-center gap-2 bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black text-xs uppercase tracking-widest transition-colors")}>
-                        <Share2 className="w-4 h-4" /> Share my score
-                    </button>
-                    <button onClick={copy} className="h-12 flex items-center justify-center gap-2 border border-[#0B1F3A] text-[#0B1F3A] hover:bg-[#FAF9F6] font-black text-xs uppercase tracking-widest">
-                        {copied ? <Check className="w-4 h-4 text-[#1F7A5A]" /> : <Copy className="w-4 h-4" />} {copied ? "Copied" : "Copy result"}
-                    </button>
-                </div>
             </div>
 
             <style>{`@keyframes agfa-fall { 0% { opacity: 1; transform: translateY(-20px) rotate(0deg); } 100% { opacity: 0; transform: translateY(105vh) rotate(540deg); } }`}</style>
