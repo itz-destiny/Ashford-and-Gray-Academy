@@ -119,6 +119,14 @@ export default function LiveClassRoomPage() {
             } else if (data.type === 'ZOOM_ERROR') {
                 setError(data.message || 'Could not join this class.');
                 setStatus('error');
+                // Students: if the in-browser room can't connect, send them
+                // straight to Zoom (app or zoom.us web) so they still get in.
+                const url = infoRef.current?.appJoinUrl;
+                if (url) {
+                    const id = liveClassIdRef.current;
+                    if (id) apiFetch(`/api/live-classes/${id}/attendance`, { method: 'POST' }).catch(() => null);
+                    setTimeout(() => { window.location.href = url; }, 1500);
+                }
             } else if (data.type === 'ZOOM_LEFT') {
                 router.push(infoRef.current?.backTo || (infoRef.current?.role === 1 ? '/instructor/schedule' : '/schedule'));
             }
@@ -164,7 +172,16 @@ export default function LiveClassRoomPage() {
                     ) : (
                         <>
                             <AlertTriangle className="h-10 w-10 text-rose-400" />
-                            <p className="font-serif text-lg text-center max-w-md px-6">{error}</p>
+                            {appJoinUrl ? (
+                                <>
+                                    <p className="font-serif text-lg text-center max-w-md px-6">Opening your class in Zoom…</p>
+                                    <Button onClick={openInApp} className="bg-[#C8A96A] hover:bg-[#B69759] text-[#0B1F3A] font-black gap-2">
+                                        <ExternalLink className="h-4 w-4" /> Join in Zoom
+                                    </Button>
+                                </>
+                            ) : (
+                                <p className="font-serif text-lg text-center max-w-md px-6">{error}</p>
+                            )}
                             <Button
                                 variant="outline"
                                 className="mt-2 border-white/30 text-white hover:bg-white/10 gap-2"

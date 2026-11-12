@@ -20,12 +20,16 @@
     build (from Zoom's own CDN) and no trace of the host app's React 19,
     sidesteps the conflict entirely instead of patching React internals.
   -->
-  <script src="https://source.zoom.us/6.0.2/lib/vendor/react.min.js"></script>
-  <script src="https://source.zoom.us/6.0.2/lib/vendor/react-dom.min.js"></script>
-  <script src="https://source.zoom.us/6.0.2/lib/vendor/react-redux.min.js"></script>
-  <script src="https://source.zoom.us/6.0.2/lib/vendor/redux.min.js"></script>
-  <script src="https://source.zoom.us/6.0.2/lib/vendor/redux-thunk.min.js"></script>
-  <script src="https://source.zoom.us/6.0.2/lib/vendor/lodash.min.js"></script>
+  <!-- The small vendor libraries are served from our own site: Zoom's CDN
+       started refusing (403) react-redux.min.js for SDK 6.0.2 in Nov 2026,
+       which left the room stuck on "Joining Meeting..." forever.
+       react-redux.min.js is Zoom's own build from SDK 6.2.0. -->
+  <script src="/zoom-vendor/react.min.js"></script>
+  <script src="/zoom-vendor/react-dom.min.js"></script>
+  <script src="/zoom-vendor/react-redux.min.js"></script>
+  <script src="/zoom-vendor/redux.min.js"></script>
+  <script src="/zoom-vendor/redux-thunk.min.js"></script>
+  <script src="/zoom-vendor/lodash.min.js"></script>
   <script src="https://source.zoom.us/6.0.2/zoom-meeting-6.0.2.min.js"></script>
   <script>
     (function () {
