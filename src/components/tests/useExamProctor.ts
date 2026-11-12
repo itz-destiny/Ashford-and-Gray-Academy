@@ -308,6 +308,8 @@ export function useExamProctor({ attemptId, enabled, initialViolations, onAutoSu
         startCamera,
         stop,
         reportViolation,
+        /** Log an uncounted event for the proctor (e.g. the connection dropped). */
+        logEvent: reportEvent,
         /** Stop counting violations (student sent to Zoom to rejoin). */
         pause: () => { pausedRef.current = true; },
         /** Count violations again, after a short grace for returning to full screen. */

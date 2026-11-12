@@ -24,6 +24,10 @@ export function examRoomProblem(a: { type?: string; courseId?: unknown; opensAt:
 async function cancelRoom(liveClassId: string) {
     const lc: any = await LiveClass.findById(liveClassId);
     if (!lc || lc.status === 'cancelled') return;
+    // Only rooms this file created ("EXAM: …") are ours to cancel. A room
+    // that is an existing meeting attached by hand (e.g. a staff meeting used
+    // as the exam room) is left exactly as it is.
+    if (!String(lc.topic || '').startsWith('EXAM: ')) return;
     lc.status = 'cancelled';
     await lc.save();
     try {

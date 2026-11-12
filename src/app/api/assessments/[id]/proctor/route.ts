@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { resolveAssessmentId } from '@/lib/assessment-slug';
 import dbConnect from '@/lib/mongodb';
 import Assessment from '@/models/Assessment';
 import Attempt from '@/models/Attempt';
@@ -21,7 +22,7 @@ const STAFF_ROLES = ['admin', 'instructor', 'course_registrar'] as const;
 export const GET = withAuth<RouteParams>(async (_req: NextRequest, { auth, params }) => {
     try {
         requireRole(auth, STAFF_ROLES);
-        const { id } = await params;
+        const id = await resolveAssessmentId((await params).id);
         await dbConnect();
 
         const assessment = await Assessment.findById(id).select('title type status durationMinutes questions createdBy opensAt closesAt proctorLiveClassId').lean<any>();

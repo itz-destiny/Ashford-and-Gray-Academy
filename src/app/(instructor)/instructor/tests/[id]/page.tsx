@@ -44,6 +44,8 @@ interface Assessment {
     durationMinutes: number;
     opensAt: string;
     closesAt: string;
+    /** Readable link name: /exam/<slug>. */
+    slug?: string;
 }
 
 interface Answer {
@@ -77,10 +79,43 @@ export default function TestDetailPage() {
     const [deleting, setDeleting] = useState(false);
     const [gradingDrafts, setGradingDrafts] = useState<Record<string, Record<string, string>>>({});
     const [savingGrade, setSavingGrade] = useState<string | null>(null);
+    const [linkDraft, setLinkDraft] = useState('');
+    const [savingLink, setSavingLink] = useState(false);
 
     useEffect(() => {
         fetchAll();
     }, [id]);
+
+    useEffect(() => { setLinkDraft(assessment?.slug || ''); }, [assessment?.slug]);
+
+    const examUrl = (slug?: string) => `${typeof window !== 'undefined' ? window.location.origin : ''}${examLinkPath(slug || id)}`;
+
+    const copyExamLink = async () => {
+        const url = examUrl(assessment?.slug);
+        try {
+            await navigator.clipboard.writeText(url);
+            toast({ title: "Exam link copied", description: url });
+        } catch {
+            toast({ title: "Exam link", description: url });
+        }
+    };
+
+    const saveLinkName = async () => {
+        const wanted = linkDraft.trim().toLowerCase().replace(/\s+/g, '-');
+        if (!wanted || wanted === assessment?.slug) return;
+        setSavingLink(true);
+        try {
+            const res = await apiFetch(`/api/assessments/${id}`, { method: 'PATCH', body: JSON.stringify({ slug: wanted }) });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(data.error || 'Could not save the link name.');
+            setAssessment(prev => (prev ? { ...prev, slug: data.slug } : prev));
+            toast({ title: "Exam link updated", description: examUrl(data.slug) });
+        } catch (err: any) {
+            toast({ variant: "destructive", title: "Link not changed", description: err?.message });
+        } finally {
+            setSavingLink(false);
+        }
+    };
 
     const fetchAll = async () => {
         setLoading(true);
@@ -182,19 +217,7 @@ export default function TestDetailPage() {
                 </div>
                 <div className="flex flex-wrap gap-3">
                     {assessment.status === 'published' && (
-                        <Button
-                            variant="outline"
-                            className="rounded-xl font-bold"
-                            onClick={async () => {
-                                const url = `${window.location.origin}${examLinkPath(id)}`;
-                                try {
-                                    await navigator.clipboard.writeText(url);
-                                    toast({ title: "Exam link copied", description: "Send it to students. They sign in with their email and password and go straight to this exam." });
-                                } catch {
-                                    toast({ title: "Exam link", description: url });
-                                }
-                            }}
-                        >
+                        <Button variant="outline" className="rounded-xl font-bold" onClick={copyExamLink}>
                             <Link2 className="w-4 h-4 mr-2" /> Copy exam link
                         </Button>
                     )}
@@ -214,6 +237,35 @@ export default function TestDetailPage() {
                         {deleting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Trash2 className="w-4 h-4 mr-2" />} Delete
                     </Button>
                 </div>
+            </div>
+
+            <div className="bg-white border-l-4 border-[#C8A96A] shadow-sm p-4 space-y-2">
+                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-[#C8A96A]">Exam link for students</p>
+                <form
+                    onSubmit={e => { e.preventDefault(); void saveLinkName(); }}
+                    className="flex flex-col sm:flex-row sm:items-center gap-2"
+                >
+                    <div className="flex items-center min-w-0 flex-1 border border-slate-200 focus-within:border-[#0B1F3A]">
+                        <span className="pl-3 text-sm text-slate-400 whitespace-nowrap hidden sm:inline">…/exam/</span>
+                        <input
+                            value={linkDraft}
+                            onChange={e => setLinkDraft(e.target.value.toLowerCase().replace(/[^a-z0-9-\s]/g, '').replace(/\s+/g, '-'))}
+                            placeholder="housekeeping"
+                            aria-label="Exam link name"
+                            className="flex-1 min-w-0 h-10 px-2 text-sm font-bold text-[#0B1F3A] outline-none bg-transparent"
+                            maxLength={60}
+                        />
+                    </div>
+                    <div className="flex gap-2">
+                        <Button type="submit" disabled={savingLink || !linkDraft || linkDraft === assessment.slug} className="h-10 rounded-none bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-bold">
+                            {savingLink ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Save link'}
+                        </Button>
+                        <Button type="button" variant="outline" onClick={copyExamLink} className="h-10 rounded-none font-bold">
+                            <Link2 className="w-4 h-4 mr-1.5" /> Copy
+                        </Button>
+                    </div>
+                </form>
+                <p className="text-xs text-slate-500 break-all">{examUrl(assessment.slug)}</p>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">

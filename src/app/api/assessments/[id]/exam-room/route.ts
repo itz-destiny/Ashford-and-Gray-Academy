@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { resolveAssessmentId } from '@/lib/assessment-slug';
 import dbConnect from '@/lib/mongodb';
 import Assessment from '@/models/Assessment';
 import { AuthError, requireRole, withAuth } from '@/lib/auth-server';
@@ -14,7 +15,7 @@ type RouteParams = { params: Promise<{ id: string }> };
 export const POST = withAuth<RouteParams>(async (_req: NextRequest, { auth, params }) => {
     try {
         requireRole(auth, ['admin', 'instructor', 'course_registrar']);
-        const { id } = await params;
+        const id = await resolveAssessmentId((await params).id);
         await dbConnect();
         const assessment = await Assessment.findById(id);
         if (!assessment) return NextResponse.json({ error: 'Assessment not found' }, { status: 404 });

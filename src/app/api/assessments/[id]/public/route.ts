@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { resolveAssessmentId } from '@/lib/assessment-slug';
 import mongoose from 'mongoose';
 import dbConnect from '@/lib/mongodb';
 import Assessment from '@/models/Assessment';
@@ -13,7 +14,7 @@ type RouteParams = { params: Promise<{ id: string }> };
  */
 export async function GET(_req: Request, { params }: RouteParams) {
     try {
-        const { id } = await params;
+        const id = await resolveAssessmentId((await params).id);
         if (!mongoose.isValidObjectId(id)) {
             return NextResponse.json({ error: 'This exam link is not valid.' }, { status: 404 });
         }

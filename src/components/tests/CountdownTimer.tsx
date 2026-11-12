@@ -33,18 +33,25 @@ export function CountdownTimer({ deadline, onExpire, className }: CountdownTimer
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
     const isLow = totalSeconds <= 60;
+    const isNear = totalSeconds <= 5 * 60;
 
     const label = hours > 0
         ? `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
         : `${minutes}:${String(seconds).padStart(2, '0')}`;
 
     return (
-        <div className={cn(
-            "flex items-center gap-2 px-4 py-2 rounded-xl font-black text-sm tabular-nums",
-            isLow ? "bg-red-100 text-red-700 animate-pulse" : "bg-indigo-100 text-indigo-700",
-            className
-        )}>
-            <Clock className="w-4 h-4" />
+        <div
+            role="timer"
+            aria-label={`Time left ${label}`}
+            className={cn(
+                "flex items-center gap-2 px-4 py-2.5 font-black text-base tabular-nums border-l-4",
+                isLow ? "bg-red-700 text-white border-red-300 animate-pulse"
+                    : isNear ? "bg-[#0B1F3A] text-amber-300 border-amber-400"
+                    : "bg-[#0B1F3A] text-white border-[#C8A96A]",
+                className
+            )}
+        >
+            <Clock className={cn("w-4 h-4", isLow ? "text-white" : "text-[#C8A96A]")} />
             {label}
         </div>
     );

@@ -23,7 +23,7 @@ export const MAX_SNAPSHOT_BYTES = 200 * 1024;
 export const VIOLATION_TYPES = ['fullscreen_exit', 'tab_hidden', 'window_blur', 'camera_off', 'left_exam_room'] as const;
 export type ViolationType = (typeof VIOLATION_TYPES)[number];
 
-export const EVENT_TYPES = ['copy', 'cut', 'paste', 'right_click', 'blocked_shortcut', 'page_reload'] as const;
+export const EVENT_TYPES = ['copy', 'cut', 'paste', 'right_click', 'blocked_shortcut', 'page_reload', 'connection_lost', 'late_submit'] as const;
 export type EventType = (typeof EVENT_TYPES)[number];
 
 export const INCIDENT_LABELS: Record<string, string> = {
@@ -38,4 +38,20 @@ export const INCIDENT_LABELS: Record<string, string> = {
     right_click: 'Right-clicked',
     blocked_shortcut: 'Used a blocked shortcut',
     page_reload: 'Reloaded the exam page',
+    connection_lost: 'Lost internet connection',
+    late_submit: 'Submitted after time was up (no connection)',
 };
+
+/**
+ * The timer always runs from the server's start time, online or not. A
+ * submit sent within this long after time is up (the page submits the moment
+ * the timer hits zero, but the network may be slow) is accepted as normal.
+ */
+export const SUBMIT_GRACE_MS = 2 * 60_000;
+/**
+ * A student whose connection was down when time ran out: the page freezes
+ * their answers at zero and keeps retrying. Answers that arrive within this
+ * long are accepted (and flagged to the proctor); after that only the
+ * answers that were saved before time ran out count.
+ */
+export const OFFLINE_SUBMIT_LIMIT_MS = 30 * 60_000;

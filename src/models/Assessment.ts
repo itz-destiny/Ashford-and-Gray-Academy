@@ -30,6 +30,8 @@ export interface IAssessment extends Document {
     // Exams only: the LiveClass (Zoom meeting) used as the live exam room
     // for the fixed sitting — see lib/exam-room.ts.
     proctorLiveClassId?: string;
+    /** Readable link name: /exam/<slug>. */
+    slug?: string;
 }
 
 const QuestionOptionSchema = new Schema<IQuestionOption>({
@@ -59,6 +61,7 @@ const AssessmentSchema: Schema = new Schema({
     status: { type: String, enum: ['draft', 'published'], default: 'draft', index: true },
     totalPoints: { type: Number, default: 0 },
     proctorLiveClassId: { type: String },
+    slug: { type: String, lowercase: true, trim: true, unique: true, sparse: true },
 }, { timestamps: true });
 
 AssessmentSchema.pre('save', function (next) {

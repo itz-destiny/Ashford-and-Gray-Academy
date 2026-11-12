@@ -4,7 +4,20 @@ import dbConnect from '@/lib/mongodb';
 import Assessment from '@/models/Assessment';
 import Attempt from '@/models/Attempt';
 import { AuthError, requireRole, withAuth, type AuthContext } from '@/lib/auth-server';
-import { finalizeAttempt } from '@/lib/grade-attempt';
+import { finalizeAttempt, savedAnswers } from '@/lib/grade-attempt';
+import { OFFLINE_SUBMIT_LIMIT_MS, SUBMIT_GRACE_MS } from '@/lib/proctoring';
+
+/** How long after this attempt's time ran out (ms; negative = time left). */
+function msPastDeadline(attempt: any, assessment: any): number {
+    const deadline = new Date(attempt.startedAt).getTime() + (assessment.durationMinutes || 0) * 60_000;
+    return Date.now() - deadline;
+}
+
+function logEvent(attempt: any, type: string, detail: string) {
+    if (!attempt.proctoring) return;
+    attempt.proctoring.events = attempt.proctoring.events || [];
+    attempt.proctoring.events.push({ type, at: new Date(), detail });
+}
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -114,6 +127,19 @@ export const PATCH = withAuth<RouteParams>(async (req: NextRequest, { auth, para
                 return NextResponse.json({ error: 'Invalid request', details: parsed.error.flatten() }, { status: 400 });
             }
 
+            // The timer runs whether or not the student is online.
+            const late = msPastDeadline(attempt, assessment);
+            if (late > OFFLINE_SUBMIT_LIMIT_MS) {
+                // Far too late: only what was saved before time ran out counts.
+                logEvent(attempt, 'late_submit', `Arrived ${Math.round(late / 60000)} min after time was up; only answers saved in time were marked.`);
+                await finalizeAttempt(attempt, assessment, savedAnswers(attempt), 'time_up');
+                return NextResponse.json(attempt);
+            }
+            if (late > SUBMIT_GRACE_MS) {
+                logEvent(attempt, 'late_submit', `Arrived ${Math.round(late / 60000)} min after time was up (no internet when time ran out).`);
+                await finalizeAttempt(attempt, assessment, parsed.data.answers, 'time_up');
+                return NextResponse.json(attempt);
+            }
             await finalizeAttempt(attempt, assessment, parsed.data.answers, parsed.data.reason || 'student');
             return NextResponse.json(attempt);
         }
@@ -130,6 +156,10 @@ export const PATCH = withAuth<RouteParams>(async (req: NextRequest, { auth, para
             const parsed = saveSchema.safeParse(json);
             if (!parsed.success) {
                 return NextResponse.json({ error: 'Invalid request', details: parsed.error.flatten() }, { status: 400 });
+            }
+            // No saving once time is up; the page submits instead.
+            if (msPastDeadline(attempt, assessment) > SUBMIT_GRACE_MS) {
+                return NextResponse.json({ error: 'Time is up.', timeUp: true }, { status: 409 });
             }
             attempt.answers = parsed.data.answers.map(a => ({ ...a, pointsAwarded: null, isCorrect: null })) as any;
             await attempt.save();

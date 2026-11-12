@@ -91,34 +91,34 @@ export function ExamRoomStatus({ assessmentId, onLeft, onAwayChange, disabled, s
     return (
         <>
             <div className={cn(
-                "fixed bottom-20 left-4 z-20 rounded-xl shadow-lg border px-3 py-2 text-xs font-bold flex items-center gap-2 bg-white",
+                "fixed bottom-20 left-4 z-20 shadow-lg border-l-4 px-3 py-2 text-xs font-bold flex items-center gap-2 bg-white",
                 !standalone && "md:left-[19rem]",
-                inRoom === false ? "border-red-200 text-red-700" : inRoom ? "border-emerald-200 text-emerald-700" : "border-slate-200 text-slate-500"
+                inRoom === false ? "border-red-500 text-red-700" : inRoom ? "border-[#1F7A5A] text-[#1F7A5A]" : "border-slate-300 text-slate-500"
             )}>
                 {inRoom === false ? <VideoOff className="w-4 h-4" /> : <Video className="w-4 h-4" />}
                 {inRoom === null ? 'Checking the Zoom exam room…' : inRoom ? 'In the Zoom exam room · you are being watched live' : 'Not seen in the Zoom exam room'}
             </div>
 
             {away && (
-                <div className="fixed inset-0 z-[60] bg-slate-950/95 flex items-center justify-center p-6">
-                    <div className="max-w-md w-full bg-white rounded-3xl p-8 space-y-5 text-center">
-                        <div className="mx-auto w-14 h-14 rounded-full bg-red-50 flex items-center justify-center">
+                <div className="fixed inset-0 z-[60] bg-[#0B1F3A]/95 flex items-center justify-center p-6">
+                    <div className="max-w-md w-full bg-white border-t-4 border-[#C8A96A] p-8 space-y-5 text-center">
+                        <div className="mx-auto w-14 h-14 bg-red-50 flex items-center justify-center">
                             <VideoOff className="w-7 h-7 text-red-600" />
                         </div>
-                        <h2 className="text-2xl font-black text-slate-900">You left the exam room</h2>
+                        <h2 className="font-serif text-2xl text-[#0B1F3A]">You left the exam room</h2>
                         <p className="text-slate-600 font-medium">
                             Zoom no longer shows you in the live exam room, and this has been recorded as a warning. Your exam is paused until you rejoin. The timer keeps running.
                         </p>
-                        <ol className="text-left text-sm text-slate-700 font-medium space-y-2 bg-slate-50 rounded-xl p-4 list-decimal pl-8">
+                        <ol className="text-left text-sm text-slate-700 font-medium space-y-2 bg-[#FAF9F6] p-4 list-decimal pl-8">
                             <li>Click <strong>Rejoin exam room</strong>. Zoom opens: join with your camera <strong>on</strong>{zoomName ? <> as <strong>{zoomName}</strong></> : null}.</li>
                             <li>Come back to this window and click <strong>I&apos;m back in the room</strong>.</li>
                         </ol>
                         {joinUrl && (
-                            <Button asChild className="w-full h-12 rounded-xl bg-[#0B1F3A] hover:bg-[#13294a] font-black">
+                            <Button asChild className="w-full h-12 rounded-none bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black text-xs uppercase tracking-widest">
                                 <a href={joinUrl} target="_blank" rel="noreferrer"><ExternalLink className="w-4 h-4 mr-2" /> Rejoin exam room</a>
                             </Button>
                         )}
-                        <Button onClick={confirmBack} disabled={checking} variant="outline" className="w-full h-12 rounded-xl font-black">
+                        <Button onClick={confirmBack} disabled={checking} variant="outline" className="w-full h-12 rounded-none border-[#0B1F3A] text-[#0B1F3A] font-black">
                             {checking ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null} I&apos;m back in the room
                         </Button>
                         {inRoom === false && !checking && (

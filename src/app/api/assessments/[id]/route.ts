@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { isValidSlug, resolveAssessmentId, slugify, uniqueSlug } from '@/lib/assessment-slug';
 import { z } from 'zod';
 import dbConnect from '@/lib/mongodb';
 import Assessment from '@/models/Assessment';
@@ -48,7 +49,7 @@ function stripAnswerKey(assessment: any) {
 // =============================================================================
 export const GET = withAuth<RouteParams>(async (_req: NextRequest, { auth, params }) => {
     try {
-        const { id } = await params;
+        const id = await resolveAssessmentId((await params).id);
         await dbConnect();
 
         const assessment = await Assessment.findById(id).lean<any>();
@@ -127,12 +128,13 @@ const patchSchema = z.object({
     opensAt: z.string().min(1).optional(),
     closesAt: z.string().min(1).optional(),
     status: z.enum(['draft', 'published']).optional(),
+    slug: z.string().max(60).optional(),
 });
 
 export const PATCH = withAuth<RouteParams>(async (req: NextRequest, { auth, params }) => {
     try {
         requireRole(auth, STAFF_ROLES);
-        const { id } = await params;
+        const id = await resolveAssessmentId((await params).id);
 
         const json = await req.json().catch(() => null);
         const parsed = patchSchema.safeParse(json);
@@ -182,6 +184,19 @@ export const PATCH = withAuth<RouteParams>(async (req: NextRequest, { auth, para
         if (data.opensAt !== undefined) assessment.opensAt = new Date(data.opensAt);
         if (data.closesAt !== undefined) assessment.closesAt = new Date(data.closesAt);
         if (data.status !== undefined) assessment.status = data.status;
+        if (data.slug !== undefined) {
+            const wanted = data.slug.trim().toLowerCase();
+            if (!isValidSlug(wanted)) {
+                return NextResponse.json({ error: 'The link name can only use lowercase letters, numbers and hyphens (for example: housekeeping-exam).' }, { status: 400 });
+            }
+            const taken = await Assessment.findOne({ slug: wanted, _id: { $ne: assessment._id } }).select('title').lean<{ title: string } | null>();
+            if (taken) {
+                return NextResponse.json({ error: `The link name "${wanted}" is already used by "${taken.title}". Choose another.` }, { status: 409 });
+            }
+            assessment.slug = wanted;
+        } else if (!assessment.slug) {
+            assessment.slug = await uniqueSlug(slugify(assessment.title), String(assessment._id));
+        }
 
         const roomProblem = examRoomProblem(assessment);
         if (roomProblem) {
@@ -218,7 +233,7 @@ export const PATCH = withAuth<RouteParams>(async (req: NextRequest, { auth, para
 export const DELETE = withAuth<RouteParams>(async (_req: NextRequest, { auth, params }) => {
     try {
         requireRole(auth, STAFF_ROLES);
-        const { id } = await params;
+        const id = await resolveAssessmentId((await params).id);
 
         await dbConnect();
         const assessment = await Assessment.findById(id).lean();

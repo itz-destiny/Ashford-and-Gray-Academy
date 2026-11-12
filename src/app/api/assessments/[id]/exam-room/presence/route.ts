@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { resolveAssessmentId } from '@/lib/assessment-slug';
 import dbConnect from '@/lib/mongodb';
 import Assessment from '@/models/Assessment';
 import Enrollment from '@/models/Enrollment';
@@ -17,7 +18,7 @@ type RouteParams = { params: Promise<{ id: string }> };
 // =============================================================================
 export const GET = withAuth<RouteParams>(async (_req: NextRequest, { auth, params }) => {
     try {
-        const { id } = await params;
+        const id = await resolveAssessmentId((await params).id);
         await dbConnect();
         const assessment = await Assessment.findById(id).select('type status courseId proctorLiveClassId').lean<any>();
         if (!assessment || !isProctored(assessment) || assessment.status !== 'published') {

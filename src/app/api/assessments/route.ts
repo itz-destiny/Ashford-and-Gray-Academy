@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { isValidSlug, slugify, uniqueSlug } from '@/lib/assessment-slug';
 import { z } from 'zod';
 import dbConnect from '@/lib/mongodb';
 import Assessment from '@/models/Assessment';
@@ -90,6 +91,7 @@ const createSchema = z.object({
     durationMinutes: z.number().min(1).max(600),
     opensAt: z.string().min(1),
     closesAt: z.string().min(1),
+    slug: z.string().max(60).optional(),
 });
 
 export const POST = withAuth(async (req: NextRequest, { auth }) => {
@@ -142,6 +144,7 @@ export const POST = withAuth(async (req: NextRequest, { auth }) => {
             opensAt: new Date(data.opensAt),
             closesAt: new Date(data.closesAt),
             status: 'draft',
+            slug: await uniqueSlug(data.slug && isValidSlug(data.slug.trim().toLowerCase()) ? data.slug.trim().toLowerCase() : slugify(data.title)),
         });
 
         return NextResponse.json(assessment, { status: 201 });

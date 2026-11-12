@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import { resolveAssessmentId } from '@/lib/assessment-slug';
 import dbConnect from '@/lib/mongodb';
 import Assessment from '@/models/Assessment';
 import Attempt from '@/models/Attempt';
@@ -29,7 +30,7 @@ function canManage(assessment: any, auth: AuthContext): boolean {
 // =============================================================================
 export const POST = withAuth<RouteParams>(async (_req: NextRequest, { auth, params }) => {
     try {
-        const { id } = await params;
+        const id = await resolveAssessmentId((await params).id);
         await dbConnect();
 
         const assessment = await Assessment.findById(id).lean<any>();
@@ -87,7 +88,7 @@ export const POST = withAuth<RouteParams>(async (_req: NextRequest, { auth, para
 export const GET = withAuth<RouteParams>(async (_req: NextRequest, { auth, params }) => {
     try {
         requireRole(auth, STAFF_ROLES);
-        const { id } = await params;
+        const id = await resolveAssessmentId((await params).id);
 
         await dbConnect();
         const assessment = await Assessment.findById(id).lean<any>();
