@@ -53,8 +53,8 @@ export default function TestIntroPage() {
     // Exams with a live Zoom exam room: the student joins it with the normal
     // Zoom link, and Zoom (not the browser) is the camera.
     // On a phone the student joins the Zoom room first, then comes back to
-    // the browser: Zoom keeps them in the room in the background (its video
-    // pauses), so the phone's own front camera takes photos too.
+    // the browser. The browser never opens the camera then: on a phone that
+    // takes the camera away from Zoom and drops the student's Zoom video.
     const [phone, setPhone] = useState(false);
     useEffect(() => { setPhone(isPhoneDevice()); }, []);
     const hasRoom = proctored && !!assessment?.proctorLiveClassId;
@@ -79,7 +79,7 @@ export default function TestIntroPage() {
     }, [hasRoom]);
 
     const ready = hasRoom
-        ? room?.inRoom === true && (!phone || cameraStatus === 'ok')
+        ? room?.inRoom === true
         : cameraStatus === 'ok';
 
     const checkCamera = async () => {
@@ -174,7 +174,7 @@ export default function TestIntroPage() {
                                 {hasRoom && phone ? (
                                     <>
                                         <li>You&apos;re taking this exam <strong>on your phone</strong>. First <strong>join the live Zoom exam room</strong> in the Zoom app with your camera on, then come back to this page in your browser. <strong>Do not leave the Zoom meeting</strong> — it keeps running in the background while you write.</li>
-                                        <li>Your phone&apos;s <strong>front camera</strong> also stays on in this page and photographs you every 20 seconds; your proctor sees these photos live. The site checks with Zoom every 30 seconds that you are still in the room — <strong>leaving the room is a warning</strong>.</li>
+                                        <li>Your <strong>Zoom camera is your proctor</strong>: keep it on in the Zoom meeting. This page does <strong>not</strong> use your phone camera, so Zoom keeps it. The site checks with Zoom every 30 seconds that you are still in the room — <strong>leaving the room is a warning</strong>.</li>
                                         <li>Once you start, <strong>stay on this page</strong>. Switching to Zoom, WhatsApp or any other app, answering a call or locking your screen is a <strong>warning</strong>. Turn on <strong>Do Not Disturb</strong>, charge your phone, and prop it up so your <strong>face is clearly visible</strong>.</li>
                                     </>
                                 ) : hasRoom ? (
@@ -239,7 +239,7 @@ export default function TestIntroPage() {
                                 </div>
                             </div>
                             ) : null}
-                            {(!hasRoom || phone) && (
+                            {!hasRoom && (
                             <div className="rounded-2xl border border-slate-200 p-4 flex flex-col sm:flex-row items-center gap-4">
                                 <div className="w-40 h-28 rounded-xl bg-slate-900 overflow-hidden shrink-0 flex items-center justify-center">
                                     <video ref={videoRef} muted playsInline autoPlay className={cameraStatus === 'ok' ? "w-full h-full object-cover -scale-x-100" : "hidden"} />

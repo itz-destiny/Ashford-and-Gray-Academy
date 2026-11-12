@@ -82,9 +82,8 @@ export default function TakeTestPage() {
     const attemptId = assessment?.myAttempt?._id || null;
     const proctored = isProctored(assessment);
     // With a live Zoom exam room the student stays in Zoom for the whole
-    // exam. On a computer Zoom is the camera and the browser's stays off; on
-    // a phone Zoom runs in the background (its video pauses there), so the
-    // phone's own camera takes photos as well.
+    // exam and Zoom is the camera; the browser's stays off (on a phone,
+    // opening it would take the camera away from Zoom).
     const [phone, setPhone] = useState(false);
     useEffect(() => { setPhone(isPhoneDevice()); }, []);
     const hasRoom = !!assessment?.proctorLiveClassId;
@@ -94,7 +93,9 @@ export default function TakeTestPage() {
     const proctor = useExamProctor({
         attemptId,
         enabled: proctored && !!attemptId,
-        useCamera: !hasRoom || phone,
+        // With a Zoom exam room, Zoom's camera is the proctor — on a phone the
+        // browser must not grab the camera or Zoom's own video drops.
+        useCamera: !hasRoom,
         phone,
         initialViolations: assessment?.myAttempt?.violationCount || 0,
         onAutoSubmitted: () => {
@@ -247,7 +248,7 @@ export default function TakeTestPage() {
                     onAwayChange={away => (away ? proctor.pause() : proctor.resume())}
                 />
             ) : null}
-            {proctored && (!hasRoom || phone) && (
+            {proctored && !hasRoom && (
                 <div className={cn("fixed z-20 rounded-xl overflow-hidden shadow-lg border-2 border-white bg-slate-900", phone ? "bottom-24 right-3 w-20 h-28" : cn("bottom-20 left-4 w-32 h-24", !standalone && "md:left-[19rem]"))}>
                     <video ref={proctor.videoRef} muted playsInline autoPlay className="w-full h-full object-cover -scale-x-100" />
                     <span className="absolute top-1.5 left-1.5 flex items-center gap-1 text-[9px] font-black text-white bg-black/50 rounded px-1.5 py-0.5">

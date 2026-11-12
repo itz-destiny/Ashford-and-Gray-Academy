@@ -36,7 +36,7 @@ interface Row {
     latestSnapshot: { _id: string; takenAt: string } | null;
     /** Whether Zoom shows this student in the live exam room (null = unknown / no room). */
     inRoom?: boolean | null;
-    /** Taking the exam on a phone — proctored by the phone camera, not Zoom. */
+    /** Taking the exam on a phone (proctored through the Zoom room). */
     device?: 'phone' | 'computer' | null;
 }
 
@@ -297,7 +297,7 @@ function ExamRoomCard({ feed, onChanged }: { feed: Feed; onChanged: () => void }
                     {room ? (
                         <>
                             <p className="font-bold">Watch every student live on camera in Zoom&apos;s gallery view.</p>
-                            <p className="text-xs text-white/60">Students on a phone join Zoom too, but Zoom pauses their video while they write — their phone camera sends a photo every 20 seconds instead, shown on their card below (marked PHONE).</p>
+                            <p className="text-xs text-white/60">Students on a phone (marked PHONE) are proctored through Zoom only: the site checks every 30 seconds that they are still in the room, and switching apps is a warning. Some phones pause Zoom video while the student writes in the browser.</p>
                             <p className="text-sm text-white/70">
                                 Sitting: {when(feed.assessment.opensAt)} · students can start until {new Date(feed.assessment.closesAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} · Meeting ID {room.meetingId}
                             </p>
