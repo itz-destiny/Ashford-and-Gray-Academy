@@ -125,6 +125,21 @@ export default function TestIntroPage() {
         }
     };
 
+    // Exam link (/exam/…): start or continue automatically.
+    const standalone = examBase(pathname) === '/exam';
+    const autoStartedRef = useRef(false);
+    useEffect(() => {
+        if (!standalone || !assessment || autoStartedRef.current) return;
+        const t = Date.now();
+        const open = t >= new Date(assessment.opensAt).getTime() && t <= new Date(assessment.closesAt).getTime();
+        const att = assessment.myAttempt;
+        if (!open || (att && att.status !== 'in_progress')) return;
+        autoStartedRef.current = true;
+        if (att) router.replace(`/exam/${id}/take`);
+        else void handleStart();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [standalone, assessment]);
+
     const continueTest = async () => {
         if (proctored && !phone) await enterFullscreen();
         router.push(`${examBase(pathname)}/${id}/take`);
@@ -140,6 +155,16 @@ export default function TestIntroPage() {
     const now = Date.now();
     const isOpen = now >= new Date(assessment.opensAt).getTime() && now <= new Date(assessment.closesAt).getTime();
     const attempt = assessment.myAttempt;
+
+    // Exam link: straight into the exam once it's open (no instructions page).
+    if (standalone && isOpen && (!attempt || attempt.status === 'in_progress')) {
+        return (
+            <div className="flex flex-col items-center justify-center gap-3 py-24 text-center">
+                <Loader2 className="w-8 h-8 animate-spin text-[#C8A96A]" />
+                <p className="font-serif text-lg text-[#0B1F3A]">Opening your exam…</p>
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 md:py-10 space-y-8 animate-in fade-in duration-700">

@@ -86,16 +86,18 @@ export default function TakeTestPage() {
     // opening it would take the camera away from Zoom).
     const [phone, setPhone] = useState(false);
     useEffect(() => { setPhone(isPhoneDevice()); }, []);
-    const hasRoom = !!assessment?.proctorLiveClassId;
     // Opened from a direct exam link: there's no dashboard sidebar to make room for.
     const standalone = examBase(pathname) === '/exam';
+    // Exam links (/exam/…): the Zoom link is sent separately, so the site
+    // doesn't check the Zoom room or use the camera there.
+    const hasRoom = !!assessment?.proctorLiveClassId && !standalone;
 
     const proctor = useExamProctor({
         attemptId,
         enabled: proctored && !!attemptId,
         // With a Zoom exam room, Zoom's camera is the proctor — on a phone the
         // browser must not grab the camera or Zoom's own video drops.
-        useCamera: !hasRoom,
+        useCamera: !hasRoom && !standalone,
         phone,
         initialViolations: assessment?.myAttempt?.violationCount || 0,
         onAutoSubmitted: () => {
@@ -361,7 +363,7 @@ export default function TakeTestPage() {
                     onAwayChange={away => (away ? proctor.pause() : proctor.resume())}
                 />
             ) : null}
-            {proctored && !hasRoom && (
+            {proctored && !hasRoom && !standalone && (
                 <div className={cn("fixed z-20 rounded-xl overflow-hidden shadow-lg border-2 border-white bg-slate-900", phone ? "bottom-24 right-3 w-20 h-28" : cn("bottom-20 left-4 w-32 h-24", !standalone && "md:left-[19rem]"))}>
                     <video ref={proctor.videoRef} muted playsInline autoPlay className="w-full h-full object-cover -scale-x-100" />
                     <span className="absolute top-1.5 left-1.5 flex items-center gap-1 text-[9px] font-black text-white bg-black/50 rounded px-1.5 py-0.5">
