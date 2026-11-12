@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { apiFetch } from "@/lib/api-client";
+import { openExamRoomInZoom } from "@/lib/open-exam-room";
 import { Loader2, ShieldAlert, AlertTriangle, Lock, Clock } from "lucide-react";
 
 interface ExamItem {
@@ -14,6 +15,7 @@ interface ExamItem {
     closesAt: string;
     durationMinutes: number;
     adminOnly: boolean;
+    roomId: string | null;
     writing: number;
     submitted: number;
 }
@@ -23,6 +25,8 @@ const WAT: Intl.DateTimeFormatOptions = { timeZone: "Africa/Lagos", hour: "numer
 export default function MonitorExamsPage() {
     const [exams, setExams] = useState<ExamItem[] | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [opening, setOpening] = useState<string | null>(null);
+    const [openError, setOpenError] = useState<string | null>(null);
 
     const load = useCallback(async () => {
         try {
@@ -60,14 +64,14 @@ export default function MonitorExamsPage() {
                 <p className="text-white/50 text-sm">No proctored exams today.</p>
             ) : (
                 <div className="w-full max-w-3xl space-y-3">
+                    {openError && <p className="flex items-center gap-2 text-rose-300 text-sm"><AlertTriangle className="w-4 h-4" /> {openError}</p>}
                     {exams.map(e => {
                         const now = Date.now();
                         const open = now >= new Date(e.opensAt).getTime() && now <= new Date(e.closesAt).getTime() + e.durationMinutes * 60_000;
                         return (
-                            <Link
+                            <div
                                 key={e.id}
-                                href={`/monitor/exams/${e.slug}/proctor`}
-                                className="group block bg-white/[0.04] border border-white/10 border-l-4 border-l-[#C8A96A] hover:bg-white/[0.08] transition-colors p-5"
+                                className="group bg-white/[0.04] border border-white/10 border-l-4 border-l-[#C8A96A] hover:bg-white/[0.08] transition-colors p-5"
                             >
                                 <div className="flex items-start justify-between gap-4">
                                     <div className="min-w-0 space-y-1">
@@ -85,11 +89,28 @@ export default function MonitorExamsPage() {
                                         {e.adminOnly && <span className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-[#C8A96A]"><Lock className="w-3 h-3" /> Admin only</span>}
                                     </div>
                                 </div>
-                                <div className="mt-3 flex items-center justify-between text-xs">
+                                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-xs">
                                     <span className="text-white/60 tabular-nums">{e.writing} writing · {e.submitted} submitted</span>
-                                    <span className="flex items-center gap-1.5 font-black uppercase tracking-widest text-[#C8A96A] group-hover:text-white"><ShieldAlert className="w-3.5 h-3.5" /> Live Proctoring</span>
+                                    <div className="flex items-center gap-4">
+                                        <Link href={`/monitor/exams/${e.slug}/proctor`} className="text-white/60 hover:text-white underline font-bold">Warnings &amp; photos</Link>
+                                        <button
+                                            type="button"
+                                            disabled={!e.roomId || opening === e.id}
+                                            onClick={async () => {
+                                                if (!e.roomId) return;
+                                                setOpenError(null);
+                                                setOpening(e.id);
+                                                const err = await openExamRoomInZoom(e.roomId);
+                                                setOpening(null);
+                                                if (err) setOpenError(`${e.title}: ${err}`);
+                                            }}
+                                            className="flex items-center gap-1.5 bg-[#C8A96A] hover:bg-white text-[#0B1F3A] font-black uppercase tracking-widest px-4 py-2.5 disabled:opacity-50"
+                                        >
+                                            {opening === e.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldAlert className="w-3.5 h-3.5" />} Live Proctoring
+                                        </button>
+                                    </div>
                                 </div>
-                            </Link>
+                            </div>
                         );
                     })}
                 </div>

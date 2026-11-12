@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, usePathname } from 'next/navigation';
 import { apiFetch } from "@/lib/api-client";
+import { openExamRoomInZoom } from "@/lib/open-exam-room";
 import { logAudit, AUDIT_ACTIONS, AUDIT_RESOURCES } from "@/lib/audit";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -81,6 +82,7 @@ export default function TestDetailPage() {
     const [savingGrade, setSavingGrade] = useState<string | null>(null);
     const [linkDraft, setLinkDraft] = useState('');
     const [savingLink, setSavingLink] = useState(false);
+    const [openingRoom, setOpeningRoom] = useState(false);
 
     useEffect(() => {
         fetchAll();
@@ -222,11 +224,25 @@ export default function TestDetailPage() {
                         </Button>
                     )}
                     {proctored && (
-                        <Button asChild className="bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold">
-                            <Link href={`${testsBase}/${id}/proctor`}>
-                                <ShieldAlert className="w-4 h-4 mr-2" /> Live Proctoring
+                        <div className="flex flex-col items-stretch gap-1">
+                            <Button
+                                onClick={async () => {
+                                    const roomId = (assessment as any).proctorLiveClassId as string | undefined;
+                                    if (!roomId) { window.location.href = `${testsBase}/${id}/proctor`; return; }
+                                    setOpeningRoom(true);
+                                    const err = await openExamRoomInZoom(roomId);
+                                    setOpeningRoom(false);
+                                    if (err) toast({ variant: "destructive", title: "Couldn't open the Zoom exam room", description: err });
+                                }}
+                                disabled={openingRoom}
+                                className="bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold"
+                            >
+                                {openingRoom ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <ShieldAlert className="w-4 h-4 mr-2" />} Live Proctoring
+                            </Button>
+                            <Link href={`${testsBase}/${id}/proctor`} className="text-[11px] font-bold text-slate-500 hover:text-slate-800 underline text-center">
+                                Warnings &amp; photos
                             </Link>
-                        </Button>
+                        </div>
                     )}
                     {assessment.status === 'draft' && (
                         <Button onClick={handlePublish} disabled={publishing} className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold">

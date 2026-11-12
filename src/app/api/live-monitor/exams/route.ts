@@ -26,7 +26,7 @@ export const GET = withAuth(async (_req: NextRequest, { auth }) => {
                 { opensAt: { $gte: start, $lt: end } },
                 { opensAt: { $lte: now }, closesAt: { $gte: new Date(now.getTime() - 3 * 3600_000) } },
             ],
-        }).select('title slug courseId opensAt closesAt durationMinutes adminOnly').sort({ opensAt: 1 }).lean<any[]>();
+        }).select('title slug courseId opensAt closesAt durationMinutes adminOnly proctorLiveClassId').sort({ opensAt: 1 }).lean<any[]>();
 
         const courses = await Course.find({ _id: { $in: exams.map(e => e.courseId).filter(Boolean) } }).select('title').lean<any[]>();
         const courseTitle = new Map(courses.map(c => [String(c._id), c.title]));
@@ -46,6 +46,7 @@ export const GET = withAuth(async (_req: NextRequest, { auth }) => {
                 closesAt: e.closesAt,
                 durationMinutes: e.durationMinutes,
                 adminOnly: !!e.adminOnly,
+                roomId: e.proctorLiveClassId || null,
                 writing: count(e._id, 'in_progress'),
                 submitted: count(e._id, 'submitted') + count(e._id, 'graded'),
             })),
