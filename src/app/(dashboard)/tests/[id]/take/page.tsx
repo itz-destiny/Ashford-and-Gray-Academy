@@ -251,7 +251,8 @@ export default function TakeTestPage() {
     }
 
     const deadline = new Date(new Date(assessment.myAttempt.startedAt).getTime() + assessment.durationMinutes * 60 * 1000);
-    const needsFullscreen = proctored && !phone && fullscreenSupported() && !proctor.isFullscreen;
+    // Exam links (/exam/…) keep it simple: no full-screen step (tab/app switching still counts).
+    const needsFullscreen = proctored && !phone && !standalone && fullscreenSupported() && !proctor.isFullscreen;
     const cameraBlocked = proctored && proctor.camera !== 'ok' && proctor.camera !== 'pending';
     const gate = proctored && !submitting && (needsFullscreen || cameraBlocked || !!proctor.warning);
 

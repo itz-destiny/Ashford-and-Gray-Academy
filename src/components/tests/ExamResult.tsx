@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import { Share2, Copy, Check, Clock, ShieldAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -91,6 +92,9 @@ export function ExamResult({ title, score, maxScore, submitReason, pendingMarkin
             )}
 
             <div className="relative w-full max-w-md bg-white border-t-4 border-[#C8A96A] shadow-xl px-6 py-10 sm:px-10 text-center motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-95 duration-500">
+                <div className="relative h-12 w-48 mx-auto mb-5">
+                    <Image src="/A & G1.png" alt="Ashford & Gray Fusion Academy" fill sizes="192px" className="object-contain" priority />
+                </div>
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#C8A96A]">Your result</p>
                 <h1 className="mt-2 font-serif text-3xl sm:text-4xl text-[#0B1F3A]">{pendingMarking ? "Submitted" : v.word}</h1>
                 <p className="mt-1 text-sm text-slate-500 line-clamp-2">{title}</p>
@@ -130,7 +134,6 @@ export function ExamResult({ title, score, maxScore, submitReason, pendingMarkin
                         {copied ? <Check className="w-4 h-4 text-[#1F7A5A]" /> : <Copy className="w-4 h-4" />} {copied ? "Copied" : "Copy result"}
                     </button>
                 </div>
-                <p className="mt-6 text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Ashford &amp; Gray Fusion Academy</p>
             </div>
 
             <style>{`@keyframes agfa-fall { 0% { opacity: 1; transform: translateY(-20px) rotate(0deg); } 100% { opacity: 0; transform: translateY(105vh) rotate(540deg); } }`}</style>

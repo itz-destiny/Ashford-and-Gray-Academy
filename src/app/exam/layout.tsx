@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -91,8 +92,11 @@ function Shell({ info, name, children }: { info: ExamInfo | null; name: string; 
         <div className="min-h-screen bg-[#FAF9F6]">
             <header className="sticky top-0 z-30 bg-[#0B1F3A] text-white border-t-4 border-t-[#C8A96A]">
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center gap-4">
-                    <div className="min-w-0 flex-1">
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#C8A96A]">Ashford &amp; Gray Fusion Academy</p>
+                    <div className="relative h-10 w-28 sm:w-36 shrink-0">
+                        <Image src="/A & G2.png" alt="Ashford & Gray Fusion Academy" fill sizes="144px" className="object-contain object-left" priority />
+                    </div>
+                    <div className="min-w-0 flex-1 border-l border-white/15 pl-3">
+                        <p className="text-[9px] font-black uppercase tracking-[0.25em] text-[#C8A96A]">Examination</p>
                         <p className="text-sm font-bold truncate">{info?.title ?? "Examination"}</p>
                     </div>
                     <span className="hidden sm:block text-xs text-white/70 truncate max-w-[14rem]">{name}</span>
@@ -140,6 +144,9 @@ function SignIn({ examId, info, infoError }: { examId: string; info: ExamInfo | 
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#0B1F3A] px-4 py-10">
             <div className="w-full max-w-sm bg-white p-8 space-y-6 border-t-4 border-[#C8A96A]">
+                <div className="relative h-14 w-52 mx-auto">
+                    <Image src="/A & G1.png" alt="Ashford & Gray Fusion Academy" fill sizes="208px" className="object-contain" priority />
+                </div>
                 <div className="text-center space-y-2">
                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#C8A96A]">
                         {info?.type === "exam" ? "Examination" : "Assessment"}
