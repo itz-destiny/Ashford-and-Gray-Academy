@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { Clock, ShieldAlert } from "lucide-react";
 
 interface Props {
     title: string;
@@ -93,15 +92,6 @@ export function ExamResult({ title, score, maxScore, submitReason, pendingMarkin
                         <p className="mt-2 text-sm font-bold text-slate-500 tabular-nums">{shown} out of {maxScore}</p>
                     </div>
                 </div>
-
-                <p className="mt-6 text-slate-700">{pendingMarking ? "Some answers will be marked by your facilitator. Your final score may go up." : v.line}</p>
-
-                {submitReason === 'time_up' && (
-                    <p className="mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-amber-800 bg-amber-50 px-3 py-1.5"><Clock className="w-3.5 h-3.5" /> Submitted automatically when time ran out</p>
-                )}
-                {submitReason === 'violations' && (
-                    <p className="mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-red-700 bg-red-50 px-3 py-1.5"><ShieldAlert className="w-3.5 h-3.5" /> Submitted automatically after 3 warnings</p>
-                )}
 
             </div>
 
