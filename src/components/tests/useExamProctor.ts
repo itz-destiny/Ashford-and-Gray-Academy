@@ -41,7 +41,14 @@ export function fullscreenSupported(): boolean {
 export async function enterFullscreen(): Promise<boolean> {
     if (!fullscreenSupported()) return false;
     try {
-        if (!document.fullscreenElement) await document.documentElement.requestFullscreen({ navigationUI: 'hide' });
+        // Some browsers never settle the promise when full screen isn't
+        // allowed (e.g. no click); don't let that block the exam.
+        if (!document.fullscreenElement) {
+            await Promise.race([
+                document.documentElement.requestFullscreen({ navigationUI: 'hide' }),
+                new Promise<void>((_, reject) => setTimeout(() => reject(new Error('timeout')), 1500)),
+            ]);
+        }
         return true;
     } catch {
         return false;

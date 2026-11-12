@@ -104,11 +104,12 @@ export default function TestIntroPage() {
 
     useEffect(() => () => { streamRef.current?.getTracks().forEach(t => t.stop()); }, []);
 
-    const handleStart = async () => {
+    const handleStart = async (opts: { auto?: boolean } = {}) => {
         setStarting(true);
         if (proctored) {
             // Must run inside the click so the browser allows full screen.
-            if (!phone) await enterFullscreen();
+            // (Auto-start has no click: the exam page asks for full screen.)
+            if (!phone && !opts.auto) await enterFullscreen();
             streamRef.current?.getTracks().forEach(t => t.stop());
             streamRef.current = null;
         }
@@ -137,7 +138,7 @@ export default function TestIntroPage() {
         if (!open || (att && att.status !== 'in_progress')) return;
         autoStartedRef.current = true;
         if (att) router.replace(`/exam/${id}/take`);
-        else void handleStart();
+        else void handleStart({ auto: true });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [standalone, assessment]);
 
@@ -329,7 +330,7 @@ export default function TestIntroPage() {
                         </Button>
                     ) : isOpen ? (
                         <Button
-                            onClick={handleStart}
+                            onClick={() => void handleStart()}
                             disabled={starting || (proctored && (!ready || !agreed))}
                             className="w-full h-14 rounded-none bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white font-black text-xs uppercase tracking-[0.2em]"
                         >
