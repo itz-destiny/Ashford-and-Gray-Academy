@@ -83,6 +83,10 @@ export const GET = withAuth<RouteParams>(async (_req: NextRequest, { auth, param
             role,
             zak,
             backTo,
+            // Fallback for slow connections: students can open the class in
+            // the Zoom app instead of the in-browser room. Never the host's
+            // start link — hosts keep using the embedded room.
+            appJoinUrl: isHost ? undefined : liveClass.zoomJoinUrl,
         });
     } catch (error: any) {
         console.error('GET /api/live-classes/[id]/sdk-join failed:', error);

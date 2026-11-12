@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useUser } from "@/firebase";
 import { apiFetch } from "@/lib/api-client";
-import { Loader2, AlertTriangle, ArrowLeft } from "lucide-react";
+import { Loader2, AlertTriangle, ArrowLeft, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 // Two ways to land here:
@@ -48,6 +48,13 @@ export default function LiveClassRoomPage() {
     const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
     const [error, setError] = useState<string | null>(null);
     const [isHost, setIsHost] = useState(false);
+    // Zoom's in-browser room downloads ~15 MB the first time. On slow mobile
+    // data that can take minutes, so after a short wait students are offered
+    // the Zoom app instead.
+    const [slow, setSlow] = useState(false);
+    const [appJoinUrl, setAppJoinUrl] = useState<string | null>(null);
+    const liveClassIdRef = useRef<string | null>(null);
+    const joinedRef = useRef(false);
 
     const sendJoinIfReady = () => {
         if (infoRef.current && frameReadyRef.current && iframeRef.current?.contentWindow) {
@@ -73,7 +80,9 @@ export default function LiveClassRoomPage() {
                     throw new Error(info.error || 'Could not load this class.');
                 }
                 if (cancelled) return;
+                liveClassIdRef.current = liveClassId;
                 setIsHost(info.role === 1);
+                if (info.appJoinUrl) setAppJoinUrl(info.appJoinUrl);
                 infoRef.current = info;
                 sendJoinIfReady();
             } catch (err: any) {
@@ -99,6 +108,8 @@ export default function LiveClassRoomPage() {
                 frameReadyRef.current = true;
                 sendJoinIfReady();
             } else if (data.type === 'ZOOM_JOINED') {
+                joinedRef.current = true;
+                setSlow(false);
                 const info = infoRef.current;
                 if (info?.role === 0) {
                     resolveLiveClassId(String(roomId)).then((id) => {
@@ -117,14 +128,38 @@ export default function LiveClassRoomPage() {
         return () => window.removeEventListener('message', onMessage);
     }, [roomId, router]);
 
+    useEffect(() => {
+        const t = setTimeout(() => { if (!joinedRef.current) setSlow(true); }, 20_000);
+        return () => clearTimeout(t);
+    }, []);
+
+    const openInApp = () => {
+        if (!appJoinUrl) return;
+        const id = liveClassIdRef.current;
+        if (id) apiFetch(`/api/live-classes/${id}/attendance`, { method: 'POST' }).catch(() => null);
+        window.location.href = appJoinUrl;
+    };
+
+    const showAppOption = slow && !!appJoinUrl && status !== 'error';
+
     return (
         <div className="fixed inset-0 z-[9999] bg-[#0B1F3A]">
+            {showAppOption && (
+                <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 w-[calc(100%-2rem)] max-w-md bg-white text-[#0B1F3A] p-4 shadow-xl flex flex-col sm:flex-row items-center gap-3">
+                    <p className="text-sm flex-1 text-center sm:text-left">Taking too long? Your connection may be slow. Join with the Zoom app instead.</p>
+                    <Button onClick={openInApp} className="bg-[#0B1F3A] hover:bg-[#1F7A5A] text-white gap-2 shrink-0">
+                        <ExternalLink className="h-4 w-4" /> Open in Zoom app
+                    </Button>
+                    <button onClick={() => setSlow(false)} className="text-xs text-slate-500 underline shrink-0">Keep waiting</button>
+                </div>
+            )}
             {status !== 'ready' && (
                 <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 text-white bg-[#0B1F3A]">
                     {status === 'loading' ? (
                         <>
                             <Loader2 className="h-10 w-10 animate-spin text-[#C8A96A]" />
                             <p className="font-serif text-lg">Joining your class…</p>
+                            <p className="text-sm text-white/60 max-w-xs text-center px-6">The first time can take a minute while Zoom loads.</p>
                         </>
                     ) : (
                         <>

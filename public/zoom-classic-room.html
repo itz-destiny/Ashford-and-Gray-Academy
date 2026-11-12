@@ -4,8 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>Live Class</title>
-  <link type="text/css" rel="stylesheet" href="https://source.zoom.us/6.0.2/css/bootstrap.css" />
-  <link type="text/css" rel="stylesheet" href="https://source.zoom.us/6.0.2/css/react-select.css" />
+  <!-- Open the connection to Zoom's CDN straight away; the SDK pulls ~15 MB from it. -->
+  <link rel="preconnect" href="https://source.zoom.us" crossorigin />
+  <link rel="preconnect" href="https://zoom.us" crossorigin />
   <style>html, body { margin: 0; padding: 0; height: 100%; background: #0B1F3A; }</style>
 </head>
 <body>
@@ -34,17 +35,25 @@
         }
       }
 
+      // Start downloading Zoom's audio/video engine (~10 MB of WASM) the
+      // moment this page loads, instead of waiting until the join details
+      // arrive. On slow mobile data this was the bulk of the wait.
+      try {
+        ZoomMtg.setZoomJSLib('https://source.zoom.us/6.0.2/lib', '/av');
+        ZoomMtg.preLoadWasm();
+        ZoomMtg.prepareWebSDK();
+      } catch (e) { /* retried below on join */ }
+
+      var started = false;
       window.addEventListener('message', function (event) {
         if (event.origin !== window.location.origin) return;
         if (!event.data || event.data.type !== 'ZOOM_JOIN') return;
+        if (started) return;
+        started = true;
 
         var info = event.data.payload;
 
         try {
-          ZoomMtg.setZoomJSLib('https://source.zoom.us/6.0.2/lib', '/av');
-          ZoomMtg.preLoadWasm();
-          ZoomMtg.prepareWebSDK();
-
           ZoomMtg.init({
             leaveUrl: window.location.origin + '/zoom-classic-left.html',
             patchJsMedia: true,

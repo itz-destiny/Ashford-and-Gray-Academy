@@ -163,7 +163,16 @@ export async function getFreshZoomStartUrl(account: ZoomAccountCredentials, zoom
 // meant only for browser redirects — it is NOT the plaintext passcode the
 // Meeting SDK's client.join() call expects. That must come from the
 // meeting's own `password` field instead.
+// A meeting's passcode doesn't change, so when 40 students join the same
+// class in the same minute we ask Zoom once, not 40 times.
+const passcodeCache = new Map<string, { passcode: string; expiresAt: number }>();
+const PASSCODE_TTL_MS = 30 * 60 * 1000;
+
 export async function getZoomMeetingPassword(account: ZoomAccountCredentials, zoomMeetingId: string): Promise<string> {
+    const cacheKey = `${account.accountId}:${zoomMeetingId}`;
+    const hit = passcodeCache.get(cacheKey);
+    if (hit && hit.expiresAt > Date.now()) return hit.passcode;
+
     const token = await getZoomAccessToken(account);
     const res = await fetch(`https://api.zoom.us/v2/meetings/${encodeURIComponent(zoomMeetingId)}`, {
         headers: { 'Authorization': `Bearer ${token}` },
@@ -173,7 +182,9 @@ export async function getZoomMeetingPassword(account: ZoomAccountCredentials, zo
         throw new Error(`Failed to fetch Zoom meeting passcode: ${errorText}`);
     }
     const data = await res.json();
-    return (data.password as string) || '';
+    const passcode = (data.password as string) || '';
+    passcodeCache.set(cacheKey, { passcode, expiresAt: Date.now() + PASSCODE_TTL_MS });
+    return passcode;
 }
 
 // Every licensed Zoom host is a shared, generic seat (Myne Wilfred's own
