@@ -7,8 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { exportAssessmentToExcel, exportCourseToExcel } from "@/lib/exam-results-excel";
 import {
-    GraduationCap, Loader2, AlertTriangle, ChevronDown, ChevronUp, Download, Search, Smartphone, Laptop, ShieldAlert,
+    GraduationCap, Loader2, AlertTriangle, ChevronDown, ChevronUp, Download, Search, Smartphone, Laptop, ShieldAlert, FileSpreadsheet,
 } from "lucide-react";
 
 type Status = 'not_taken' | 'in_progress' | 'awaiting_marking' | 'graded';
@@ -63,27 +64,6 @@ const STATUS_LABEL: Record<Status, string> = {
 const dateFmt: Intl.DateTimeFormatOptions = { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', year: 'numeric' };
 const dateTimeFmt: Intl.DateTimeFormatOptions = { timeZone: 'Africa/Lagos', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' };
 
-function csvCell(v: unknown): string {
-    const s = v === null || v === undefined ? '' : String(v);
-    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
-}
-
-function downloadCsv(course: CourseGroup, a: AssessmentResults) {
-    const head = ['Student', 'Email', 'Programme of study', 'Status', 'Score', 'Out of', 'Percent', 'Warnings', 'Device', 'Submitted (WAT)', 'Note'];
-    const lines = a.results.map(r => [
-        r.name, r.email, r.studies.join('; '), STATUS_LABEL[r.status], r.score ?? (r.scoreSoFar !== null ? `${r.scoreSoFar} (so far)` : ''), r.maxScore, r.percent ?? '',
-        r.warnings, r.device ?? '', r.submittedAt ? new Date(r.submittedAt).toLocaleString('en-GB', dateTimeFmt) : '',
-        r.submitReason === 'violations' ? 'Auto-submitted for warnings' : r.submitReason === 'time_up' ? 'Submitted when time ran out' : '',
-    ].map(csvCell).join(','));
-    const blob = new Blob([[head.join(','), ...lines].join('\n')], { type: 'text/csv;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${course.title} - ${a.title}.csv`.replace(/[\\/:*?"<>|]/g, '-');
-    link.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
 export default function RegistrarExamResultsPage() {
     const [courses, setCourses] = useState<CourseGroup[] | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -91,6 +71,12 @@ export default function RegistrarExamResultsPage() {
     const [open, setOpen] = useState<Set<string>>(new Set());
     const [filter, setFilter] = useState<Filter>('all');
     const [query, setQuery] = useState('');
+    const [exporting, setExporting] = useState<string | null>(null);
+
+    const runExport = async (key: string, job: () => Promise<void>) => {
+        setExporting(key);
+        try { await job(); } catch { alert('Could not create the Excel file. Please try again.'); } finally { setExporting(null); }
+    };
 
     useEffect(() => {
         apiFetch('/api/registrar/exam-results')
@@ -175,6 +161,16 @@ export default function RegistrarExamResultsPage() {
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                                 <Input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search student name or email" className="pl-9 rounded-xl bg-white" />
                             </div>
+                            {course && course.assessments.length > 0 && (
+                                <Button
+                                    onClick={() => void runExport('course', () => exportCourseToExcel(course.title, course.assessments))}
+                                    disabled={exporting !== null}
+                                    className="rounded-xl font-bold bg-[#1F7A5A] hover:bg-[#17614a] text-white shrink-0"
+                                >
+                                    {exporting === 'course' ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <FileSpreadsheet className="w-4 h-4 mr-1.5" />}
+                                    Export course to Excel
+                                </Button>
+                            )}
                             <div className="flex rounded-xl bg-slate-100 p-1 text-xs font-bold">
                                 {(['all', 'taken', 'not_taken'] as Filter[]).map(f => (
                                     <button
@@ -223,8 +219,8 @@ export default function RegistrarExamResultsPage() {
                                         <div className="border-t border-slate-100">
                                             <div className="flex justify-between items-center px-5 py-3 bg-slate-50/60">
                                                 <p className="text-xs font-bold text-slate-500">{rows.length} shown</p>
-                                                <Button size="sm" variant="outline" className="rounded-lg font-bold" onClick={() => downloadCsv(course, a)}>
-                                                    <Download className="w-4 h-4 mr-1.5" /> Download (Excel/CSV)
+                                                <Button size="sm" variant="outline" className="rounded-lg font-bold" disabled={exporting !== null} onClick={() => void runExport(a._id, () => exportAssessmentToExcel(course.title, a))}>
+                                                    {exporting === a._id ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Download className="w-4 h-4 mr-1.5" />} Download Excel
                                                 </Button>
                                             </div>
                                             <div className="overflow-x-auto">
