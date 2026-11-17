@@ -30,7 +30,7 @@ export const GET = withAuth<RouteParams>(async (_req: NextRequest, { auth, param
         }
         // The registrar may open exam rooms only (to proctor exams), not ordinary classes.
         const isExamRoom = String(liveClass.topic || '').startsWith('EXAM');
-        const canStart = auth.role === 'admin' || auth.role === 'live_monitor' || liveClass.instructorId === auth.uid || ((auth.role === 'registrar' || auth.role === 'admissions_officer') && isExamRoom);
+        const canStart = auth.role === 'admin' || auth.role === 'live_monitor' || liveClass.instructorId === auth.uid || ((auth.role === 'registrar' || auth.role === 'admissions_officer' || auth.role === 'course_registrar') && isExamRoom);
         if (!canStart) {
             return NextResponse.json({ error: 'You can only start a class you are hosting.' }, { status: 403 });
         }
