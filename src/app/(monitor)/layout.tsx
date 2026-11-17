@@ -34,6 +34,7 @@ export default function MonitorLayout({ children }: { children: React.ReactNode 
                                 <span className="mx-2 h-4 w-px bg-white/10" />
                                 <MonitorNavLink href="/admissions">Admissions</MonitorNavLink>
                                 <MonitorNavLink href="/registrar">Registrar</MonitorNavLink>
+                                <MonitorNavLink href="/course-registrar">Academic Affairs</MonitorNavLink>
                                 <MonitorNavLink href="/admin">Admin</MonitorNavLink>
                             </span>
                         )}

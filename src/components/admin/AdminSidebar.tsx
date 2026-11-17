@@ -25,7 +25,7 @@ import {
     UserSquare2,
     MonitorPlay,
     Link2,
-    ClipboardCheck, Award,
+    ClipboardCheck, Award, Building2, School, Landmark,
 } from "lucide-react";
 import { useUser } from "@/firebase";
 import { signOut } from "@/firebase/auth";
@@ -48,6 +48,9 @@ const navItems = [
     { href: "/admin/communications", label: "Messages", icon: MessageSquare, tour: "nav-admin-communications" },
     { href: "/admin/newsletter", label: "Newsletter", icon: Mail },
     { href: "/admin/reports", label: "Insights", icon: BarChart3, tour: "nav-admin-reports" },
+    { href: "/registrar", label: "Registrar Portal", icon: Building2 },
+    { href: "/admissions", label: "Admissions Portal", icon: School },
+    { href: "/course-registrar", label: "Academic Affairs", icon: Landmark },
 ];
 
 export function AdminSidebar({ className }: { className?: string }) {

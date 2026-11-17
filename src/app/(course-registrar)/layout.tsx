@@ -13,7 +13,7 @@ import { courseRegistrarTourSteps } from "@/lib/tutorial-steps/course-registrar"
 
 export default function CourseRegistrarLayout({ children }: { children: React.ReactNode }) {
     return (
-        <RoleGuard allowed={["course_registrar"]}>
+        <RoleGuard allowed={["course_registrar", "admin"]}>
             <PortalTutorial steps={courseRegistrarTourSteps} />
             <div className="flex min-h-screen w-full bg-[#FAF9F6]">
                 <CourseRegistrarSidebar className="hidden md:flex" />

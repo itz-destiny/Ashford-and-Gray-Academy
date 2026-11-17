@@ -17,8 +17,9 @@ export function examLinkPath(assessmentId: string): string {
  * the instructor portal and the admin portal; links stay inside whichever
  * portal the page was opened from.
  */
-export function staffTestsBase(pathname: string | null | undefined): '/admin/tests' | '/instructor/tests' | '/monitor/exams' | '/registrar/exams' {
+export function staffTestsBase(pathname: string | null | undefined): '/admin/tests' | '/instructor/tests' | '/monitor/exams' | '/registrar/exams' | '/admissions/exams' {
     if (pathname?.startsWith('/monitor/')) return '/monitor/exams';
     if (pathname?.startsWith('/registrar/')) return '/registrar/exams';
+    if (pathname?.startsWith('/admissions/')) return '/admissions/exams';
     return pathname?.startsWith('/admin/') ? '/admin/tests' : '/instructor/tests';
 }

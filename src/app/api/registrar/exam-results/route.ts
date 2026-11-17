@@ -18,7 +18,7 @@ function handleError(err: unknown): Response {
 // =============================================================================
 export const GET = withAuth(async (_req: NextRequest, { auth }) => {
     try {
-        requireRole(auth, ['registrar', 'admin', 'course_registrar']);
+        requireRole(auth, ['registrar', 'admin', 'course_registrar', 'admissions_officer']);
         await dbConnect();
 
         const list = await buildExamResults();

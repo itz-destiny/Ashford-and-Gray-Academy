@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/logo";
 import {
-    LayoutDashboard, LogOut, Sparkles, PlayCircle, Link2,
+    LayoutDashboard, LogOut, Sparkles, PlayCircle, Link2, ShieldCheck, GraduationCap,
 } from "lucide-react";
 import { useUser } from "@/firebase";
 import { signOut } from "@/firebase/auth";
@@ -15,6 +15,8 @@ import { TOUR_QUERY_PARAM } from "@/components/tutorial/PortalTutorial";
 const navItems = [
     { href: "/admissions", label: "Admissions", icon: LayoutDashboard, tour: "nav-admissions-home" },
     { href: "/admissions/zoom-links", label: "Zoom Links", icon: Link2 },
+    { href: "/admissions/exams", label: "Exam Monitor", icon: ShieldCheck },
+    { href: "/admissions/exam-results", label: "Exam Results", icon: GraduationCap },
 ];
 
 export function AdmissionsSidebar({ className }: { className?: string }) {

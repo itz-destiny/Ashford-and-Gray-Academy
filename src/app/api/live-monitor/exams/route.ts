@@ -13,7 +13,7 @@ import { watDayBoundsUtc } from '@/lib/wat-time';
 // =============================================================================
 export const GET = withAuth(async (_req: NextRequest, { auth }) => {
     try {
-        requireRole(auth, ['live_monitor', 'registrar', 'admin']);
+        requireRole(auth, ['live_monitor', 'registrar', 'admissions_officer', 'admin']);
         await dbConnect();
         const { start, end } = watDayBoundsUtc();
         const now = new Date();

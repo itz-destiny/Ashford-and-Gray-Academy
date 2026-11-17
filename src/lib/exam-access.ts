@@ -11,11 +11,11 @@ export function canMonitorExam(assessment: { adminOnly?: boolean; createdBy?: st
     if (!assessment) return false;
     if (auth.role === 'admin') return true;
     if (assessment.adminOnly) return false;
-    return auth.role === 'live_monitor' || auth.role === 'registrar' || auth.role === 'course_registrar' || assessment.createdBy === auth.uid;
+    return auth.role === 'live_monitor' || auth.role === 'registrar' || auth.role === 'admissions_officer' || auth.role === 'course_registrar' || assessment.createdBy === auth.uid;
 }
 
 /** Roles that may open Live Proctoring at all (each exam is then checked with canMonitorExam). */
-export const MONITOR_ROLES = ['admin', 'instructor', 'course_registrar', 'registrar', 'live_monitor'] as const;
+export const MONITOR_ROLES = ['admin', 'instructor', 'course_registrar', 'registrar', 'admissions_officer', 'live_monitor'] as const;
 
 /**
  * Live-class IDs of the Zoom rooms of "admin only" exams. Only the admin may
