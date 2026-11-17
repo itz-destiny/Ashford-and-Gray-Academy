@@ -28,7 +28,9 @@ export const GET = withAuth<RouteParams>(async (_req: NextRequest, { auth, param
         if (auth.role !== 'admin' && auth.role !== 'student' && (await adminOnlyRoomIds()).has(String(liveClass._id))) {
             return NextResponse.json({ error: 'Only the admin can monitor this exam room.' }, { status: 403 });
         }
-        const canStart = auth.role === 'admin' || auth.role === 'live_monitor' || liveClass.instructorId === auth.uid;
+        // The registrar may open exam rooms only (to proctor exams), not ordinary classes.
+        const isExamRoom = String(liveClass.topic || '').startsWith('EXAM');
+        const canStart = auth.role === 'admin' || auth.role === 'live_monitor' || liveClass.instructorId === auth.uid || (auth.role === 'registrar' && isExamRoom);
         if (!canStart) {
             return NextResponse.json({ error: 'You can only start a class you are hosting.' }, { status: 403 });
         }
