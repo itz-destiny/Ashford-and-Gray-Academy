@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { Logo } from "@/components/logo";
 import {
     Users, MessageSquare, Settings,
-    LayoutDashboard, LogOut, TrendingUp, Sparkles, PlayCircle, CalendarClock, ShieldCheck, GraduationCap,
+    LayoutDashboard, LogOut, TrendingUp, Sparkles, PlayCircle, CalendarClock, ShieldCheck, GraduationCap, BookOpenCheck,
 } from "lucide-react";
 import { useUser } from "@/firebase";
 import { signOut } from "@/firebase/auth";
@@ -21,6 +21,7 @@ const navItems = [
     { href: "/course-registrar/analytics",      label: "Performance",       icon: TrendingUp, tour: "nav-cr-analytics" },
     { href: "/course-registrar/exams",          label: "Exam Monitor",      icon: ShieldCheck },
     { href: "/course-registrar/exam-results",   label: "Exam Results",      icon: GraduationCap },
+    { href: "/course-registrar/exam-bank",   label: "Exam Bank",       icon: BookOpenCheck },
 ];
 
 export function CourseRegistrarSidebar({ className }: { className?: string }) {
