@@ -23,6 +23,9 @@ interface BankExam {
  * Read-only bank of every exam with its questions and answer key, for staff.
  * Drafts are hidden from students until someone publishes them.
  */
+// Exam Bank tab: every draft. Tests tab: everything already published to students.
+const inTab = (e: { status: string }, t: "exam" | "test") => (t === "exam" ? e.status === "draft" : e.status !== "draft");
+
 export function ExamBank() {
     const [exams, setExams] = useState<BankExam[] | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -45,14 +48,13 @@ export function ExamBank() {
 
     const groups = useMemo(() => {
         const q = query.trim().toLowerCase();
-        const list = (exams || []).filter(e => e.type === tab).filter(e => !q || e.title.toLowerCase().includes(q) || e.courseTitle.toLowerCase().includes(q));
+        const list = (exams || []).filter(e => inTab(e, tab)).filter(e => !q || e.title.toLowerCase().includes(q) || e.courseTitle.toLowerCase().includes(q));
         const map = new Map<string, BankExam[]>();
         for (const e of list) map.set(e.courseTitle, [...(map.get(e.courseTitle) || []), e]);
         return [...map.entries()].sort((a, b) => a[0].localeCompare(b[0]));
     }, [exams, query, tab]);
 
-    const count = (t: "exam" | "test") => (exams || []).filter(e => e.type === t).length;
-    const drafts = (exams || []).filter(e => e.type === tab && e.status === "draft").length;
+    const count = (t: "exam" | "test") => (exams || []).filter(e => inTab(e, t)).length;
 
     return (
         <div className="flex-1 flex flex-col px-4 sm:px-6 py-8 gap-6 max-w-4xl">
@@ -63,9 +65,9 @@ export function ExamBank() {
                 </div>
                 <p className="text-sm text-slate-500">
                     {tab === "exam"
-                        ? <>Academy exams with their questions and correct answers. <strong>Draft</strong> exams are hidden from students until they are published.</>
-                        : <>Tests that instructors made and published to their own classes from their portals.</>}
-                    {exams && <> {count(tab)} {tab === "exam" ? "exams" : "tests"} · {drafts} drafts.</>}
+                        ? <>Draft exams with their questions and correct answers. Students cannot see drafts.</>
+                        : <>Tests already published to students, made by instructors from their portals.</>}
+                    {exams && <> {count(tab)} {tab === "exam" ? "drafts" : "tests"}.</>}
                 </p>
                 <div className="flex gap-1 border-b border-slate-200">
                     {(["exam", "test"] as const).map(t => (
@@ -78,7 +80,7 @@ export function ExamBank() {
                                 tab === t ? "border-[#C8A96A] text-[#0B1F3A]" : "border-transparent text-slate-400 hover:text-slate-600",
                             )}
                         >
-                            {t === "exam" ? "Exams" : "Instructor tests"}{exams && <span className="tabular-nums"> ({count(t)})</span>}
+                            {t === "exam" ? "Exam Bank" : "Tests"}{exams && <span className="tabular-nums"> ({count(t)})</span>}
                         </button>
                     ))}
                 </div>
@@ -117,7 +119,7 @@ export function ExamBank() {
                                             <p className="text-xs text-slate-500 tabular-nums">
                                                 {e.questions.length} questions · {e.totalPoints} marks · {e.durationMinutes} min · /exam/{e.slug}
                                             </p>
-                                            {e.type === "test" && (
+                                            {tab === "test" && (
                                                 <p className="text-xs text-slate-500">
                                                     By {e.createdBy}
                                                     {e.status === "published" && e.closesAt && (new Date(e.closesAt) < new Date()
