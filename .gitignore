@@ -53,3 +53,10 @@ firestore-debug.log
 # script, the data lives in Mongo from here; the spreadsheet itself doesn't
 # need to be in git (large binary, gets superseded by "Updated (N)" files).
 /public/Ashford_Gray_Fusion_Academy_Timetable*.xlsx
+# Local test credentials — never commit.
+PROCTORING-TEST-LOGINS.txt
+REGISTRAR-LOGIN.txt
+ACADEMIC-AFFAIRS-LOGIN.txt
+
+# Exam papers and answer keys: never deploy (they are loaded into the Exam Bank instead)
+public/Exams/

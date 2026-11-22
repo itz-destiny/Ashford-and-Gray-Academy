@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Assessment from '@/models/Assessment';
 import Course from '@/models/Course';
+import User from '@/models/User';
 import { AuthError, requireRole, withAuth } from '@/lib/auth-server';
 
 function handleError(err: unknown): Response {
@@ -24,12 +25,15 @@ export const GET = withAuth(async (_req: NextRequest, { auth }) => {
 
         const [assessments, courses] = await Promise.all([
             Assessment.find({})
-                .select('title slug type status courseId durationMinutes totalPoints opensAt closesAt questions')
+                .select('title slug type status courseId createdBy durationMinutes totalPoints opensAt closesAt questions')
                 .sort({ title: 1 })
                 .lean<any[]>(),
             Course.find({}).select('title').lean<any[]>(),
         ]);
         const courseTitle = new Map(courses.map(c => [String(c._id), c.title as string]));
+        const creators = await User.find({ uid: { $in: [...new Set(assessments.map(a => a.createdBy).filter(Boolean))] } })
+            .select('uid displayName role').lean<any[]>();
+        const creatorName = new Map(creators.map(u => [u.uid as string, (u.role === 'instructor' ? u.displayName : 'Academy') as string]));
 
         const exams = assessments.map(a => ({
             id: String(a._id),
@@ -37,6 +41,7 @@ export const GET = withAuth(async (_req: NextRequest, { auth }) => {
             title: a.title,
             type: a.type,
             status: a.status,
+            createdBy: creatorName.get(a.createdBy) || 'Academy',
             courseTitle: a.courseId ? courseTitle.get(String(a.courseId)) || 'Unknown course' : 'All students',
             durationMinutes: a.durationMinutes,
             totalPoints: a.totalPoints,

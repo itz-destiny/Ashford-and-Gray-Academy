@@ -11,6 +11,8 @@ interface BankExam {
     title: string;
     type: "test" | "exam";
     status: "draft" | "published";
+    createdBy: string;
+    closesAt: string;
     courseTitle: string;
     durationMinutes: number;
     totalPoints: number;
@@ -26,6 +28,7 @@ export function ExamBank() {
     const [error, setError] = useState<string | null>(null);
     const [query, setQuery] = useState("");
     const [open, setOpen] = useState<string | null>(null);
+    const [tab, setTab] = useState<"exam" | "test">("exam");
 
     useEffect(() => {
         (async () => {
@@ -42,13 +45,14 @@ export function ExamBank() {
 
     const groups = useMemo(() => {
         const q = query.trim().toLowerCase();
-        const list = (exams || []).filter(e => !q || e.title.toLowerCase().includes(q) || e.courseTitle.toLowerCase().includes(q));
+        const list = (exams || []).filter(e => e.type === tab).filter(e => !q || e.title.toLowerCase().includes(q) || e.courseTitle.toLowerCase().includes(q));
         const map = new Map<string, BankExam[]>();
         for (const e of list) map.set(e.courseTitle, [...(map.get(e.courseTitle) || []), e]);
         return [...map.entries()].sort((a, b) => a[0].localeCompare(b[0]));
-    }, [exams, query]);
+    }, [exams, query, tab]);
 
-    const drafts = (exams || []).filter(e => e.status === "draft").length;
+    const count = (t: "exam" | "test") => (exams || []).filter(e => e.type === t).length;
+    const drafts = (exams || []).filter(e => e.type === tab && e.status === "draft").length;
 
     return (
         <div className="flex-1 flex flex-col px-4 sm:px-6 py-8 gap-6 max-w-4xl">
@@ -58,15 +62,32 @@ export function ExamBank() {
                     <h1 className="font-serif text-2xl tracking-tight text-[#0B1F3A]">Exam Bank</h1>
                 </div>
                 <p className="text-sm text-slate-500">
-                    Every exam with its questions and correct answers. <strong>Draft</strong> exams are hidden from students until they are published.
-                    {exams && <> {exams.length} exams · {drafts} drafts.</>}
+                    {tab === "exam"
+                        ? <>Academy exams with their questions and correct answers. <strong>Draft</strong> exams are hidden from students until they are published.</>
+                        : <>Tests that instructors made and published to their own classes from their portals.</>}
+                    {exams && <> {count(tab)} {tab === "exam" ? "exams" : "tests"} · {drafts} drafts.</>}
                 </p>
+                <div className="flex gap-1 border-b border-slate-200">
+                    {(["exam", "test"] as const).map(t => (
+                        <button
+                            key={t}
+                            type="button"
+                            onClick={() => { setTab(t); setOpen(null); }}
+                            className={cn(
+                                "px-4 py-2 text-xs font-black uppercase tracking-widest border-b-2 -mb-px",
+                                tab === t ? "border-[#C8A96A] text-[#0B1F3A]" : "border-transparent text-slate-400 hover:text-slate-600",
+                            )}
+                        >
+                            {t === "exam" ? "Exams" : "Instructor tests"}{exams && <span className="tabular-nums"> ({count(t)})</span>}
+                        </button>
+                    ))}
+                </div>
                 <label className="flex items-center gap-2 border border-slate-200 bg-white px-3 py-2 max-w-md">
                     <Search className="w-4 h-4 text-slate-400" />
                     <input
                         value={query}
                         onChange={e => setQuery(e.target.value)}
-                        placeholder="Search by exam or programme"
+                        placeholder={tab === "exam" ? "Search by exam or programme" : "Search by test or programme"}
                         className="flex-1 text-sm outline-none bg-transparent"
                     />
                 </label>
@@ -96,11 +117,21 @@ export function ExamBank() {
                                             <p className="text-xs text-slate-500 tabular-nums">
                                                 {e.questions.length} questions · {e.totalPoints} marks · {e.durationMinutes} min · /exam/{e.slug}
                                             </p>
+                                            {e.type === "test" && (
+                                                <p className="text-xs text-slate-500">
+                                                    By {e.createdBy}
+                                                    {e.status === "published" && e.closesAt && (new Date(e.closesAt) < new Date()
+                                                        ? <> · closed {new Date(e.closesAt).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</>
+                                                        : <> · open to students until {new Date(e.closesAt).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</>)}
+                                                </p>
+                                            )}
                                         </div>
                                         <div className="flex items-center gap-3 shrink-0">
                                             {e.status === "draft"
                                                 ? <span className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest px-2 py-1 bg-amber-100 text-amber-800"><EyeOff className="w-3 h-3" /> Draft</span>
-                                                : <span className="text-[10px] font-black uppercase tracking-widest px-2 py-1 bg-emerald-100 text-emerald-800">Published</span>}
+                                                : e.closesAt && new Date(e.closesAt) < new Date()
+                                                    ? <span className="text-[10px] font-black uppercase tracking-widest px-2 py-1 bg-slate-100 text-slate-600">Closed</span>
+                                                    : <span className="text-[10px] font-black uppercase tracking-widest px-2 py-1 bg-emerald-100 text-emerald-800">Published</span>}
                                             <ChevronDown className={cn("w-4 h-4 text-slate-400 transition-transform", isOpen && "rotate-180")} />
                                         </div>
                                     </button>
