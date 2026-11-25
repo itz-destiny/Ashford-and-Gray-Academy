@@ -30,7 +30,8 @@ export const GET = withAuth(async (_req: NextRequest, { auth }) => {
                 .lean<any[]>(),
             Course.find({}).select('title').lean<any[]>(),
         ]);
-        const courseTitle = new Map(courses.map(c => [String(c._id), c.title as string]));
+        // Exam Bank shows programme names without the "Diploma in" prefix.
+        const courseTitle = new Map(courses.map(c => [String(c._id), String(c.title).replace(/^Diploma in /i, '')]));
         const creators = await User.find({ uid: { $in: [...new Set(assessments.map(a => a.createdBy).filter(Boolean))] } })
             .select('uid displayName role').lean<any[]>();
         const creatorName = new Map(creators.map(u => [u.uid as string, (u.role === 'instructor' ? u.displayName : 'Academy') as string]));
