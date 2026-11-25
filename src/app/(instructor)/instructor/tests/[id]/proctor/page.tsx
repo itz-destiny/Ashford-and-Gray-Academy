@@ -14,6 +14,7 @@ import { INCIDENT_LABELS, OFFLINE_AFTER_MS } from "@/lib/proctoring";
 import { cn } from "@/lib/utils";
 import { ArrowLeft, Loader2, ShieldAlert, Users, Radio, AlertTriangle, CheckCircle2, WifiOff, Video, PlayCircle } from "lucide-react";
 
+import { score100 } from "@/lib/score100";
 interface Incident { type: string; at: string; detail?: string }
 
 interface Row {
@@ -224,7 +225,7 @@ export default function LiveProctorPage() {
                                     <p className="text-xs text-slate-400 truncate">{r.student?.email}</p>
                                     <div className="flex items-center justify-between text-xs font-bold text-slate-500 pt-1">
                                         <span>{r.answered}/{r.totalQuestions} answered</span>
-                                        <span>{state === 'done' ? `${r.score}/${r.maxScore} pts` : `${minsLeft} min left`}</span>
+                                        <span>{state === 'done' ? `${score100(r.score, r.maxScore) ?? 0}/100` : `${minsLeft} min left`}</span>
                                     </div>
                                     {v > 0 && (
                                         <p className="text-xs font-bold text-amber-700 truncate">
@@ -362,7 +363,7 @@ function StudentDetail({ row, max }: { row: Row; max: number }) {
                     <Badge variant="outline">{row.events.length} blocked actions</Badge>
                     <Badge variant="outline">{row.snapshotCount} photos</Badge>
                     <Badge variant="outline">{row.answered}/{row.totalQuestions} answered</Badge>
-                    {row.status !== 'in_progress' && <Badge variant="outline">{row.score}/{row.maxScore} pts</Badge>}
+                    {row.status !== 'in_progress' && <Badge variant="outline">{score100(row.score, row.maxScore) ?? 0}/100</Badge>}
                     {row.submitReason === 'violations' && <Badge className="bg-red-100 text-red-700 border-none">Auto-submitted for warnings</Badge>}
                 </div>
 

@@ -116,8 +116,8 @@ export default function CourseRegistrarGradesPage() {
 
     const downloadCsv = (rows: GradeRecord[], filename: string) => {
         const csv = [
-            ['Student', 'Email', 'Assessment', 'Course', 'Score', 'Max Score', 'Percentage', 'Status'],
-            ...rows.map(r => [r.studentName, r.studentEmail, r.assessmentTitle, r.courseTitle, r.score, r.maxScore, `${r.percentage}%`, r.status]),
+            ['Student', 'Email', 'Assessment', 'Course', 'Score (out of 100)', 'Status'],
+            ...rows.map(r => [r.studentName, r.studentEmail, r.assessmentTitle, r.courseTitle, Math.round(r.percentage), r.status]),
         ].map(row => row.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',')).join('\n');
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);

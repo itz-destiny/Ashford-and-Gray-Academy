@@ -13,6 +13,7 @@ import { MAX_VIOLATIONS, isProctored } from "@/lib/proctoring";
 import { enterFullscreen } from "@/components/tests/useExamProctor";
 import { isPhoneDevice } from "@/lib/device";
 
+import { score100 } from "@/lib/score100";
 interface Assessment {
     _id: string;
     title: string;
@@ -192,8 +193,8 @@ export default function TestIntroPage() {
                             <p className="font-serif text-2xl text-[#0B1F3A] tabular-nums">{assessment.durationMinutes} min</p>
                         </div>
                         <div className="p-4 text-center">
-                            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Marks</p>
-                            <p className="font-serif text-2xl text-[#0B1F3A] tabular-nums">{assessment.totalPoints}</p>
+                            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Marked out of</p>
+                            <p className="font-serif text-2xl text-[#0B1F3A] tabular-nums">100</p>
                         </div>
                     </div>
 
@@ -311,7 +312,7 @@ export default function TestIntroPage() {
                                 <p className="font-black text-[#0B1F3A]">
                                     {attempt.status === 'graded' ? 'Graded' : 'Submitted — pending final grading'}
                                 </p>
-                                <p className="font-serif text-2xl text-[#1F7A5A] tabular-nums">{attempt.score} / {attempt.maxScore}</p>
+                                <p className="font-serif text-2xl text-[#1F7A5A] tabular-nums">{score100(attempt.score, attempt.maxScore) ?? 0} / 100</p>
                                 {attempt.submitReason === 'violations' && (
                                     <p className="text-sm font-bold text-red-700 mt-1">Submitted automatically after {MAX_VIOLATIONS} proctoring warnings.</p>
                                 )}

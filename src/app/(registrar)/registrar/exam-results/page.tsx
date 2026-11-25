@@ -12,6 +12,7 @@ import {
     GraduationCap, Loader2, AlertTriangle, ChevronDown, ChevronUp, Download, Search, Smartphone, Laptop, ShieldAlert, FileSpreadsheet,
 } from "lucide-react";
 
+import { score100 } from "@/lib/score100";
 type Status = 'not_taken' | 'in_progress' | 'awaiting_marking' | 'graded';
 
 interface Result {
@@ -199,7 +200,7 @@ export default function RegistrarExamResultsPage() {
                                                 <p className="font-black text-slate-900">{a.title}</p>
                                             </div>
                                             <p className="text-xs text-slate-500">
-                                                {new Date(a.opensAt).toLocaleDateString('en-GB', dateFmt)} · {a.totalPoints} points
+                                                {new Date(a.opensAt).toLocaleDateString('en-GB', dateFmt)} · marked out of 100
                                             </p>
                                         </div>
                                         <div className="flex items-center gap-5 text-sm">
@@ -257,7 +258,7 @@ export default function RegistrarExamResultsPage() {
                                                                     {r.submitReason === 'violations' && <p className="text-[11px] font-bold text-red-600 mt-1">Auto-submitted (warnings)</p>}
                                                                     {r.submitReason === 'time_up' && <p className="text-[11px] font-bold text-amber-700 mt-1">Time ran out</p>}
                                                                 </td>
-                                                                <td className="px-3 py-3 text-right tabular-nums font-bold text-slate-900 whitespace-nowrap">{r.score !== null ? `${r.score} / ${r.maxScore}` : r.scoreSoFar !== null ? <span className="text-slate-400 font-medium" title="Auto-marked part only">{r.scoreSoFar} so far</span> : '—'}</td>
+                                                                <td className="px-3 py-3 text-right tabular-nums font-bold text-slate-900 whitespace-nowrap">{r.score !== null ? `${score100(r.score, r.maxScore) ?? 0} / 100` : r.scoreSoFar !== null ? <span className="text-slate-400 font-medium" title="Auto-marked part only">{score100(r.scoreSoFar, r.maxScore) ?? 0} so far</span> : '—'}</td>
                                                                 <td className={cn(
                                                                     "px-3 py-3 text-right tabular-nums font-black",
                                                                     r.percent === null ? "text-slate-300" : r.percent >= 50 ? "text-emerald-700" : "text-red-600"

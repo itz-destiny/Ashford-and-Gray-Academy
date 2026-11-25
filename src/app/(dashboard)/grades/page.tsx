@@ -10,6 +10,7 @@ import { BookOpen, Award, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
+import { score100 } from "@/lib/score100";
 export default function StudentGradesPage() {
     const { user } = useUser();
     const [enrollments, setEnrollments] = useState<any[]>([]);
@@ -113,8 +114,7 @@ export default function StudentGradesPage() {
                                         </Badge>
                                     ) : (
                                         <div className="text-right">
-                                            <p className="font-serif text-[#0B1F3A] text-lg">{r.percentage}%</p>
-                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{r.score}/{r.maxScore} pts</p>
+                                            <p className="font-serif text-[#0B1F3A] text-lg">{score100(r.score, r.maxScore) ?? 0} / 100</p>
                                         </div>
                                     )}
                                 </div>

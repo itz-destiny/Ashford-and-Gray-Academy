@@ -24,6 +24,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 
+import { score100 } from "@/lib/score100";
 interface Question {
     _id: string;
     type: 'mcq' | 'true_false' | 'short_answer';
@@ -299,7 +300,7 @@ export default function TestDetailPage() {
                         <div className="bg-emerald-500 p-3 rounded-xl text-white"><ClipboardCheck className="w-5 h-5" /></div>
                         <div>
                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Average Score</p>
-                            <p className="text-2xl font-black text-slate-900">{averageScore} / {assessment.totalPoints}</p>
+                            <p className="text-2xl font-black text-slate-900">{score100(Number(averageScore), assessment.totalPoints) ?? 0} / 100</p>
                         </div>
                     </CardContent>
                 </Card>
@@ -338,7 +339,7 @@ export default function TestDetailPage() {
                                             <TableCell>
                                                 <Badge variant="outline" className="capitalize">{attempt.status.replace('_', ' ')}</Badge>
                                             </TableCell>
-                                            <TableCell className="font-bold">{attempt.score} / {attempt.maxScore}</TableCell>
+                                            <TableCell className="font-bold">{score100(attempt.score, attempt.maxScore) ?? 0} / 100</TableCell>
                                             {proctored && (
                                                 <TableCell>
                                                     {(() => {

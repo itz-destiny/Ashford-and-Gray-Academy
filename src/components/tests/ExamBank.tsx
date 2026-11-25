@@ -256,7 +256,7 @@ function ModuleRow({ group, index, isOpen, onToggle, showOwner }: {
                         <p className="text-xs text-slate-500 tabular-nums">
                             {parts > 1
                                 ? <>{parts} parts · {questions} questions · {parts} × {e.durationMinutes} min</>
-                                : <>{questions} questions · {e.totalPoints} marks · {e.durationMinutes} min · /exam/{e.slug}</>}
+                                : <>{questions} questions · marked out of 100 · {e.durationMinutes} min · /exam/{e.slug}</>}
                         </p>
                         {showOwner && (
                             <p className="text-xs text-slate-500">

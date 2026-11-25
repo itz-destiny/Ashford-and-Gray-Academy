@@ -1,3 +1,4 @@
+import { score100 } from './score100';
 "use client";
 
 // Excel (.xlsx) export for the Exam Results page. The xlsx library is loaded
@@ -52,9 +53,7 @@ function rows(a: ExportAssessment) {
             Email: r.email,
             'Programme of study': r.studies.join('; '),
             Status: STATUS[r.status],
-            Score: r.score ?? r.scoreSoFar ?? null,
-            'Out of': r.maxScore,
-            'Percent (%)': r.percent,
+            'Score (out of 100)': score100(r.score ?? r.scoreSoFar, r.maxScore),
             Warnings: a.type === 'exam' ? r.warnings : null,
             Device: r.device === 'phone' ? 'Phone' : r.device === 'computer' ? 'Computer' : '',
             'Started (WAT)': when(r.startedAt),
@@ -65,7 +64,7 @@ function rows(a: ExportAssessment) {
         }));
 }
 
-const WIDTHS = [5, 26, 34, 30, 16, 8, 8, 12, 10, 10, 20, 20, 40];
+const WIDTHS = [5, 26, 34, 30, 16, 16, 10, 10, 20, 20, 40];
 
 /** Excel sheet names: max 31 chars, no []:*?/\ , unique. */
 function sheetName(title: string, used: Set<string>): string {
@@ -104,7 +103,7 @@ export async function exportCourseToExcel(courseTitle: string, assessments: Expo
         Exam: a.title,
         Type: a.type === 'exam' ? 'Exam' : 'Test',
         Date: new Date(a.opensAt).toLocaleDateString('en-GB', WAT_D),
-        'Out of': a.totalPoints,
+        'Out of': 100,
         'Took it': a.taken,
         Eligible: a.eligible,
         'Average (%)': a.averagePercent,

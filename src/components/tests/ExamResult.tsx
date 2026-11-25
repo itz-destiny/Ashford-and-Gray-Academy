@@ -32,14 +32,14 @@ export function ExamResult({ title, score, maxScore, submitReason, pendingMarkin
     // Count the score up and fill the ring.
     useEffect(() => {
         const reduce = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-        if (reduce) { setShown(score); setRing(pct); return; }
+        if (reduce) { setShown(pct); setRing(pct); return; }
         const duration = 1400;
         const start = performance.now();
         let raf = 0;
         const tick = (t: number) => {
             const k = Math.min(1, (t - start) / duration);
             const ease = 1 - Math.pow(1 - k, 3);
-            setShown(Math.round(score * ease));
+            setShown(Math.round(pct * ease));
             setRing(pct * ease);
             if (k < 1) raf = requestAnimationFrame(tick);
         };
@@ -88,8 +88,8 @@ export function ExamResult({ title, score, maxScore, submitReason, pendingMarkin
                         />
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <p className="font-serif text-6xl leading-none text-[#0B1F3A] tabular-nums">{Math.round(ring)}<span className="text-3xl align-top">%</span></p>
-                        <p className="mt-2 text-sm font-bold text-slate-500 tabular-nums">{shown} out of {maxScore}</p>
+                        <p className="font-serif text-6xl leading-none text-[#0B1F3A] tabular-nums">{shown}</p>
+                        <p className="mt-2 text-sm font-bold text-slate-500 tabular-nums">out of 100</p>
                     </div>
                 </div>
 
