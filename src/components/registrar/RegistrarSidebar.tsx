@@ -8,6 +8,7 @@ import { Logo } from "@/components/logo";
 import {
     Users, ClipboardList, MessageSquare, Settings,
     LayoutDashboard, LogOut, History, Sparkles, PlayCircle, ClipboardCheck, Star, Link2, GraduationCap, ShieldCheck, BookOpenCheck,
+    ShieldAlert,
 } from "lucide-react";
 import { useUser } from "@/firebase";
 import { signOut } from "@/firebase/auth";
@@ -19,6 +20,7 @@ const navItems = [
     { href: "/registrar/attendance",     label: "Attendance",      icon: ClipboardCheck, tour: "nav-reg-attendance" },
     { href: "/registrar/exams",          label: "Exam Monitor",    icon: ShieldCheck },
     { href: "/registrar/exam-results",   label: "Exam Results",    icon: GraduationCap },
+    { href: "/registrar/class-warnings", label: "Class Warnings", icon: ShieldAlert },
     { href: "/registrar/exam-bank",   label: "Exam Bank",     icon: BookOpenCheck },
     { href: "/registrar/zoom-links",     label: "Zoom Links",      icon: Link2 },
     { href: "/registrar/feedback",       label: "Feedback",        icon: Star, tour: "nav-reg-feedback" },

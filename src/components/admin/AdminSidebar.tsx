@@ -26,6 +26,7 @@ import {
     MonitorPlay,
     Link2,
     ClipboardCheck, Award, Building2, School, Landmark, BookOpenCheck,
+    ShieldAlert,
 } from "lucide-react";
 import { useUser } from "@/firebase";
 import { signOut } from "@/firebase/auth";
@@ -41,6 +42,7 @@ const navItems = [
     { href: "/admin/emc", label: "EMC Leadership", icon: Crown },
     { href: "/admin/tests", label: "Tests & Exams", icon: ClipboardCheck },
     { href: "/admin/exam-results", label: "Exam Results", icon: Award },
+    { href: "/admin/class-warnings", label: "Class Warnings", icon: ShieldAlert },
     { href: "/admin/exam-bank", label: "Exam Bank",  icon: BookOpenCheck },
     { href: "/admin/courses", label: "Course Catalog", icon: Book, tour: "nav-admin-courses" },
     { href: "/admin/timetable", label: "Timetable", icon: CalendarClock, tour: "nav-admin-timetable" },

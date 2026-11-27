@@ -19,6 +19,7 @@ import { RoleGuard } from "@/components/auth/RoleGuard";
 import { EnrollmentGate } from "@/components/dashboard/EnrollmentGate";
 import { PortalTutorial } from "@/components/tutorial/PortalTutorial";
 import { studentTourSteps } from "@/lib/tutorial-steps/student";
+import { ClassWarningAlert } from "@/components/class-warnings/ClassWarningAlert";
 import "../globals.css";
 
 
@@ -32,6 +33,7 @@ export default function DashboardLayout({
   return (
     <RoleGuard allowed={["student"]}>
     <PortalTutorial steps={studentTourSteps} />
+    <ClassWarningAlert />
     <div className="flex min-h-screen w-full bg-[#FAF9F6]">
       {/* Desktop Sidebar */}
       <Sidebar className="hidden md:flex" />

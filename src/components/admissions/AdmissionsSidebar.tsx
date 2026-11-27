@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { Logo } from "@/components/logo";
 import {
     LayoutDashboard, LogOut, Sparkles, PlayCircle, Link2, ShieldCheck, GraduationCap, BookOpenCheck,
+    ShieldAlert,
 } from "lucide-react";
 import { useUser } from "@/firebase";
 import { signOut } from "@/firebase/auth";
@@ -17,6 +18,7 @@ const navItems = [
     { href: "/admissions/zoom-links", label: "Zoom Links", icon: Link2 },
     { href: "/admissions/exams", label: "Exam Monitor", icon: ShieldCheck },
     { href: "/admissions/exam-results", label: "Exam Results", icon: GraduationCap },
+    { href: "/admissions/class-warnings", label: "Class Warnings", icon: ShieldAlert },
     { href: "/admissions/exam-bank", label: "Exam Bank",  icon: BookOpenCheck },
 ];
 
