@@ -1,10 +1,11 @@
-import { score100 } from './score100';
 "use client";
+import { score100 } from './score100';
 
 // Excel (.xlsx) export for the Exam Results page. The xlsx library is loaded
 // only when someone clicks Export, so it doesn't slow the page down.
 
 export interface ExportResult {
+    uid?: string;
     name: string;
     email: string;
     studies: string[];
@@ -42,10 +43,15 @@ const WAT_DT: Intl.DateTimeFormatOptions = { timeZone: 'Africa/Lagos', day: '2-d
 const WAT_D: Intl.DateTimeFormatOptions = { timeZone: 'Africa/Lagos', day: '2-digit', month: 'short', year: 'numeric' };
 const when = (iso: string | null) => (iso ? new Date(iso).toLocaleString('en-GB', WAT_DT) : '');
 
+/** Modules at least one student has taken; the rest are left out of the page and the exports. */
+export function takenOnly<T extends ExportAssessment>(list: T[]): T[] {
+    return list.filter(a => a.results.some(r => r.status !== 'not_taken'));
+}
+
 function rows(a: ExportAssessment) {
-    // Best score first, then those still writing, then not taken.
-    const order = (r: ExportResult) => (r.status === 'not_taken' ? 2 : r.status === 'in_progress' ? 1 : 0);
-    return [...a.results]
+    // Only students who took it: best score first, then those still writing.
+    const order = (r: ExportResult) => (r.status === 'in_progress' ? 1 : 0);
+    return a.results.filter(r => r.status !== 'not_taken')
         .sort((x, y) => order(x) - order(y) || (y.percent ?? -1) - (x.percent ?? -1) || x.name.localeCompare(y.name))
         .map((r, i) => ({
             '#': i + 1,
@@ -94,13 +100,15 @@ export async function exportAssessmentToExcel(courseTitle: string, a: ExportAsse
     XLSX.writeFile(wb, fileName(`${courseTitle} - ${a.title}`));
 }
 
-/** A whole course -> one .xlsx with a Summary sheet plus one sheet per exam. */
-export async function exportCourseToExcel(courseTitle: string, assessments: ExportAssessment[]) {
+/** A whole course -> one .xlsx: Summary, an All results grid (student × module), then one sheet per module. */
+export async function exportCourseToExcel(courseTitle: string, all: ExportAssessment[]) {
     const XLSX = await import('xlsx');
     const wb = XLSX.utils.book_new();
-    const used = new Set<string>(['summary']);
-    const summary = XLSX.utils.json_to_sheet(assessments.map(a => ({
-        Exam: a.title,
+    const assessments = takenOnly(all).sort((x, y) => +new Date(x.opensAt) - +new Date(y.opensAt));
+    const used = new Set<string>(['summary', 'all results']);
+    const summary = XLSX.utils.json_to_sheet(assessments.map((a, i) => ({
+        '#': `M${i + 1}`,
+        Module: a.title,
         Type: a.type === 'exam' ? 'Exam' : 'Test',
         Date: new Date(a.opensAt).toLocaleDateString('en-GB', WAT_D),
         'Out of': 100,
@@ -108,8 +116,31 @@ export async function exportCourseToExcel(courseTitle: string, assessments: Expo
         Eligible: a.eligible,
         'Average (%)': a.averagePercent,
     })));
-    summary['!cols'] = [44, 8, 14, 8, 9, 9, 12].map(wch => ({ wch }));
+    summary['!cols'] = [6, 44, 8, 14, 8, 9, 9, 12].map(wch => ({ wch }));
     XLSX.utils.book_append_sheet(wb, summary, 'Summary');
+
+    // All results: one row per student who wrote anything, one column per module (score out of 100).
+    const students = new Map<string, { name: string; email: string; marks: Record<string, number | string> }>();
+    assessments.forEach((a, i) => {
+        for (const r of a.results) {
+            if (r.status === 'not_taken') continue;
+            const key = r.uid || r.email || r.name;
+            if (!students.has(key)) students.set(key, { name: r.name, email: r.email, marks: {} });
+            const m = score100(r.score ?? r.scoreSoFar, r.maxScore);
+            students.get(key)!.marks[`M${i + 1}`] = r.status === 'in_progress' ? 'Writing' : m ?? '';
+        }
+    });
+    const header = ['Student', 'Email', ...assessments.map((a, i) => `M${i + 1} ${a.title}`), 'Average'];
+    const gridRows = [...students.values()].sort((x, y) => x.name.localeCompare(y.name)).map(s => {
+        const nums = Object.values(s.marks).filter((v): v is number => typeof v === 'number');
+        return [s.name, s.email, ...assessments.map((_, i) => s.marks[`M${i + 1}`] ?? '—'),
+            nums.length ? Math.round(nums.reduce((t, v) => t + v, 0) / nums.length) : ''];
+    });
+    const grid = XLSX.utils.aoa_to_sheet([header, ...gridRows]);
+    grid['!cols'] = [26, 32, ...assessments.map(() => 14), 10].map(wch => ({ wch }));
+    if (grid['!ref']) grid['!autofilter'] = { ref: grid['!ref'] };
+    XLSX.utils.book_append_sheet(wb, grid, 'All results');
+
     for (const a of assessments) await addResultsSheet(XLSX, wb, a, used);
     const stamp = new Date().toLocaleDateString('en-GB', WAT_D);
     XLSX.writeFile(wb, fileName(`Exam Results - ${courseTitle} - ${stamp}`));
