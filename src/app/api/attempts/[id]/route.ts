@@ -161,8 +161,15 @@ export const PATCH = withAuth<RouteParams>(async (req: NextRequest, { auth, para
             if (msPastDeadline(attempt, assessment) > SUBMIT_GRACE_MS) {
                 return NextResponse.json({ error: 'Time is up.', timeUp: true }, { status: 409 });
             }
-            attempt.answers = parsed.data.answers.map(a => ({ ...a, pointsAwarded: null, isCorrect: null })) as any;
-            await attempt.save();
+            // Atomic, and only while still in progress: an autosave racing the
+            // submit can neither fail it nor overwrite the marked answers.
+            const r = await Attempt.updateOne(
+                { _id: attempt._id, status: 'in_progress' },
+                { $set: { answers: parsed.data.answers.map(a => ({ ...a, pointsAwarded: null, isCorrect: null })) } },
+            );
+            if (r.matchedCount === 0) {
+                return NextResponse.json({ error: 'This attempt has already been submitted.', status: 'submitted' }, { status: 409 });
+            }
             return NextResponse.json({ saved: true });
         }
 

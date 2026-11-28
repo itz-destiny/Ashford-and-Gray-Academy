@@ -83,6 +83,10 @@ const AttemptSchema: Schema = new Schema({
     gradedAt: { type: Date },
     submitReason: { type: String, enum: ['student', 'time_up', 'violations'] },
     proctoring: { type: ProctoringSchema },
-}, { timestamps: true });
+// The answer list is rewritten whole by autosave and by submit; with array
+// versioning on, an autosave landing a moment before a submit made the submit
+// fail (VersionError). Autosave is now an atomic update guarded by
+// status:'in_progress', so it can't clobber a submitted attempt anyway.
+}, { timestamps: true, skipVersioning: { answers: true } } as any);
 
 export default mongoose.models.Attempt || mongoose.model<IAttempt>('Attempt', AttemptSchema);
