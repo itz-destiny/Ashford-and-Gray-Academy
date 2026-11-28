@@ -5,6 +5,7 @@ import { useParams, useRouter, usePathname } from "next/navigation";
 import { examBase } from "@/lib/exam-link";
 import { ExamResult } from "@/components/tests/ExamResult";
 import { apiFetch } from "@/lib/api-client";
+import { useUser } from "@/firebase";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -35,8 +36,10 @@ export default function TestIntroPage() {
     const router = useRouter();
     const pathname = usePathname();
     const { toast } = useToast();
+    const { user } = useUser();
     const [assessment, setAssessment] = useState<Assessment | null>(null);
     const [loading, setLoading] = useState(true);
+    const [loadError, setLoadError] = useState<string | null>(null);
     const [starting, setStarting] = useState(false);
     const [cameraStatus, setCameraStatus] = useState<'idle' | 'checking' | 'ok' | 'denied' | 'unsupported'>('idle');
     const [agreed, setAgreed] = useState(false);
@@ -46,6 +49,7 @@ export default function TestIntroPage() {
     useEffect(() => {
         apiFetch(`/api/assessments/${id}`).then(async res => {
             if (res.ok) setAssessment(await res.json());
+            else setLoadError((await res.json().catch(() => ({})))?.error || null);
             setLoading(false);
         }).catch(() => setLoading(false));
     }, [id]);
@@ -152,7 +156,14 @@ export default function TestIntroPage() {
         return <div className="flex justify-center py-24"><Loader2 className="w-8 h-8 animate-spin text-slate-300" /></div>;
     }
     if (!assessment) {
-        return <div className="p-10 text-center text-slate-400">Test not found.</div>;
+        return (
+            <div className="p-10 text-center space-y-2 max-w-md mx-auto">
+                <p className="font-bold text-slate-700">{loadError === 'You are not enrolled in this course.' ? 'This exam is not for the account you are signed in with.' : loadError || 'Test not found.'}</p>
+                {loadError === 'You are not enrolled in this course.' && (
+                    <p className="text-sm text-slate-500">You are signed in as <b>{(user as any)?.email || 'another account'}</b>, which is not registered for this programme. Sign out (top right) and sign in with the email you registered for this programme with.</p>
+                )}
+            </div>
+        );
     }
 
     const now = Date.now();
